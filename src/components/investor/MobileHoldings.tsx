@@ -29,42 +29,48 @@ export default function MobileHoldings({
   return (
     <div className="pb-20">
       {/* Portfolio Summary Section */}
-      <div className="bg-white px-5 pt-10 pb-6 rounded-b-[2rem] shadow-[0_4px_20px_-10px_rgba(0,0,0,0.05)] relative z-10">
+      <div className="bg-white px-5 pt-8 pb-6 shadow-[0_4px_20px_-10px_rgba(0,0,0,0.05)] relative z-10">
         
-        {/* UPDATED: Flex container to hold the name on the left and logout on the right */}
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-2">
-            <span className="flex items-center justify-center w-6 h-6 rounded-full bg-indigo-100 text-indigo-700 font-bold text-[10px]">BM</span>
-            <h2 className="text-xs font-bold text-indigo-700 tracking-wide uppercase truncate max-w-[200px]">{client.clientName}</h2>
+        <div className="flex justify-between items-start mb-6">
+          <div>
+            <h1 className="text-2xl font-black tracking-tight text-slate-900 mb-1">
+              Portfolio <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-indigo-600 to-primary/80">Overview</span>
+            </h1>
+            <div className="flex items-center gap-2">
+              <span className="flex items-center justify-center w-5 h-5 rounded-full bg-indigo-100 text-indigo-700 font-bold text-[9px]">BM</span>
+              <h2 className="text-xs font-bold text-indigo-700 tracking-wide uppercase truncate max-w-[200px]">{client.clientName}</h2>
+            </div>
           </div>
           
-          {/* ADD THE LOGOUT BUTTON HERE */}
           <LogoutButton />
         </div>
 
-        <p className="text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-1">Current Value</p>
-        <h1 className="text-4xl font-black text-slate-900 tracking-tight">{formatCurrencyNoDecimals(client.currentValue)}</h1>
-        
-        <div className="flex items-center gap-2 mt-2">
-          <span className={`text-sm font-bold ${getColorClass(client.todaysGain)}`}>
-            {client.todaysGain > 0 ? '+' : ''}{formatCurrencyNoDecimals(client.todaysGain)} ({client.todaysGainPercent}%)
-          </span>
-          <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-slate-100 text-slate-500 uppercase tracking-wider">
-            1 Day P&L
-          </span>
+        {/* Center-aligned KPIs */}
+        <div className="flex flex-col items-center text-center">
+          <p className="text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-1">Current Value</p>
+          <h1 className="text-4xl font-black text-slate-900 tracking-tight">{formatCurrencyNoDecimals(client.currentValue)}</h1>
+          
+          <div className="flex items-center justify-center gap-2 mt-2">
+            <span className={`text-sm font-bold ${getColorClass(client.todaysGain)}`}>
+              {client.todaysGain > 0 ? '+' : ''}{formatCurrencyNoDecimals(client.todaysGain)} ({client.todaysGainPercent}%)
+            </span>
+            <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-slate-100 text-slate-500 uppercase tracking-wider">
+              1 Day P&L
+            </span>
+          </div>
         </div>
 
         {/* KPI Grid */}
-        <div className="grid grid-cols-3 gap-3 mt-6 pt-6 border-t border-slate-100">
-          <div>
+        <div className="grid grid-cols-3 gap-3 mt-6 pt-6 border-t border-slate-100 text-center">
+          <div className="flex flex-col items-center">
             <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Invested</p>
             <p className="text-sm font-bold text-slate-900">{formatCurrencyNoDecimals(client.investedCapital)}</p>
           </div>
-          <div>
+          <div className="flex flex-col items-center">
             <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Total Gain</p>
             <p className={`text-sm font-bold ${getColorClass(client.unrealisedGain)}`}>{formatCurrencyNoDecimals(client.unrealisedGain)}</p>
           </div>
-          <div>
+          <div className="flex flex-col items-center">
             <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">XIRR</p>
             <p className="text-sm font-bold text-indigo-600">{client.xirr}%</p>
           </div>
@@ -72,24 +78,6 @@ export default function MobileHoldings({
       </div>
 
       <div className="px-5 mt-6">
-        {/* Asset Category Section */}
-        <h3 className="text-sm font-bold text-slate-900 mb-3">Asset Allocation</h3>
-        <div className="grid grid-cols-3 gap-3 mb-8">
-          {[
-            { label: 'MF', icon: '📈', active: true },
-            { label: 'Stocks', icon: '🏢', active: false },
-            { label: 'FD', icon: '🏦', active: false },
-            { label: 'SIF', icon: '🛡️', active: false },
-            { label: 'NPS', icon: '👴', active: false },
-            { label: 'MLD', icon: '📊', active: false },
-          ].map(asset => (
-            <div key={asset.label} className={`flex flex-col items-center justify-center p-3 rounded-2xl border ${asset.active ? 'bg-indigo-50 border-indigo-100' : 'bg-white border-slate-200'}`}>
-              <span className="text-xl mb-1">{asset.icon}</span>
-              <span className={`text-[11px] font-bold ${asset.active ? 'text-indigo-700' : 'text-slate-600'}`}>{asset.label}</span>
-            </div>
-          ))}
-        </div>
-
         {/* Fund List (Mobile) */}
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-sm font-bold text-slate-900">Your Holdings</h3>

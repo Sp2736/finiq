@@ -43,7 +43,7 @@ export default function UnifiedPortfolioApp() {
   });
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 font-sans relative selection:bg-indigo-500/20 selection:text-indigo-900 pb-24">
+    <div className="min-h-screen lg:h-screen lg:overflow-hidden bg-gradient-to-br from-slate-50 via-white to-slate-100 font-sans relative selection:bg-indigo-500/20 selection:text-indigo-900 pb-24 lg:pb-0">
       {/* Background matching Login Page */}
       <div className="fixed inset-0 z-0 opacity-[0.35] bg-[radial-gradient(#94a3b8_1px,transparent_1px)] [background-size:24px_24px] pointer-events-none" />
       
@@ -84,10 +84,10 @@ export default function UnifiedPortfolioApp() {
       {/* ========================================================= */}
       {/* =================== DESKTOP VIEW (>= 1024px) ============== */}
       {/* ========================================================= */}
-      <div className="hidden lg:block relative z-10 px-4 sm:px-8 lg:px-12 py-8 max-w-[1800px] mx-auto space-y-8 animate-[fadeIn_0.5s_ease-out]">
+      <div className="hidden lg:flex flex-col relative z-10 px-4 sm:px-8 lg:px-12 py-8 max-w-[1800px] mx-auto space-y-6 animate-[fadeIn_0.5s_ease-out] h-full">
         
         {/* Header */}
-        <div className="flex justify-between items-end gap-4">
+        <div className="shrink-0 flex justify-between items-end gap-4">
           <div>
             <h1 className="text-4xl font-black tracking-tight text-slate-900">
               Portfolio <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-indigo-600 to-primary/80">Overview</span>
@@ -100,21 +100,27 @@ export default function UnifiedPortfolioApp() {
           </div>
           <div className="mb-2">
               <LogoutButton />
-            </div>
+          </div>
         </div>
 
-        <GlobalStatsRibbon client={CURRENT_CLIENT} />
+        <div className="shrink-0">
+          <GlobalStatsRibbon client={CURRENT_CLIENT} />
+        </div>
         
-        <FilterBar 
-          activeFilterType={activeFilterType}
-          setActiveFilterType={setActiveFilterType}
-          activeFilterValue={activeFilterValue}
-          setActiveFilterValue={setActiveFilterValue}
-          filterOptions={filterOptions}
-          avgHoldingDays={CURRENT_CLIENT.avgHoldingDays}
-        />
+        <div className="shrink-0">
+          <FilterBar 
+            activeFilterType={activeFilterType}
+            setActiveFilterType={setActiveFilterType}
+            activeFilterValue={activeFilterValue}
+            setActiveFilterValue={setActiveFilterValue}
+            filterOptions={filterOptions}
+            avgHoldingDays={CURRENT_CLIENT.avgHoldingDays}
+          />
+        </div>
         
-        <DesktopFundTable funds={filteredFunds} />
+        <div className="flex-1 min-h-0 pb-4 w-full">
+          <DesktopFundTable funds={filteredFunds} />
+        </div>
       </div>
 
       {/* Global Scrollbars and Keyframes */}
