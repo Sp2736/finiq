@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 
 interface OTPVerificationFormProps {
   onVerify: (otp: string) => void;
@@ -9,6 +10,8 @@ interface OTPVerificationFormProps {
 }
 
 export default function OTPVerificationForm({ onVerify, onBack, phoneInfo }: OTPVerificationFormProps) {
+  const router = useRouter(); // Initialize the App Router navigation hook
+  
   const [otp, setOtp] = useState(['', '', '', '']);
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
@@ -40,10 +43,18 @@ export default function OTPVerificationForm({ onVerify, onBack, phoneInfo }: OTP
 
   const triggerVerification = (code: string) => {
     setStatus('loading');
+    
     setTimeout(() => {
       if (code === '1234') { 
         setStatus('success');
-        setTimeout(() => onVerify(code), 1200);
+        
+        // SET DUMMY COOKIE: This allows the middleware to see you as logged in
+        // In production, your backend API would set an HttpOnly cookie instead
+        document.cookie = "auth-token=true; path=/";
+        
+        // On Success: Push to the dashboard
+        router.push('/investor');
+        
       } else {
         setStatus('error');
         setOtp(['', '', '', '']);

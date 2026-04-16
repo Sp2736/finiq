@@ -1,10 +1,9 @@
+// src/app/page.tsx
 import { redirect } from 'next/navigation';
-import InvestorDashboard from './investor/page';
 
-export default function Home() {
-  // Redirect users visiting the root directly to the authentication flow
-  redirect('/login');
-  return (
-    <InvestorDashboard />
-  );
+export default function RootPage() {
+  // If you are using subdomain routing (investor.domain.com):
+  // You might want to redirect to the explicit subdomain in production, 
+  // but for local testing or relative routing:
+  redirect('/login'); 
 }
