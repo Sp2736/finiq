@@ -43,14 +43,14 @@ export default function UnifiedPortfolioApp() {
   });
 
   return (
-    <div className="min-h-screen lg:h-screen lg:overflow-hidden bg-gradient-to-br from-slate-50 via-white to-slate-100 font-sans relative selection:bg-indigo-500/20 selection:text-indigo-900 pb-24 lg:pb-0">
+    <div className="h-[100dvh] overflow-hidden bg-gradient-to-br from-slate-50 via-white to-slate-100 font-sans relative selection:bg-indigo-500/20 selection:text-indigo-900">
       {/* Background matching Login Page */}
       <div className="fixed inset-0 z-0 opacity-[0.35] bg-[radial-gradient(#94a3b8_1px,transparent_1px)] [background-size:24px_24px] pointer-events-none" />
       
       {/* ========================================================= */}
-      {/* =================== MOBILE VIEW (< 1024px) ================ */}
+      {/* =================== MOBILE/TABLET VIEW (< 1024px) ========= */}
       {/* ========================================================= */}
-      <div className="block lg:hidden relative z-10 md:max-w-md md:mx-auto md:shadow-2xl md:border-x border-slate-200 bg-slate-50 min-h-screen">
+      <div className="flex flex-col lg:hidden relative z-10 w-full bg-slate-50 h-full">
         
         {mobileActiveScreen === 'holdings' ? (
           <MobileHoldings 
@@ -64,7 +64,6 @@ export default function UnifiedPortfolioApp() {
             onNavigateToFund={(fund) => {
               setMobileSelectedFund(fund);
               setMobileActiveScreen('fund_details');
-              window.scrollTo(0, 0);
             }}
           />
         ) : (
