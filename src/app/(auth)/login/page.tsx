@@ -2,51 +2,43 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useState, useEffect } from "react";
-import PhoneInputForm from "@/components/layouts/PhoneInputForm";
-import OTPVerificationForm from "@/components/layouts/OTPVerificationForm";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import EmailPasswordForm from "@/components/layouts/EmailPasswordForm";
 import FluidBackground from "@/components/layouts/FluidBackground";
-
-type Step = "phone" | "otp";
+import { authService } from "@/services/auth.service";
+import { setAuthCookie } from "@/lib/authClient";
 
 export default function LoginPage() {
-  const [step, setStep] = useState<Step>("phone");
-  const [phoneInfo, setPhoneInfo] = useState({ countryCode: "+1", number: "" });
+  const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
+  const portalName = "Investor";
 
-  const [activeRole, setActiveRole] = useState<string>("Unknown");
-  const [portalName, setPortalName] = useState<string>("Financial");
-
-  useEffect(() => {
-    const hostname = window.location.hostname;
-    if (hostname.includes("admin")) {
-      setActiveRole("Company Admin");
-      setPortalName("Admin");
-    } else if (hostname.includes("investor")) {
-      setActiveRole("Investor");
-      setPortalName("Investor");
-    } else if (hostname.includes("distributor")) {
-      setActiveRole("Distributor");
-      setPortalName("Distributor");
-    } else {
-      setActiveRole("General User");
+  const handleLogin = async (email: string, password: string) => {
+    setIsLoading(true);
+    try {
+      const response = await authService.loginWithEmail(email, password);
+      console.log("Authentication successful:", response.user);
+      
+      // 1. Set the cookie so the middleware authenticates the user
+      setAuthCookie(response.token);
+      
+      // 2. Redirect seamlessly to the dashboard
+      router.push('/investor');
+      
+    } catch (error) {
+      console.error("Login failed:", error);
+      // We keep the error alert for testing feedback if credentials fail
+      alert("Invalid credentials. Try abc@gmail.com / pwd123");
+    } finally {
+      setIsLoading(false);
     }
-  }, []);
-
-  const handlePhoneSubmit = (info: { countryCode: string; number: string }) => {
-    setPhoneInfo(info);
-    setStep("otp");
-  };
-
-  const handleOTPVerify = (otp: string) => {
-    console.log(
-      `Authenticating ${phoneInfo.countryCode}${phoneInfo.number} for Role: [${activeRole}]`,
-    );
   };
 
   return (
     <div className="min-h-screen bg-background font-sans selection:bg-primary/20 selection:text-primary relative flex items-center justify-center overflow-x-hidden">
 
-      {/* Background layers — untouched */}
+      {/* Background layers */}
       <div className="absolute inset-0 z-0 bg-gradient-to-br from-slate-100 via-white to-slate-200" />
       <div className="absolute inset-0 z-0 opacity-[0.35] bg-[radial-gradient(#94a3b8_1px,transparent_1px)] [background-size:24px_24px] sm:[background-size:32px_32px] pointer-events-none" />
 
@@ -63,21 +55,10 @@ export default function LoginPage() {
       <div className="absolute -top-40 -left-40 w-[400px] sm:w-[600px] h-[400px] sm:h-[600px] bg-primary/20 rounded-full blur-[80px] sm:blur-[100px] pointer-events-none z-0" />
       <div className="absolute bottom-0 right-0 w-[500px] sm:w-[800px] h-[500px] sm:h-[800px] bg-indigo-500/15 rounded-full blur-[100px] sm:blur-[120px] pointer-events-none z-0" />
 
-      {/*
-        ─── MAIN CONTENT WRAPPER ───────────────────────────────────────────────
-        Mobile  : single column, uniform 24px edge padding, vertically centered
-                  with equal top/bottom breathing room via py-10
-        Tablet  : same column, wider side padding (px-12)
-        Desktop : two-column row, full-height centering, no extra py needed
-                  because the wrapper itself is min-h-screen + flex items-center
-        ────────────────────────────────────────────────────────────────────────
-      */}
       <div className="relative z-10 w-full max-w-[1600px] mx-auto px-6 sm:px-12 lg:px-20 py-10 lg:py-16 flex flex-col lg:flex-row items-center justify-between gap-10 md:gap-12 lg:gap-20">
 
         {/* ── LEFT: Branding ─────────────────────────────────────────────── */}
         <div className="w-full lg:w-3/5 flex flex-col justify-center items-center md:items-start">
-
-          {/* Logo — visible on all breakpoints */}
           <div className="inline-flex items-center justify-center lg:justify-start gap-3 mb-6 lg:mb-8">
             <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br from-primary to-indigo-700 flex items-center justify-center shadow-lg shadow-primary/30 relative overflow-hidden">
               <div className="absolute inset-0 bg-white/30 transform -skew-x-12 -translate-x-full animate-[shine_4s_infinite]" />
@@ -91,14 +72,10 @@ export default function LoginPage() {
               </svg>
             </div>
             <div className="text-3xl sm:text-4xl lg:text-3xl font-black tracking-tight text-slate-900">
-              FinIQ{" "}
-              {portalName !== "Financial" && (
-                <span className="text-primary font-light">| {portalName}</span>
-              )}
+              FinIQ <span className="text-primary font-light">| {portalName}</span>
             </div>
           </div>
 
-          {/* Desktop / tablet hero content */}
           <div className="hidden md:block w-full">
             <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-extrabold tracking-tight text-slate-900 leading-[1.1] mb-4 sm:mb-6">
               Financial Edge, <br />
@@ -108,13 +85,12 @@ export default function LoginPage() {
             </h1>
 
             <p className="text-base sm:text-lg lg:text-xl text-slate-600 font-medium max-w-xl leading-relaxed mb-8 sm:mb-12">
-              The platform built for modern financial institutions to manage,
-              analyze, and scale infrastructure with absolute precision.
+              The exclusive platform built for our investors to manage,
+              analyze, and scale portfolios with absolute precision.
             </p>
 
             {/* Isometric glass stack illustration */}
             <div className="relative w-full max-w-lg h-48 sm:h-64 perspective-1000">
-              {/* Base grid layer */}
               <div className="absolute top-6 sm:top-10 left-6 sm:left-10 w-full h-40 sm:h-48 bg-white/80 border-2 border-white rounded-3xl transform rotate-x-12 -rotate-y-12 rotate-z-6 shadow-2xl backdrop-blur-md p-6 overflow-hidden">
                 <svg className="w-full h-full opacity-60 text-primary" viewBox="0 0 100 100" preserveAspectRatio="none">
                   <pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse">
@@ -124,7 +100,6 @@ export default function LoginPage() {
                 </svg>
               </div>
 
-              {/* Top glass waveform layer */}
               <div className="absolute top-0 left-0 w-[90%] h-32 sm:h-40 bg-white/90 border-2 border-white shadow-[0_30px_60px_-15px_rgba(0,0,0,0.20)] rounded-3xl transform rotate-x-12 -rotate-y-12 rotate-z-6 backdrop-blur-xl p-4 sm:p-6 flex flex-col justify-between overflow-hidden group">
                 <div className="absolute inset-0 bg-gradient-to-tr from-primary/15 to-transparent opacity-100" />
                 <div className="flex justify-between items-center relative z-10">
@@ -155,7 +130,6 @@ export default function LoginPage() {
                 </div>
               </div>
 
-              {/* Floating security badge */}
               <div className="absolute -top-4 sm:-top-6 right-0 sm:right-8 bg-white border-2 border-white rounded-2xl shadow-xl shadow-slate-300/60 p-3 sm:p-4 transform rotate-x-12 -rotate-y-12 rotate-z-6 animate-[float_6s_ease-in-out_infinite]">
                 <div className="flex items-center gap-2 sm:gap-3">
                   <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-emerald-50 flex items-center justify-center border border-emerald-200">
@@ -164,8 +138,8 @@ export default function LoginPage() {
                     </svg>
                   </div>
                   <div>
-                    <p className="text-[9px] sm:text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">Infrastructure</p>
-                    <p className="text-xs sm:text-sm font-extrabold text-slate-900">Institutional Grade</p>
+                    <p className="text-[9px] sm:text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">Access</p>
+                    <p className="text-xs sm:text-sm font-extrabold text-slate-900">Investor Portal</p>
                   </div>
                 </div>
               </div>
@@ -181,42 +155,28 @@ export default function LoginPage() {
           >
             <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-primary/50 to-transparent opacity-80" />
 
-            {step === "phone" && (
-              <div style={{ animation: "fadeIn 0.4s ease-out forwards" }}>
-                <div className="mb-8 sm:mb-10 text-center lg:text-left">
-                  <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-slate-900 mb-2">
-                    Welcome back
-                  </h2>
-                  <p className="text-sm text-slate-600 font-medium">
-                    Enter your phone number to securely access your dashboard.
-                  </p>
-                </div>
-
-                <div className="relative z-10">
-                  <PhoneInputForm onSubmit={handlePhoneSubmit} />
-                </div>
-
-                <div className="mt-8 sm:mt-10 text-center">
-                  <span className="text-slate-600 font-medium text-sm">Don&apos;t have an account? </span>
-                  <Link
-                    href="#"
-                    className="font-bold text-primary hover:text-primary/80 transition-colors duration-200 text-sm border-b-2 border-primary/20 hover:border-primary/60 pb-0.5"
-                  >
-                    Request access
-                  </Link>
-                </div>
+            <div style={{ animation: "fadeIn 0.4s ease-out forwards" }}>
+              <div className="mb-8 sm:mb-10 text-center lg:text-left">
+                <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-slate-900 mb-2">
+                  Welcome back
+                </h2>
+                <p className="text-sm text-slate-600 font-medium">
+                  Enter your credentials to securely access your portfolio.
+                </p>
               </div>
-            )}
 
-            {step === "otp" && (
-              <div style={{ animation: "slideFadeUp 0.4s ease-out forwards" }}>
-                <OTPVerificationForm
-                  onVerify={handleOTPVerify}
-                  onBack={() => setStep("phone")}
-                  phoneInfo={phoneInfo}
-                />
+              <EmailPasswordForm onSubmit={handleLogin} isLoading={isLoading} />
+
+              <div className="mt-8 sm:mt-10 text-center">
+                <span className="text-slate-600 font-medium text-sm">Don&apos;t have an account? </span>
+                <Link
+                  href="#"
+                  className="font-bold text-primary hover:text-primary/80 transition-colors duration-200 text-sm border-b-2 border-primary/20 hover:border-primary/60 pb-0.5"
+                >
+                  Request access
+                </Link>
               </div>
-            )}
+            </div>
 
             <div className="mt-8 sm:mt-12 pt-6 border-t border-slate-200/80 flex flex-col items-center justify-center gap-3">
               <div className="flex items-center gap-1.5 text-[10px] sm:text-[11px] font-bold text-slate-500 uppercase tracking-widest">

@@ -1,9 +1,11 @@
-import { useState, useEffect } from 'react';
-import { investorService } from '@/services/investor.service';
-import { ClientPortfolio } from '@/types/investor';
+"use client";
+
+import { useState, useEffect } from "react";
+import { UnifiedFund } from "@/types/investor";
+import { CURRENT_CLIENT } from "@/types/mockInvestorData";
 
 export function usePortfolio() {
-  const [portfolio, setPortfolio] = useState<ClientPortfolio | null>(null);
+  const [portfolio, setPortfolio] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -12,23 +14,24 @@ export function usePortfolio() {
 
     const fetchPortfolio = async () => {
       try {
-        setIsLoading(true);
-        setError(null);
+        await new Promise(resolve => setTimeout(resolve, 800));
         
-        // Fetch real data from the API
-        const data = await investorService.getPortfolio();
-        
-        if (isMounted) setPortfolio(data);
+        if (isMounted) {
+          setPortfolio(CURRENT_CLIENT);
+        }
       } catch (err: any) {
-        if (isMounted) setError(err.message || "Failed to load portfolio data.");
+        if (isMounted) {
+          setError(err.message || "Failed to fetch portfolio");
+        }
       } finally {
-        if (isMounted) setIsLoading(false);
+        if (isMounted) {
+          setIsLoading(false);
+        }
       }
     };
 
     fetchPortfolio();
 
-    // Cleanup function
     return () => {
       isMounted = false;
     };

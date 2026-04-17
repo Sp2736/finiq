@@ -1,89 +1,86 @@
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api';
+// src/lib/apiClient.ts
 
-interface FetchOptions extends RequestInit {
-  params?: Record<string, string>;
-}
-
-// Helper to safely get token without crashing in strict-privacy browsers
-const getAuthToken = (): string | null => {
-  if (typeof window === 'undefined') return null;
-  try {
-    return localStorage.getItem('token');
-  } catch (e) {
-    // Browser blocking localStorage (e.g., Safari blocked cookies/storage)
-    return null; 
-  }
+// Helper to safely get the cookie on the client side
+const getAuthToken = () => {
+  if (typeof document === 'undefined') return null;
+  const match = document.cookie.match(new RegExp('(^| )auth-token=([^;]+)'));
+  if (match) return match[2];
+  return null;
 };
 
-async function fetchApi<T>(endpoint: string, options: FetchOptions = {}): Promise<T> {
-  const { params, headers, ...customConfig } = options;
-
-  // 1. Build URL with query parameters securely
-  const url = new URL(`${BASE_URL}${endpoint}`);
-  if (params) {
-    Object.keys(params).forEach(key => url.searchParams.append(key, params[key]));
+// Generic fetch wrapper to standardize API calls
+async function fetchWithConfig<T>(
+  endpoint: string,
+  options: RequestInit = {}
+): Promise<T> {
+  const token = getAuthToken();
+  const headers = new Headers(options.headers || {});
+  
+  // Always attach JSON headers
+  if (!headers.has('Content-Type')) {
+    headers.set('Content-Type', 'application/json');
   }
 
-  const token = getAuthToken();
+  // Attach the Bearer token if it exists
+  if (token) {
+    headers.set('Authorization', `Bearer ${token}`);
+  }
 
-  // 2. Configure Strict Headers
-  const config: RequestInit = {
-    ...customConfig,
-    headers: {
-      'Content-Type': 'application/json',
-      'Accept': 'application/json',
-      // Prevent browsers from caching sensitive API responses
-      'Cache-Control': 'no-store, max-age=0', 
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-      ...headers,
-    },
-  };
-
+  // Use the NEXT_PUBLIC_API_URL environment variable, or fallback to relative routing
+  const baseUrl = process.env.NEXT_PUBLIC_API_URL || '/api';
+  
   try {
-    const response = await fetch(url.toString(), config);
+    const response = await fetch(`${baseUrl}${endpoint}`, {
+      ...options,
+      headers,
+    });
 
-    // 204 No Content handling
-    if (response.status === 204) {
-      return {} as T;
-    }
-
-    const data = await response.json().catch(() => ({}));
-
-    // 3. Error Handling
     if (!response.ok) {
-      // Handle Unauthorized globally
-      if (response.status === 401 && typeof window !== 'undefined') {
-        try {
-          localStorage.removeItem('token');
-        } catch(e) {}
-        // Secure redirect to login, clearing state
-        window.location.replace('/login'); 
+      // You could handle specific global errors here (e.g., 401 Unauthorized -> Force Logout)
+      if (response.status === 401) {
+        if (typeof document !== 'undefined') {
+          // Wipe cookie and redirect to login if unauthorized
+          document.cookie = 'auth-token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+          window.location.href = '/login';
+        }
       }
       
-      // Throw a sanitized error. Do NOT throw raw backend objects that might contain stack traces.
-      throw new Error(data?.message || 'A server error occurred. Please try again later.');
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.message || `API Error: ${response.status}`);
     }
 
-    return data as T;
-  } catch (error: any) {
-    // 4. Secure Logging: Only log in development to prevent PII leakage in prod tools
-    if (process.env.NODE_ENV === 'development') {
-      console.error(`[API Error] ${options.method || 'GET'} ${endpoint}:`, error.message);
+    // Some APIs might return empty responses, handle gracefully
+    const contentType = response.headers.get('content-type');
+    if (contentType && contentType.includes('application/json')) {
+      return response.json();
     }
+    
+    return {} as T;
+
+  } catch (error) {
+    console.error(`API Client Error [${endpoint}]:`, error);
     throw error;
   }
 }
 
 export const apiClient = {
-  get: <T>(endpoint: string, options?: FetchOptions) => 
-    fetchApi<T>(endpoint, { ...options, method: 'GET' }),
+  get: <T>(endpoint: string, options?: RequestInit) => 
+    fetchWithConfig<T>(endpoint, { ...options, method: 'GET' }),
     
-  post: <T>(endpoint: string, body?: any, options?: FetchOptions) => 
-    fetchApi<T>(endpoint, { ...options, method: 'POST', body: JSON.stringify(body) }),
+  post: <T>(endpoint: string, data: any, options?: RequestInit) => 
+    fetchWithConfig<T>(endpoint, { 
+      ...options, 
+      method: 'POST', 
+      body: JSON.stringify(data) 
+    }),
     
-  put: <T>(endpoint: string, body?: any, options?: FetchOptions) => 
-    fetchApi<T>(endpoint, { ...options, method: 'PUT', body: JSON.stringify(body) }),
+  put: <T>(endpoint: string, data: any, options?: RequestInit) => 
+    fetchWithConfig<T>(endpoint, { 
+      ...options, 
+      method: 'PUT', 
+      body: JSON.stringify(data) 
+    }),
     
-  delete: <T>(endpoint: string, options?: FetchOptions) => 
-    fetchApi<T>(endpoint, { ...options, method: 'DELETE' }),
+  delete: <T>(endpoint: string, options?: RequestInit) => 
+    fetchWithConfig<T>(endpoint, { ...options, method: 'DELETE' }),
 };
