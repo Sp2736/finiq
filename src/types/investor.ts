@@ -61,7 +61,7 @@ export type ClientPortfolio = {
   todaysGain: number;
   todaysGainPercent: number;
   xirr: number;
-  absReturn: number;
+  abs: number;
   avgHoldingDays: number;
   funds: UnifiedFund[];
 };

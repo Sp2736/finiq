@@ -1,8 +1,8 @@
+// src/hooks/usePortfolio.ts
 "use client";
 
 import { useState, useEffect } from "react";
-import { UnifiedFund } from "@/types/investor";
-import { CURRENT_CLIENT } from "@/types/mockInvestorData";
+import { investorService } from "@/services/investor.service";
 
 export function usePortfolio() {
   const [portfolio, setPortfolio] = useState<any>(null);
@@ -14,14 +14,15 @@ export function usePortfolio() {
 
     const fetchPortfolio = async () => {
       try {
-        await new Promise(resolve => setTimeout(resolve, 800));
+        setIsLoading(true);
+        const data = await investorService.getPortfolio();
         
         if (isMounted) {
-          setPortfolio(CURRENT_CLIENT);
+          setPortfolio(data);
         }
       } catch (err: any) {
         if (isMounted) {
-          setError(err.message || "Failed to fetch portfolio");
+          setError(err.message || "failed to fetch portfolio holdings");
         }
       } finally {
         if (isMounted) {

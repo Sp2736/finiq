@@ -1,57 +1,34 @@
 import { apiClient } from '@/lib/apiClient';
 
+// Updated to match your exact API response structure
 export interface LoginResponse {
-  token: string;
-  user: {
-    id: string;
-    name: string;
-    role: string;
+  success: boolean;
+  message: string;
+  data: {
+    access_token: string;
+    investor: {
+      id: string;
+      name: string;
+      mobile: string;
+      email: string;
+    };
   };
 }
 
 export const authService = {
   // ─── INVESTOR AUTH ────────────────────────────────────────────────────────
-  loginWithEmail: async (email: string, password: string): Promise<LoginResponse> => {
-    // Dummy logic for testing environment
-    if (email === 'abc@gmail.com' && password === 'pwd123') {
-      return Promise.resolve({
-        token: 'mock-jwt-token-732d460b',
-        user: {
-          id: 'inv-101',
-          name: 'Demo Investor',
-          role: 'Investor'
-        }
-      });
-    }
-
-    // Actual API call for production
-    return apiClient.post<LoginResponse>('/auth/login', { email, password });
+  loginInvestor: async (identifier: string, password: string): Promise<LoginResponse> => {
+    return apiClient.post<LoginResponse>('/investor-auth/login', { identifier, password });
   },
 
   // ─── ADMIN / DISTRIBUTOR AUTH ─────────────────────────────────────────────
   sendOtp: async (phone: string) => {
     console.log(`Mock: Sending OTP to ${phone}`);
-    // Returning a resolved promise so the form doesn't crash during testing
     return Promise.resolve({ success: true });
-    
-    // Future API call: 
-    // return apiClient.post('/auth/send-otp', { phone });
   },
 
-  verifyOtp: async (phone: string, otp: string): Promise<LoginResponse> => {
+  verifyOtp: async (phone: string, otp: string) => {
     console.log(`Mock: Verifying OTP ${otp} for ${phone}`);
-    // Returning a dummy response so the OTPVerificationForm doesn't throw an error.
-    // The actual "1234" check and redirect is safely handled in your page.tsx!
-    return Promise.resolve({
-      token: 'mock-otp-token',
-      user: {
-        id: 'sys-001',
-        name: 'System User',
-        role: 'Staff'
-      }
-    });
-
-    // Future API call: 
-    // return apiClient.post<LoginResponse>('/auth/verify-otp', { phone, otp });
+    return Promise.resolve({ token: 'mock-admin-token-1234' });
   }
 };

@@ -3,7 +3,7 @@
 import React, { useState, useMemo } from 'react';
 import { UnifiedFund } from "@/types/investor";
 import LogoutButton from "@/components/investor/LogoutButton";
-import { usePortfolio } from "@/hooks/usePortfolio"; // <-- Import the new hook
+import { usePortfolio } from "@/hooks/usePortfolio";
 
 // Desktop Components
 import GlobalStatsRibbon from "@/components/investor/GlobalStatsRibbon";
@@ -18,6 +18,80 @@ export default function UnifiedPortfolioApp() {
   // --- REAL DATA FETCHING ---
   const { portfolio, isLoading, error } = usePortfolio();
 
+  // --- DATA NORMALIZER (Transforms API snake_case to Frontend camelCase) ---
+  const normalizedPortfolio = useMemo(() => {
+    if (!portfolio) return null;
+    const d = portfolio.data || portfolio; 
+    
+    return {
+      clientName: d.investor_name || d.clientName || "Investor",
+      currentValue: d.current_value || d.currentValue || 0,
+      investedCapital: d.invested_capital || d.investedCapital || 0,
+      todaysGain: d.todays_pnl || d.todaysGain || 0,
+      todaysGainPercent: d.todays_pnl_percent ?? d.todaysGainPercent ?? 0,
+      unrealisedGain: (d.unrealised_gains_lt || 0) + (d.unrealised_gains_st || 0) || d.unrealisedGain || 0,
+      xirr: d.xirr_percent ?? d.xirr ?? 0,
+      absPercent: d.abs_percent ?? d.absPercent ?? 0,
+      abs: d.abs_percent ?? d.abs ?? 0,
+      avgHoldingDays: d.avg_days ?? d.avgHoldingDays ?? 0,
+      funds: (d.funds || []).map((f: any) => ({
+        ...f,
+        folioNo: f.folio_number || f.folioNo || "N/A",
+        fundName: f.fund_name || f.fundName || "Unknown Fund",
+        category: f.category || "Equity",
+        amc: f.amc || "AMC",
+        statusTag: f.sip_status || f.statusTag || "N/A",
+        purchaseDate: f.purchase_date ? new Date(f.purchase_date).toLocaleDateString('en-GB') : f.purchaseDate,
+        investedCapital: f.total_capital || f.investedCapital || 0,
+        currentValue: f.current_value || f.currentValue || 0,
+        availableUnits: f.available_units || f.availableUnits || 0,
+        currentNAV: f.current_nav || f.currentNAV || 0,
+        avgNAV: f.avg_nav || f.avgNAV || 0,
+        dividendPayout: f.dividend_payout || f.dividendPayout || 0,
+        unrealisedGain: (f.unrealised_gains_lt || 0) + (f.unrealised_gains_st || 0) || f.unrealisedGain || 0,
+        unrealisedGainPercent: f.abs_percent ?? f.unrealisedGainPercent ?? 0,
+        xirr: f.xirr_percent ?? f.xirr ?? 0,
+        oneDayChange: f.todays_pnl || f.oneDayChange || 0,
+        sipStatus: f.sip_status || f.sipStatus || "N/A",
+        
+        investorDetails: {
+          name: d.investor_name || d.clientName || "Investor",
+          pan: f.pan || "Not Available",
+          holdingNature: f.holding_nature || "Single",
+          taxStatus: f.tax_status || "Resident Individual"
+        },
+
+        bankDetails: {
+          bankName: f.bank_name || d.bank_name || "Bank Details Unavailable",
+          accountNumber: f.account_number || d.account_number || "N/A",
+          branch: f.branch || d.branch || "N/A"
+        },
+
+        // NEW: Intercept and sort the transactions before mapping them!
+        transactions: (f.transactions || [])
+          .sort((a: any, b: any) => {
+            // Convert dates to milliseconds for accurate mathematical sorting
+            const dateA = new Date(a.transaction_date || 0).getTime();
+            const dateB = new Date(b.transaction_date || 0).getTime();
+            return dateB - dateA; // Descending order (latest first)
+          })
+          .map((t: any, i: number) => ({
+            ...t,
+            id: i.toString(),
+            transactionDate: t.transaction_date ? new Date(t.transaction_date).toLocaleDateString('en-GB') : t.transactionDate,
+            transactionType: t.transaction_type || t.transactionType || "Unknown",
+            amount: t.amount || 0,
+            sttCharges: t.stt_and_others || t.sttCharges || 0,
+            nav: t.nav || 0,
+            units: t.units || 0,
+            balanceUnits: t.balanceUnits || 0,
+            holdingDays: t.holdingDays || 0,
+            capitalGain: t.unrealised_gains || t.capitalGain || 0
+          }))
+      }))
+    };
+  }, [portfolio]);
+
   // --- SHARED STATE ---
   const [activeFilterType, setActiveFilterType] = useState<string>("All");
   const [activeFilterValue, setActiveFilterValue] = useState<string>("All");
@@ -26,29 +100,37 @@ export default function UnifiedPortfolioApp() {
   const [mobileActiveScreen, setMobileActiveScreen] = useState<'holdings' | 'fund_details'>('holdings');
   const [mobileSelectedFund, setMobileSelectedFund] = useState<UnifiedFund | null>(null);
 
-  // --- FILTER LOGIC (Updated for dynamic data) ---
+  // --- FILTER LOGIC ---
   const filterOptions = useMemo(() => {
     const options = new Set<string>();
-    if (portfolio?.funds) {
-      portfolio.funds.forEach(fund => {
+    if (normalizedPortfolio?.funds) {
+      normalizedPortfolio.funds.forEach((fund: any) => {
         if (activeFilterType === "Category/Industry") options.add(fund.category);
         if (activeFilterType === "AMC/Issuer") options.add(fund.amc);
         if (activeFilterType === "Tag" && fund.statusTag) options.add(fund.statusTag);
       });
     }
     return Array.from(options);
-  }, [activeFilterType, portfolio]);
+  }, [activeFilterType, normalizedPortfolio]);
 
   const filteredFunds = useMemo(() => {
-    if (!portfolio?.funds) return [];
-    return portfolio.funds.filter(fund => {
+    if (!normalizedPortfolio?.funds) return [];
+    return normalizedPortfolio.funds.filter((fund: any) => {
       if (activeFilterType === "All" || activeFilterValue === "All") return true;
       if (activeFilterType === "Category/Industry") return fund.category === activeFilterValue;
       if (activeFilterType === "AMC/Issuer") return fund.amc === activeFilterValue;
       if (activeFilterType === "Tag") return fund.statusTag === activeFilterValue;
       return true;
     });
-  }, [activeFilterType, activeFilterValue, portfolio]);
+  }, [activeFilterType, activeFilterValue, normalizedPortfolio]);
+
+  // --- HELPER: Initials ---
+  const getInitials = (name: string) => {
+    if (!name || name === "Investor") return "IV";
+    const parts = name.trim().split(" ");
+    if (parts.length >= 2) return (parts[0][0] + parts[1][0]).toUpperCase();
+    return name.substring(0, 2).toUpperCase();
+  };
 
   // --- RENDER: LOADING STATE ---
   if (isLoading) {
@@ -61,7 +143,7 @@ export default function UnifiedPortfolioApp() {
   }
 
   // --- RENDER: ERROR STATE ---
-  if (error || !portfolio) {
+  if (error || !normalizedPortfolio) {
     return (
       <div className="h-[100dvh] flex flex-col items-center justify-center bg-slate-50 px-4">
         <div className="bg-white p-6 rounded-2xl shadow-sm border border-rose-200 text-center max-w-sm w-full">
@@ -85,7 +167,7 @@ export default function UnifiedPortfolioApp() {
       <div className="flex flex-col lg:hidden relative z-10 w-full bg-slate-50 h-full">
         {mobileActiveScreen === 'holdings' ? (
           <MobileHoldings 
-            client={portfolio}
+            client={normalizedPortfolio}
             filteredFunds={filteredFunds}
             activeFilterType={activeFilterType}
             setActiveFilterType={setActiveFilterType}
@@ -111,21 +193,21 @@ export default function UnifiedPortfolioApp() {
       </div>
       
       {/* --- DESKTOP VIEW --- */}
-      <div className="hidden lg:flex flex-col relative z-10 px-4 sm:px-8 lg:px-12 py-8 max-w-[1800px] mx-auto space-y-6 animate-[fadeIn_0.5s_ease-out] h-full">
+      {/* TIGHTENED LAYOUT: py-4 and space-y-3 instead of py-8 and space-y-6 */}
+      <div className="hidden lg:flex flex-col relative z-10 px-4 sm:px-8 lg:px-12 py-4 max-w-[1800px] mx-auto space-y-3 animate-[fadeIn_0.5s_ease-out] h-full">
         
         {/* Header */}
         <div className="shrink-0 flex justify-between items-end gap-4">
           <div>
-            <h1 className="text-4xl font-black tracking-tight text-slate-900">
+            <h1 className="text-3xl font-black tracking-tight text-slate-900">
               Portfolio <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-indigo-600 to-primary/80">Overview</span>
             </h1>
-            <p className="text-slate-500 font-medium mt-1">Holistic view of your capital allocation and performance.</p>
-            <div className="mt-4 flex items-center gap-2">
+            <p className="text-slate-500 font-medium mt-0 text-sm">Holistic view of your capital allocation and performance.</p>
+            <div className="mt-2 flex items-center gap-2">
               <span className="flex items-center justify-center w-6 h-6 rounded-full bg-indigo-100 text-indigo-700 font-bold text-[10px]">
-                {/* Fallback to 'BM' if no name is available, otherwise grab first initials */}
-                {portfolio.clientName ? portfolio.clientName.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() : 'BM'}
+                {getInitials(normalizedPortfolio.clientName)}
               </span>
-              <h2 className="text-sm font-bold text-indigo-700 tracking-wide uppercase">{portfolio.clientName}</h2>
+              <h2 className="text-sm font-bold text-indigo-700 tracking-wide uppercase">{normalizedPortfolio.clientName}</h2>
             </div>
           </div>
           <div className="mb-2">
@@ -134,7 +216,7 @@ export default function UnifiedPortfolioApp() {
         </div>
 
         <div className="shrink-0">
-          <GlobalStatsRibbon client={portfolio} />
+          <GlobalStatsRibbon client={normalizedPortfolio} />
         </div>
         
         <div className="shrink-0">
@@ -144,7 +226,7 @@ export default function UnifiedPortfolioApp() {
             activeFilterValue={activeFilterValue}
             setActiveFilterValue={setActiveFilterValue}
             filterOptions={filterOptions}
-            avgHoldingDays={portfolio.avgHoldingDays}
+            avgHoldingDays={normalizedPortfolio.avgHoldingDays}
           />
         </div>
         

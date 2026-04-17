@@ -1,4 +1,21 @@
-export const getColorClass = (val: number) => val > 0 ? 'text-emerald-600' : val < 0 ? 'text-rose-600' : 'text-slate-500';
-export const formatCurrency = (val: number) => `₹${val.toLocaleString('en-IN', { maximumFractionDigits: 2 })}`;
-export const formatCurrencyNoDecimals = (val: number) => `₹${val.toLocaleString('en-IN', { maximumFractionDigits: 0 })}`;
-export const formatPct = (val: number) => `${val > 0 ? '+' : ''}${val.toFixed(2)}%`;
+// src/lib/utils.ts
+
+export const formatCurrency = (val?: number | null) => {
+  const safeVal = val ?? 0;
+  return `₹${safeVal.toLocaleString('en-IN', { maximumFractionDigits: 2, minimumFractionDigits: 2 })}`;
+};
+
+export const formatCurrencyNoDecimals = (val?: number | null) => {
+  const safeVal = val ?? 0;
+  return `₹${safeVal.toLocaleString('en-IN', { maximumFractionDigits: 0 })}`;
+};
+
+export const formatPercent = (val?: number | null) => {
+  const safeVal = val ?? 0;
+  return `${safeVal > 0 ? '+' : ''}${safeVal.toFixed(2)}%`;
+};
+
+export const getStatusColor = (val?: number | null) => {
+  const safeVal = val ?? 0;
+  return safeVal > 0 ? 'text-emerald-600' : safeVal < 0 ? 'text-rose-600' : 'text-slate-600';
+};

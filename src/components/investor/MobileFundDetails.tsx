@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { UnifiedFund } from '@/types/investor';
-import { formatCurrency, getColorClass } from '@/lib/utils';
+import { formatCurrency, getStatusColor } from '@/lib/utils';
 import Badge from './Badge';
 
 interface MobileFundDetailsProps {
@@ -57,15 +57,15 @@ export default function MobileFundDetails({ fund, onBack }: MobileFundDetailsPro
                 </div>
                 <div>
                   <p className="text-[10px] md:text-[11px] font-bold text-slate-400 uppercase">Total Gain</p>
-                  <p className={`text-sm md:text-base font-bold ${getColorClass(fund.unrealisedGain)}`}>{formatCurrency(fund.unrealisedGain)}</p>
+                  <p className={`text-sm md:text-base font-bold ${getStatusColor(fund.unrealisedGain)}`}>{formatCurrency(fund.unrealisedGain)}</p>
                 </div>
                 <div>
                   <p className="text-[10px] md:text-[11px] font-bold text-slate-400 uppercase">XIRR</p>
-                  <p className="text-sm md:text-base font-bold text-indigo-600">{fund.xirr}%</p>
+                  <p className="text-sm md:text-base font-bold text-indigo-600">{fund.xirr ?? 0}%</p>
                 </div>
                 <div>
                   <p className="text-[10px] md:text-[11px] font-bold text-slate-400 uppercase">1 Day Change</p>
-                  <p className={`text-sm md:text-base font-bold ${getColorClass(fund.oneDayChange)}`}>
+                  <p className={`text-sm md:text-base font-bold ${getStatusColor(fund.oneDayChange)}`}>
                     {fund.oneDayChange > 0 ? '+' : ''}{formatCurrency(fund.oneDayChange)}
                   </p>
                 </div>
@@ -78,23 +78,23 @@ export default function MobileFundDetails({ fund, onBack }: MobileFundDetailsPro
                 <div className="grid grid-cols-2 gap-y-4 gap-x-4">
                   <div>
                     <p className="text-[10px] md:text-[11px] font-bold text-slate-400 uppercase">Available Units</p>
-                    <p className="text-sm md:text-base font-medium text-slate-800">{fund.availableUnits}</p>
+                    <p className="text-sm md:text-base font-medium text-slate-800">{fund.availableUnits ?? 0}</p>
                   </div>
                   <div>
                     <p className="text-[10px] md:text-[11px] font-bold text-slate-400 uppercase">Avg Holding Days</p>
-                    <p className="text-sm md:text-base font-medium text-slate-800">{fund.avgHoldingDays}</p>
+                    <p className="text-sm md:text-base font-medium text-slate-800">{fund.avgHoldingDays ?? 0}</p>
                   </div>
                   <div>
                     <p className="text-[10px] md:text-[11px] font-bold text-slate-400 uppercase">Current NAV</p>
-                    <p className="text-sm md:text-base font-medium text-slate-800">₹{fund.currentNAV}</p>
+                    <p className="text-sm md:text-base font-medium text-slate-800">₹{fund.currentNAV ?? 0}</p>
                   </div>
                   <div>
                     <p className="text-[10px] md:text-[11px] font-bold text-slate-400 uppercase">Avg NAV</p>
-                    <p className="text-sm md:text-base font-medium text-slate-800">₹{fund.avgNAV}</p>
+                    <p className="text-sm md:text-base font-medium text-slate-800">₹{fund.avgNAV ?? 0}</p>
                   </div>
                   <div className="col-span-2 mt-2 pt-3 border-t border-slate-50 flex justify-between">
                     <p className="text-[10px] md:text-[11px] font-bold text-slate-400 uppercase">Valuation Date</p>
-                    <p className="text-xs md:text-sm font-bold text-slate-600">{fund.valuationDate}</p>
+                    <p className="text-xs md:text-sm font-bold text-slate-600">{fund.valuationDate || 'N/A'}</p>
                   </div>
                 </div>
               </div>
@@ -123,27 +123,31 @@ export default function MobileFundDetails({ fund, onBack }: MobileFundDetailsPro
             </div>
 
             <div className="space-y-3 md:space-y-4">
-              {fund.transactions
-                .filter(tx => mobileTxFilter === 'All' || tx.transactionType === mobileTxFilter || tx.transactionType.includes(mobileTxFilter))
-                .map(tx => (
-                  <div key={tx.id} className="bg-white p-4 md:p-5 rounded-xl border border-slate-200 shadow-sm">
-                    <div className="flex justify-between items-start mb-3">
-                      <div>
-                        <p className="text-xs md:text-sm font-bold text-slate-900 mb-1">{tx.transactionDate}</p>
-                        <span className={`text-[9px] md:text-[10px] font-bold px-1.5 py-0.5 rounded uppercase border ${tx.transactionType.includes('SIP') || tx.transactionType.includes('ADDITIONAL') ? 'bg-indigo-50 text-indigo-700 border-indigo-100' : 'bg-emerald-50 text-emerald-700 border-emerald-100'}`}>
-                          {tx.transactionType}
-                        </span>
+              {fund.transactions && fund.transactions.length > 0 ? (
+                fund.transactions
+                  .filter(tx => mobileTxFilter === 'All' || tx.transactionType === mobileTxFilter || tx.transactionType.includes(mobileTxFilter))
+                  .map(tx => (
+                    <div key={tx.id} className="bg-white p-4 md:p-5 rounded-xl border border-slate-200 shadow-sm">
+                      <div className="flex justify-between items-start mb-3">
+                        <div>
+                          <p className="text-xs md:text-sm font-bold text-slate-900 mb-1">{tx.transactionDate}</p>
+                          <span className={`text-[9px] md:text-[10px] font-bold px-1.5 py-0.5 rounded uppercase border ${tx.transactionType.includes('SIP') || tx.transactionType.includes('ADDITIONAL') ? 'bg-indigo-50 text-indigo-700 border-indigo-100' : 'bg-emerald-50 text-emerald-700 border-emerald-100'}`}>
+                            {tx.transactionType}
+                          </span>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-sm md:text-base font-black text-slate-900">{formatCurrency(tx.amount)}</p>
+                        </div>
                       </div>
-                      <div className="text-right">
-                        <p className="text-sm md:text-base font-black text-slate-900">{formatCurrency(tx.amount)}</p>
+                      <div className="flex justify-between items-center pt-2 border-t border-slate-100">
+                        <p className="text-[10px] md:text-xs text-slate-500 font-medium">Units: <span className="font-bold text-slate-700">{tx.units}</span></p>
+                        <p className="text-[10px] md:text-xs text-slate-500 font-medium">NAV: <span className="font-bold text-slate-700">₹{tx.nav}</span></p>
                       </div>
                     </div>
-                    <div className="flex justify-between items-center pt-2 border-t border-slate-100">
-                      <p className="text-[10px] md:text-xs text-slate-500 font-medium">Units: <span className="font-bold text-slate-700">{tx.units}</span></p>
-                      <p className="text-[10px] md:text-xs text-slate-500 font-medium">NAV: <span className="font-bold text-slate-700">₹{tx.nav}</span></p>
-                    </div>
-                  </div>
-              ))}
+                ))
+              ) : (
+                <div className="text-center py-10 text-slate-500 text-sm font-medium">No transactions found.</div>
+              )}
             </div>
           </div>
         )}
@@ -156,10 +160,11 @@ export default function MobileFundDetails({ fund, onBack }: MobileFundDetailsPro
                 <h3 className="text-[11px] md:text-xs font-bold text-slate-500 uppercase tracking-widest">Investor Details</h3>
               </div>
               <div className="p-4 md:p-5 space-y-3">
-                <div className="flex justify-between"><span className="text-xs md:text-sm text-slate-500">Name</span><span className="text-xs md:text-sm font-bold text-slate-900">{fund.investorDetails.name}</span></div>
-                <div className="flex justify-between"><span className="text-xs md:text-sm text-slate-500">PAN</span><span className="text-xs md:text-sm font-bold text-slate-900">{fund.investorDetails.pan}</span></div>
-                <div className="flex justify-between"><span className="text-xs md:text-sm text-slate-500">Holding Nature</span><span className="text-xs md:text-sm font-bold text-slate-900">{fund.investorDetails.holdingType}</span></div>
-                <div className="flex justify-between"><span className="text-xs md:text-sm text-slate-500">Tax Status</span><span className="text-xs md:text-sm font-bold text-slate-900">{fund.investorDetails.taxStatus}</span></div>
+                {/* Applied Optional Chaining here */}
+                <div className="flex justify-between"><span className="text-xs md:text-sm text-slate-500">Name</span><span className="text-xs md:text-sm font-bold text-slate-900">{fund.investorDetails?.name || 'N/A'}</span></div>
+                <div className="flex justify-between"><span className="text-xs md:text-sm text-slate-500">PAN</span><span className="text-xs md:text-sm font-bold text-slate-900">{fund.investorDetails?.pan || 'N/A'}</span></div>
+                <div className="flex justify-between"><span className="text-xs md:text-sm text-slate-500">Holding Nature</span><span className="text-xs md:text-sm font-bold text-slate-900">{fund.investorDetails?.holdingType || 'N/A'}</span></div>
+                <div className="flex justify-between"><span className="text-xs md:text-sm text-slate-500">Tax Status</span><span className="text-xs md:text-sm font-bold text-slate-900">{fund.investorDetails?.taxStatus || 'N/A'}</span></div>
               </div>
             </div>
 
@@ -169,9 +174,10 @@ export default function MobileFundDetails({ fund, onBack }: MobileFundDetailsPro
                   <h3 className="text-[11px] md:text-xs font-bold text-slate-500 uppercase tracking-widest">Bank Details</h3>
                 </div>
                 <div className="p-4 md:p-5 space-y-3">
-                  <div className="flex justify-between"><span className="text-xs md:text-sm text-slate-500">Bank Name</span><span className="text-xs md:text-sm font-bold text-slate-900">{fund.bankDetails.bankName}</span></div>
-                  <div className="flex justify-between"><span className="text-xs md:text-sm text-slate-500">Account No.</span><span className="text-xs md:text-sm font-bold text-slate-900">{fund.bankDetails.accountNumber}</span></div>
-                  <div className="flex justify-between"><span className="text-xs md:text-sm text-slate-500">Branch</span><span className="text-xs md:text-sm font-bold text-slate-900">{fund.bankDetails.branch}</span></div>
+                  {/* Applied Optional Chaining here */}
+                  <div className="flex justify-between"><span className="text-xs md:text-sm text-slate-500">Bank Name</span><span className="text-xs md:text-sm font-bold text-slate-900">{fund.bankDetails?.bankName || 'N/A'}</span></div>
+                  <div className="flex justify-between"><span className="text-xs md:text-sm text-slate-500">Account No.</span><span className="text-xs md:text-sm font-bold text-slate-900">{fund.bankDetails?.accountNumber || 'N/A'}</span></div>
+                  <div className="flex justify-between"><span className="text-xs md:text-sm text-slate-500">Branch</span><span className="text-xs md:text-sm font-bold text-slate-900">{fund.bankDetails?.branch || 'N/A'}</span></div>
                 </div>
               </div>
 
@@ -180,8 +186,9 @@ export default function MobileFundDetails({ fund, onBack }: MobileFundDetailsPro
                   <h3 className="text-[11px] md:text-xs font-bold text-slate-500 uppercase tracking-widest">Nominee Details</h3>
                 </div>
                 <div className="p-4 md:p-5 flex justify-between">
-                  <span className="text-xs md:text-sm text-slate-500">{fund.nomineeDetails.relation}</span>
-                  <span className="text-xs md:text-sm font-bold text-slate-900">{fund.nomineeDetails.name}</span>
+                  {/* Applied Optional Chaining here */}
+                  <span className="text-xs md:text-sm text-slate-500">{fund.nomineeDetails?.relation || 'N/A'}</span>
+                  <span className="text-xs md:text-sm font-bold text-slate-900">{fund.nomineeDetails?.name || 'N/A'}</span>
                 </div>
               </div>
             </div>

@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { UnifiedFund } from '@/types/investor';
-import { formatCurrency, formatPct, getColorClass } from '@/lib/utils';
+import { formatCurrency, formatPercent, getStatusColor } from '@/lib/utils';
 import Badge from './Badge';
 
 export default function DesktopFundTable({ funds }: { funds: UnifiedFund[] }) {
@@ -17,25 +17,41 @@ export default function DesktopFundTable({ funds }: { funds: UnifiedFund[] }) {
   };
 
   return (
-    <>
-      <div className="bg-white rounded-xl border border-slate-200 shadow-[0_8px_30px_rgb(0,0,0,0.04)] relative h-full flex flex-col overflow-hidden">
-        <div className="flex-1 overflow-auto table-scrollbar">
-          <table className="w-full text-left border-collapse min-w-[1400px]">
-            <thead className="sticky top-0 z-30 shadow-sm ring-1 ring-slate-200/50">
-              <tr className="bg-slate-50 text-[10px] uppercase tracking-widest text-slate-500 font-bold">
-                <th className="p-4 w-12 sticky left-0 z-40 bg-slate-50 border-r border-slate-200/80"></th>
-                <th className="p-4 w-[350px] sticky left-12 z-40 bg-slate-50 border-r border-slate-200/50 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.05)]">Fund Details</th>
-                <th className="p-4 bg-slate-50">Purch. Date</th>
-                <th className="p-4 text-right bg-slate-50">Inv. Capital</th>
-                <th className="p-4 text-right bg-slate-50">Current Val</th>
-                <th className="p-4 text-right bg-slate-50">Units</th>
-                <th className="p-4 text-right bg-slate-50">NAV (Cur/Avg)</th>
-                <th className="p-4 text-right bg-slate-50">Dividend</th>
-                <th className="p-4 text-right bg-slate-50">Unrealised Gain</th>
+    <div className="bg-white rounded-xl border border-slate-200 shadow-[0_8px_30px_rgb(0,0,0,0.04)] relative h-full flex flex-col overflow-hidden">
+      <div className="flex-1 overflow-auto table-scrollbar">
+        <table className="w-full text-left border-collapse min-w-[1400px]">
+          <thead className="sticky top-0 z-30 shadow-sm ring-1 ring-slate-200/50">
+            <tr className="bg-slate-50 text-[10px] uppercase tracking-widest text-slate-500 font-bold">
+              <th className="p-4 w-12 sticky left-0 z-40 bg-slate-50 border-r border-slate-200/80"></th>
+              <th className="p-4 w-[350px] sticky left-12 z-40 bg-slate-50 border-r border-slate-200/50 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.05)]">Fund Details</th>
+              <th className="p-4 bg-slate-50">Purch. Date</th>
+              <th className="p-4 text-right bg-slate-50">Inv. Capital</th>
+              <th className="p-4 text-right bg-slate-50">Current Val</th>
+              <th className="p-4 text-right bg-slate-50">Units</th>
+              <th className="p-4 text-right bg-slate-50">NAV (Cur/Avg)</th>
+              <th className="p-4 text-right bg-slate-50">Dividend</th>
+              <th className="p-4 text-right bg-slate-50">Unrealised Gain</th>
+            </tr>
+          </thead>
+          <tbody className="text-[13px]">
+            {(!funds || funds.length === 0) ? (
+              <tr>
+                <td colSpan={9} className="p-12 text-center bg-white">
+                  <div className="flex flex-col items-center justify-center py-8">
+                    <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mb-4">
+                      <svg className="w-8 h-8 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                      </svg>
+                    </div>
+                    <h3 className="text-lg font-bold text-slate-900 mb-1">No Funds Found</h3>
+                    <p className="text-slate-500 text-sm max-w-sm">
+                      We couldn't find any funds matching your current filters. Try clearing your filters or selecting a different category.
+                    </p>
+                  </div>
+                </td>
               </tr>
-            </thead>
-            <tbody className="text-[13px]">
-              {funds.map((fund) => {
+            ) : (
+              funds.map((fund) => {
                 const isFundExpanded = expandedFund === fund.folioNo;
                 
                 return (
@@ -71,9 +87,9 @@ export default function DesktopFundTable({ funds }: { funds: UnifiedFund[] }) {
                       </td>
                       <td className="p-4 text-right font-medium text-slate-500 tabular-nums">{formatCurrency(fund.dividendPayout)}</td>
                       <td className="p-4 text-right tabular-nums">
-                        <span className={`font-bold block ${getColorClass(fund.unrealisedGain)}`}>{formatCurrency(fund.unrealisedGain)}</span>
+                        <span className={`font-bold block ${getStatusColor(fund.unrealisedGain)}`}>{formatCurrency(fund.unrealisedGain)}</span>
                         <span className={`text-[10px] font-bold mt-0.5 inline-block px-1.5 py-0.5 rounded ${fund.unrealisedGainPercent >= 0 ? 'bg-emerald-50 text-emerald-700' : 'bg-red-50 text-red-700'}`}>
-                          {formatPct(fund.unrealisedGainPercent)}
+                          {formatPercent(fund.unrealisedGainPercent)}
                         </span>
                       </td>
                     </tr>
@@ -118,7 +134,7 @@ export default function DesktopFundTable({ funds }: { funds: UnifiedFund[] }) {
                                         <tr key={txn.id} className={`hover:bg-slate-50/80 transition-colors ${idx !== fund.transactions.length - 1 ? "border-b border-slate-100" : ""}`}>
                                           <td className="p-3 w-[12%] font-medium text-slate-600 tabular-nums">{txn.transactionDate}</td>
                                           <td className="p-3 w-[18%]">
-                                            <Badge intent={txn.transactionType.includes('PURCHASE') || txn.transactionType.includes('ADDITIONAL') || txn.transactionType.includes('SIP') ? 'brand' : 'neutral'}>{txn.transactionType}</Badge>
+                                            <Badge intent={txn.transactionType.includes('PURCHASE') || txn.transactionType.includes('ADDITIONAL') || txn.transactionType.includes('SIP') || txn.transactionType.includes('SIN') ? 'brand' : 'neutral'}>{txn.transactionType}</Badge>
                                           </td>
                                           <td className="p-3 w-[12%] text-right font-bold text-slate-800 tabular-nums">{formatCurrency(Math.abs(txn.amount))}</td>
                                           <td className="p-3 w-[8%] text-right text-slate-400 tabular-nums">{txn.sttCharges}</td>
@@ -126,7 +142,7 @@ export default function DesktopFundTable({ funds }: { funds: UnifiedFund[] }) {
                                           <td className="p-3 w-[10%] text-right text-slate-600 font-medium tabular-nums">{txn.units}</td>
                                           <td className="p-3 w-[10%] text-right text-slate-600 font-medium tabular-nums">{txn.balanceUnits}</td>
                                           <td className="p-3 w-[8%] text-right text-slate-400 tabular-nums">{txn.holdingDays}</td>
-                                          <td className={`p-3 w-[12%] text-right font-bold tabular-nums pr-4 ${getColorClass(txn.capitalGain)}`}>{txn.capitalGain !== 0 ? formatCurrency(txn.capitalGain) : '-'}</td>
+                                          <td className={`p-3 w-[12%] text-right font-bold tabular-nums pr-4 ${getStatusColor(txn.capitalGain)}`}>{txn.capitalGain !== 0 ? formatCurrency(txn.capitalGain) : '-'}</td>
                                         </tr>
                                       ))}
                                     </tbody>
@@ -140,11 +156,11 @@ export default function DesktopFundTable({ funds }: { funds: UnifiedFund[] }) {
                     </tr>
                   </React.Fragment>
                 );
-              })}
-            </tbody>
-          </table>
-        </div>
+              })
+            )}
+          </tbody>
+        </table>
       </div>
-    </>
+    </div>
   );
 }

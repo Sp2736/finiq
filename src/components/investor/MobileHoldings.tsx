@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { ClientPortfolio, UnifiedFund } from '@/types/investor';
-import { formatCurrencyNoDecimals, getColorClass } from '@/lib/utils';
+import { formatCurrencyNoDecimals, getStatusColor } from '@/lib/utils';
 import LogoutButton from './LogoutButton';
 
 interface MobileHoldingsProps {
@@ -26,6 +26,14 @@ export default function MobileHoldings({
   filterOptions,
   onNavigateToFund
 }: MobileHoldingsProps) {
+
+  const getInitials = (name: string) => {
+    if (!name || name === "Investor") return "IV";
+    const parts = name.trim().split(" ");
+    if (parts.length >= 2) return (parts[0][0] + parts[1][0]).toUpperCase();
+    return name.substring(0, 2).toUpperCase();
+  };
+
   return (
     <div className="flex flex-col h-full overflow-hidden">
       {/* Portfolio Summary Section (FIXED TOP) */}
@@ -36,7 +44,9 @@ export default function MobileHoldings({
               Portfolio <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-indigo-600 to-primary/80">Overview</span>
             </h1>
             <div className="flex items-center gap-2">
-              <span className="flex items-center justify-center w-5 h-5 rounded-full bg-indigo-100 text-indigo-700 font-bold text-[9px]">BM</span>
+              <span className="flex items-center justify-center w-5 h-5 rounded-full bg-indigo-100 text-indigo-700 font-bold text-[9px]">
+                {getInitials(client.clientName)}
+              </span>
               <h2 className="text-xs md:text-sm font-bold text-indigo-700 tracking-wide uppercase truncate max-w-[200px]">{client.clientName}</h2>
             </div>
           </div>
@@ -49,8 +59,8 @@ export default function MobileHoldings({
           <h1 className="text-4xl md:text-5xl font-black text-slate-900 tracking-tight">{formatCurrencyNoDecimals(client.currentValue)}</h1>
           
           <div className="flex items-center justify-center gap-2 mt-2">
-            <span className={`text-sm md:text-base font-bold ${getColorClass(client.todaysGain)}`}>
-              {client.todaysGain > 0 ? '+' : ''}{formatCurrencyNoDecimals(client.todaysGain)} ({client.todaysGainPercent}%)
+            <span className={`text-sm md:text-base font-bold ${getStatusColor(client.todaysGain)}`}>
+              {client.todaysGain > 0 ? '+' : ''}{formatCurrencyNoDecimals(client.todaysGain)} ({client.todaysGainPercent ?? 0}%)
             </span>
             <span className="text-[10px] md:text-xs font-bold px-2 py-0.5 rounded bg-slate-100 text-slate-500 uppercase tracking-wider">
               1 Day P&L
@@ -66,11 +76,11 @@ export default function MobileHoldings({
           </div>
           <div className="flex flex-col items-center">
             <p className="text-[10px] md:text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Total Gain</p>
-            <p className={`text-sm md:text-base font-bold ${getColorClass(client.unrealisedGain)}`}>{formatCurrencyNoDecimals(client.unrealisedGain)}</p>
+            <p className={`text-sm md:text-base font-bold ${getStatusColor(client.unrealisedGain)}`}>{formatCurrencyNoDecimals(client.unrealisedGain)}</p>
           </div>
           <div className="flex flex-col items-center">
             <p className="text-[10px] md:text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">XIRR</p>
-            <p className="text-sm md:text-base font-bold text-indigo-600">{client.xirr}%</p>
+            <p className="text-sm md:text-base font-bold text-indigo-600">{client.xirr ?? 0}%</p>
           </div>
         </div>
       </div>
@@ -128,7 +138,7 @@ export default function MobileHoldings({
                   <span className="text-[9px] md:text-[10px] font-mono font-bold text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded border border-slate-200">
                     {fund.folioNo}
                   </span>
-                  <span className={`text-[9px] md:text-[10px] font-bold px-1.5 py-0.5 rounded uppercase tracking-wider border ${fund.sipStatus.includes('Active') ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-slate-50 text-slate-500 border-slate-200'}`}>
+                  <span className={`text-[9px] md:text-[10px] font-bold px-1.5 py-0.5 rounded uppercase tracking-wider border ${fund.sipStatus && fund.sipStatus.includes('Active') ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-slate-50 text-slate-500 border-slate-200'}`}>
                     {fund.sipStatus}
                   </span>
                 </div>
@@ -145,18 +155,18 @@ export default function MobileHoldings({
                 </div>
                 <div className="text-right">
                   <p className="text-[10px] md:text-[11px] text-slate-400 font-bold uppercase mb-0.5">XIRR</p>
-                  <p className="text-xs md:text-sm font-bold text-indigo-600">{fund.xirr}%</p>
+                  <p className="text-xs md:text-sm font-bold text-indigo-600">{fund.xirr ?? 0}%</p>
                 </div>
               </div>
 
               <div className="flex justify-between items-center pt-3 border-t border-slate-100">
                 <div className="flex items-center gap-1.5">
                   <span className="text-[10px] md:text-[11px] font-bold text-slate-400 uppercase">Gain</span>
-                  <span className={`text-xs md:text-sm font-bold ${getColorClass(fund.unrealisedGain)}`}>{formatCurrencyNoDecimals(fund.unrealisedGain)}</span>
+                  <span className={`text-xs md:text-sm font-bold ${getStatusColor(fund.unrealisedGain)}`}>{formatCurrencyNoDecimals(fund.unrealisedGain)}</span>
                 </div>
                 <div className="flex items-center gap-1.5">
                   <span className="text-[10px] md:text-[11px] font-bold text-slate-400 uppercase">1D</span>
-                  <span className={`text-xs md:text-sm font-bold ${getColorClass(fund.oneDayChange)}`}>
+                  <span className={`text-xs md:text-sm font-bold ${getStatusColor(fund.oneDayChange)}`}>
                     {fund.oneDayChange > 0 ? '+' : ''}{formatCurrencyNoDecimals(fund.oneDayChange)}
                   </span>
                 </div>
