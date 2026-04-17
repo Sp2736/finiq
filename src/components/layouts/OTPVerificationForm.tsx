@@ -2,6 +2,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { authService } from '@/services/auth.service';
 
 interface OTPVerificationFormProps {
   onVerify: (otp: string) => void;
@@ -10,10 +11,11 @@ interface OTPVerificationFormProps {
 }
 
 export default function OTPVerificationForm({ onVerify, onBack, phoneInfo }: OTPVerificationFormProps) {
-  const router = useRouter(); // Initialize the App Router navigation hook
+  const router = useRouter(); 
   
   const [otp, setOtp] = useState(['', '', '', '']);
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+  const [errorMessage, setErrorMessage] = useState<string>('Invalid code.');
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
   useEffect(() => {
@@ -41,26 +43,33 @@ export default function OTPVerificationForm({ onVerify, onBack, phoneInfo }: OTP
     }
   };
 
-  const triggerVerification = (code: string) => {
+  const triggerVerification = async (code: string) => {
     setStatus('loading');
     
-    setTimeout(() => {
-      if (code === '1234') { 
-        setStatus('success');
-        
-        // SET DUMMY COOKIE: This allows the middleware to see you as logged in
-        // In production, your backend API would set an HttpOnly cookie instead
-        document.cookie = "auth-token=true; path=/";
-        
-        // On Success: Push to the dashboard
-        router.push('/investor');
-        
-      } else {
-        setStatus('error');
-        setOtp(['', '', '', '']);
-        setTimeout(() => inputRefs.current[0]?.focus(), 100);
-      }
-    }, 1500);
+    try {
+      // 1. Call the real API
+      const fullPhoneNumber = `${phoneInfo.countryCode}${phoneInfo.number.replace(/\D/g, '')}`;
+      const response = await authService.verifyOtp(fullPhoneNumber, code);
+      
+      setStatus('success');
+      
+      // 2. Securely store the token for apiClient to use
+      localStorage.setItem('token', response.token);
+      
+      // 3. Set cookie for Next.js Middleware to allow routing
+      // Note: In a highly secure enterprise app, the API should return an HttpOnly cookie instead
+      document.cookie = `auth-token=${response.token}; path=/; max-age=86400; secure; samesite=strict`;
+      
+      // 4. Trigger parent callback and redirect
+      onVerify(code);
+      router.push('/investor');
+      
+    } catch (error: any) {
+      setStatus('error');
+      setErrorMessage(error.message || 'Invalid code. Please try again.');
+      setOtp(['', '', '', '']);
+      setTimeout(() => inputRefs.current[0]?.focus(), 100);
+    }
   };
 
   const handlePaste = (e: React.ClipboardEvent) => {
@@ -105,7 +114,7 @@ export default function OTPVerificationForm({ onVerify, onBack, phoneInfo }: OTP
       </div>
 
       <div className="w-full relative">
-        <div className={`flex justify-between gap-2 md:gap-4 max-w-[260px] md:max-w-[320px] mx-auto lg:mx-0 relative ${status === 'error' ? 'animate-[errorShake_0.5s_both]' : ''}`}>
+        <div className={`flex justify-between gap-2 md:gap-4 max-w-[260px] md:max-w-[320px] mx-auto lg:mx-0 relative ${status === 'error' ? 'animate-errorShake' : ''}`}>
           {otp.map((digit, index) => (
             <input
               key={index}
@@ -116,6 +125,7 @@ export default function OTPVerificationForm({ onVerify, onBack, phoneInfo }: OTP
               value={digit}
               onChange={e => handleChange(index, e.target.value)}
               onKeyDown={e => handleKeyDown(index, e)}
+              onPaste={index === 0 ? handlePaste : undefined}
               disabled={status === 'loading' || status === 'success'}
               className={`w-12 h-14 sm:w-14 sm:h-16 md:w-16 md:h-20 text-center text-xl md:text-3xl font-bold bg-white border-2 rounded-xl md:rounded-2xl shadow-sm focus:outline-none focus:ring-4 transition-all duration-300 ${getInputBorderColor()}`}
             />
@@ -123,7 +133,7 @@ export default function OTPVerificationForm({ onVerify, onBack, phoneInfo }: OTP
         </div>
 
         <div className="h-5 md:h-6 mt-1.5 md:mt-3 flex items-center justify-center lg:justify-start">
-          {status === 'error' && <p className="text-rose-500 text-[11px] md:text-sm font-bold animate-in fade-in duration-300">Invalid code.</p>}
+          {status === 'error' && <p className="text-rose-500 text-[11px] md:text-sm font-bold animate-fadeIn">{errorMessage}</p>}
         </div>
 
         <button
@@ -140,14 +150,6 @@ export default function OTPVerificationForm({ onVerify, onBack, phoneInfo }: OTP
           )}
         </button>
       </div>
-
-      <style dangerouslySetInnerHTML={{__html: `
-        @keyframes errorShake {
-          0%, 100% { transform: translateX(0); }
-          20%, 60% { transform: translateX(-4px); }
-          40%, 80% { transform: translateX(4px); }
-        }
-      `}} />
     </div>
   );
 }
