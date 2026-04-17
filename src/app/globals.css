@@ -24,15 +24,85 @@
 
 :root {
   /* Configurable Light Theme Variables */
-  --background: #f8fafc; /* Slate 50 - Very soft off-white for the page background */
-  --foreground: #0f172a; /* Slate 900 */
-  --primary: #4f46e5;    /* Indigo 600 */
-  --border: #e2e8f0;     /* Slate 200 */
-  --font-inter: 'Inter', sans-serif;
+  --background: #f8fafc; 
+  --foreground: #0f172a; 
+  --primary: #4f46e5;    
+  --border: #e2e8f0;     
 }
 
-body {
-  background-color: var(--background);
-  color: var(--foreground);
-  font-family: var(--font-sans);
+/* =========================================
+   GLOBAL ANIMATIONS & UTILITIES
+========================================= */
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@layer utilities {
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+  }
+}
+
+/* =========================================
+   CUSTOM SCROLLBARS 
+   (Kept outside layers to prevent Tailwind v4 compiler crashes)
+========================================= */
+
+/* Standard Custom Scrollbar */
+.custom-scrollbar::-webkit-scrollbar {
+  height: 6px;
+  width: 6px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: rgba(241, 245, 249, 0.5); 
+  border-radius: 4px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #cbd5e1; 
+  border-radius: 4px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8; 
+}
+
+/* Desktop Main Table Scrollbar */
+.table-scrollbar::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+.table-scrollbar::-webkit-scrollbar-track {
+  background: rgba(248, 250, 252, 0.8);
+  border-left: 1px solid rgba(226, 232, 240, 0.8);
+  border-top: 1px solid rgba(226, 232, 240, 0.8); 
+  border-bottom-right-radius: 0.75rem;
+}
+.table-scrollbar::-webkit-scrollbar-thumb {
+  background-color: rgba(148, 163, 184, 0.5);
+  border-radius: 9999px;
+  border: 3px solid transparent;
+  background-clip: content-box;
+}
+.table-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(100, 116, 139, 0.8);
+}
+
+/* Desktop Inner Transaction Scrollbar */
+.inner-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+.inner-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.inner-scrollbar::-webkit-scrollbar-thumb {
+  background-color: rgba(203, 213, 225, 0.8);
+  border-radius: 9999px;
+}
+.inner-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(148, 163, 184, 0.8);
 }

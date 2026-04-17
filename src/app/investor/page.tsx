@@ -121,39 +121,6 @@ export default function UnifiedPortfolioApp() {
           <DesktopFundTable funds={filteredFunds} />
         </div>
       </div>
-
-      {/* Global Scrollbars and Keyframes */}
-      <style dangerouslySetInnerHTML={{ __html: `
-        @keyframes fadeIn {
-          from { opacity: 0; transform: translateY(10px); }
-          to   { opacity: 1; transform: translateY(0); }
-        }
-        
-        .custom-scrollbar::-webkit-scrollbar {
-          height: 6px;
-          width: 6px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-track {
-          background: rgba(241, 245, 249, 0.5); 
-          border-radius: 4px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-          background: #cbd5e1; 
-          border-radius: 4px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-          background: #94a3b8; 
-        }
-
-        /* Hide scrollbar for mobile horizontal scroll elements */
-        .no-scrollbar::-webkit-scrollbar {
-            display: none;
-        }
-        .no-scrollbar {
-            -ms-overflow-style: none;  /* IE and Edge */
-            scrollbar-width: none;  /* Firefox */
-        }
-      `}} />
     </div>
   );
 }

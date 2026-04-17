@@ -193,12 +193,7 @@ export default function MobileFundDetails({ fund, onBack }: MobileFundDetailsPro
       {mobileActiveTab === 'details' && (
         <div className="absolute bottom-0 left-0 right-0 p-4 md:px-8 bg-white/90 backdrop-blur-xl border-t border-slate-200 shadow-[0_-10px_20px_-10px_rgba(0,0,0,0.05)] z-50">
           <div className="flex gap-3 md:gap-6 max-w-2xl mx-auto">
-            <button className="flex-1 bg-indigo-50 text-indigo-700 py-3.5 rounded-xl font-black text-sm tracking-wide border border-indigo-100 active:scale-95 transition-transform">
-              START SIP
-            </button>
-            <button className="flex-1 bg-slate-900 text-white py-3.5 rounded-xl font-black text-sm tracking-wide shadow-lg shadow-slate-900/20 active:scale-95 transition-transform">
-              BUY MORE
-            </button>
+            
           </div>
         </div>
       )}

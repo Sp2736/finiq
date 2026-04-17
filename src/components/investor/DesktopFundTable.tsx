@@ -145,44 +145,6 @@ export default function DesktopFundTable({ funds }: { funds: UnifiedFund[] }) {
           </table>
         </div>
       </div>
-
-      <style dangerouslySetInnerHTML={{ __html: `
-        /* Main Table Scrollbar */
-        .table-scrollbar::-webkit-scrollbar {
-          width: 10px;
-          height: 10px;
-        }
-        .table-scrollbar::-webkit-scrollbar-track {
-          background: rgba(248, 250, 252, 0.8); /* slate-50 */
-          border-left: 1px solid rgba(226, 232, 240, 0.8); /* slate-200 */
-          border-top: 1px solid rgba(226, 232, 240, 0.8); 
-          border-bottom-right-radius: 0.75rem; /* Match rounded-xl */
-        }
-        .table-scrollbar::-webkit-scrollbar-thumb {
-          background-color: rgba(148, 163, 184, 0.5); /* slate-400 */
-          border-radius: 9999px;
-          border: 3px solid transparent; /* Creates padding around the thumb */
-          background-clip: content-box;
-        }
-        .table-scrollbar::-webkit-scrollbar-thumb:hover {
-          background-color: rgba(100, 116, 139, 0.8); /* slate-500 */
-        }
-
-        /* Inner Transaction Scrollbar */
-        .inner-scrollbar::-webkit-scrollbar {
-          width: 6px;
-        }
-        .inner-scrollbar::-webkit-scrollbar-track {
-          background: transparent;
-        }
-        .inner-scrollbar::-webkit-scrollbar-thumb {
-          background-color: rgba(203, 213, 225, 0.8); /* slate-300 */
-          border-radius: 9999px;
-        }
-        .inner-scrollbar::-webkit-scrollbar-thumb:hover {
-          background-color: rgba(148, 163, 184, 0.8); /* slate-400 */
-        }
-      `}} />
     </>
   );
 }
