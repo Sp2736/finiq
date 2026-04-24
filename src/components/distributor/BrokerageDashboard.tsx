@@ -1,111 +1,167 @@
-'use client';
+"use client";
 
-import React, { useState } from 'react';
-import Badge from '../investor/Badge'; // Reusing your existing Badge component
+import React, { useState, useMemo } from 'react';
+import DesktopBrokerageTable from './DesktopBrokerageTable';
+import MobileBrokerageOverview from './MobileBrokerageOverview';
+import { Search, Download, Calendar, Filter, AlertCircle, RefreshCw } from 'lucide-react';
 
-// Mock data to hold the layout until APIs are ready
-const MOCK_BROKERAGE_DATA = [
-  { id: '1', clientName: 'Aarav Patel', type: 'Mutual Fund SIP', amount: 1500, status: 'Paid', date: '2026-04-20' },
-  { id: '2', clientName: 'Neha Sharma', type: 'Equity Lumpsum', amount: 4200, status: 'Pending', date: '2026-04-22' },
-  { id: '3', clientName: 'Vikram Singh', type: 'Debt Fund SIP', amount: 850, status: 'Paid', date: '2026-04-23' },
-  { id: '4', clientName: 'Priya Desai', type: 'NFO Investment', amount: 3100, status: 'Processing', date: '2026-04-24' },
+const MOCK_HIERARCHY_DATA = [
+  {
+    id: "1", user: "Vandana Srivastava", type: "Direct Client", template: "60-60 FLAT",
+    gross: 134154.94, paid: 122392.77, paidSub: 0,
+    amcBreakdown: [
+      { id: "a1", amcName: "ICICI Prudential", gross: 60000, paid: 55000, paidSub: 0 },
+      { id: "a2", amcName: "HDFC Mutual Fund", gross: 74154.94, paid: 67392.77, paidSub: 0 }
+    ],
+    children: [
+      {
+        id: "1-1", user: "Rahul Verma", type: "RM", template: "40-40 FLAT",
+        gross: 50000.00, paid: 20000.00, paidSub: 25000.00,
+        amcBreakdown: [
+          { id: "a3", amcName: "Kotak Mahindra", gross: 50000, paid: 20000, paidSub: 25000 }
+        ],
+        children: [
+          {
+            id: "1-1-1", user: "Amit Desai", type: "Associate", template: "50-50 FLAT",
+            gross: 25000.00, paid: 25000.00, paidSub: 0,
+            amcBreakdown: [{ id: "a4", amcName: "Kotak Mahindra", gross: 25000, paid: 25000, paidSub: 0 }]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    id: "2", user: "Rakesh Jhunjhunwala Portfolio", type: "Family", template: "70-30 FLAT",
+    gross: 540000.00, paid: 400000.00, paidSub: 100000.00,
+    amcBreakdown: [
+      { id: "a5", amcName: "Mirae Asset", gross: 300000, paid: 250000, paidSub: 50000 },
+      { id: "a6", amcName: "Invesco", gross: 240000, paid: 150000, paidSub: 50000 }
+    ]
+  }
 ];
 
 export default function BrokerageDashboard() {
   const [searchTerm, setSearchTerm] = useState('');
+  const [activeGroup, setActiveGroup] = useState("AMC");
+
+  const filteredData = useMemo(() => {
+    if (!searchTerm) return MOCK_HIERARCHY_DATA;
+    return MOCK_HIERARCHY_DATA.filter(node => 
+      node.user.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      node.type.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  }, [searchTerm]);
+
+  const totals = useMemo(() => {
+    return MOCK_HIERARCHY_DATA.reduce((acc, curr) => {
+      acc.gross += curr.gross;
+      acc.paid += curr.paid;
+      acc.paidSub += curr.paidSub;
+      return acc;
+    }, { gross: 0, paid: 0, paidSub: 0 });
+  }, []);
+
+  const grandTotalPaid = totals.paid + totals.paidSub;
+  const grandNetReceivable = totals.gross - grandTotalPaid;
+  const pendingPercentage = ((grandNetReceivable / totals.gross) * 100).toFixed(1);
 
   return (
-    <div className="flex flex-col gap-6 p-4 md:p-6 w-full max-w-7xl mx-auto">
-      {/* Header Section */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+    <div className="flex flex-col h-full animate-[fadeIn_0.5s_ease-out] overflow-hidden">
+      
+      {/* 1. Header is locked (shrink-0) */}
+      <div className="shrink-0 flex flex-col md:flex-row justify-between items-start md:items-end gap-4 mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Brokerage Overview</h1>
-          <p className="text-sm text-gray-500 dark:text-gray-400">Track and manage your commission and brokerage earnings.</p>
+          <h1 className="text-3xl font-black tracking-tight text-slate-900">
+            Hierarchy <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 to-teal-700">Earnings</span>
+          </h1>
+          <p className="text-slate-500 font-medium mt-1 text-sm">Monitor revenue flow, receivables, and sub-level payouts.</p>
         </div>
-        <button className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors">
-          Download Report
-        </button>
-      </div>
-
-      {/* Stats Ribbon */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="p-5 rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 shadow-sm">
-          <p className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Total Earnings (YTD)</p>
-          <h3 className="text-3xl font-bold text-gray-900 dark:text-white">₹1,24,500</h3>
-          <p className="text-xs text-green-600 mt-2 flex items-center">
-            <span className="font-medium">+12.5%</span> <span className="text-gray-500 dark:text-gray-400 ml-1">vs last month</span>
-          </p>
-        </div>
-        <div className="p-5 rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 shadow-sm">
-          <p className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Pending Brokerage</p>
-          <h3 className="text-3xl font-bold text-gray-900 dark:text-white">₹14,200</h3>
-          <p className="text-xs text-yellow-600 mt-2 flex items-center">
-            <span className="font-medium">To be cleared by 1st May</span>
-          </p>
-        </div>
-        <div className="p-5 rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 shadow-sm">
-          <p className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Active Clients</p>
-          <h3 className="text-3xl font-bold text-gray-900 dark:text-white">142</h3>
-          <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
-            Generating brokerage this month
-          </p>
+        <div className="flex gap-3">
+          <button className="hidden md:flex items-center gap-2 px-5 py-2.5 bg-white border border-slate-200 text-slate-600 rounded-xl font-bold text-sm hover:text-emerald-700 hover:border-emerald-200 transition-all shadow-sm">
+            <Download className="w-4 h-4" />
+            <span>Export</span>
+          </button>
+          <button className="flex items-center gap-2 px-5 py-2.5 bg-emerald-600 text-white rounded-xl font-bold text-sm hover:bg-emerald-700 transition-all shadow-lg shadow-emerald-600/20">
+            <RefreshCw className="w-4 h-4" />
+            <span className="hidden sm:inline">Sync Hierarchy</span>
+          </button>
         </div>
       </div>
 
-      {/* Table Section */}
-      <div className="mt-4 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl shadow-sm overflow-hidden">
-        
-        {/* Table Toolbar */}
-        <div className="p-4 border-b border-gray-200 dark:border-gray-800 flex flex-col sm:flex-row justify-between items-center gap-4">
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Recent Transactions</h2>
-          <div className="relative w-full sm:w-64">
-            <input 
-              type="text" 
-              placeholder="Search client or type..." 
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-9 pr-4 py-2 bg-gray-50 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:text-white"
-            />
-            <svg className="w-4 h-4 absolute left-3 top-2.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-            </svg>
+      {/* 2. Filters are locked (shrink-0) */}
+      <div className="shrink-0 bg-white/80 backdrop-blur-xl border border-slate-200 rounded-2xl p-3 mb-6 shadow-sm flex flex-wrap items-center gap-3">
+        <div className="flex items-center bg-slate-100 p-1 rounded-xl overflow-x-auto hide-scrollbar">
+          {['AMC', 'Scheme', 'Client', 'Family'].map((lvl) => (
+            <button
+              key={lvl}
+              onClick={() => setActiveGroup(lvl)}
+              className={`px-4 py-1.5 text-xs font-bold rounded-lg transition-all whitespace-nowrap ${activeGroup === lvl ? 'bg-white text-emerald-700 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+            >
+              {lvl}
+            </button>
+          ))}
+        </div>
+        <div className="h-6 w-px bg-slate-200 hidden md:block" />
+        <div className="relative flex-1 md:flex-none">
+          <Calendar className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+          <select className="w-full md:w-auto pl-9 pr-8 py-2 bg-white border border-slate-200 rounded-xl text-sm font-bold text-slate-700 focus:outline-none focus:border-emerald-500 appearance-none">
+            <option>Apr-2026</option>
+            <option>Mar-2026</option>
+          </select>
+        </div>
+        <div className="flex-1 min-w-[200px] relative w-full md:w-auto mt-2 md:mt-0">
+          <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+          <input
+            type="text"
+            placeholder="Search hierarchy..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full pl-9 pr-4 py-2 bg-white border border-slate-200 rounded-xl text-sm font-medium focus:outline-none focus:border-emerald-500 transition-all"
+          />
+        </div>
+      </div>
+
+      {/* 3. KPIs are locked (shrink-0) */}
+      <div className="shrink-0 grid grid-cols-2 md:grid-cols-5 gap-3 md:gap-4 mb-6">
+        <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm col-span-2 md:col-span-1">
+          <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">Gross Receivable</p>
+          <h3 className="text-xl font-black text-slate-900">₹{totals.gross.toLocaleString('en-IN', { maximumFractionDigits: 2 })}</h3>
+        </div>
+        <div className="bg-white p-4 rounded-xl border border-emerald-100 shadow-sm bg-gradient-to-br from-white to-emerald-50/50">
+          <p className="text-[10px] font-black text-emerald-600 uppercase tracking-widest mb-1">Paid (Self)</p>
+          <h3 className="text-xl font-black text-emerald-700">₹{totals.paid.toLocaleString('en-IN', { maximumFractionDigits: 2 })}</h3>
+        </div>
+        <div className="bg-white p-4 rounded-xl border border-teal-100 shadow-sm bg-gradient-to-br from-white to-teal-50/50">
+          <p className="text-[10px] font-black text-teal-600 uppercase tracking-widest mb-1">Paid (Sub)</p>
+          <h3 className="text-xl font-black text-teal-700">₹{totals.paidSub.toLocaleString('en-IN', { maximumFractionDigits: 2 })}</h3>
+        </div>
+        <div className="bg-slate-900 p-4 rounded-xl shadow-lg relative overflow-hidden group col-span-2 md:col-span-1">
+          <div className="absolute top-0 right-0 w-24 h-24 bg-emerald-500/20 rounded-full blur-2xl -mr-8 -mt-8" />
+          <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 relative z-10">Net Receivable</p>
+          <h3 className="text-xl font-black text-white relative z-10">₹{grandNetReceivable.toLocaleString('en-IN', { maximumFractionDigits: 2 })}</h3>
+        </div>
+        <div className="hidden md:flex bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex-col justify-center">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Pending</span>
+            <AlertCircle className="w-3 h-3 text-amber-500" />
           </div>
-        </div>
-
-        {/* Desktop Table */}
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
-            <thead>
-              <tr className="bg-gray-50 dark:bg-gray-800/50 border-b border-gray-200 dark:border-gray-800">
-                <th className="p-4 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Client Name</th>
-                <th className="p-4 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Transaction Type</th>
-                <th className="p-4 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Date</th>
-                <th className="p-4 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider text-right">Amount (₹)</th>
-                <th className="p-4 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider text-center">Status</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-200 dark:divide-gray-800">
-              {MOCK_BROKERAGE_DATA.map((item) => (
-                <tr key={item.id} className="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
-                  <td className="p-4 text-sm font-medium text-gray-900 dark:text-white">{item.clientName}</td>
-                  <td className="p-4 text-sm text-gray-600 dark:text-gray-300">{item.type}</td>
-                  <td className="p-4 text-sm text-gray-600 dark:text-gray-300">
-                    {new Date(item.date).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}
-                  </td>
-                  <td className="p-4 text-sm font-semibold text-gray-900 dark:text-white text-right">
-                    {item.amount.toLocaleString('en-IN')}
-                  </td>
-                  <td className="p-4 flex justify-center">
-                    <Badge variant={item.status === 'Paid' ? 'success' : item.status === 'Pending' ? 'warning' : 'primary'}>
-                      {item.status}
-                    </Badge>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          <div className="w-full bg-slate-100 rounded-full h-2 mb-1">
+            <div className="bg-amber-500 h-2 rounded-full" style={{ width: `${pendingPercentage}%` }}></div>
+          </div>
+          <p className="text-xs font-black text-slate-900">{pendingPercentage}% stuck</p>
         </div>
       </div>
+
+      {/* 4. Table takes remaining space and scrolls internally */}
+      <div className="hidden md:flex flex-col flex-1 min-h-0">
+        <DesktopBrokerageTable data={filteredData} totals={totals} />
+      </div>
+
+      {/* Mobile Scrollable Region */}
+      <div className="md:hidden flex flex-col flex-1 min-h-0 overflow-y-auto pr-1 pb-4">
+         <MobileBrokerageOverview data={filteredData} totals={totals} />
+      </div>
+
     </div>
   );
 }

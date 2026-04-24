@@ -1,4 +1,6 @@
-import React from 'react';
+"use client";
+
+import React, { useState } from 'react';
 import Sidebar from '@/components/distributor/Sidebar';
 
 export default function DistributorLayout({
@@ -6,13 +8,21 @@ export default function DistributorLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const [isCollapsed, setIsCollapsed] = useState(false);
+
   return (
-    <div className="min-h-screen bg-slate-50 flex overflow-hidden">
-      <Sidebar />
-      <main className="flex-1 ml-72 h-screen overflow-y-auto overflow-x-hidden relative">
-        {/* Background Accents */}
-        <div className="fixed inset-0 z-0 opacity-[0.35] bg-[radial-gradient(#10b981_1px,transparent_1px)] [background-size:32px_32px] pointer-events-none" />
-        <div className="relative z-10 p-8 lg:p-12">
+    <div className="flex h-screen bg-slate-50/50 overflow-hidden selection:bg-emerald-100 selection:text-emerald-900">
+      <Sidebar isCollapsed={isCollapsed} setIsCollapsed={setIsCollapsed} />
+      
+      {/* CRITICAL CHANGE: Changed overflow-y-auto to overflow-hidden and forced h-screen. 
+        This locks the outer viewport so children handle their own inner scrolling.
+      */}
+      <main 
+        className={`flex-1 relative transition-all duration-300 ease-in-out h-screen overflow-hidden
+        ${isCollapsed ? 'lg:ml-24' : 'lg:ml-72'}`}
+      >
+        <div className="absolute inset-0 bg-[url('/noise.png')] opacity-[0.015] pointer-events-none mix-blend-overlay" />
+        <div className="w-full h-full max-w-[1600px] mx-auto p-4 sm:p-5 md:p-6 lg:p-8 flex flex-col relative z-10">
           {children}
         </div>
       </main>

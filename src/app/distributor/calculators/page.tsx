@@ -1,20 +1,47 @@
 "use client";
 
 import React from 'react';
+import { Calculator, TrendingUp, Target, ArrowUpRight, BarChart, ChevronRight } from 'lucide-react';
 
-export default function CalculatorsPage() {
+const CALCULATORS = [
+  { id: 1, name: 'SIP Calculator', description: 'Calculate wealth accumulation through regular monthly investments.', icon: TrendingUp, color: 'text-emerald-600', bg: 'bg-emerald-50' },
+  { id: 2, name: 'Lumpsum Calculator', description: 'Estimate the future value of a one-time investment over time.', icon: BarChart, color: 'text-teal-600', bg: 'bg-teal-50' },
+  { id: 3, name: 'Goal Planner', description: 'Determine the required investment to reach a specific financial target.', icon: Target, color: 'text-indigo-600', bg: 'bg-indigo-50' },
+  { id: 4, name: 'Step-up SIP', description: 'Project returns when increasing SIP amounts annually to match income growth.', icon: ArrowUpRight, color: 'text-sky-600', bg: 'bg-sky-50' },
+];
+
+export default function DistributorCalculatorsPage() {
   return (
-    <div className="space-y-6">
-      <h1 className="text-3xl font-black text-slate-900">Calculators</h1>
-      <div className="p-12 border-2 border-dashed border-slate-200 rounded-[2.5rem] flex flex-col items-center justify-center text-center">
-        <div className="w-16 h-16 bg-slate-100 rounded-2xl flex items-center justify-center mb-4 text-slate-400">
-            <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
-            </svg>
+    <div className="h-full flex flex-col relative z-10 animate-[fadeIn_0.5s_ease-out] overflow-hidden">
+      
+      <div className="shrink-0 flex flex-col md:flex-row justify-between items-start md:items-end gap-4 mb-6">
+        <div>
+          <h1 className="text-3xl font-black tracking-tight text-slate-900">
+            Financial <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-800">Calculators</span>
+          </h1>
+          <p className="text-slate-500 font-medium mt-1 text-sm">Tools to project wealth and plan client investment strategies.</p>
         </div>
-        <h2 className="text-xl font-bold text-slate-700 mb-2">Module Under Development</h2>
-        <p className="text-slate-500 max-w-sm">Advanced financial planning tools are being integrated.</p>
       </div>
+
+      <div className="flex-1 overflow-y-auto pr-2 pb-6 flex flex-col gap-6 scrollbar-none">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {CALCULATORS.map((calc) => (
+            <div key={calc.id} className="bg-white p-6 md:p-8 rounded-[2rem] border border-slate-200 shadow-sm hover:border-emerald-200 transition-all group flex flex-col sm:flex-row items-start sm:items-center gap-6 cursor-pointer relative overflow-hidden">
+              <div className={`w-16 h-16 shrink-0 ${calc.bg} ${calc.color} rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-500`}>
+                <calc.icon className="w-8 h-8" />
+              </div>
+              <div className="flex-1">
+                <h3 className="text-xl font-black text-slate-900 tracking-tight mb-1 group-hover:text-emerald-700 transition-colors">{calc.name}</h3>
+                <p className="text-sm text-slate-500 font-medium leading-relaxed">{calc.description}</p>
+              </div>
+              <div className="hidden sm:flex w-10 h-10 rounded-full bg-slate-50 items-center justify-center group-hover:bg-emerald-50 transition-colors shrink-0">
+                <ChevronRight className="w-5 h-5 text-slate-400 group-hover:text-emerald-600" />
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
     </div>
   );
 }

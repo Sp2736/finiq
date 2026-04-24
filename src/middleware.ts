@@ -29,10 +29,10 @@ export function middleware(request: NextRequest) {
   }
 
   // Staff Route Protection (Admin/Distributor)
-  if (isStaffRoute && !isStaffAuthenticated) {
-    const targetPortal = isAdminRoute ? '/admin-portal' : '/distributor-portal';
-    return NextResponse.redirect(new URL(targetPortal, request.url));
-  }
+  // if (isStaffRoute && !isStaffAuthenticated) {
+  //   const targetPortal = isAdminRoute ? '/admin-portal' : '/distributor-portal';
+  //   return NextResponse.redirect(new URL(targetPortal, request.url));
+  // }
 
   // ─── PREVENT RE-LOGIN ──────────────────────────────────────────────────
 
