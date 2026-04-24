@@ -6,7 +6,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import PhoneInputForm from "@/components/layouts/PhoneInputForm";
 import OTPVerificationForm from "@/components/layouts/OTPVerificationForm";
-import FluidBackground from "@/components/layouts/FluidBackground";
+import DistributorFluidBackground from "@/components/layouts/DistributorFluidBackground";
 import { authService } from "@/services/auth.service";
 import { setAuthCookies } from "@/lib/authClient";
 
@@ -70,7 +70,7 @@ export default function DistributorLoginPage() {
           WebkitMaskImage: "linear-gradient(to right, black 40%, transparent 100%)",
         }}
       >
-        <FluidBackground />
+        <DistributorFluidBackground />
       </div>
 
       <div className="absolute -top-40 -left-40 w-[400px] sm:w-[600px] h-[400px] sm:h-[600px] bg-emerald-500/10 rounded-full blur-[80px] sm:blur-[100px] pointer-events-none z-0" />

@@ -23,26 +23,32 @@ const formatCurrency = (amount: number) => {
 
 export default function DistributorDashboard() {
   const [topInvestors, setTopInvestors] = useState<TopContributor[]>([]);
-  const [summary, setSummary] = useState<any>(null);
+  const [summary, setSummary] = useState<CompanySummary | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
+        setIsLoading(true);
+        // distributorService now returns Promise<ApiResponse<T>>
         const [contributorsRes, summaryRes] = await Promise.all([
           distributorService.getTopContributors(),
           distributorService.getCompanySummary()
         ]);
 
-        if (contributorsRes.success) setTopInvestors(contributorsRes.data);
-        if (summaryRes.success) setSummary(summaryRes.data);
+        if (contributorsRes.success) {
+          setTopInvestors(contributorsRes.data); // Accessing .data from ApiResponse
+        }
+        if (summaryRes.success) {
+          setSummary(summaryRes.data); // Accessing .data from ApiResponse
+        }
         
         if (!contributorsRes.success || !summaryRes.success) {
-          setError(contributorsRes.message || summaryRes.message || "Partial data load failure");
+          setError(contributorsRes.message || summaryRes.message || "Failed to load data");
         }
       } catch (err: any) {
-        setError(err.message || "Failed to load dashboard data");
+        setError(err.message || "An unexpected error occurred");
       } finally {
         setIsLoading(false);
       }

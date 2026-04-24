@@ -7,37 +7,32 @@ import MobileClientList from '@/components/distributor/clients/MobileClientList'
 import { distributorService } from '@/services/distributor.service'; // Assuming this exists
 
 export default function DistributorClientsPage() {
-  const [clients, setClients] = useState<any[]>([]);
+  const [clients, setClients] = useState<Investor[]>([]);
+  const [pagination, setPagination] = useState({ page: 1, totalPages: 1, totalItems: 0 });
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
-  // Shared State
-  const [searchTerm, setSearchTerm] = useState("");
-  const [activeFilter, setActiveFilter] = useState("All");
-  
-  // Mobile State
-  const [mobileActiveScreen, setMobileActiveScreen] = useState<'list' | 'details'>('list');
-  const [selectedClient, setSelectedClient] = useState<any | null>(null);
-
-  // Fetch Data (Replace with useDistributorClients hook later if desired)
-  useEffect(() => {
-    const fetchClients = async () => {
-      try {
-        setIsLoading(true);
-        // Using top contributors as a placeholder for the full client list fetch
-        const res = await distributorService.getTopContributors();
-        if (res.success) {
-          setClients(res.data);
-        } else {
-          setError(res.message);
-        }
-      } catch (err: any) {
-        setError(err.message || "Failed to load clients.");
-      } finally {
-        setIsLoading(false);
+  const fetchClients = async (page: number) => {
+    setIsLoading(true);
+    try {
+      const res = await distributorService.getInvestors(page, 30); // Uses /holdings-cache/investors
+      if (res.success) {
+        // res.data is PaginatedResponse<Investor>, so we access .data again for the array
+        setClients(res.data.data); 
+        setPagination({
+          page: res.data.page,
+          totalPages: res.data.totalPages,
+          totalItems: res.data.total
+        });
       }
-    };
-    fetchClients();
+    } catch (err) {
+      console.error("Fetch error:", err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchClients(1);
   }, []);
 
   // Filter Logic

@@ -5,7 +5,7 @@
 // import { useState } from "react";
 // import { useRouter } from "next/navigation";
 // import EmailPasswordForm from "@/components/layouts/EmailPasswordForm";
-// import FluidBackground from "@/components/layouts/FluidBackground";
+// import InvestorFluidBackground from "@/components/layouts/InvestorFluidBackground";
 // import { authService } from "@/services/auth.service";
 // import { setAuthCookie } from "@/lib/authClient";
 
@@ -49,7 +49,7 @@
 //           WebkitMaskImage: "linear-gradient(to right, black 40%, transparent 100%)",
 //         }}
 //       >
-//         <FluidBackground />
+//         <InvestorFluidBackground />
 //       </div>
 
 //       <div className="absolute -top-40 -left-40 w-[400px] sm:w-[600px] h-[400px] sm:h-[600px] bg-primary/20 rounded-full blur-[80px] sm:blur-[100px] pointer-events-none z-0" />
@@ -221,7 +221,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import EmailPasswordForm from "@/components/layouts/EmailPasswordForm";
-import FluidBackground from "@/components/layouts/FluidBackground";
+import InvestorFluidBackground from "@/components/layouts/InvestorFluidBackground";
 import { authService } from "@/services/auth.service";
 import { setAuthCookies } from "@/lib/authClient";
 
@@ -269,7 +269,7 @@ export default function LoginPage() {
           WebkitMaskImage: "linear-gradient(to right, black 40%, transparent 100%)",
         }}
       >
-        <FluidBackground />
+        <InvestorFluidBackground />
       </div>
 
       <div className="absolute -top-40 -left-40 w-[400px] sm:w-[600px] h-[400px] sm:h-[600px] bg-primary/20 rounded-full blur-[80px] sm:blur-[100px] pointer-events-none z-0" />
