@@ -1,82 +1,120 @@
 "use client";
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import DesktopBrokerageTable from './DesktopBrokerageTable';
 import MobileBrokerageOverview from './MobileBrokerageOverview';
-import { Search, Download, Calendar, Filter, AlertCircle, RefreshCw } from 'lucide-react';
+import { distributorService } from '@/services/distributor.service';
+import { Search, Download, Calendar, AlertCircle, RefreshCw, Loader2 } from 'lucide-react';
 
-const MOCK_HIERARCHY_DATA = [
-  {
-    id: "1", user: "Vandana Srivastava", type: "Direct Client", template: "60-60 FLAT",
-    gross: 134154.94, paid: 122392.77, paidSub: 0,
-    amcBreakdown: [
-      { id: "a1", amcName: "ICICI Prudential", gross: 60000, paid: 55000, paidSub: 0 },
-      { id: "a2", amcName: "HDFC Mutual Fund", gross: 74154.94, paid: 67392.77, paidSub: 0 }
-    ],
-    children: [
-      {
-        id: "1-1", user: "Rahul Verma", type: "RM", template: "40-40 FLAT",
-        gross: 50000.00, paid: 20000.00, paidSub: 25000.00,
-        amcBreakdown: [
-          { id: "a3", amcName: "Kotak Mahindra", gross: 50000, paid: 20000, paidSub: 25000 }
-        ],
-        children: [
-          {
-            id: "1-1-1", user: "Amit Desai", type: "Associate", template: "50-50 FLAT",
-            gross: 25000.00, paid: 25000.00, paidSub: 0,
-            amcBreakdown: [{ id: "a4", amcName: "Kotak Mahindra", gross: 25000, paid: 25000, paidSub: 0 }]
-          }
-        ]
-      }
-    ]
-  },
-  {
-    id: "2", user: "Rakesh Jhunjhunwala Portfolio", type: "Family", template: "70-30 FLAT",
-    gross: 540000.00, paid: 400000.00, paidSub: 100000.00,
-    amcBreakdown: [
-      { id: "a5", amcName: "Mirae Asset", gross: 300000, paid: 250000, paidSub: 50000 },
-      { id: "a6", amcName: "Invesco", gross: 240000, paid: 150000, paidSub: 50000 }
-    ]
-  }
-];
+// Mapper to translate API Response into UI format
+const mapHierarchyData = (subBrokers: any[]) => {
+  if (!subBrokers || !Array.isArray(subBrokers)) return [];
+
+  return subBrokers.map((broker, index) => {
+    let totalGross = 0;
+    let totalPaid = 0;
+
+    const amcBreakdown = (broker.amc_wise_brokerage || []).map((amc: any, i: number) => {
+      totalGross += amc.total_brokerage || 0;
+      totalPaid += amc.paid_brokerage || 0;
+
+      return {
+        id: `amc-${index}-${i}`,
+        amcName: amc.amc_name || "Uncategorized AMC",
+        gross: amc.total_brokerage || 0,
+        paid: amc.paid_brokerage || 0,
+        paidSub: 0 // Sub-split not present in this specific endpoint level
+      };
+    });
+
+    return {
+      id: broker.sub_broker_id || `broker-${index}`,
+      user: broker.sub_broker_name || "Unnamed Client",
+      type: broker.broker_type === "DIRECT" ? "Direct Client" : "Sub-Broker",
+      template: broker.share_percentage ? `${broker.share_percentage}% Share` : "Standard",
+      gross: totalGross,
+      paid: totalPaid,
+      paidSub: 0,
+      amcBreakdown: amcBreakdown,
+      children: [] // Assuming flat list of sub-brokers for this view
+    };
+  });
+};
 
 export default function BrokerageDashboard() {
-  // Local input state for typing
   const [searchInput, setSearchInput] = useState('');
-  // State that actually triggers the data filter/API call
   const [searchTerm, setSearchTerm] = useState('');
   const [activeGroup, setActiveGroup] = useState("AMC");
+  
+  const [dateRange, setDateRange] = useState({
+    fromDate: '2026-02-01',
+    toDate: '2026-02-28'
+  });
+  
+  const [hierarchyData, setHierarchyData] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchHierarchy = async () => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const res = await distributorService.getBrokerageSummary(
+        dateRange.fromDate, 
+        dateRange.toDate, 
+        activeGroup
+      );
+      
+      if (res.success && res.data) {
+        // Extract the sub_brokers array from the API response and map it
+        const subBrokers = res.data.sub_brokers || [];
+        const mappedData = mapHierarchyData(subBrokers);
+        setHierarchyData(mappedData);
+      } else {
+        setError(res.message || "Failed to load hierarchy data");
+      }
+    } catch (err: any) {
+      setError(err.message || "An unexpected error occurred");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchHierarchy();
+  }, [activeGroup, dateRange]);
 
   const handleSearchTrigger = () => {
-    // This is where you would call your API in a real implementation
-    // distributorService.getHierarchy(searchInput, ...)
-    setSearchTerm(searchInput);
+    setSearchTerm(searchInput.toLowerCase());
   };
 
   const filteredData = useMemo(() => {
-    if (!searchTerm) return MOCK_HIERARCHY_DATA;
-    return MOCK_HIERARCHY_DATA.filter(node => 
-      node.user.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      node.type.toLowerCase().includes(searchTerm.toLowerCase())
+    if (!searchTerm || !hierarchyData) return hierarchyData || [];
+    return hierarchyData.filter(node => 
+      (node.user && node.user.toLowerCase().includes(searchTerm)) ||
+      (node.type && node.type.toLowerCase().includes(searchTerm))
     );
-  }, [searchTerm]);
+  }, [searchTerm, hierarchyData]);
 
   const totals = useMemo(() => {
-    return MOCK_HIERARCHY_DATA.reduce((acc, curr) => {
-      acc.gross += curr.gross;
-      acc.paid += curr.paid;
-      acc.paidSub += curr.paidSub;
+    return filteredData.reduce((acc, curr) => {
+      acc.gross += (curr.gross || 0);
+      acc.paid += (curr.paid || 0);
+      acc.paidSub += (curr.paidSub || 0);
       return acc;
     }, { gross: 0, paid: 0, paidSub: 0 });
-  }, []);
+  }, [filteredData]);
 
   const grandTotalPaid = totals.paid + totals.paidSub;
   const grandNetReceivable = totals.gross - grandTotalPaid;
-  const pendingPercentage = ((grandNetReceivable / totals.gross) * 100).toFixed(1);
+  const pendingPercentage = totals.gross > 0 
+    ? ((grandNetReceivable / totals.gross) * 100).toFixed(1) 
+    : "0";
 
   return (
     <div className="flex flex-col h-full animate-[fadeIn_0.5s_ease-out] overflow-hidden">
       
+      {/* Header */}
       <div className="shrink-0 flex flex-col md:flex-row justify-between items-start md:items-end gap-4 mb-6">
         <div>
           <h1 className="text-3xl font-black tracking-tight text-slate-900">
@@ -89,16 +127,21 @@ export default function BrokerageDashboard() {
             <Download className="w-4 h-4" />
             <span>Export</span>
           </button>
-          <button className="flex items-center gap-2 px-5 py-2.5 bg-emerald-600 text-white rounded-xl font-bold text-sm hover:bg-emerald-700 transition-all shadow-lg shadow-emerald-600/20">
-            <RefreshCw className="w-4 h-4" />
-            <span className="hidden sm:inline">Sync Hierarchy</span>
+          <button 
+            onClick={fetchHierarchy}
+            disabled={isLoading}
+            className="flex items-center gap-2 px-5 py-2.5 bg-emerald-600 text-white rounded-xl font-bold text-sm hover:bg-emerald-700 transition-all shadow-lg shadow-emerald-600/20 disabled:opacity-50"
+          >
+            <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
+            <span className="hidden sm:inline">Sync</span>
           </button>
         </div>
       </div>
 
+      {/* Filter Bar */}
       <div className="shrink-0 bg-white/80 backdrop-blur-xl border border-slate-200 rounded-2xl p-3 mb-6 shadow-sm flex flex-wrap items-center gap-3">
         <div className="flex items-center bg-slate-100 p-1 rounded-xl overflow-x-auto hide-scrollbar">
-          {['AMC', 'Scheme', 'Client', 'Family'].map((lvl) => (
+          {['AMC', 'Client', 'Scheme', 'Family'].map((lvl) => (
             <button
               key={lvl}
               onClick={() => setActiveGroup(lvl)}
@@ -109,15 +152,16 @@ export default function BrokerageDashboard() {
           ))}
         </div>
         <div className="h-6 w-px bg-slate-200 hidden md:block" />
+        
         <div className="relative flex-1 md:flex-none">
           <Calendar className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
           <select className="w-full md:w-auto pl-9 pr-8 py-2 bg-white border border-slate-200 rounded-xl text-sm font-bold text-slate-700 focus:outline-none focus:border-emerald-500 appearance-none">
-            <option>Apr-2026</option>
-            <option>Mar-2026</option>
+            <option>Feb-2026</option>
+            <option>Jan-2026</option>
           </select>
         </div>
 
-        {/* Updated Search Bar with explicit Search Button */}
+        {/* Search */}
         <div className="flex-1 min-w-[280px] flex items-center gap-2">
           <div className="relative flex-1">
             <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
@@ -139,6 +183,7 @@ export default function BrokerageDashboard() {
         </div>
       </div>
 
+      {/* KPI Section */}
       <div className="shrink-0 grid grid-cols-2 md:grid-cols-5 gap-3 md:gap-4 mb-6">
         <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm col-span-2 md:col-span-1">
           <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">Gross Receivable</p>
@@ -169,13 +214,32 @@ export default function BrokerageDashboard() {
         </div>
       </div>
 
-      <div className="hidden md:flex flex-col flex-1 min-h-0 pb-4">
-        <DesktopBrokerageTable data={filteredData} totals={totals} />
-      </div>
+      {/* Main Table Area */}
+      {error ? (
+        <div className="flex-1 flex items-center justify-center bg-white rounded-xl border border-rose-100 p-8">
+           <p className="text-rose-600 font-bold">{error}</p>
+        </div>
+      ) : (
+        <React.Fragment>
+          <div className="hidden md:flex flex-col flex-1 min-h-0 pb-4 relative">
+            {isLoading && (
+              <div className="absolute inset-0 bg-white/50 backdrop-blur-[1px] z-50 flex items-center justify-center">
+                <Loader2 className="w-8 h-8 text-emerald-600 animate-spin" />
+              </div>
+            )}
+            <DesktopBrokerageTable data={filteredData} totals={totals} />
+          </div>
 
-      <div className="md:hidden flex flex-col flex-1 min-h-0 overflow-y-auto pr-1 pb-4">
-         <MobileBrokerageOverview data={filteredData} totals={totals} />
-      </div>
+          <div className="md:hidden flex flex-col flex-1 min-h-0 overflow-y-auto pr-1 pb-4 relative">
+             {isLoading && (
+              <div className="absolute inset-0 bg-white/50 backdrop-blur-[1px] z-50 flex items-center justify-center rounded-xl">
+                <Loader2 className="w-8 h-8 text-emerald-600 animate-spin" />
+              </div>
+            )}
+             <MobileBrokerageOverview data={filteredData} totals={totals} />
+          </div>
+        </React.Fragment>
+      )}
 
     </div>
   );

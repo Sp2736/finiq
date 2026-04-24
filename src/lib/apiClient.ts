@@ -1,6 +1,7 @@
 // src/lib/apiClient.ts
 
 const getAuthToken = () => {
+
   if (typeof document === 'undefined') return null;
   
   // Decide which token to use based on the current path
