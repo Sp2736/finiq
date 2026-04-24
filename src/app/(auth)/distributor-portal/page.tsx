@@ -27,7 +27,7 @@ export default function DistributorLoginPage() {
     setError("");
     try {
       const fullPhone = `${info.countryCode}${info.number}`;
-      // await authService.sendOtp(fullPhone);
+      await authService.sendOtp(fullPhone);
       setPhoneInfo(info);
       setStep("otp");
     } catch (err: any) {
@@ -43,11 +43,11 @@ export default function DistributorLoginPage() {
     setError("");
     try {
       const fullPhone = `${phoneInfo.countryCode}${phoneInfo.number.replace(/\D/g, '')}`;
-      // const response = await authService.verifyOtp(fullPhone, otp);
-      // if (response.success) {
-        // setAuthCookies(response.data.access_token, response.data.refresh_token);
+      const response = await authService.verifyOtp(fullPhone, otp);
+      if (response.success) {
+        setAuthCookies(response.data.access_token, response.data.refresh_token);
         router.push("/distributor");
-      // }
+      }
     } catch (err: any) {
       console.error("Verify Error:", err);
       const msg = err.message || "Invalid OTP. Please try again.";

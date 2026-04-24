@@ -53,15 +53,15 @@ export const authService = {
   },
 
   // ─── ADMIN / DISTRIBUTOR AUTH ─────────────────────────────────────────────
-  // sendOtp: async (phone_number: string): Promise<AuthResponse<SendOtpData>> => {
-  //   return apiClient.post<AuthResponse<SendOtpData>>('/auth/send-otp', { phone_number });
-  // },
+  sendOtp: async (phone_number: string): Promise<AuthResponse<SendOtpData>> => {
+    return apiClient.post<AuthResponse<SendOtpData>>('/auth/send-otp', { phone_number });
+  },
 
-  // verifyOtp: async (phone_number: string, otp_code: string): Promise<AuthResponse<VerifyOtpData>> => {
-  //   return apiClient.post<AuthResponse<VerifyOtpData>>('/auth/verify-otp', { phone_number, otp_code });
-  // },
+  verifyOtp: async (phone_number: string, otp_code: string): Promise<AuthResponse<VerifyOtpData>> => {
+    return apiClient.post<AuthResponse<VerifyOtpData>>('/auth/verify-otp', { phone_number, otp_code });
+  },
 
-  // refreshToken: async (user_id: string, refresh_token: string): Promise<AuthResponse<VerifyOtpData>> => {
-  //   return apiClient.post<AuthResponse<VerifyOtpData>>('/auth/refresh', { user_id, refresh_token });
-  // }
+  refreshToken: async (user_id: string, refresh_token: string): Promise<AuthResponse<VerifyOtpData>> => {
+    return apiClient.post<AuthResponse<VerifyOtpData>>('/auth/refresh', { user_id, refresh_token });
+  }
 };

@@ -41,8 +41,17 @@ const MOCK_HIERARCHY_DATA = [
 ];
 
 export default function BrokerageDashboard() {
+  // Local input state for typing
+  const [searchInput, setSearchInput] = useState('');
+  // State that actually triggers the data filter/API call
   const [searchTerm, setSearchTerm] = useState('');
   const [activeGroup, setActiveGroup] = useState("AMC");
+
+  const handleSearchTrigger = () => {
+    // This is where you would call your API in a real implementation
+    // distributorService.getHierarchy(searchInput, ...)
+    setSearchTerm(searchInput);
+  };
 
   const filteredData = useMemo(() => {
     if (!searchTerm) return MOCK_HIERARCHY_DATA;
@@ -68,7 +77,6 @@ export default function BrokerageDashboard() {
   return (
     <div className="flex flex-col h-full animate-[fadeIn_0.5s_ease-out] overflow-hidden">
       
-      {/* 1. Header is locked (shrink-0) */}
       <div className="shrink-0 flex flex-col md:flex-row justify-between items-start md:items-end gap-4 mb-6">
         <div>
           <h1 className="text-3xl font-black tracking-tight text-slate-900">
@@ -77,7 +85,7 @@ export default function BrokerageDashboard() {
           <p className="text-slate-500 font-medium mt-1 text-sm">Monitor revenue flow, receivables, and sub-level payouts.</p>
         </div>
         <div className="flex gap-3">
-          <button className="hidden md:flex items-center gap-2 px-5 py-2.5 bg-white border border-slate-200 text-slate-600 rounded-xl font-bold text-sm hover:text-emerald-700 hover:border-emerald-200 transition-all shadow-sm">
+          <button className="hidden md:flex items-center gap-2 px-5 py-2.5 bg-white border border-slate-200 text-slate-600 font-bold text-sm hover:border-emerald-600 hover:text-emerald-600 transition-all shadow-sm">
             <Download className="w-4 h-4" />
             <span>Export</span>
           </button>
@@ -88,7 +96,6 @@ export default function BrokerageDashboard() {
         </div>
       </div>
 
-      {/* 2. Filters are locked (shrink-0) */}
       <div className="shrink-0 bg-white/80 backdrop-blur-xl border border-slate-200 rounded-2xl p-3 mb-6 shadow-sm flex flex-wrap items-center gap-3">
         <div className="flex items-center bg-slate-100 p-1 rounded-xl overflow-x-auto hide-scrollbar">
           {['AMC', 'Scheme', 'Client', 'Family'].map((lvl) => (
@@ -109,19 +116,29 @@ export default function BrokerageDashboard() {
             <option>Mar-2026</option>
           </select>
         </div>
-        <div className="flex-1 min-w-[200px] relative w-full md:w-auto mt-2 md:mt-0">
-          <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-          <input
-            type="text"
-            placeholder="Search hierarchy..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-9 pr-4 py-2 bg-white border border-slate-200 rounded-xl text-sm font-medium focus:outline-none focus:border-emerald-500 transition-all"
-          />
+
+        {/* Updated Search Bar with explicit Search Button */}
+        <div className="flex-1 min-w-[280px] flex items-center gap-2">
+          <div className="relative flex-1">
+            <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+            <input
+              type="text"
+              placeholder="Search user or type..."
+              value={searchInput}
+              onChange={(e) => setSearchInput(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && handleSearchTrigger()}
+              className="w-full pl-9 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium focus:outline-none focus:ring-2 focus:ring-emerald-600/20 focus:border-emerald-600 transition-all"
+            />
+          </div>
+          <button 
+            onClick={handleSearchTrigger}
+            className="px-4 py-2 bg-slate-900 text-white rounded-xl text-xs font-bold hover:bg-slate-800 transition-all active:scale-95 shadow-md shadow-slate-900/10"
+          >
+            Search
+          </button>
         </div>
       </div>
 
-      {/* 3. KPIs are locked (shrink-0) */}
       <div className="shrink-0 grid grid-cols-2 md:grid-cols-5 gap-3 md:gap-4 mb-6">
         <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm col-span-2 md:col-span-1">
           <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">Gross Receivable</p>
@@ -152,12 +169,10 @@ export default function BrokerageDashboard() {
         </div>
       </div>
 
-      {/* 4. Table takes remaining space and scrolls internally */}
-      <div className="hidden md:flex flex-col flex-1 min-h-0">
+      <div className="hidden md:flex flex-col flex-1 min-h-0 pb-4">
         <DesktopBrokerageTable data={filteredData} totals={totals} />
       </div>
 
-      {/* Mobile Scrollable Region */}
       <div className="md:hidden flex flex-col flex-1 min-h-0 overflow-y-auto pr-1 pb-4">
          <MobileBrokerageOverview data={filteredData} totals={totals} />
       </div>

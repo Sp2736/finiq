@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import LogoutButton from '@/components/investor/LogoutButton';
@@ -13,17 +13,12 @@ import {
   Settings,
   ChevronRight,
   ChevronLeft,
+  ChevronDown,
   Menu,
-  X
+  X,
+  FilePieChart,
+  Network
 } from 'lucide-react';
-
-const navItems = [
-  { name: 'Dashboard', href: '/distributor', icon: LayoutDashboard },
-  { name: 'Client Management', href: '/distributor/clients', icon: Users },
-  { name: 'User Management', href: '/distributor/users', icon: UserSquare2 },
-  { name: 'Reports', href: '/distributor/reports', icon: BarChart3 },
-  { name: 'Calculators', href: '/distributor/calculators', icon: Calculator },
-];
 
 interface SidebarProps {
   isCollapsed: boolean;
@@ -33,6 +28,24 @@ interface SidebarProps {
 export default function Sidebar({ isCollapsed, setIsCollapsed }: SidebarProps) {
   const pathname = usePathname();
   const [isMobileOpen, setIsMobileOpen] = useState(false);
+  const [isReportsOpen, setIsReportsOpen] = useState(false);
+
+  // Auto-expand reports menu if we are inside a reports route
+  useEffect(() => {
+    if (pathname.startsWith('/distributor/reports')) {
+      setIsReportsOpen(true);
+    }
+  }, [pathname]);
+
+  const handleReportsClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (isCollapsed) {
+      setIsCollapsed(false);
+      setIsReportsOpen(true);
+    } else {
+      setIsReportsOpen(!isReportsOpen);
+    }
+  };
 
   return (
     <>
@@ -75,28 +88,110 @@ export default function Sidebar({ isCollapsed, setIsCollapsed }: SidebarProps) {
         </div>
 
         <nav className="flex-1 px-4 space-y-1.5 overflow-y-auto scrollbar-none">
-          {navItems.map((item) => {
-            const isActive = pathname === item.href;
-            return (
-              <Link
-                key={item.name}
-                href={item.href}
-                title={isCollapsed ? item.name : undefined}
-                onClick={() => setIsMobileOpen(false)}
-                className={`flex items-center ${isCollapsed ? 'justify-center' : 'justify-between'} px-4 py-3 rounded-2xl transition-all duration-300 group ${
-                  isActive 
-                    ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-600/20' 
-                    : 'text-slate-600 hover:bg-emerald-50 hover:text-emerald-700'
-                }`}
-              >
-                <div className="flex items-center gap-3">
-                  <item.icon className={`w-5 h-5 shrink-0 transition-transform duration-300 ${isActive ? 'scale-110' : 'group-hover:scale-110'}`} />
-                  {!isCollapsed && <span className="font-bold text-sm tracking-tight whitespace-nowrap animate-[fadeIn_0.2s_ease-in]">{item.name}</span>}
-                </div>
-                {!isCollapsed && isActive && <div className="w-1.5 h-1.5 shrink-0 bg-white rounded-full" />}
-              </Link>
-            );
-          })}
+          {/* Dashboard */}
+          <Link
+            href="/distributor"
+            onClick={() => setIsMobileOpen(false)}
+            className={`flex items-center ${isCollapsed ? 'justify-center' : 'justify-between'} px-4 py-3 rounded-2xl transition-all duration-300 group ${
+              pathname === '/distributor' ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-600/20' : 'text-slate-600 hover:bg-emerald-50 hover:text-emerald-700'
+            }`}
+          >
+            <div className="flex items-center gap-3">
+              <LayoutDashboard className={`w-5 h-5 shrink-0 transition-transform duration-300 ${pathname === '/distributor' ? 'scale-110' : 'group-hover:scale-110'}`} />
+              {!isCollapsed && <span className="font-bold text-sm tracking-tight whitespace-nowrap">Dashboard</span>}
+            </div>
+            {!isCollapsed && pathname === '/distributor' && <div className="w-1.5 h-1.5 shrink-0 bg-white rounded-full" />}
+          </Link>
+
+          {/* Client Management */}
+          <Link
+            href="/distributor/clients"
+            onClick={() => setIsMobileOpen(false)}
+            className={`flex items-center ${isCollapsed ? 'justify-center' : 'justify-between'} px-4 py-3 rounded-2xl transition-all duration-300 group ${
+              pathname.startsWith('/distributor/clients') ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-600/20' : 'text-slate-600 hover:bg-emerald-50 hover:text-emerald-700'
+            }`}
+          >
+            <div className="flex items-center gap-3">
+              <Users className={`w-5 h-5 shrink-0 transition-transform duration-300 ${pathname.startsWith('/distributor/clients') ? 'scale-110' : 'group-hover:scale-110'}`} />
+              {!isCollapsed && <span className="font-bold text-sm tracking-tight whitespace-nowrap">Client Management</span>}
+            </div>
+            {!isCollapsed && pathname.startsWith('/distributor/clients') && <div className="w-1.5 h-1.5 shrink-0 bg-white rounded-full" />}
+          </Link>
+
+          {/* User Management */}
+          <Link
+            href="/distributor/users"
+            onClick={() => setIsMobileOpen(false)}
+            className={`flex items-center ${isCollapsed ? 'justify-center' : 'justify-between'} px-4 py-3 rounded-2xl transition-all duration-300 group ${
+              pathname.startsWith('/distributor/users') ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-600/20' : 'text-slate-600 hover:bg-emerald-50 hover:text-emerald-700'
+            }`}
+          >
+            <div className="flex items-center gap-3">
+              <UserSquare2 className={`w-5 h-5 shrink-0 transition-transform duration-300 ${pathname.startsWith('/distributor/users') ? 'scale-110' : 'group-hover:scale-110'}`} />
+              {!isCollapsed && <span className="font-bold text-sm tracking-tight whitespace-nowrap">User Management</span>}
+            </div>
+            {!isCollapsed && pathname.startsWith('/distributor/users') && <div className="w-1.5 h-1.5 shrink-0 bg-white rounded-full" />}
+          </Link>
+
+          {/* Reports (Nested Menu) */}
+          <div className="space-y-1">
+            <button
+              onClick={handleReportsClick}
+              className={`w-full flex items-center ${isCollapsed ? 'justify-center' : 'justify-between'} px-4 py-3 rounded-2xl transition-all duration-300 group ${
+                pathname.startsWith('/distributor/reports') ? 'bg-emerald-50 text-emerald-700' : 'text-slate-600 hover:bg-emerald-50 hover:text-emerald-700'
+              }`}
+            >
+              <div className="flex items-center gap-3">
+                <BarChart3 className={`w-5 h-5 shrink-0 transition-transform duration-300 ${pathname.startsWith('/distributor/reports') ? 'scale-110 text-emerald-600' : 'group-hover:scale-110'}`} />
+                {!isCollapsed && <span className="font-bold text-sm tracking-tight whitespace-nowrap">Reports</span>}
+              </div>
+              {!isCollapsed && (
+                <ChevronDown className={`w-4 h-4 shrink-0 transition-transform duration-300 ${isReportsOpen ? 'rotate-180 text-emerald-600' : 'text-slate-400'}`} />
+              )}
+            </button>
+            
+            {/* Sub-menu Items */}
+            {!isCollapsed && isReportsOpen && (
+              <div className="pl-4 pr-2 py-1 space-y-1 animate-[fadeIn_0.3s_ease-out]">
+                <Link
+                  href="/distributor/reports"
+                  onClick={() => setIsMobileOpen(false)}
+                  className={`flex items-center gap-3 px-4 py-2.5 rounded-xl transition-all duration-200 ${
+                    pathname === '/distributor/reports' ? 'bg-white text-emerald-700 shadow-sm ring-1 ring-emerald-100' : 'text-slate-500 hover:text-emerald-600 hover:bg-white/50'
+                  }`}
+                >
+                  <FilePieChart className="w-4 h-4 shrink-0" />
+                  <span className="text-xs font-bold">Analytic Reports</span>
+                </Link>
+                <Link
+                  href="/distributor/reports/hierarchy"
+                  onClick={() => setIsMobileOpen(false)}
+                  className={`flex items-center gap-3 px-4 py-2.5 rounded-xl transition-all duration-200 ${
+                    pathname === '/distributor/reports/hierarchy' ? 'bg-white text-emerald-700 shadow-sm ring-1 ring-emerald-100' : 'text-slate-500 hover:text-emerald-600 hover:bg-white/50'
+                  }`}
+                >
+                  <Network className="w-4 h-4 shrink-0" />
+                  <span className="text-xs font-bold">Hierarchy Earnings</span>
+                </Link>
+              </div>
+            )}
+          </div>
+
+          {/* Calculators */}
+          <Link
+            href="/distributor/calculators"
+            onClick={() => setIsMobileOpen(false)}
+            className={`flex items-center ${isCollapsed ? 'justify-center' : 'justify-between'} px-4 py-3 rounded-2xl transition-all duration-300 group ${
+              pathname.startsWith('/distributor/calculators') ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-600/20' : 'text-slate-600 hover:bg-emerald-50 hover:text-emerald-700'
+            }`}
+          >
+            <div className="flex items-center gap-3">
+              <Calculator className={`w-5 h-5 shrink-0 transition-transform duration-300 ${pathname.startsWith('/distributor/calculators') ? 'scale-110' : 'group-hover:scale-110'}`} />
+              {!isCollapsed && <span className="font-bold text-sm tracking-tight whitespace-nowrap">Calculators</span>}
+            </div>
+            {!isCollapsed && pathname.startsWith('/distributor/calculators') && <div className="w-1.5 h-1.5 shrink-0 bg-white rounded-full" />}
+          </Link>
+
         </nav>
 
         <div className="p-6 mt-auto border-t border-slate-100 flex flex-col gap-4">
