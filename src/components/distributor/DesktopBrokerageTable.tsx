@@ -29,7 +29,7 @@ export default function DesktopBrokerageTable({ data, totals }: { data: any[], t
   const flatData = flattenHierarchy(data);
 
   return (
-    <div className="bg-white rounded-xl border border-slate-200 shadow-[0_8px_30px_rgb(0,0,0,0.04)] relative h-full flex flex-col overflow-hidden">
+    <div className="bg-white rounded-md border border-slate-200 shadow-[0_8px_30px_rgb(0,0,0,0.04)] relative h-full flex flex-col overflow-hidden">
       <div className="flex-1 overflow-auto table-scrollbar">
         <table className="w-full text-left border-collapse min-w-[1000px] xl:min-w-[1200px]">
           <thead className="sticky top-0 z-30 shadow-sm ring-1 ring-slate-200/50">
@@ -109,7 +109,7 @@ export default function DesktopBrokerageTable({ data, totals }: { data: any[], t
                                   </h4>
                                 </div>
 
-                                <div className="bg-white rounded-lg border border-slate-200 shadow-sm overflow-hidden flex flex-col">
+                                <div className="bg-white rounded-md border border-slate-200 shadow-sm overflow-hidden flex flex-col">
                                   <table className="w-full text-left text-[11px]">
                                     <thead className="bg-slate-50/80 text-[8px] uppercase tracking-widest text-slate-500 font-bold border-b border-slate-200/80">
                                       <tr>

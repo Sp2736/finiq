@@ -51,7 +51,7 @@ export default function Sidebar({ isCollapsed, setIsCollapsed }: SidebarProps) {
     <>
       <button 
         onClick={() => setIsMobileOpen(true)}
-        className="lg:hidden fixed top-4 right-4 z-50 p-2.5 bg-white border border-slate-200 rounded-xl shadow-s text-slate-600"
+        className="lg:hidden fixed top-4 right-4 z-50 p-2.5 bg-white border border-slate-200 rounded-md shadow-s text-slate-600"
       >
         <Menu className="w-5 h-5" />
       </button>
@@ -63,14 +63,15 @@ export default function Sidebar({ isCollapsed, setIsCollapsed }: SidebarProps) {
         />
       )}
 
+      {/* Added overflow-x-hidden here to prevent the main scrollbar glitch */}
       <aside 
-        className={`h-screen bg-white/80 backdrop-blur-xl border-r border-slate-200 flex flex-col fixed left-0 top-0 z-50 transition-all duration-300 ease-in-out
+        className={`h-screen bg-white/80 backdrop-blur-xl border-r border-slate-200 flex flex-col fixed left-0 top-0 z-50 transition-all duration-300 ease-in-out overflow-x-hidden
         ${isMobileOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'} 
         ${isCollapsed ? 'w-24' : 'w-72'}`}
       >
         <div className={`p-8 pb-10 flex items-center ${isCollapsed ? 'justify-center px-4' : 'justify-between'}`}>
           <Link href="/distributor" className="flex items-center gap-3 group overflow-hidden">
-            <div className="w-10 h-10 shrink-0 bg-gradient-to-br from-emerald-600 to-teal-800 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+            <div className="w-10 h-10 shrink-0 bg-gradient-to-br from-emerald-600 to-teal-800 rounded-md flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
               <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M13 10V3L4 14h7v7l9-11h-7z" />
               </svg>
@@ -87,12 +88,13 @@ export default function Sidebar({ isCollapsed, setIsCollapsed }: SidebarProps) {
           </button>
         </div>
 
-        <nav className="flex-1 px-4 space-y-1.5 overflow-y-auto scrollbar-none">
+        {/* Added overflow-x-hidden to the nav wrapper */}
+        <nav className="flex-1 px-4 space-y-1.5 overflow-y-auto overflow-x-hidden scrollbar-none">
           {/* Dashboard */}
           <Link
             href="/distributor"
             onClick={() => setIsMobileOpen(false)}
-            className={`flex items-center ${isCollapsed ? 'justify-center' : 'justify-between'} px-4 py-3 rounded-2xl transition-all duration-300 group ${
+            className={`flex items-center overflow-hidden ${isCollapsed ? 'justify-center' : 'justify-between'} px-4 py-3 rounded-md transition-all duration-300 group ${
               pathname === '/distributor' ? 'bg-emerald-600 text-white' : 'text-slate-600 hover:bg-emerald-50 hover:text-emerald-700'
             }`}
           >
@@ -107,7 +109,7 @@ export default function Sidebar({ isCollapsed, setIsCollapsed }: SidebarProps) {
           <Link
             href="/distributor/clients"
             onClick={() => setIsMobileOpen(false)}
-            className={`flex items-center ${isCollapsed ? 'justify-center' : 'justify-between'} px-4 py-3 rounded-2xl transition-all duration-300 group ${
+            className={`flex items-center overflow-hidden ${isCollapsed ? 'justify-center' : 'justify-between'} px-4 py-3 rounded-md transition-all duration-300 group ${
               pathname.startsWith('/distributor/clients') ? 'bg-emerald-600 text-white' : 'text-slate-600 hover:bg-emerald-50 hover:text-emerald-700'
             }`}
           >
@@ -122,7 +124,7 @@ export default function Sidebar({ isCollapsed, setIsCollapsed }: SidebarProps) {
           <Link
             href="/distributor/users"
             onClick={() => setIsMobileOpen(false)}
-            className={`flex items-center ${isCollapsed ? 'justify-center' : 'justify-between'} px-4 py-3 rounded-2xl transition-all duration-300 group ${
+            className={`flex items-center overflow-hidden ${isCollapsed ? 'justify-center' : 'justify-between'} px-4 py-3 rounded-md transition-all duration-300 group ${
               pathname.startsWith('/distributor/users') ? 'bg-emerald-600 text-white' : 'text-slate-600 hover:bg-emerald-50 hover:text-emerald-700'
             }`}
           >
@@ -137,7 +139,7 @@ export default function Sidebar({ isCollapsed, setIsCollapsed }: SidebarProps) {
           <div className="space-y-1">
             <button
               onClick={handleReportsClick}
-              className={`w-full flex items-center ${isCollapsed ? 'justify-center' : 'justify-between'} px-4 py-3 rounded-2xl transition-all duration-300 group ${
+              className={`w-full flex items-center overflow-hidden ${isCollapsed ? 'justify-center' : 'justify-between'} px-4 py-3 rounded-md transition-all duration-300 group ${
                 pathname.startsWith('/distributor/reports') ? 'bg-emerald-50 text-emerald-700' : 'text-slate-600 hover:bg-emerald-50 hover:text-emerald-700'
               }`}
             >
@@ -153,11 +155,10 @@ export default function Sidebar({ isCollapsed, setIsCollapsed }: SidebarProps) {
             {/* Sub-menu Items */}
             {!isCollapsed && isReportsOpen && (
               <div className="pl-4 pr-2 py-1 space-y-1 animate-[fadeIn_0.3s_ease-out]">
-                
                 <Link
                   href="/distributor/reports/hierarchy"
                   onClick={() => setIsMobileOpen(false)}
-                  className={`flex items-center gap-3 px-4 py-2.5 rounded-xl transition-all duration-200 ${
+                  className={`flex items-center gap-3 px-4 py-2.5 rounded-md transition-all duration-200 ${
                     pathname === '/distributor/reports/hierarchy' ? 'bg-white text-emerald-700 ring-1 ring-emerald-100' : 'text-slate-500 hover:text-emerald-600 hover:bg-white/50'
                   }`}
                 >
@@ -172,7 +173,7 @@ export default function Sidebar({ isCollapsed, setIsCollapsed }: SidebarProps) {
           <Link
             href="/distributor/calculators"
             onClick={() => setIsMobileOpen(false)}
-            className={`flex items-center ${isCollapsed ? 'justify-center' : 'justify-between'} px-4 py-3 rounded-2xl transition-all duration-300 group ${
+            className={`flex items-center overflow-hidden ${isCollapsed ? 'justify-center' : 'justify-between'} px-4 py-3 rounded-md transition-all duration-300 group ${
               pathname.startsWith('/distributor/calculators') ? 'bg-emerald-600 text-white' : 'text-slate-600 hover:bg-emerald-50 hover:text-emerald-700'
             }`}
           >
@@ -188,7 +189,7 @@ export default function Sidebar({ isCollapsed, setIsCollapsed }: SidebarProps) {
         <div className="p-6 mt-auto border-t border-slate-100 flex flex-col gap-4">
           <button 
             onClick={() => setIsCollapsed(!isCollapsed)}
-            className={`hidden lg:flex items-center ${isCollapsed ? 'justify-center' : 'gap-3 px-4'} py-2 text-slate-400 hover:text-slate-700 transition-colors w-full`}
+            className={`hidden lg:flex items-center overflow-hidden ${isCollapsed ? 'justify-center' : 'gap-3 px-4'} py-2 text-slate-400 hover:text-slate-700 transition-colors w-full`}
             title={isCollapsed ? "Expand Sidebar" : "Collapse Sidebar"}
           >
             {isCollapsed ? <ChevronRight className="w-5 h-5 shrink-0" /> : <ChevronLeft className="w-5 h-5 shrink-0" />}
@@ -198,13 +199,13 @@ export default function Sidebar({ isCollapsed, setIsCollapsed }: SidebarProps) {
           <Link 
             href="/distributor/settings" 
             title={isCollapsed ? "Settings" : undefined}
-            className={`flex items-center ${isCollapsed ? 'justify-center' : 'gap-3 px-4'} py-2 text-slate-500 hover:text-emerald-600 transition-colors group`}
+            className={`flex items-center overflow-hidden ${isCollapsed ? 'justify-center' : 'gap-3 px-4'} py-2 text-slate-500 hover:text-emerald-600 transition-colors group`}
           >
             <Settings className="w-5 h-5 shrink-0 group-hover:rotate-45 transition-transform duration-500" />
             {!isCollapsed && <span className="text-sm font-bold uppercase tracking-wider whitespace-nowrap">Settings</span>}
           </Link>
           
-          <div className={`w-full ${isCollapsed ? 'flex justify-center' : ''}`}>
+          <div className={`w-full overflow-hidden ${isCollapsed ? 'flex justify-center' : ''}`}>
              {isCollapsed ? (
                 <Link href="/distributor-portal" title="Sign Out" className="p-2 text-slate-400 hover:text-rose-600 transition-colors">
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>

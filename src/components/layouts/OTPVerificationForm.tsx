@@ -107,7 +107,7 @@ export default function OTPVerificationForm({ onVerify, onBack, phoneInfo }: OTP
               onKeyDown={e => handleKeyDown(index, e)}
               onPaste={index === 0 ? handlePaste : undefined}
               disabled={status === 'loading' || status === 'success'}
-              className={`w-12 h-14 sm:w-14 sm:h-16 md:w-16 md:h-20 text-center text-xl md:text-3xl font-bold bg-white border-2 rounded-xl md:rounded-2xl shadow-sm focus:outline-none focus:ring-4 transition-all duration-300 ${getInputBorderColor()}`}
+              className={`w-12 h-14 sm:w-14 sm:h-16 md:w-16 md:h-20 text-center text-xl md:text-3xl font-bold bg-white border-2 rounded-md md:rounded-md shadow-sm focus:outline-none focus:ring-4 transition-all duration-300 ${getInputBorderColor()}`}
             />
           ))}
         </div>
@@ -119,7 +119,7 @@ export default function OTPVerificationForm({ onVerify, onBack, phoneInfo }: OTP
         <button
           onClick={() => triggerVerification(otp.join(''))}
           disabled={otp.some(char => char === '') || status === 'loading' || status === 'success'}
-          className="w-full py-2.5 md:py-4 px-4 mt-2 md:mt-4 bg-indigo-500 text-white text-sm md:text-base font-bold rounded-xl shadow-md hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-400 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+          className="w-full py-2.5 md:py-4 px-4 mt-2 md:mt-4 bg-indigo-500 text-white text-sm md:text-base font-bold rounded-md shadow-md hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-400 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
         >
           {status === 'loading' ? (
             <svg className="animate-spin h-4 w-4 md:h-5 md:w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>

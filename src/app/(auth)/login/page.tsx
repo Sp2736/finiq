@@ -60,7 +60,7 @@
 //         {/* ── LEFT: Branding ─────────────────────────────────────────────── */}
 //         <div className="w-full lg:w-3/5 flex flex-col justify-center items-center md:items-start">
 //           <div className="inline-flex items-center justify-center lg:justify-start gap-3 mb-6 lg:mb-8">
-//             <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br from-primary to-indigo-700 flex items-center justify-center shadow-lg shadow-primary/30 relative overflow-hidden">
+//             <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-md bg-gradient-to-br from-primary to-indigo-700 flex items-center justify-center shadow-lg shadow-primary/30 relative overflow-hidden">
 //               <div className="absolute inset-0 bg-white/30 transform -skew-x-12 -translate-x-full animate-[shine_4s_infinite]" />
 //               <svg
 //                 className="w-6 h-6 sm:w-7 sm:h-7 text-white relative z-10"
@@ -130,7 +130,7 @@
 //                 </div>
 //               </div>
 
-//               <div className="absolute -top-4 sm:-top-6 right-0 sm:right-8 bg-white border-2 border-white rounded-2xl shadow-xl shadow-slate-300/60 p-3 sm:p-4 transform rotate-x-12 -rotate-y-12 rotate-z-6 animate-[float_6s_ease-in-out_infinite]">
+//               <div className="absolute -top-4 sm:-top-6 right-0 sm:right-8 bg-white border-2 border-white rounded-md shadow-xl shadow-slate-300/60 p-3 sm:p-4 transform rotate-x-12 -rotate-y-12 rotate-z-6 animate-[float_6s_ease-in-out_infinite]">
 //                 <div className="flex items-center gap-2 sm:gap-3">
 //                   <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-emerald-50 flex items-center justify-center border border-emerald-200">
 //                     <svg className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -279,7 +279,7 @@ export default function LoginPage() {
 
         <div className="w-full lg:w-3/5 flex flex-col justify-center items-center md:items-start">
           <div className="inline-flex items-center justify-center lg:justify-start gap-3 mb-6 lg:mb-8">
-            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br from-primary to-indigo-700 flex items-center justify-center shadow-lg shadow-primary/30 relative overflow-hidden">
+            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-md bg-gradient-to-br from-primary to-indigo-700 flex items-center justify-center shadow-lg shadow-primary/30 relative overflow-hidden">
               <div className="absolute inset-0 bg-white/30 transform -skew-x-12 -translate-x-full animate-[shine_4s_infinite]" />
               <svg
                 className="w-6 h-6 sm:w-7 sm:h-7 text-white relative z-10"
@@ -348,7 +348,7 @@ export default function LoginPage() {
                 </div>
               </div>
 
-              <div className="absolute -top-4 sm:-top-6 right-0 sm:right-8 bg-white border-2 border-white rounded-2xl shadow-xl shadow-slate-300/60 p-3 sm:p-4 transform rotate-x-12 -rotate-y-12 rotate-z-6 animate-[float_6s_ease-in-out_infinite]">
+              <div className="absolute -top-4 sm:-top-6 right-0 sm:right-8 bg-white border-2 border-white rounded-md shadow-xl shadow-slate-300/60 p-3 sm:p-4 transform rotate-x-12 -rotate-y-12 rotate-z-6 animate-[float_6s_ease-in-out_infinite]">
                 <div className="flex items-center gap-2 sm:gap-3">
                   <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-emerald-50 flex items-center justify-center border border-emerald-200">
                     <svg className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">

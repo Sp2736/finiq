@@ -28,11 +28,11 @@ export default function RoleSelector({ roles, activeRole, onRoleChange }: RoleSe
 
   return (
     <div 
-      className="relative flex w-full p-1 bg-slate-100 dark:bg-slate-800/50 rounded-xl mb-8 items-center"
+      className="relative flex w-full p-1 bg-slate-100 dark:bg-slate-800/50 rounded-md mb-8 items-center"
       ref={containerRef}
     >
       <div 
-        className="absolute h-[calc(100%-8px)] top-1 bg-white dark:bg-slate-700 shadow-sm rounded-lg transition-all duration-300 ease-out"
+        className="absolute h-[calc(100%-8px)] top-1 bg-white dark:bg-slate-700 shadow-sm rounded-md transition-all duration-300 ease-out"
         style={{
           left: `${indicatorStyle.left}px`,
           width: `${indicatorStyle.width}px`
@@ -50,7 +50,7 @@ export default function RoleSelector({ roles, activeRole, onRoleChange }: RoleSe
             type="button"
             onClick={() => onRoleChange(role)}
             className={`
-              relative z-10 flex-1 py-2 text-sm font-medium transition-colors duration-300 rounded-lg
+              relative z-10 flex-1 py-2 text-sm font-medium transition-colors duration-300 rounded-md
               ${isActive 
                 ? 'text-foreground' 
                 : 'text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-300'

@@ -4,6 +4,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import DesktopBrokerageTable from './DesktopBrokerageTable';
 import MobileBrokerageOverview from './MobileBrokerageOverview';
 import { distributorService } from '@/services/distributor.service';
+import { formatCompactNumber } from '@/lib/utils';
 import { Search, Download, Calendar, AlertCircle, RefreshCw, Loader2 } from 'lucide-react';
 
 // Mapper to translate API Response into UI format
@@ -114,90 +115,126 @@ export default function BrokerageDashboard() {
   return (
     <div className="flex flex-col h-full animate-[fadeIn_0.5s_ease-out] overflow-hidden">
       
-      {/* Header */}
-      <div className="shrink-0 flex flex-col md:flex-row justify-between items-start md:items-end gap-4 mb-6">
+      {/* Header - Compressed Margins */}
+      <div className="shrink-0 flex flex-col md:flex-row justify-between items-start md:items-end gap-2 mb-3 lg:mb-6">
         <div>
-          <h1 className="text-3xl font-black tracking-tight text-slate-900">
+          <h1 className="text-2xl lg:text-3xl font-black tracking-tight text-slate-900">
             Hierarchy <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 to-teal-700">Earnings</span>
           </h1>
-          <p className="text-slate-500 font-medium mt-1 text-sm">Monitor revenue flow, receivables, and sub-level payouts.</p>
         </div>
-        <div className="flex gap-3">
-          <button className="hidden md:flex items-center gap-2 px-5 py-2.5 bg-white border border-slate-200 text-slate-600 font-bold text-sm hover:border-emerald-600 hover:text-emerald-600 transition-all shadow-sm">
+        <div className="hidden md:flex gap-3">
+          <button className="flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 text-slate-600 font-bold text-xs rounded-xl hover:border-emerald-600 hover:text-emerald-600 transition-all shadow-sm">
             <Download className="w-4 h-4" />
             <span>Export</span>
           </button>
-          
         </div>
       </div>
 
-      {/* Filter Bar */}
-      <div className="shrink-0 bg-white/80 backdrop-blur-xl border border-slate-200 rounded-2xl p-3 mb-6 shadow-sm flex flex-wrap items-center gap-3">
-        <div className="flex items-center bg-slate-100 p-1 rounded-xl overflow-x-auto hide-scrollbar">
-          {['AMC', 'Investor'].map((lvl) => (
-            <button
-              key={lvl}
-              onClick={() => setActiveGroup(lvl)}
-              className={`px-4 py-1.5 text-xs font-bold rounded-lg transition-all whitespace-nowrap ${activeGroup === lvl ? 'bg-white text-emerald-700 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
-            >
-              {lvl}
-            </button>
-          ))}
-        </div>
-        <div className="h-6 w-px bg-slate-200 hidden md:block" />
+      {/* Filter Bar - Compressed Padding & Layout */}
+      <div className="shrink-0 bg-white/80 backdrop-blur-xl border border-slate-200 rounded-xl md:rounded-2xl p-2 md:p-3 mb-3 lg:mb-6 shadow-sm flex flex-col md:flex-row items-stretch md:items-center gap-2">
         
-        <div className="relative flex-1 md:flex-none">
+        <div className="flex items-center justify-between gap-2">
+          <div className="flex items-center bg-slate-100 p-1 rounded-lg overflow-x-auto hide-scrollbar flex-1">
+            {['AMC', 'Investor'].map((lvl) => (
+              <button
+                key={lvl}
+                onClick={() => setActiveGroup(lvl)}
+                className={`flex-1 px-3 py-1 text-[11px] md:text-xs font-bold rounded-md transition-all whitespace-nowrap ${activeGroup === lvl ? 'bg-white text-emerald-700 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+              >
+                {lvl}
+              </button>
+            ))}
+          </div>
+          
+          <div className="relative md:hidden w-32">
+            <Calendar className="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400" />
+            <select className="w-full pl-8 pr-6 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-bold text-slate-700 focus:outline-none focus:border-emerald-500 appearance-none">
+              <option>Feb-2026</option>
+              <option>Jan-2026</option>
+            </select>
+          </div>
+        </div>
+
+        <div className="h-6 w-px bg-slate-200 hidden md:block mx-1" />
+        
+        <div className="relative hidden md:block md:flex-none">
           <Calendar className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-          <select className="w-full md:w-auto pl-9 pr-8 py-2 bg-white border border-slate-200 rounded-xl text-sm font-bold text-slate-700 focus:outline-none focus:border-emerald-500 appearance-none">
+          <select className="w-full pl-9 pr-8 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-bold text-slate-700 focus:outline-none focus:border-emerald-500 appearance-none">
             <option>Feb-2026</option>
             <option>Jan-2026</option>
           </select>
         </div>
 
         {/* Search */}
-        <div className="flex-1 min-w-[280px] flex items-center gap-2">
+        <div className="flex-1 flex items-center gap-2">
           <div className="relative flex-1">
-            <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+            <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
             <input
               type="text"
               placeholder="Search user or type..."
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleSearchTrigger()}
-              className="w-full pl-9 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium focus:outline-none focus:ring-2 focus:ring-emerald-600/20 focus:border-emerald-600 transition-all"
+              className="w-full pl-8 pr-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs font-medium focus:outline-none focus:border-emerald-600 transition-all"
             />
           </div>
           <button 
             onClick={handleSearchTrigger}
-            className="px-4 py-2 bg-slate-900 text-white rounded-xl text-xs font-bold hover:bg-slate-800 transition-all active:scale-95 shadow-md shadow-slate-900/10"
+            className="px-3 py-1.5 bg-slate-900 text-white rounded-lg text-[11px] font-bold hover:bg-slate-800 transition-all shadow-sm"
           >
             Search
           </button>
         </div>
       </div>
 
-      {/* KPI Section */}
-      <div className="shrink-0 grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 mb-6">
-        <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm col-span-2 md:col-span-1">
-          <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">Gross Receivable</p>
-          <h3 className="text-xl font-black text-slate-900">₹{totals.gross.toLocaleString('en-IN', { maximumFractionDigits: 2 })}</h3>
-        </div>
-        <div className="bg-white p-4 rounded-xl border border-emerald-100 shadow-sm bg-gradient-to-br from-white to-emerald-50/50">
-          <p className="text-[10px] font-black text-emerald-600 uppercase tracking-widest mb-1">Paid Brokerage</p>
-          <h3 className="text-xl font-black text-emerald-700">₹{totals.paid.toLocaleString('en-IN', { maximumFractionDigits: 2 })}</h3>
-        </div>
+      {/* KPI Section - Compact Grid, Less Padding */}
+      <div className="shrink-0 grid grid-cols-2 md:grid-cols-4 gap-2 mb-3 lg:mb-6">
         
-        <div className="bg-slate-900 p-4 rounded-xl shadow-lg relative overflow-hidden group col-span-2 md:col-span-1">
-          <div className="absolute top-0 right-0 w-24 h-24 bg-emerald-500/20 rounded-full blur-2xl -mr-8 -mt-8" />
-          <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 relative z-10">Net Receivable</p>
-          <h3 className="text-xl font-black text-white relative z-10">₹{grandNetReceivable.toLocaleString('en-IN', { maximumFractionDigits: 2 })}</h3>
+        <div className="bg-white p-2.5 md:p-4 rounded-xl border border-slate-200 shadow-sm relative overflow-hidden group hover:bg-emerald-600 transition-all cursor-default">
+          <div className="group-hover:opacity-0 transition-opacity">
+            <p className="text-[9px] md:text-[10px] font-black text-slate-500 uppercase tracking-widest mb-0.5">Gross Rec.</p>
+            <h3 className="text-base md:text-xl font-black text-slate-900">{formatCompactNumber(totals.gross)}</h3>
+          </div>
+          <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+            <h3 className="text-sm md:text-base font-black text-white">₹{totals.gross.toLocaleString('en-IN', { maximumFractionDigits: 0 })}</h3>
+          </div>
         </div>
-        
+
+        <div className="bg-white p-2.5 md:p-4 rounded-xl border border-slate-200 shadow-sm relative overflow-hidden group hover:bg-emerald-600 transition-all cursor-default">
+          <div className="group-hover:opacity-0 transition-opacity">
+            <p className="text-[9px] md:text-[10px] font-black text-slate-500 uppercase tracking-widest mb-0.5">Paid Brokerage</p>
+            <h3 className="text-base md:text-xl font-black text-emerald-600">{formatCompactNumber(totals.paid)}</h3>
+          </div>
+          <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+            <h3 className="text-sm md:text-base font-black text-white">₹{totals.paid.toLocaleString('en-IN', { maximumFractionDigits: 0 })}</h3>
+          </div>
+        </div>
+
+        <div className="bg-white p-2.5 md:p-4 rounded-xl border border-slate-200 shadow-sm relative overflow-hidden group hover:bg-emerald-600 transition-all cursor-default">
+          <div className="group-hover:opacity-0 transition-opacity">
+            <p className="text-[9px] md:text-[10px] font-black text-slate-500 uppercase tracking-widest mb-0.5">Paid (Sub)</p>
+            <h3 className="text-base md:text-xl font-black text-teal-600">{formatCompactNumber(totals.paidSub)}</h3>
+          </div>
+          <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+            <h3 className="text-sm md:text-base font-black text-white">₹{totals.paidSub.toLocaleString('en-IN', { maximumFractionDigits: 0 })}</h3>
+          </div>
+        </div>
+
+        <div className="bg-slate-900 p-2.5 md:p-4 rounded-xl border border-slate-900 shadow-sm relative overflow-hidden group hover:bg-emerald-600 transition-all cursor-default">
+          <div className="group-hover:opacity-0 transition-opacity relative z-10">
+            <p className="text-[9px] md:text-[10px] font-black text-slate-400 uppercase tracking-widest mb-0.5">Net Rec.</p>
+            <h3 className="text-base md:text-xl font-black text-white">{formatCompactNumber(grandNetReceivable)}</h3>
+          </div>
+          <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity z-20">
+            <h3 className="text-sm md:text-base font-black text-white">₹{grandNetReceivable.toLocaleString('en-IN', { maximumFractionDigits: 0 })}</h3>
+          </div>
+        </div>
+
       </div>
 
-      {/* Main Table Area */}
+      {/* Main Table Area -> DesktopBrokerageTable / MobileBrokerageOverview */}
       {error ? (
-        <div className="flex-1 flex items-center justify-center bg-white rounded-xl border border-rose-100 p-8">
+        <div className="flex-1 flex items-center justify-center bg-white rounded-md border border-rose-100 p-8">
            <p className="text-rose-600 font-bold">{error}</p>
         </div>
       ) : (
@@ -213,7 +250,7 @@ export default function BrokerageDashboard() {
 
           <div className="md:hidden flex flex-col flex-1 min-h-0 overflow-y-auto pr-1 pb-4 relative">
              {isLoading && (
-              <div className="absolute inset-0 bg-white/50 backdrop-blur-[1px] z-50 flex items-center justify-center rounded-xl">
+              <div className="absolute inset-0 bg-white/50 backdrop-blur-[1px] z-50 flex items-center justify-center rounded-md">
                 <Loader2 className="w-8 h-8 text-emerald-600 animate-spin" />
               </div>
             )}

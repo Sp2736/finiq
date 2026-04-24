@@ -6,7 +6,7 @@ import { formatCurrency, formatPercent, getStatusColor } from '@/lib/utils';
 
 export default function GlobalStatsRibbon({ client }: { client: ClientPortfolio }) {
   return (
-    <div className="bg-white/80 backdrop-blur-xl rounded-2xl border border-slate-200/60 shadow-sm overflow-x-auto custom-scrollbar">
+    <div className="bg-white/80 backdrop-blur-xl rounded-md border border-slate-200/60 shadow-sm overflow-x-auto custom-scrollbar">
       <div className="flex w-max min-w-full divide-x divide-slate-100 p-2">
         {[
           { label: "Invested Capital", value: formatCurrency(client.investedCapital) },

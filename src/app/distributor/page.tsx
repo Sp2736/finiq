@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
+import { formatCompactNumber } from '@/lib/utils';
 import { distributorService, TopContributor } from '@/services/distributor.service';
 import DesktopContributorTable from '@/components/distributor/dashboard/DesktopContributorTable';
 import MobileContributorList from '@/components/distributor/dashboard/MobileContributorList';
@@ -59,7 +60,8 @@ export default function DistributorDashboard() {
   const kpis = summary ? [
     { 
       name: 'Total AUM', 
-      value: formatCurrency(summary.total_current), 
+      value: formatCompactNumber(summary.total_current), 
+      fullValue: `₹${summary.total_current.toLocaleString('en-IN', { maximumFractionDigits: 2 })}`,
       change: `${((summary.total_current - summary.total_invested) / summary.total_invested * 100).toFixed(1)}%`, 
       isPositive: summary.total_current >= summary.total_invested, 
       icon: Briefcase,
@@ -68,21 +70,23 @@ export default function DistributorDashboard() {
     },
     { 
       name: 'Total Invested', 
-      value: formatCurrency(summary.total_invested), 
+      value: formatCompactNumber(summary.total_invested), 
+      fullValue: `₹${summary.total_invested.toLocaleString('en-IN', { maximumFractionDigits: 2 })}`,
       change: 'Capital', 
       isPositive: true, 
       icon: TrendingUp,
-      bgClass: 'bg-blue-50',
-      textClass: 'text-blue-600'
+      bgClass: 'bg-emerald-50',
+      textClass: 'text-emerald-600'
     },
     { 
       name: 'Total Clients', 
       value: summary.investor_count.toLocaleString(), 
+      fullValue: summary.investor_count.toLocaleString('en-IN'),
       change: 'Active', 
       isPositive: true, 
       icon: Users,
-      bgClass: 'bg-indigo-50',
-      textClass: 'text-indigo-600'
+      bgClass: 'bg-emerald-50',
+      textClass: 'text-emerald-600'
     },
   ] : [];
 
@@ -111,11 +115,11 @@ export default function DistributorDashboard() {
           </p>
         </div>
         <div className="flex gap-2.5">
-          {/* <button className="flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 rounded-xl text-slate-600 font-bold text-xs hover:border-emerald-600 hover:text-emerald-600 transition-all shadow-sm active:scale-95">
+          {/* <button className="flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 rounded-md text-slate-600 font-bold text-xs hover:border-emerald-600 hover:text-emerald-600 transition-all shadow-sm active:scale-95">
             <Filter className="w-3.5 h-3.5" />
             <span>Filters</span>
           </button>
-          <button className="px-5 py-2 bg-slate-900 text-white rounded-xl font-bold text-xs hover:bg-slate-800 transition-all shadow-md active:scale-95">
+          <button className="px-5 py-2 bg-slate-900 text-white rounded-md font-bold text-xs hover:bg-slate-800 transition-all shadow-md active:scale-95">
             Generate Report
           </button> */}
         </div>
@@ -124,13 +128,19 @@ export default function DistributorDashboard() {
       <div className="flex-1 overflow-y-auto pr-0.5 pb-4 flex flex-col gap-5 scrollbar-none">
         
         {/* KPI Section - Smaller Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 shrink-0">
-          {kpis.map((kpi) => (
-            <div key={kpi.name} className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm relative overflow-hidden group hover:border-emerald-400/50 hover:shadow-md transition-all duration-300">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 shrink-0 mb-6">
+        {kpis.map((kpi) => (
+          <div 
+            key={kpi.name} 
+            className="bg-white p-5 rounded-md border border-slate-200 shadow-sm relative overflow-hidden group hover:bg-emerald-600 hover:border-emerald-600 hover:shadow-md transition-all duration-300 cursor-default"
+          >
+            
+            {/* --- KPI (fades out on hover) --- */}
+            <div className="group-hover:opacity-0 transition-opacity duration-300">
               <div className="absolute top-0 right-0 w-24 h-24 bg-emerald-50 rounded-full -mr-12 -mt-12 group-hover:scale-125 transition-transform duration-700 pointer-events-none opacity-50" />
               
               <div className="flex items-center gap-4 relative z-10">
-                <div className={`w-11 h-11 ${kpi.bgClass} ${kpi.textClass} rounded-xl flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform duration-500`}>
+                <div className={`w-11 h-11 ${kpi.bgClass} ${kpi.textClass} rounded-md flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform duration-500`}>
                   <kpi.icon className="w-5 h-5" />
                 </div>
                 <div className="min-w-0">
@@ -145,8 +155,17 @@ export default function DistributorDashboard() {
                 </div>
               </div>
             </div>
-          ))}
-        </div>
+
+            {/* --- HOVER STATE (Full Value only, fades in on hover) --- */}
+            <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20">
+              <h3 className="text-lg lg:text-xl font-black text-white tracking-tight">
+                {kpi.fullValue}
+              </h3>
+            </div>
+
+          </div>
+        ))}
+      </div>
 
         {/* Table/List Area - Expanded Room */}
         <div className="hidden lg:flex flex-col flex-1 min-h-0">

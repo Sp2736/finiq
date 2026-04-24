@@ -28,13 +28,13 @@ export default function DistributorOverviewPage() {
       <div className="flex-1 overflow-y-auto pr-2 pb-6 flex flex-col gap-6 scrollbar-none">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           {kpis.map((kpi, idx) => (
-            <div key={idx} className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm relative overflow-hidden group hover:border-emerald-200 transition-all">
+            <div key={idx} className="bg-white p-6 rounded-md border border-slate-200 shadow-sm relative overflow-hidden group hover:border-emerald-200 transition-all">
               <div className="flex justify-between items-start mb-4">
-                <div className="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                <div className="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-md flex items-center justify-center group-hover:scale-110 transition-transform">
                   <kpi.icon className="w-6 h-6" />
                 </div>
                 {kpi.isPositive !== null && (
-                  <span className={`flex items-center gap-1 text-xs font-bold px-2 py-1 rounded-lg ${kpi.isPositive ? 'bg-emerald-50 text-emerald-700' : 'bg-rose-50 text-rose-700'}`}>
+                  <span className={`flex items-center gap-1 text-xs font-bold px-2 py-1 rounded-md ${kpi.isPositive ? 'bg-emerald-50 text-emerald-700' : 'bg-rose-50 text-rose-700'}`}>
                     {kpi.isPositive ? <ArrowUpRight className="w-3 h-3" /> : null}
                     {kpi.change}
                   </span>
@@ -49,20 +49,20 @@ export default function DistributorOverviewPage() {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-2 bg-white rounded-xl border border-slate-200 shadow-sm p-6 flex flex-col min-h-[400px]">
+          <div className="lg:col-span-2 bg-white rounded-md border border-slate-200 shadow-sm p-6 flex flex-col min-h-[400px]">
             <h3 className="text-lg font-black text-slate-900 mb-6 shrink-0">AUM Growth Trend</h3>
-            <div className="flex-1 bg-slate-50/50 rounded-xl border border-slate-100 flex items-center justify-center">
+            <div className="flex-1 bg-slate-50/50 rounded-md border border-slate-100 flex items-center justify-center">
               <p className="text-sm font-bold text-slate-400 flex items-center gap-2">
                 <TrendingUp className="w-5 h-5" /> Chart Component Placeholder
               </p>
             </div>
           </div>
           
-          <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-6 flex flex-col min-h-[400px]">
+          <div className="bg-white rounded-md border border-slate-200 shadow-sm p-6 flex flex-col min-h-[400px]">
             <h3 className="text-lg font-black text-slate-900 mb-6 shrink-0">Recent Onboardings</h3>
             <div className="flex-1 space-y-4 overflow-y-auto pr-1">
               {[1, 2, 3, 4, 5, 6].map((i) => (
-                <div key={i} className="flex items-center gap-4 p-3 hover:bg-slate-50 rounded-xl transition-colors cursor-pointer border border-transparent hover:border-slate-100">
+                <div key={i} className="flex items-center gap-4 p-3 hover:bg-slate-50 rounded-md transition-colors cursor-pointer border border-transparent hover:border-slate-100">
                   <div className="w-10 h-10 bg-slate-100 rounded-full flex items-center justify-center text-slate-600 font-black text-xs shrink-0">
                     CL
                   </div>

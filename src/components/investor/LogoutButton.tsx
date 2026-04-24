@@ -19,7 +19,7 @@ export default function LogoutButton({ portal = 'investor', redirectTo = '/login
   return (
     <button
       onClick={handleLogout}
-      className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/60 hover:bg-rose-50 border border-slate-200 hover:border-rose-200 text-slate-600 hover:text-rose-600 transition-all duration-300 backdrop-blur-md shadow-sm group"
+      className="flex items-center gap-2 px-4 py-2.5 rounded-md bg-white/60 hover:bg-rose-50 border border-slate-200 hover:border-rose-200 text-slate-600 hover:text-rose-600 transition-all duration-300 backdrop-blur-md shadow-sm group"
     >
       <svg
         className="w-4 h-4 transition-transform group-hover:-translate-x-0.5"

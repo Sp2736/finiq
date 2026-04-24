@@ -3,11 +3,6 @@ import type { NextRequest } from 'next/server';
 
 export function middleware(request: NextRequest) {
 
-  // 🛑 TEMPORARY BYPASS FOR LOCAL TESTING
-  if (process.env.NODE_ENV === 'development') {
-    return NextResponse.next();
-  }
-
   const pathname = request.nextUrl.pathname;
 
   const staffCookie = request.cookies.get('staff-auth-token');

@@ -19,7 +19,7 @@ export default function DistributorLoginPage() {
   const [error, setError] = useState("");
   const router = useRouter();
 
-  const activeRole = "Distributor";
+  // const activeRole = "Distributor";
   const portalName = "Distributor";
 
   const handlePhoneSubmit = async (info: { countryCode: string; number: string }) => {
@@ -80,7 +80,7 @@ export default function DistributorLoginPage() {
 
         <div className="w-full lg:w-3/5 flex flex-col justify-center items-center md:items-start">
           <div className="inline-flex items-center justify-center lg:justify-start gap-3 mb-6 lg:mb-8">
-            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br from-emerald-600 to-teal-800 flex items-center justify-center shadow-lg shadow-emerald-900/30 relative overflow-hidden">
+            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-md bg-gradient-to-br from-emerald-600 to-teal-800 flex items-center justify-center shadow-lg shadow-emerald-900/30 relative overflow-hidden">
               <div className="absolute inset-0 bg-white/20 transform -skew-x-12 -translate-x-full animate-[shine_4s_infinite]" />
               <svg className="w-6 h-6 sm:w-7 sm:h-7 text-white relative z-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
@@ -112,7 +112,7 @@ export default function DistributorLoginPage() {
             <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-emerald-500/50 to-transparent opacity-80" />
 
             {error && (
-              <div className="mb-6 p-4 bg-rose-50 border border-rose-100 rounded-2xl text-rose-600 text-sm font-medium animate-in fade-in slide-in-from-top-2">
+              <div className="mb-6 p-4 bg-rose-50 border border-rose-100 rounded-md text-rose-600 text-sm font-medium animate-in fade-in slide-in-from-top-2">
                 {error}
               </div>
             )}

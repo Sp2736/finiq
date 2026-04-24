@@ -27,7 +27,7 @@
 //   return (
 //     <form onSubmit={handleSubmit} className="space-y-5 relative z-10">
 //       {error && (
-//         <div className="p-3 text-sm font-medium text-red-600 bg-red-50 border border-red-100 rounded-xl">
+//         <div className="p-3 text-sm font-medium text-red-600 bg-red-50 border border-red-100 rounded-md">
 //           {error}
 //         </div>
 //       )}
@@ -41,7 +41,7 @@
 //           required
 //           value={email}
 //           onChange={(e) => setEmail(e.target.value)}
-//           className="w-full px-4 py-3.5 rounded-xl bg-slate-50/50 border border-slate-200 focus:bg-white focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all outline-none text-slate-800 font-medium placeholder:text-slate-400"
+//           className="w-full px-4 py-3.5 rounded-md bg-slate-50/50 border border-slate-200 focus:bg-white focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all outline-none text-slate-800 font-medium placeholder:text-slate-400"
 //           placeholder="investor@example.com"
 //         />
 //       </div>
@@ -55,7 +55,7 @@
 //           required
 //           value={password}
 //           onChange={(e) => setPassword(e.target.value)}
-//           className="w-full px-4 py-3.5 rounded-xl bg-slate-50/50 border border-slate-200 focus:bg-white focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all outline-none text-slate-800 font-medium placeholder:text-slate-400"
+//           className="w-full px-4 py-3.5 rounded-md bg-slate-50/50 border border-slate-200 focus:bg-white focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all outline-none text-slate-800 font-medium placeholder:text-slate-400"
 //           placeholder="••••••••"
 //         />
 //       </div>
@@ -69,7 +69,7 @@
 //       <button
 //         type="submit"
 //         disabled={isLoading}
-//         className="w-full py-4 px-4 bg-gradient-to-r from-primary to-indigo-600 hover:from-primary/90 hover:to-indigo-600/90 text-white font-bold rounded-xl shadow-lg shadow-primary/30 transition-all disabled:opacity-70 disabled:cursor-not-allowed mt-4 flex justify-center items-center gap-2"
+//         className="w-full py-4 px-4 bg-gradient-to-r from-primary to-indigo-600 hover:from-primary/90 hover:to-indigo-600/90 text-white font-bold rounded-md shadow-lg shadow-primary/30 transition-all disabled:opacity-70 disabled:cursor-not-allowed mt-4 flex justify-center items-center gap-2"
 //       >
 //         {isLoading ? (
 //           <>
@@ -116,7 +116,7 @@ export default function EmailPasswordForm({ onSubmit, isLoading }: EmailPassword
   return (
     <form onSubmit={handleSubmit} className="space-y-5 relative z-10">
       {error && (
-        <div className="p-3 text-sm font-medium text-rose-600 bg-rose-50 border border-rose-100 rounded-xl">
+        <div className="p-3 text-sm font-medium text-rose-600 bg-rose-50 border border-rose-100 rounded-md">
           {error}
         </div>
       )}
@@ -130,7 +130,7 @@ export default function EmailPasswordForm({ onSubmit, isLoading }: EmailPassword
           required
           value={identifier}
           onChange={(e) => setIdentifier(e.target.value)}
-          className="w-full px-4 py-3.5 rounded-xl bg-slate-50/50 border border-slate-200 focus:bg-white focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all outline-none text-slate-800 font-medium placeholder:text-slate-400"
+          className="w-full px-4 py-3.5 rounded-md bg-slate-50/50 border border-slate-200 focus:bg-white focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all outline-none text-slate-800 font-medium placeholder:text-slate-400"
           placeholder="e.g. A00001"
           autoCapitalize="characters"
         />
@@ -145,7 +145,7 @@ export default function EmailPasswordForm({ onSubmit, isLoading }: EmailPassword
           required
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          className="w-full px-4 py-3.5 rounded-xl bg-slate-50/50 border border-slate-200 focus:bg-white focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all outline-none text-slate-800 font-medium placeholder:text-slate-400"
+          className="w-full px-4 py-3.5 rounded-md bg-slate-50/50 border border-slate-200 focus:bg-white focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all outline-none text-slate-800 font-medium placeholder:text-slate-400"
           placeholder="••••••••"
         />
       </div>
@@ -159,7 +159,7 @@ export default function EmailPasswordForm({ onSubmit, isLoading }: EmailPassword
       <button
         type="submit"
         disabled={isLoading}
-        className="w-full py-4 px-4 bg-gradient-to-r from-primary to-indigo-600 hover:from-primary/90 hover:to-indigo-600/90 text-white font-bold rounded-xl shadow-lg shadow-primary/30 transition-all disabled:opacity-70 disabled:cursor-not-allowed mt-4 flex justify-center items-center gap-2"
+        className="w-full py-4 px-4 bg-gradient-to-r from-primary to-indigo-600 hover:from-primary/90 hover:to-indigo-600/90 text-white font-bold rounded-md shadow-lg shadow-primary/30 transition-all disabled:opacity-70 disabled:cursor-not-allowed mt-4 flex justify-center items-center gap-2"
       >
         {isLoading ? (
           <>

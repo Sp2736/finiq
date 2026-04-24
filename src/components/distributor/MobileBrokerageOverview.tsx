@@ -37,7 +37,7 @@ export default function MobileBrokerageOverview({ data, totals }: { data: any[],
     <div className="flex flex-col space-y-4 pb-16 px-1">
       
       {/* Light Theme Grand Totals Card */}
-      <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm relative overflow-hidden mb-2">
+      <div className="bg-white p-5 rounded-md border border-slate-200 shadow-sm relative overflow-hidden mb-2">
         <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-50 rounded-full blur-2xl -mr-10 -mt-10 pointer-events-none" />
         <h3 className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-4 relative z-10">Grand Totals</h3>
         
@@ -60,7 +60,7 @@ export default function MobileBrokerageOverview({ data, totals }: { data: any[],
 
       {/* Hierarchy Cards */}
       {(!flatData || flatData.length === 0) ? (
-        <div className="bg-white p-6 rounded-2xl border border-slate-200 text-center shadow-sm">
+        <div className="bg-white p-6 rounded-md border border-slate-200 text-center shadow-sm">
           <h3 className="text-sm font-bold text-slate-900 mb-1">No Hierarchy Found</h3>
           <p className="text-slate-500 text-xs">Adjust your search parameters.</p>
         </div>
@@ -75,7 +75,7 @@ export default function MobileBrokerageOverview({ data, totals }: { data: any[],
             <div key={user.id} className="flex flex-col mb-1">
               <div 
                 onClick={() => toggleUser(user.id)}
-                className={`bg-white p-4 rounded-2xl border cursor-pointer ${isUserExpanded ? 'border-emerald-200 shadow-md ring-1 ring-emerald-50' : 'border-slate-200 shadow-sm'} relative overflow-hidden transition-all group`}
+                className={`bg-white p-4 rounded-md border cursor-pointer ${isUserExpanded ? 'border-emerald-200 shadow-md ring-1 ring-emerald-50' : 'border-slate-200 shadow-sm'} relative overflow-hidden transition-all group`}
               >
                 <div className={`absolute left-0 top-0 bottom-0 w-1 transition-colors ${isUserExpanded ? 'bg-emerald-500' : 'bg-slate-200 group-hover:bg-emerald-300'}`} />
                 
@@ -108,7 +108,7 @@ export default function MobileBrokerageOverview({ data, totals }: { data: any[],
                   <div className="overflow-hidden">
                     
                     {/* Financial Grid */}
-                    <div className="grid grid-cols-2 gap-3 bg-slate-50 p-3.5 rounded-xl ml-2 mb-3">
+                    <div className="grid grid-cols-2 gap-3 bg-slate-50 p-3.5 rounded-md ml-2 mb-3">
                       <div>
                         <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Gross Rec.</p>
                         <p className="text-sm font-black text-slate-700">{formatCurrency(user.gross)}</p>
@@ -134,7 +134,7 @@ export default function MobileBrokerageOverview({ data, totals }: { data: any[],
                           const amcTotal = amc.paid + amc.paidSub;
                           const amcNet = amc.gross - amcTotal;
                           return (
-                            <div key={amc.id} className="bg-white p-3 rounded-xl border border-slate-200 shadow-sm flex flex-col gap-2">
+                            <div key={amc.id} className="bg-white p-3 rounded-md border border-slate-200 shadow-sm flex flex-col gap-2">
                               <h5 className="font-bold text-xs text-slate-800">{amc.amcName}</h5>
                               <div className="flex justify-between items-center">
                                 <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Gross: {formatCurrency(amc.gross)}</span>
