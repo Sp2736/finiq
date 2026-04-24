@@ -113,7 +113,7 @@ export default function Sidebar({ isCollapsed, setIsCollapsed }: SidebarProps) {
           >
             <div className="flex items-center gap-3">
               <Users className={`w-5 h-5 shrink-0 transition-transform duration-300 ${pathname.startsWith('/distributor/clients') ? 'scale-110' : 'group-hover:scale-110'}`} />
-              {!isCollapsed && <span className="font-bold text-sm tracking-tight whitespace-nowrap">Client Management</span>}
+              {!isCollapsed && <span className="font-bold text-sm tracking-tight whitespace-nowrap">Investors</span>}
             </div>
             {!isCollapsed && pathname.startsWith('/distributor/clients') && <div className="w-1.5 h-1.5 shrink-0 bg-white rounded-full" />}
           </Link>

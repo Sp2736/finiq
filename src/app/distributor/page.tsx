@@ -126,7 +126,7 @@ export default function DistributorDashboard() {
         {/* KPI Section - Smaller Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 shrink-0">
           {kpis.map((kpi) => (
-            <div key={kpi.name} className="bg-white p-5 rounded-[1.75rem] border border-slate-200 shadow-sm relative overflow-hidden group hover:border-emerald-400/50 hover:shadow-md transition-all duration-300">
+            <div key={kpi.name} className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm relative overflow-hidden group hover:border-emerald-400/50 hover:shadow-md transition-all duration-300">
               <div className="absolute top-0 right-0 w-24 h-24 bg-emerald-50 rounded-full -mr-12 -mt-12 group-hover:scale-125 transition-transform duration-700 pointer-events-none opacity-50" />
               
               <div className="flex items-center gap-4 relative z-10">

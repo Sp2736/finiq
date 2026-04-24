@@ -177,7 +177,7 @@ export default function BrokerageDashboard() {
       </div>
 
       {/* KPI Section */}
-      <div className="shrink-0 grid grid-cols-2 md:grid-cols-5 gap-3 md:gap-4 mb-6">
+      <div className="shrink-0 grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 mb-6">
         <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm col-span-2 md:col-span-1">
           <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">Gross Receivable</p>
           <h3 className="text-xl font-black text-slate-900">₹{totals.gross.toLocaleString('en-IN', { maximumFractionDigits: 2 })}</h3>

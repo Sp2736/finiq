@@ -14,7 +14,7 @@ export default function DesktopContributorTable({ investors }: { investors: TopC
   );
 
   return (
-    <div className="bg-white rounded-[2rem] border border-slate-200 shadow-[0_8px_30px_rgb(0,0,0,0.04)] h-full flex flex-col overflow-hidden">
+    <div className="bg-white rounded-xl border border-slate-200 shadow-[0_8px_30px_rgb(0,0,0,0.04)] h-full flex flex-col overflow-hidden">
       
       {/* Table Header / Search */}
       <div className="p-6 lg:p-8 border-b border-slate-100 flex justify-between items-center bg-slate-50/50 shrink-0">
@@ -59,7 +59,7 @@ export default function DesktopContributorTable({ investors }: { investors: TopC
                 <tr key={investor.pan} className="hover:bg-slate-50/50 transition-colors group">
                   <td className="px-8 py-5">
                     <div className="flex items-center gap-4">
-                      <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-slate-100 text-slate-600 text-xs font-black">
+                      <div className="flex items-center justify-center w-8 h-8 rounded-xl bg-slate-100 text-slate-600 text-xs font-black">
                         #{idx + 1}
                       </div>
                       <div>
@@ -81,12 +81,12 @@ export default function DesktopContributorTable({ investors }: { investors: TopC
                     </div>
                   </td>
                   <td className="px-8 py-5 text-center tabular-nums">
-                    <span className={`px-3 py-1.5 rounded-lg text-xs font-black ${investor.abs_pct >= 0 ? 'bg-emerald-50 text-emerald-700' : 'bg-rose-50 text-rose-700'}`}>
+                    <span className={`px-3 py-1.5 rounded-xl text-xs font-black ${investor.abs_pct >= 0 ? 'bg-emerald-50 text-emerald-700' : 'bg-rose-50 text-rose-700'}`}>
                       {investor.abs_pct > 0 ? '+' : ''}{investor.abs_pct}%
                     </span>
                   </td>
                   <td className="px-8 py-5 text-right">
-                    <button className="p-2 hover:bg-white rounded-lg transition-colors border border-transparent hover:border-slate-200">
+                    <button className="p-2 hover:bg-white rounded-xl transition-colors border border-transparent hover:border-slate-200">
                       <MoreVertical className="w-4 h-4 text-slate-400" />
                     </button>
                   </td>

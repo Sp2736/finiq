@@ -26,7 +26,7 @@ export default function DistributorCalculatorsPage() {
       <div className="flex-1 overflow-y-auto pr-2 pb-6 flex flex-col gap-6 scrollbar-none">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {CALCULATORS.map((calc) => (
-            <div key={calc.id} className="bg-white p-6 md:p-8 rounded-[2rem] border border-slate-200 shadow-sm hover:border-emerald-200 transition-all group flex flex-col sm:flex-row items-start sm:items-center gap-6 cursor-pointer relative overflow-hidden">
+            <div key={calc.id} className="bg-white p-6 md:p-8 rounded-xl border border-slate-200 shadow-sm hover:border-emerald-200 transition-all group flex flex-col sm:flex-row items-start sm:items-center gap-6 cursor-pointer relative overflow-hidden">
               <div className={`w-16 h-16 shrink-0 ${calc.bg} ${calc.color} rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-500`}>
                 <calc.icon className="w-8 h-8" />
               </div>
