@@ -127,21 +127,14 @@ export default function BrokerageDashboard() {
             <Download className="w-4 h-4" />
             <span>Export</span>
           </button>
-          <button 
-            onClick={fetchHierarchy}
-            disabled={isLoading}
-            className="flex items-center gap-2 px-5 py-2.5 bg-emerald-600 text-white rounded-xl font-bold text-sm hover:bg-emerald-700 transition-all shadow-lg shadow-emerald-600/20 disabled:opacity-50"
-          >
-            <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
-            <span className="hidden sm:inline">Sync</span>
-          </button>
+          
         </div>
       </div>
 
       {/* Filter Bar */}
       <div className="shrink-0 bg-white/80 backdrop-blur-xl border border-slate-200 rounded-2xl p-3 mb-6 shadow-sm flex flex-wrap items-center gap-3">
         <div className="flex items-center bg-slate-100 p-1 rounded-xl overflow-x-auto hide-scrollbar">
-          {['AMC', 'Client', 'Scheme', 'Family'].map((lvl) => (
+          {['AMC', 'Investor'].map((lvl) => (
             <button
               key={lvl}
               onClick={() => setActiveGroup(lvl)}
@@ -190,28 +183,16 @@ export default function BrokerageDashboard() {
           <h3 className="text-xl font-black text-slate-900">₹{totals.gross.toLocaleString('en-IN', { maximumFractionDigits: 2 })}</h3>
         </div>
         <div className="bg-white p-4 rounded-xl border border-emerald-100 shadow-sm bg-gradient-to-br from-white to-emerald-50/50">
-          <p className="text-[10px] font-black text-emerald-600 uppercase tracking-widest mb-1">Paid (Self)</p>
+          <p className="text-[10px] font-black text-emerald-600 uppercase tracking-widest mb-1">Paid Brokerage</p>
           <h3 className="text-xl font-black text-emerald-700">₹{totals.paid.toLocaleString('en-IN', { maximumFractionDigits: 2 })}</h3>
         </div>
-        <div className="bg-white p-4 rounded-xl border border-teal-100 shadow-sm bg-gradient-to-br from-white to-teal-50/50">
-          <p className="text-[10px] font-black text-teal-600 uppercase tracking-widest mb-1">Paid (Sub)</p>
-          <h3 className="text-xl font-black text-teal-700">₹{totals.paidSub.toLocaleString('en-IN', { maximumFractionDigits: 2 })}</h3>
-        </div>
+        
         <div className="bg-slate-900 p-4 rounded-xl shadow-lg relative overflow-hidden group col-span-2 md:col-span-1">
           <div className="absolute top-0 right-0 w-24 h-24 bg-emerald-500/20 rounded-full blur-2xl -mr-8 -mt-8" />
           <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 relative z-10">Net Receivable</p>
           <h3 className="text-xl font-black text-white relative z-10">₹{grandNetReceivable.toLocaleString('en-IN', { maximumFractionDigits: 2 })}</h3>
         </div>
-        <div className="hidden md:flex bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex-col justify-center">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Pending</span>
-            <AlertCircle className="w-3 h-3 text-amber-500" />
-          </div>
-          <div className="w-full bg-slate-100 rounded-full h-2 mb-1">
-            <div className="bg-amber-500 h-2 rounded-full" style={{ width: `${pendingPercentage}%` }}></div>
-          </div>
-          <p className="text-xs font-black text-slate-900">{pendingPercentage}% stuck</p>
-        </div>
+        
       </div>
 
       {/* Main Table Area */}

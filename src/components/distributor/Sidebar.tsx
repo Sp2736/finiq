@@ -51,7 +51,7 @@ export default function Sidebar({ isCollapsed, setIsCollapsed }: SidebarProps) {
     <>
       <button 
         onClick={() => setIsMobileOpen(true)}
-        className="lg:hidden fixed top-4 right-4 z-50 p-2.5 bg-white border border-slate-200 rounded-xl shadow-sm text-slate-600"
+        className="lg:hidden fixed top-4 right-4 z-50 p-2.5 bg-white border border-slate-200 rounded-xl shadow-s text-slate-600"
       >
         <Menu className="w-5 h-5" />
       </button>
@@ -70,7 +70,7 @@ export default function Sidebar({ isCollapsed, setIsCollapsed }: SidebarProps) {
       >
         <div className={`p-8 pb-10 flex items-center ${isCollapsed ? 'justify-center px-4' : 'justify-between'}`}>
           <Link href="/distributor" className="flex items-center gap-3 group overflow-hidden">
-            <div className="w-10 h-10 shrink-0 bg-gradient-to-br from-emerald-600 to-teal-800 rounded-xl flex items-center justify-center shadow-lg shadow-emerald-900/20 group-hover:scale-110 transition-transform duration-300">
+            <div className="w-10 h-10 shrink-0 bg-gradient-to-br from-emerald-600 to-teal-800 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
               <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M13 10V3L4 14h7v7l9-11h-7z" />
               </svg>
@@ -93,7 +93,7 @@ export default function Sidebar({ isCollapsed, setIsCollapsed }: SidebarProps) {
             href="/distributor"
             onClick={() => setIsMobileOpen(false)}
             className={`flex items-center ${isCollapsed ? 'justify-center' : 'justify-between'} px-4 py-3 rounded-2xl transition-all duration-300 group ${
-              pathname === '/distributor' ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-600/20' : 'text-slate-600 hover:bg-emerald-50 hover:text-emerald-700'
+              pathname === '/distributor' ? 'bg-emerald-600 text-white' : 'text-slate-600 hover:bg-emerald-50 hover:text-emerald-700'
             }`}
           >
             <div className="flex items-center gap-3">
@@ -108,7 +108,7 @@ export default function Sidebar({ isCollapsed, setIsCollapsed }: SidebarProps) {
             href="/distributor/clients"
             onClick={() => setIsMobileOpen(false)}
             className={`flex items-center ${isCollapsed ? 'justify-center' : 'justify-between'} px-4 py-3 rounded-2xl transition-all duration-300 group ${
-              pathname.startsWith('/distributor/clients') ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-600/20' : 'text-slate-600 hover:bg-emerald-50 hover:text-emerald-700'
+              pathname.startsWith('/distributor/clients') ? 'bg-emerald-600 text-white' : 'text-slate-600 hover:bg-emerald-50 hover:text-emerald-700'
             }`}
           >
             <div className="flex items-center gap-3">
@@ -123,7 +123,7 @@ export default function Sidebar({ isCollapsed, setIsCollapsed }: SidebarProps) {
             href="/distributor/users"
             onClick={() => setIsMobileOpen(false)}
             className={`flex items-center ${isCollapsed ? 'justify-center' : 'justify-between'} px-4 py-3 rounded-2xl transition-all duration-300 group ${
-              pathname.startsWith('/distributor/users') ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-600/20' : 'text-slate-600 hover:bg-emerald-50 hover:text-emerald-700'
+              pathname.startsWith('/distributor/users') ? 'bg-emerald-600 text-white' : 'text-slate-600 hover:bg-emerald-50 hover:text-emerald-700'
             }`}
           >
             <div className="flex items-center gap-3">
@@ -153,21 +153,12 @@ export default function Sidebar({ isCollapsed, setIsCollapsed }: SidebarProps) {
             {/* Sub-menu Items */}
             {!isCollapsed && isReportsOpen && (
               <div className="pl-4 pr-2 py-1 space-y-1 animate-[fadeIn_0.3s_ease-out]">
-                <Link
-                  href="/distributor/reports"
-                  onClick={() => setIsMobileOpen(false)}
-                  className={`flex items-center gap-3 px-4 py-2.5 rounded-xl transition-all duration-200 ${
-                    pathname === '/distributor/reports' ? 'bg-white text-emerald-700 shadow-sm ring-1 ring-emerald-100' : 'text-slate-500 hover:text-emerald-600 hover:bg-white/50'
-                  }`}
-                >
-                  <FilePieChart className="w-4 h-4 shrink-0" />
-                  <span className="text-xs font-bold">Analytic Reports</span>
-                </Link>
+                
                 <Link
                   href="/distributor/reports/hierarchy"
                   onClick={() => setIsMobileOpen(false)}
                   className={`flex items-center gap-3 px-4 py-2.5 rounded-xl transition-all duration-200 ${
-                    pathname === '/distributor/reports/hierarchy' ? 'bg-white text-emerald-700 shadow-sm ring-1 ring-emerald-100' : 'text-slate-500 hover:text-emerald-600 hover:bg-white/50'
+                    pathname === '/distributor/reports/hierarchy' ? 'bg-white text-emerald-700 ring-1 ring-emerald-100' : 'text-slate-500 hover:text-emerald-600 hover:bg-white/50'
                   }`}
                 >
                   <Network className="w-4 h-4 shrink-0" />
@@ -182,7 +173,7 @@ export default function Sidebar({ isCollapsed, setIsCollapsed }: SidebarProps) {
             href="/distributor/calculators"
             onClick={() => setIsMobileOpen(false)}
             className={`flex items-center ${isCollapsed ? 'justify-center' : 'justify-between'} px-4 py-3 rounded-2xl transition-all duration-300 group ${
-              pathname.startsWith('/distributor/calculators') ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-600/20' : 'text-slate-600 hover:bg-emerald-50 hover:text-emerald-700'
+              pathname.startsWith('/distributor/calculators') ? 'bg-emerald-600 text-white' : 'text-slate-600 hover:bg-emerald-50 hover:text-emerald-700'
             }`}
           >
             <div className="flex items-center gap-3">

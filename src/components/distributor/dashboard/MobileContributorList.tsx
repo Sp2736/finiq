@@ -22,7 +22,7 @@ export default function MobileContributorList({ investors }: { investors: TopCon
           <h2 className="text-base font-black text-slate-900 tracking-tight">Top Contributors</h2>
           <button className="text-xs font-bold text-emerald-600 uppercase tracking-widest">View All</button>
         </div>
-        <div className="relative w-full">
+        {/* <div className="relative w-full">
           <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
           <input
             type="text"
@@ -31,7 +31,7 @@ export default function MobileContributorList({ investors }: { investors: TopCon
             onChange={(e) => setSearchTerm(e.target.value)}
             className="w-full pl-9 pr-4 py-2 bg-white border border-slate-200 rounded-xl text-sm font-medium focus:outline-none focus:ring-2 focus:ring-emerald-600/20 focus:border-emerald-600 transition-all shadow-sm"
           />
-        </div>
+        </div> */}
       </div>
 
       {filteredInvestors.length === 0 ? (

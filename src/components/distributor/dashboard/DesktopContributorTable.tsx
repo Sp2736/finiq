@@ -20,9 +20,8 @@ export default function DesktopContributorTable({ investors }: { investors: TopC
       <div className="p-6 lg:p-8 border-b border-slate-100 flex justify-between items-center bg-slate-50/50 shrink-0">
         <div>
           <h2 className="text-xl font-black text-slate-900 tracking-tight mb-1">Top 10 Contributors</h2>
-          <p className="text-xs text-slate-500 font-bold uppercase tracking-widest">Global Portfolio Ranking</p>
         </div>
-        <div className="relative">
+        {/* <div className="relative">
           <Search className="w-4 h-4 absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
           <input
             type="text"
@@ -31,7 +30,7 @@ export default function DesktopContributorTable({ investors }: { investors: TopC
             onChange={(e) => setSearchTerm(e.target.value)}
             className="pl-11 pr-6 py-2.5 bg-white border border-slate-200 rounded-xl text-sm font-medium focus:outline-none focus:ring-2 focus:ring-emerald-600/20 focus:border-emerald-600 transition-all w-64"
           />
-        </div>
+        </div> */}
       </div>
       
       {/* Scrollable Table Area */}

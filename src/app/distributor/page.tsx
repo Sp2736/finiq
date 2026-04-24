@@ -107,17 +107,17 @@ export default function DistributorDashboard() {
             Client and <span className="text-emerald-600">AUM Insights</span>
           </h1>
           <p className="text-slate-500 font-medium text-xs lg:text-sm max-w-xl">
-            Real-time synchronization of contributor pipelines.
+            Synchronization of contributor pipelines.
           </p>
         </div>
         <div className="flex gap-2.5">
-          <button className="flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 rounded-xl text-slate-600 font-bold text-xs hover:border-emerald-600 hover:text-emerald-600 transition-all shadow-sm active:scale-95">
+          {/* <button className="flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 rounded-xl text-slate-600 font-bold text-xs hover:border-emerald-600 hover:text-emerald-600 transition-all shadow-sm active:scale-95">
             <Filter className="w-3.5 h-3.5" />
             <span>Filters</span>
           </button>
           <button className="px-5 py-2 bg-slate-900 text-white rounded-xl font-bold text-xs hover:bg-slate-800 transition-all shadow-md active:scale-95">
             Generate Report
-          </button>
+          </button> */}
         </div>
       </div>
 

@@ -69,7 +69,7 @@ export default function DistributorClientsPage() {
       <div className="shrink-0 flex flex-col md:flex-row justify-between items-start md:items-end gap-4 mb-6">
         <div>
           <h1 className="text-2xl lg:text-3xl font-black tracking-tight text-slate-900 mb-1">
-            Client <span className="text-emerald-600">Directory</span>
+            <span className="text-emerald-600">Investors</span>
           </h1>
           <p className="text-slate-500 font-medium text-xs lg:text-sm">
             Manage your network of mapped investors and access their portfolios.
@@ -79,7 +79,8 @@ export default function DistributorClientsPage() {
 
       {/* Filter & Search Bar */}
       <div className="shrink-0 bg-white/80 backdrop-blur-xl border border-slate-200 rounded-2xl p-3 mb-6 shadow-sm flex flex-wrap items-center gap-3">
-        <div className="flex items-center bg-slate-100 p-1 rounded-xl overflow-x-auto hide-scrollbar">
+
+        {/* <div className="flex items-center bg-slate-100 p-1 rounded-xl overflow-x-auto hide-scrollbar">
           {['All', 'Resident Individual', 'Non Resident Indian', 'HUF'].map((status) => (
             <button
               key={status}
@@ -89,7 +90,7 @@ export default function DistributorClientsPage() {
               {status === 'Resident Individual' ? 'Resident' : status === 'Non Resident Indian' ? 'NRI' : status}
             </button>
           ))}
-        </div>
+        </div> */}
         
         <div className="h-6 w-px bg-slate-200 hidden md:block" />
         

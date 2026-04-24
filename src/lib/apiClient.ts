@@ -2,6 +2,11 @@
 
 const getAuthToken = () => {
 
+  // 🛑 TEMPORARY BYPASS: Hardcoded token for local testing
+  if (process.env.NODE_ENV === 'development') {
+    return "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIwYjVmN2YxZC1kYmViLTQ2NTQtYTI2OS04MzcwN2ViNGM4NjkiLCJwaG9uZV9udW1iZXIiOiIrOTE4NDg3OTk2NTU2Iiwicm9sZXMiOlt7ImlkIjoiZDE0OTI4ZDgtN2QzYi00YzY5LWJmMTctOWJlZDBhM2YzMGJjIiwicm9sZSI6IkZJTklRX0FETUlOIiwidGVuYW50X2lkIjpudWxsLCJjb21wYW55X2lkIjpudWxsLCJjb21wYW55X25hbWUiOm51bGwsImZpcnN0X25hbWUiOiJGaW5JUSIsImxhc3RfbmFtZSI6IlN1cGVyQWRtaW4ifSx7ImlkIjoiNDdjZmQzOTgtYTBkNS00Y2JmLTk2ZTUtZWQxM2UxNWU1MDMyIiwicm9sZSI6IkNPTVBBTllfQURNSU4iLCJ0ZW5hbnRfaWQiOiJjMWZjY2EwNy02MTI1LTRhMmUtYTkzNi0yOGM2ODYxYTI1ZWQiLCJjb21wYW55X2lkIjoiOWQwMzQzNTMtZDY1OC00ZmE1LWI1YTEtZTQ2MjUzY2RiYzBjIiwiY29tcGFueV9uYW1lIjoiU2hyaW5hdGhqaSBJbnZlc3RtZW50cyIsImZpcnN0X25hbWUiOm51bGwsImxhc3RfbmFtZSI6bnVsbH1dLCJpYXQiOjE3NzcwMjY3NzcsImV4cCI6MTc3NzExMzE3N30.V-UTgcCVyGAGq-bMWmJZ0k35V45Zolsll2Dj2ew6kmY";
+  }
+
   if (typeof document === 'undefined') return null;
   
   // Decide which token to use based on the current path
