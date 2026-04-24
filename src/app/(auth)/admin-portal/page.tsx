@@ -7,31 +7,57 @@ import { useRouter } from "next/navigation";
 import PhoneInputForm from "@/components/layouts/PhoneInputForm";
 import OTPVerificationForm from "@/components/layouts/OTPVerificationForm";
 import FluidBackground from "@/components/layouts/FluidBackground";
-import { setAuthCookie } from "@/lib/authClient";
+import { authService } from "@/services/auth.service";
+import { setAuthCookies } from "@/lib/authClient";
 
 type Step = "phone" | "otp";
 
 export default function AdminLoginPage() {
   const [step, setStep] = useState<Step>("phone");
-  const [phoneInfo, setPhoneInfo] = useState({ countryCode: "+1", number: "" });
+  const [phoneInfo, setPhoneInfo] = useState({ countryCode: "+91", number: "" });
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
   const router = useRouter();
 
   const activeRole = "Company Admin";
   const portalName = "Admin";
 
-  const handlePhoneSubmit = (info: { countryCode: string; number: string }) => {
-    setPhoneInfo(info);
-    setStep("otp");
-  };
-
-  const handleOTPVerify = (otp: string) => {
-    if (otp === "1234") {
-      setAuthCookie("mock-admin-token-1234");
-      router.push("/admin");
-    } else {
-      alert("Invalid OTP. Try 1234 for testing.");
+  const handlePhoneSubmit = async (info: { countryCode: string; number: string }) => {
+    setIsLoading(true);
+    setError("");
+    try {
+      const fullPhone = `${info.countryCode}${info.number.replace(/\D/g, '')}`;
+      await authService.sendOtp(fullPhone);
+      setPhoneInfo(info);
+      setStep("otp");
+    } catch (err: any) {
+      console.error("OTP Error:", err);
+      setError(err.message || "Failed to send OTP. Please check your credentials.");
+    } finally {
+      setIsLoading(false);
     }
   };
+
+  const handleOTPVerify = async (otp: string) => {
+    setIsLoading(true);
+    setError("");
+    try {
+      const fullPhone = `${phoneInfo.countryCode}${phoneInfo.number.replace(/\D/g, '')}`;
+      const response = await authService.verifyOtp(fullPhone, otp);
+      if (response.success) {
+        setAuthCookies(response.data.access_token, response.data.refresh_token);
+        router.push("/admin");
+      }
+    } catch (err: any) {
+      console.error("Verify Error:", err);
+      const msg = err.message || "Invalid OTP. Please try again.";
+      setError(msg);
+      throw new Error(msg);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
 
   return (
     <div className="min-h-screen bg-background font-sans selection:bg-primary/20 selection:text-primary relative flex items-center justify-center overflow-x-hidden">
@@ -86,7 +112,14 @@ export default function AdminLoginPage() {
           >
             <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-rose-500/50 to-transparent opacity-80" />
 
+            {error && (
+              <div className="mb-6 p-4 bg-rose-50 border border-rose-100 rounded-2xl text-rose-600 text-sm font-medium animate-in fade-in slide-in-from-top-2">
+                {error}
+              </div>
+            )}
+
             {step === "phone" && (
+
               <div style={{ animation: "fadeIn 0.4s ease-out forwards" }}>
                 <div className="mb-8 sm:mb-10 text-center lg:text-left">
                   <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-slate-900 mb-2">
@@ -98,7 +131,7 @@ export default function AdminLoginPage() {
                 </div>
 
                 <div className="relative z-10">
-                  <PhoneInputForm onSubmit={handlePhoneSubmit} />
+                  <PhoneInputForm onSubmit={handlePhoneSubmit} isLoading={isLoading} />
                 </div>
               </div>
             )}

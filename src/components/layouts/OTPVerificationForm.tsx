@@ -1,18 +1,14 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { authService } from '@/services/auth.service';
 
 interface OTPVerificationFormProps {
-  onVerify: (otp: string) => void;
+  onVerify: (otp: string) => Promise<void>;
   onBack: () => void;
   phoneInfo: { countryCode: string; number: string };
 }
 
 export default function OTPVerificationForm({ onVerify, onBack, phoneInfo }: OTPVerificationFormProps) {
-  const router = useRouter(); 
-  
   const [otp, setOtp] = useState(['', '', '', '']);
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [errorMessage, setErrorMessage] = useState<string>('Invalid code.');
@@ -45,25 +41,9 @@ export default function OTPVerificationForm({ onVerify, onBack, phoneInfo }: OTP
 
   const triggerVerification = async (code: string) => {
     setStatus('loading');
-    
     try {
-      // 1. Call the real API
-      const fullPhoneNumber = `${phoneInfo.countryCode}${phoneInfo.number.replace(/\D/g, '')}`;
-      const response = await authService.verifyOtp(fullPhoneNumber, code);
-      
+      await onVerify(code);
       setStatus('success');
-      
-      // 2. Securely store the token for apiClient to use
-      localStorage.setItem('token', response.token);
-      
-      // 3. Set cookie for Next.js Middleware to allow routing
-      // Note: In a highly secure enterprise app, the API should return an HttpOnly cookie instead
-      document.cookie = `auth-token=${response.token}; path=/; max-age=86400; secure; samesite=strict`;
-      
-      // 4. Trigger parent callback and redirect
-      onVerify(code);
-      router.push('/investor');
-      
     } catch (error: any) {
       setStatus('error');
       setErrorMessage(error.message || 'Invalid code. Please try again.');

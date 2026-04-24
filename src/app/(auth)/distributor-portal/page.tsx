@@ -7,29 +7,54 @@ import { useRouter } from "next/navigation";
 import PhoneInputForm from "@/components/layouts/PhoneInputForm";
 import OTPVerificationForm from "@/components/layouts/OTPVerificationForm";
 import FluidBackground from "@/components/layouts/FluidBackground";
-import { setAuthCookie } from "@/lib/authClient";
+import { authService } from "@/services/auth.service";
+import { setAuthCookies } from "@/lib/authClient";
 
 type Step = "phone" | "otp";
 
 export default function DistributorLoginPage() {
   const [step, setStep] = useState<Step>("phone");
-  const [phoneInfo, setPhoneInfo] = useState({ countryCode: "+1", number: "" });
+  const [phoneInfo, setPhoneInfo] = useState({ countryCode: "+91", number: "" });
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
   const router = useRouter();
 
   const activeRole = "Distributor";
   const portalName = "Distributor";
 
-  const handlePhoneSubmit = (info: { countryCode: string; number: string }) => {
-    setPhoneInfo(info);
-    setStep("otp");
+  const handlePhoneSubmit = async (info: { countryCode: string; number: string }) => {
+    setIsLoading(true);
+    setError("");
+    try {
+      const fullPhone = `${info.countryCode}${info.number}`;
+      // await authService.sendOtp(fullPhone);
+      setPhoneInfo(info);
+      setStep("otp");
+    } catch (err: any) {
+      console.error("OTP Error:", err);
+      setError(err.message || "Failed to send OTP. Please check your phone number.");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const handleOTPVerify = (otp: string) => {
-    if (otp === "1234") {
-      setAuthCookie("mock-distributor-token-1234");
-      router.push("/distributor");
-    } else {
-      alert("Invalid OTP. Try 1234 for testing.");
+  const handleOTPVerify = async (otp: string) => {
+    setIsLoading(true);
+    setError("");
+    try {
+      const fullPhone = `${phoneInfo.countryCode}${phoneInfo.number.replace(/\D/g, '')}`;
+      // const response = await authService.verifyOtp(fullPhone, otp);
+      // if (response.success) {
+        // setAuthCookies(response.data.access_token, response.data.refresh_token);
+        router.push("/distributor");
+      // }
+    } catch (err: any) {
+      console.error("Verify Error:", err);
+      const msg = err.message || "Invalid OTP. Please try again.";
+      setError(msg);
+      throw new Error(msg); // Re-throw for the form component to handle
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -52,7 +77,7 @@ export default function DistributorLoginPage() {
       <div className="absolute bottom-0 right-0 w-[500px] sm:w-[800px] h-[500px] sm:h-[800px] bg-indigo-500/10 rounded-full blur-[100px] sm:blur-[120px] pointer-events-none z-0" />
 
       <div className="relative z-10 w-full max-w-[1600px] mx-auto px-6 sm:px-12 lg:px-20 py-10 lg:py-16 flex flex-col lg:flex-row items-center justify-between gap-10 md:gap-12 lg:gap-20">
-        
+
         <div className="w-full lg:w-3/5 flex flex-col justify-center items-center md:items-start">
           <div className="inline-flex items-center justify-center lg:justify-start gap-3 mb-6 lg:mb-8">
             <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br from-emerald-600 to-teal-800 flex items-center justify-center shadow-lg shadow-emerald-900/30 relative overflow-hidden">
@@ -86,6 +111,12 @@ export default function DistributorLoginPage() {
           >
             <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-emerald-500/50 to-transparent opacity-80" />
 
+            {error && (
+              <div className="mb-6 p-4 bg-rose-50 border border-rose-100 rounded-2xl text-rose-600 text-sm font-medium animate-in fade-in slide-in-from-top-2">
+                {error}
+              </div>
+            )}
+
             {step === "phone" && (
               <div style={{ animation: "fadeIn 0.4s ease-out forwards" }}>
                 <div className="mb-8 sm:mb-10 text-center lg:text-left">
@@ -98,7 +129,7 @@ export default function DistributorLoginPage() {
                 </div>
 
                 <div className="relative z-10">
-                  <PhoneInputForm onSubmit={handlePhoneSubmit} />
+                  <PhoneInputForm onSubmit={handlePhoneSubmit} isLoading={isLoading} />
                 </div>
               </div>
             )}
@@ -116,7 +147,8 @@ export default function DistributorLoginPage() {
         </div>
       </div>
 
-      <style dangerouslySetInnerHTML={{ __html: `
+      <style dangerouslySetInnerHTML={{
+        __html: `
         @keyframes slideFadeUp {
           from { opacity: 0; transform: translateY(20px); }
           to   { opacity: 1; transform: translateY(0); }

@@ -4,10 +4,11 @@ import React, { useState } from 'react';
 
 interface PhoneInputFormProps {
   onSubmit: (phoneInfo: { countryCode: string; number: string }) => void;
+  isLoading?: boolean;
 }
 
-export default function PhoneInputForm({ onSubmit }: PhoneInputFormProps) {
-  const [countryCode, setCountryCode] = useState('+1');
+export default function PhoneInputForm({ onSubmit, isLoading }: PhoneInputFormProps) {
+  const [countryCode, setCountryCode] = useState('+91');
   const [phoneNumber, setPhoneNumber] = useState('');
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -31,9 +32,9 @@ export default function PhoneInputForm({ onSubmit }: PhoneInputFormProps) {
                 onChange={(e) => setCountryCode(e.target.value)}
                 className="appearance-none block w-full pl-3 pr-8 py-3 border border-border rounded-xl bg-background text-foreground shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all duration-300 sm:text-sm cursor-pointer"
               >
+                <option value="+91">+91 (IN)</option>
                 <option value="+1">+1 (US)</option>
                 <option value="+44">+44 (UK)</option>
-                <option value="+91">+91 (IN)</option>
                 <option value="+61">+61 (AU)</option>
               </select>
               <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
@@ -59,12 +60,20 @@ export default function PhoneInputForm({ onSubmit }: PhoneInputFormProps) {
         <div className="pt-2">
           <button
             type="submit"
-            disabled={phoneNumber.length < 6}
-            className="w-full flex justify-center py-3 px-4 border border-transparent rounded-xl shadow-[0_4px_14px_0_rgba(99,102,241,0.39)] font-medium text-white bg-primary hover:bg-primary-600 hover:shadow-[0_6px_20px_rgba(99,102,241,0.23)] hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary focus:ring-offset-background transition-all duration-300 disabled:opacity-50 disabled:pointer-events-none disabled:shadow-none"
+            disabled={phoneNumber.length < 6 || isLoading}
+            className="w-full flex justify-center items-center py-3 px-4 border border-transparent rounded-xl shadow-[0_4px_14px_0_rgba(99,102,241,0.39)] font-medium text-white bg-primary hover:bg-primary-600 hover:shadow-[0_6px_20px_rgba(99,102,241,0.23)] hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary focus:ring-offset-background transition-all duration-300 disabled:opacity-50 disabled:pointer-events-none disabled:shadow-none"
           >
-            Send OTP
+            {isLoading ? (
+              <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+            ) : (
+              'Send OTP'
+            )}
           </button>
         </div>
+
       </form>
     </div>
   );

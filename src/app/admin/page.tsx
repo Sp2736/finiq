@@ -20,7 +20,7 @@ export default function AdminDashboard() {
          <p className="text-slate-500 mb-8 font-medium text-sm leading-relaxed">
            No system data to load at this time. Infrastructure modules and user telemetry are pending connection.
          </p>
-         <LogoutButton />
+         <LogoutButton portal="staff" redirectTo="/admin-portal" />
       </div>
 
       <style dangerouslySetInnerHTML={{ __html: `

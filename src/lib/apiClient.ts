@@ -2,11 +2,16 @@
 
 const getAuthToken = () => {
   if (typeof document === 'undefined') return null;
-  // Standard extraction for the auth-token cookie
-  const match = document.cookie.match(new RegExp('(^| )auth-token=([^;]+)'));
+  
+  // Decide which token to use based on the current path
+  const path = window.location.pathname;
+  const tokenName = path.startsWith('/investor') ? 'investor-auth-token' : 'staff-auth-token';
+  
+  const match = document.cookie.match(new RegExp('(^| )' + tokenName + '=([^;]+)'));
   if (match) return decodeURIComponent(match[2]);
   return null;
 };
+
 
 async function fetchWithConfig<T>(
   endpoint: string,

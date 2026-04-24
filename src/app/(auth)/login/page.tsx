@@ -223,7 +223,7 @@ import { useRouter } from "next/navigation";
 import EmailPasswordForm from "@/components/layouts/EmailPasswordForm";
 import FluidBackground from "@/components/layouts/FluidBackground";
 import { authService } from "@/services/auth.service";
-import { setAuthCookie } from "@/lib/authClient";
+import { setAuthCookies } from "@/lib/authClient";
 
 export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
@@ -239,7 +239,7 @@ export default function LoginPage() {
       const actualToken = response.data?.access_token; 
       
       if (actualToken) {
-         setAuthCookie(actualToken);
+         setAuthCookies(actualToken, undefined, 'investor');
       } else {
          // If we still can't find it, throw an error instead of using a dummy session
          throw new Error("API connected, but access_token was missing in the data object.");

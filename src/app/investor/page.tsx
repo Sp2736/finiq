@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useMemo } from 'react';
-import { UnifiedFund } from "@/types/investor";
+import { UnifiedFund, ClientPortfolio, Transaction } from "@/types/investor";
 import LogoutButton from "@/components/investor/LogoutButton";
 import { usePortfolio } from "@/hooks/usePortfolio";
 
@@ -19,30 +19,35 @@ export default function UnifiedPortfolioApp() {
   const { portfolio, isLoading, error } = usePortfolio();
 
   // --- DATA NORMALIZER (Transforms API snake_case to Frontend camelCase) ---
-  const normalizedPortfolio = useMemo(() => {
+  const normalizedPortfolio = useMemo((): ClientPortfolio | null => {
     if (!portfolio) return null;
     const d = portfolio.data || portfolio; 
     
     return {
+      id: d.id || "investor-id",
       clientName: d.investor_name || d.clientName || "Investor",
-      currentValue: d.current_value || d.currentValue || 0,
+      totalCapital: d.total_capital || d.invested_capital || d.totalCapital || 0,
       investedCapital: d.invested_capital || d.investedCapital || 0,
+      currentValue: d.current_value || d.currentValue || 0,
+      dividendPayout: d.dividend_payout || d.dividendPayout || 0,
+      unrealisedGain: (d.unrealised_gains_lt || 0) + (d.unrealised_gains_st || 0) || d.unrealisedGain || 0,
+      unrealisedGainPercent: d.unrealised_gain_percent || d.abs_percent || 0,
+      realisedGain: d.realised_gain || d.realisedGain || 0,
+      netPL: d.net_pl || d.netPL || 0,
       todaysGain: d.todays_pnl || d.todaysGain || 0,
       todaysGainPercent: d.todays_pnl_percent ?? d.todaysGainPercent ?? 0,
-      unrealisedGain: (d.unrealised_gains_lt || 0) + (d.unrealised_gains_st || 0) || d.unrealisedGain || 0,
       xirr: d.xirr_percent ?? d.xirr ?? 0,
-      absPercent: d.abs_percent ?? d.absPercent ?? 0,
       abs: d.abs_percent ?? d.abs ?? 0,
       avgHoldingDays: d.avg_days ?? d.avgHoldingDays ?? 0,
-      funds: (d.funds || []).map((f: any) => ({
-        ...f,
+      funds: (d.funds || []).map((f: any): UnifiedFund => ({
         folioNo: f.folio_number || f.folioNo || "N/A",
         fundName: f.fund_name || f.fundName || "Unknown Fund",
         category: f.category || "Equity",
         amc: f.amc || "AMC",
         statusTag: f.sip_status || f.statusTag || "N/A",
         purchaseDate: f.purchase_date ? new Date(f.purchase_date).toLocaleDateString('en-GB') : f.purchaseDate,
-        investedCapital: f.total_capital || f.investedCapital || 0,
+        totalCapital: f.total_capital || f.invested_capital || 0,
+        investedCapital: f.invested_capital || f.total_capital || 0,
         currentValue: f.current_value || f.currentValue || 0,
         availableUnits: f.available_units || f.availableUnits || 0,
         currentNAV: f.current_nav || f.currentNAV || 0,
@@ -50,33 +55,53 @@ export default function UnifiedPortfolioApp() {
         dividendPayout: f.dividend_payout || f.dividendPayout || 0,
         unrealisedGain: (f.unrealised_gains_lt || 0) + (f.unrealised_gains_st || 0) || f.unrealisedGain || 0,
         unrealisedGainPercent: f.abs_percent ?? f.unrealisedGainPercent ?? 0,
+        realisedGain: f.realised_gain || 0,
+        securityType: f.security_type || "Mutual Fund",
+        sipStatus: f.sip_status || f.sipStatus || "N/A",
         xirr: f.xirr_percent ?? f.xirr ?? 0,
         oneDayChange: f.todays_pnl || f.oneDayChange || 0,
-        sipStatus: f.sip_status || f.sipStatus || "N/A",
+        oneDayPercent: f.todays_pnl_percent || 0,
+        valuationDate: f.valuation_date || new Date().toISOString(),
+        avgHoldingDays: f.avg_days || 0,
         
         investorDetails: {
           name: d.investor_name || d.clientName || "Investor",
           pan: f.pan || "Not Available",
-          holdingNature: f.holding_nature || "Single",
-          taxStatus: f.tax_status || "Resident Individual"
+          dob: f.dob || "N/A",
+          taxStatus: f.tax_status || "Resident Individual",
+          holdingType: f.holding_nature || "Single",
+        },
+
+        contactDetails: {
+          email: f.email || d.email || "N/A",
+          mobile: f.mobile || d.mobile || "N/A",
+          address: f.address || "N/A"
         },
 
         bankDetails: {
           bankName: f.bank_name || d.bank_name || "Bank Details Unavailable",
           accountNumber: f.account_number || d.account_number || "N/A",
+          accountType: f.account_type || "Savings",
           branch: f.branch || d.branch || "N/A"
         },
 
-        // NEW: Intercept and sort the transactions before mapping them!
+        nomineeDetails: {
+          name: f.nominee_name || "N/A",
+          relation: f.nominee_relation || "N/A"
+        },
+
+        jointHolderDetails: f.joint_holder ? {
+          name: f.joint_holder_name || "N/A",
+          pan: f.joint_holder_pan || "N/A"
+        } : null,
+
         transactions: (f.transactions || [])
           .sort((a: any, b: any) => {
-            // Convert dates to milliseconds for accurate mathematical sorting
             const dateA = new Date(a.transaction_date || 0).getTime();
             const dateB = new Date(b.transaction_date || 0).getTime();
-            return dateB - dateA; // Descending order (latest first)
+            return dateB - dateA;
           })
-          .map((t: any, i: number) => ({
-            ...t,
+          .map((t: any, i: number): Transaction => ({
             id: i.toString(),
             transactionDate: t.transaction_date ? new Date(t.transaction_date).toLocaleDateString('en-GB') : t.transactionDate,
             transactionType: t.transaction_type || t.transactionType || "Unknown",
@@ -152,7 +177,7 @@ export default function UnifiedPortfolioApp() {
           </div>
           <h3 className="text-slate-900 font-bold mb-2">Connection Error</h3>
           <p className="text-slate-500 text-sm mb-6">{error || "Could not retrieve portfolio data."}</p>
-          <LogoutButton />
+          <LogoutButton portal="investor" redirectTo="/login" />
         </div>
       </div>
     );
@@ -211,7 +236,7 @@ export default function UnifiedPortfolioApp() {
             </div>
           </div>
           <div className="mb-2">
-              <LogoutButton />
+              <LogoutButton portal="investor" redirectTo="/login" />
           </div>
         </div>
 
