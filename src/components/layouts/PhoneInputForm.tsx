@@ -30,7 +30,7 @@ export default function PhoneInputForm({ onSubmit, isLoading }: PhoneInputFormPr
               <select
                 value={countryCode}
                 onChange={(e) => setCountryCode(e.target.value)}
-                className="appearance-none block w-full pl-3 pr-8 py-3 border border-border rounded-md bg-background text-foreground shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all duration-300 sm:text-sm cursor-pointer"
+                className="appearance-none block w-full pl-3 pr-8 py-3 border border-border rounded-md bg-background text-foreground shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all duration-300 sm:text-sm cursor-pointer"
               >
                 <option value="+91">+91 (IN)</option>
                 <option value="+1">+1 (US)</option>
@@ -50,7 +50,7 @@ export default function PhoneInputForm({ onSubmit, isLoading }: PhoneInputFormPr
                 required
                 value={phoneNumber}
                 onChange={(e) => setPhoneNumber(e.target.value.replace(/\D/g, ''))}
-                className="appearance-none block w-full px-4 py-3 border border-border rounded-md bg-background text-foreground shadow-sm placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all duration-300 sm:text-sm"
+                className="appearance-none block w-full px-4 py-3 border border-border rounded-md bg-background text-foreground shadow-sm placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all duration-300 sm:text-sm"
                 placeholder="234 567 8900"
               />
             </div>
@@ -61,7 +61,7 @@ export default function PhoneInputForm({ onSubmit, isLoading }: PhoneInputFormPr
           <button
             type="submit"
             disabled={phoneNumber.length < 6 || isLoading}
-            className="w-full flex justify-center items-center py-3 px-4 border border-transparent rounded-md shadow-[0_4px_14px_0_rgba(16, 185, 129, 0.85)] font-medium text-white bg-primary hover:bg-emerald-600 hover:shadow-[0_6px_20px_rgba(6, 78, 59, 0.95)] hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary focus:ring-offset-background transition-all duration-300 disabled:opacity-50 disabled:pointer-events-none disabled:shadow-none"
+            className="w-full flex justify-center items-center py-3 px-4 border border-transparent rounded-md shadow-[0_4px_14px_0_rgba(16,185,129,0.4)] font-medium text-white bg-emerald-600 hover:bg-emerald-700 hover:shadow-[0_6px_20px_rgba(6,78,59,0.5)] hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-600 focus:ring-offset-background transition-all duration-300 disabled:opacity-50 disabled:pointer-events-none disabled:shadow-none"
           >
             {isLoading ? (
               <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">

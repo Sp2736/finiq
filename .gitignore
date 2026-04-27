@@ -43,3 +43,5 @@ next-env.d.ts
 # mds
 CLAUDE.md
 AGENTS.md
+
+log.txt

@@ -4,6 +4,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { distributorService, Investor } from '@/services/distributor.service';
 import DesktopClientTable from '@/components/distributor/clients/DesktopClientTable';
 import MobileClientList from '@/components/distributor/clients/MobileClientList';
+import ClientHoldingsView from '@/components/distributor/clients/ClientHoldingsView';
 import { Search, ChevronLeft, ChevronRight, Loader2, Download } from 'lucide-react';
 
 export default function InvestorsPage() {
@@ -14,6 +15,9 @@ export default function InvestorsPage() {
 
   const [searchInput, setSearchInput] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
+
+  // NEW: State to control the SPA view transition
+  const [activeClientId, setActiveClientId] = useState<string | null>(null);
 
   const fetchClients = async (page: number) => {
     setIsLoading(true);
@@ -83,6 +87,21 @@ export default function InvestorsPage() {
     }
   };
 
+  if (activeClientId) {
+    return <ClientHoldingsView clientId={activeClientId} onBack={() => setActiveClientId(null)} />;
+  }
+  
+  {/* <div className="flex items-center bg-slate-100 p-1 rounded-md overflow-x-auto hide-scrollbar">
+    {['All', 'Resident Individual', 'Non Resident Indian', 'HUF'].map((status) => (
+      <button
+        key={status}
+        onClick={() => setActiveStatus(status)}
+        className={`px-4 py-1.5 text-xs font-bold rounded-md transition-all whitespace-nowrap ${activeStatus === status ? 'bg-white text-emerald-700 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+      >
+        {status === 'Resident Individual' ? 'Resident' : status === 'Non Resident Indian' ? 'NRI' : status}
+      </button>
+    ))}
+  </div> */}
   return (
     <div className="flex flex-col h-full relative z-10 animate-in fade-in duration-500 overflow-hidden">
       
@@ -96,18 +115,6 @@ export default function InvestorsPage() {
             Manage your network of mapped investors and portfolios.
           </p>
         </div>
-
-        {/* <div className="flex items-center bg-slate-100 p-1 rounded-md overflow-x-auto hide-scrollbar">
-          {['All', 'Resident Individual', 'Non Resident Indian', 'HUF'].map((status) => (
-            <button
-              key={status}
-              onClick={() => setActiveStatus(status)}
-              className={`px-4 py-1.5 text-xs font-bold rounded-md transition-all whitespace-nowrap ${activeStatus === status ? 'bg-white text-emerald-700 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
-            >
-              {status === 'Resident Individual' ? 'Resident' : status === 'Non Resident Indian' ? 'NRI' : status}
-            </button>
-          ))}
-        </div> */}
         
         <div className="flex w-full md:w-auto items-center gap-3">
           <div className="relative flex-1 md:w-64">
@@ -141,14 +148,14 @@ export default function InvestorsPage() {
           </div>
         )}
         
-        {/* Desktop View (Hidden on mobile/tablet) */}
+        {/* Desktop View */}
         <div className="hidden lg:flex flex-col flex-1 overflow-auto table-scrollbar">
-          <DesktopClientTable clients={filteredClients} />
+          <DesktopClientTable clients={filteredClients} onClientClick={setActiveClientId} />
         </div>
 
-        {/* Mobile & Tablet View (Hidden on desktop) */}
+        {/* Mobile & Tablet View */}
         <div className="lg:hidden flex flex-col flex-1 overflow-y-auto bg-slate-50/30">
-          <MobileClientList clients={filteredClients} />
+          <MobileClientList clients={filteredClients} onClientClick={setActiveClientId} />
         </div>
 
         {/* Pagination Footer */}

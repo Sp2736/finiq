@@ -51,19 +51,16 @@ export const distributorService = {
   getInvestors: async (page: number = 1, limit: number = 30): Promise<ApiResponse<PaginatedResponse<Investor>>> => {
     return apiClient.get<ApiResponse<PaginatedResponse<Investor>>>(`/holdings-cache/investors?page=${page}&limit=${limit}`);
   },
-  
-  // NEW INTEGRATION: Brokerage Summary
   getBrokerageSummary: async (fromDate: string, toDate: string, groupBy: string = "AMC"): Promise<ApiResponse<any>> => {
-    const query = new URLSearchParams({
-      fromDate,
-      toDate
-    });
-    
-    // Map the UI group filters to the expected API param
+    const query = new URLSearchParams({ fromDate, toDate });
     if (groupBy.toLowerCase() === 'client' || groupBy.toLowerCase() === 'investor' || groupBy.toLowerCase() === 'family') {
       query.append('groupBy', 'investor');
     }
-    
     return apiClient.get<ApiResponse<any>>(`/brokerage-distribution/detailed-summary?${query.toString()}`);
+  },
+  
+  // Fetch specific client's portfolio using the precise API route
+  getClientPortfolio: async (id: string): Promise<ApiResponse<any>> => {
+    return apiClient.get<ApiResponse<any>>(`/investors/${id}/holdings`);
   }
 };
