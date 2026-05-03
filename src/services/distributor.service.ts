@@ -42,22 +42,28 @@ export interface PaginatedResponse<T> {
   totalPages: number;
 }
 
-// Add these interfaces near your other ones:
+// Updated User Management Interfaces
 export interface CompanyUser {
   id: string;
   name: string;
-  role: string;
-  arn: string;
-  parent_id: string;
-  share_percentage: number;
+  role?: string; 
+  arn_id: string | null;
+  parent_id: string | null;
+  parent_name: string | null;
+  share_percentage: number | null;
+  created_at: string;
 }
 
 export interface CompanyUserPayload {
   role: string;
   name: string;
-  arn: string;
-  parent_id: string;
-  share_percentage: number;
+  arn_id: string;
+  parent_id: string | null;
+  share_percentage: number | null;
+}
+
+export interface CompanyUsersResponse {
+  sub_brokers: CompanyUser[];
 }
 
 export const distributorService = {
@@ -78,13 +84,13 @@ export const distributorService = {
     return apiClient.get<ApiResponse<any>>(`/brokerage-distribution/detailed-summary?${query.toString()}`);
   },
 
-  // Fetch specific client's portfolio using the precise API route
   getClientPortfolio: async (id: string): Promise<ApiResponse<any>> => {
     return apiClient.get<ApiResponse<any>>(`/investors/${id}/holdings`);
   },
+  
   // --- USER MANAGEMENT ENDPOINTS ---
-  getCompanyUsers: async (): Promise<ApiResponse<CompanyUser[]>> => {
-    return apiClient.get<ApiResponse<CompanyUser[]>>('/admin/users');
+  getCompanyUsers: async (): Promise<ApiResponse<CompanyUsersResponse>> => {
+    return apiClient.get<ApiResponse<CompanyUsersResponse>>('/admin/users');
   },
 
   createCompanyUser: async (data: CompanyUserPayload): Promise<ApiResponse<any>> => {
