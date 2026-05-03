@@ -4,7 +4,7 @@ import React, { useEffect, useState, useMemo } from 'react';
 import { distributorService } from '@/services/distributor.service';
 import GlobalStatsRibbon from '@/components/investor/GlobalStatsRibbon';
 import { ChevronLeft, ChevronRight, Loader2, PieChart, ArrowUpRight, ArrowDownRight } from 'lucide-react';
-import { formatCurrency, formatCompactNumber, toTitleCase } from '@/lib/utils';
+import { formatCurrency, toTitleCase } from '@/lib/utils';
 
 // We import the types needed to normalize the data for the Ribbon
 import { ClientPortfolio, UnifiedFund, Transaction } from '@/types/investor';
@@ -99,7 +99,8 @@ export default function ClientHoldingsView({ clientId, onBack }: ClientHoldingsV
       {/* Global Stats Ribbon (KPIs) */}
       {normalizedPortfolio && (
         <div className="shrink-0 mb-4 lg:mb-6 animate-in fade-in slide-in-from-bottom-2 duration-500 delay-100 fill-both">
-          <GlobalStatsRibbon client={normalizedPortfolio} />
+          {/* Passing the Prop to turn ON Compact Numbers */}
+          <GlobalStatsRibbon client={normalizedPortfolio} useCompactValues={true} />
         </div>
       )}
 
