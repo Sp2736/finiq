@@ -2,11 +2,26 @@
 
 import React from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { formatCompactNumber } from '@/lib/utils';
 import { formatCurrency } from '@/lib/utils'; 
 import { TopContributor } from '@/services/distributor.service';
+import { handler } from 'next/dist/build/templates/app-route';
 
 export default function DesktopContributorTable({ investors }: { investors: TopContributor[] }) {
+
+  const router = useRouter();
+
+  const handleRowClick = (investor: TopContributor) => {
+    // Strictly enforcing ID usage
+    if (!investor.id) {
+      console.error("Missing Investor ID in Top Contributors API");
+      return;
+    }
+    sessionStorage.setItem('viewClientId', investor.id);
+    router.push('/distributor/clients');
+  };
+
   return (
     <div className="bg-white rounded-md border border-slate-200 shadow-[0_4px_20px_rgb(0,0,0,0.03)] h-full flex flex-col overflow-hidden transition-all duration-500">
       
@@ -58,7 +73,7 @@ export default function DesktopContributorTable({ investors }: { investors: TopC
             {investors.map((investor, idx) => {
               const isPositive = investor.notional_pl >= 0;
               return (
-                <tr key={investor.pan} className="hover:bg-emerald-50/30 transition-all duration-200 group">
+                <tr key={investor.pan} onClick={() => handleRowClick(investor)} className="hover:bg-emerald-50/30 transition-all cursor-pointer duration-200 group">
                   {/* Reduced row padding to py-1.5 to fit more rows in the view */}
                   <td className="px-5 py-1.5 border-b border-slate-50">
                     <div className="flex items-center gap-3">

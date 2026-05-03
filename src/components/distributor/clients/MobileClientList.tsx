@@ -1,7 +1,7 @@
 "use client";
 
 import React from 'react';
-import { formatCurrency } from '@/lib/utils';
+import { formatCurrency, toTitleCase } from '@/lib/utils';
 import { Investor } from '@/services/distributor.service';
 import { ChevronRight } from 'lucide-react';
 
@@ -23,7 +23,7 @@ export default function MobileClientList({ clients, onClientClick }: Props) {
         >
           <div className="p-3 md:p-4 flex items-center justify-between">
             <div className="flex flex-col min-w-0 flex-1">
-              <p className="font-bold text-slate-900 text-sm md:text-base truncate pr-2 group-hover:text-emerald-700">{client.name}</p>
+              <p className="font-bold text-slate-900 text-sm md:text-base truncate pr-2 group-hover:text-emerald-700">{toTitleCase(client.name)}</p>
               <div className="flex items-center gap-2 mt-1">
                 <span className="px-2 py-0.5 bg-slate-100 text-slate-600 rounded text-[10px] md:text-xs font-bold font-mono">{client.pan}</span>
                 <span className="text-[10px] text-slate-400 font-medium truncate border-l border-slate-200 pl-2">{client.tax_status}</span>

@@ -4,7 +4,7 @@ import React, { useEffect, useState, useMemo } from 'react';
 import { distributorService } from '@/services/distributor.service';
 import GlobalStatsRibbon from '@/components/investor/GlobalStatsRibbon';
 import { ChevronLeft, ChevronRight, Loader2, PieChart, ArrowUpRight, ArrowDownRight } from 'lucide-react';
-import { formatCurrency, formatCompactNumber } from '@/lib/utils';
+import { formatCurrency, formatCompactNumber, toTitleCase } from '@/lib/utils';
 
 // We import the types needed to normalize the data for the Ribbon
 import { ClientPortfolio, UnifiedFund, Transaction } from '@/types/investor';
@@ -83,11 +83,14 @@ export default function ClientHoldingsView({ clientId, onBack }: ClientHoldingsV
         </button>
         <h1 className="text-2xl lg:text-3xl font-black tracking-tight text-slate-900 mb-1">
           {portfolioData?.investor_name ? (
-             <>{portfolioData.investor_name}'s <span className="text-emerald-600">Portfolio</span></>
+             <>{toTitleCase(portfolioData.investor_name)}'s <span className="text-emerald-600">Portfolio</span></>
           ) : (
              <>Client <span className="text-emerald-600">Portfolio</span></>
           )}
         </h1>
+        <h2>
+          {/* TODO: ADD THE NAME OF HOLDER IN CASE OF MINOR, ELSE FIELD WOULD BE NULL */}
+        </h2>
         <p className="text-slate-500 font-medium text-xs lg:text-sm truncate">
           View detailed mutual fund holdings and transaction history securely.
         </p>

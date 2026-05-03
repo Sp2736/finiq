@@ -27,3 +27,10 @@ export const formatCompactNumber = (number: number) => {
   if (number >= 1000) return `₹${(number / 1000).toFixed(2)} K`;
   return `₹${number.toFixed(0)}`;
 };
+
+export function toTitleCase(str: string | undefined): string {
+  if (!str) return '';
+  return str.toLowerCase().split(' ').map(word => 
+    word.charAt(0).toUpperCase() + word.slice(1)
+  ).join(' ');
+}

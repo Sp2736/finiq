@@ -1,12 +1,13 @@
+// src/middleware.ts
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
 export function middleware(request: NextRequest) {
-
   const pathname = request.nextUrl.pathname;
 
-  const staffCookie = request.cookies.get('staff-auth-token');
-  const investorCookie = request.cookies.get('investor-auth-token');
+  // Explicitly append .value to ensure we are verifying actual token data
+  const staffCookie = request.cookies.get('staff-auth-token')?.value;
+  const investorCookie = request.cookies.get('investor-auth-token')?.value;
 
   const isInvestorAuthenticated = !!investorCookie;
   const isStaffAuthenticated = !!staffCookie;
@@ -14,7 +15,6 @@ export function middleware(request: NextRequest) {
   // Define login routes
   const isInvestorLogin = pathname.startsWith('/login');
   const isStaffLogin = pathname.startsWith('/admin-portal') || pathname.startsWith('/distributor-portal');
-  const isAnyLoginPage = isInvestorLogin || isStaffLogin;
 
   // Define protected dashboard routes
   const isInvestorRoute = pathname.startsWith('/investor');

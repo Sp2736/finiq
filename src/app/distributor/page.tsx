@@ -1,23 +1,26 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
-import { formatCompactNumber } from '@/lib/utils';
-import { distributorService, TopContributor } from '@/services/distributor.service';
-import DesktopContributorTable from '@/components/distributor/dashboard/DesktopContributorTable';
-import MobileContributorList from '@/components/distributor/dashboard/MobileContributorList';
+import React, { useState, useEffect } from "react";
+import { formatCompactNumber } from "@/lib/utils";
+import {
+  distributorService,
+  TopContributor,
+} from "@/services/distributor.service";
+import DesktopContributorTable from "@/components/distributor/dashboard/DesktopContributorTable";
+import MobileContributorList from "@/components/distributor/dashboard/MobileContributorList";
 import {
   TrendingUp,
   Users,
   Briefcase,
   ArrowUpRight,
   ArrowDownRight,
-  Filter
-} from 'lucide-react';
+  Filter,
+} from "lucide-react";
 
 const formatCurrency = (amount: number) => {
-  return new Intl.NumberFormat('en-IN', {
-    style: 'currency',
-    currency: 'INR',
+  return new Intl.NumberFormat("en-IN", {
+    style: "currency",
+    currency: "INR",
     maximumFractionDigits: 0,
   }).format(amount);
 };
@@ -35,7 +38,7 @@ export default function DistributorDashboard() {
         // distributorService now returns Promise<ApiResponse<T>>
         const [contributorsRes, summaryRes] = await Promise.all([
           distributorService.getTopContributors(),
-          distributorService.getCompanySummary()
+          distributorService.getCompanySummary(),
         ]);
 
         if (contributorsRes.success) {
@@ -44,9 +47,13 @@ export default function DistributorDashboard() {
         if (summaryRes.success) {
           setSummary(summaryRes.data); // Accessing .data from ApiResponse
         }
-        
+
         if (!contributorsRes.success || !summaryRes.success) {
-          setError(contributorsRes.message || summaryRes.message || "Failed to load data");
+          setError(
+            contributorsRes.message ||
+              summaryRes.message ||
+              "Failed to load data",
+          );
         }
       } catch (err: any) {
         setError(err.message || "An unexpected error occurred");
@@ -57,45 +64,49 @@ export default function DistributorDashboard() {
     fetchDashboardData();
   }, []);
 
-  const kpis = summary ? [
-    { 
-      name: 'Total AUM', 
-      value: formatCompactNumber(summary.total_current), 
-      fullValue: `₹${summary.total_current.toLocaleString('en-IN', { maximumFractionDigits: 2 })}`,
-      change: `${((summary.total_current - summary.total_invested) / summary.total_invested * 100).toFixed(1)}%`, 
-      isPositive: summary.total_current >= summary.total_invested, 
-      icon: Briefcase,
-      bgClass: 'bg-emerald-50',
-      textClass: 'text-emerald-600'
-    },
-    { 
-      name: 'Total Invested', 
-      value: formatCompactNumber(summary.total_invested), 
-      fullValue: `₹${summary.total_invested.toLocaleString('en-IN', { maximumFractionDigits: 2 })}`,
-      change: 'Capital', 
-      isPositive: true, 
-      icon: TrendingUp,
-      bgClass: 'bg-emerald-50',
-      textClass: 'text-emerald-600'
-    },
-    { 
-      name: 'Total Clients', 
-      value: summary.investor_count.toLocaleString(), 
-      fullValue: summary.investor_count.toLocaleString('en-IN'),
-      change: 'Active', 
-      isPositive: true, 
-      icon: Users,
-      bgClass: 'bg-emerald-50',
-      textClass: 'text-emerald-600'
-    },
-  ] : [];
+  const kpis = summary
+    ? [
+        {
+          name: "Total AUM",
+          value: formatCompactNumber(summary.total_current),
+          fullValue: `₹${summary.total_current.toLocaleString("en-IN", { maximumFractionDigits: 2 })}`,
+          change: `${(((summary.total_current - summary.total_invested) / summary.total_invested) * 100).toFixed(1)}%`,
+          isPositive: summary.total_current >= summary.total_invested,
+          icon: Briefcase,
+          bgClass: "bg-emerald-50",
+          textClass: "text-emerald-600",
+        },
+        {
+          name: "Total Invested",
+          value: formatCompactNumber(summary.total_invested),
+          fullValue: `₹${summary.total_invested.toLocaleString("en-IN", { maximumFractionDigits: 2 })}`,
+          change: "Capital",
+          isPositive: true,
+          icon: TrendingUp,
+          bgClass: "bg-emerald-50",
+          textClass: "text-emerald-600",
+        },
+        {
+          name: "Total Clients",
+          value: summary.investor_count.toLocaleString(),
+          fullValue: summary.investor_count.toLocaleString("en-IN"),
+          change: "Active",
+          isPositive: true,
+          icon: Users,
+          bgClass: "bg-emerald-50",
+          textClass: "text-emerald-600",
+        },
+      ]
+    : [];
 
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-full">
         <div className="flex flex-col items-center gap-3">
           <div className="w-10 h-10 border-3 border-emerald-600 border-t-transparent rounded-full animate-spin" />
-          <p className="text-slate-400 font-bold tracking-widest uppercase text-[10px]">Syncing...</p>
+          <p className="text-slate-400 font-bold tracking-widest uppercase text-[10px]">
+            Syncing...
+          </p>
         </div>
       </div>
     );
@@ -103,7 +114,6 @@ export default function DistributorDashboard() {
 
   return (
     <div className="flex flex-col h-full relative z-10 animate-in fade-in slide-in-from-bottom-2 duration-500 overflow-hidden">
-      
       {/* Header - Compact */}
       <div className="shrink-0 flex flex-col md:flex-row justify-between items-start md:items-end gap-4 mb-5">
         <div>
@@ -125,48 +135,57 @@ export default function DistributorDashboard() {
         </div>
       </div>
 
-      <div className="flex-1 overflow-y-auto pr-0.5 pb-4 flex flex-col gap-5 scrollbar-none">
-        
-        {/* KPI Section - Smaller Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 shrink-0 mb-6">
-        {kpis.map((kpi) => (
-          <div 
-            key={kpi.name} 
-            className="bg-white p-5 rounded-md border border-slate-200 shadow-sm relative overflow-hidden group hover:bg-emerald-600 hover:border-emerald-600 hover:shadow-md transition-all duration-300 cursor-default"
-          >
-            
-            {/* --- KPI (fades out on hover) --- */}
-            <div className="group-hover:opacity-0 transition-opacity duration-300">
-              <div className="absolute top-0 right-0 w-24 h-24 bg-emerald-50 rounded-full -mr-12 -mt-12 group-hover:scale-125 transition-transform duration-700 pointer-events-none opacity-50" />
-              
-              <div className="flex items-center gap-4 relative z-10">
-                <div className={`w-11 h-11 ${kpi.bgClass} ${kpi.textClass} rounded-md flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform duration-500`}>
-                  <kpi.icon className="w-5 h-5" />
-                </div>
-                <div className="min-w-0">
-                  <p className="text-slate-400 font-bold uppercase text-[9px] tracking-widest mb-0.5">{kpi.name}</p>
-                  <div className="flex items-baseline gap-2">
-                    <h3 className="text-xl lg:text-2xl font-black text-slate-900 tracking-tight">{kpi.value}</h3>
-                    <div className={`flex items-center gap-0.5 text-[10px] font-black ${kpi.isPositive ? 'text-emerald-600' : 'text-rose-600'}`}>
-                      {kpi.isPositive ? <ArrowUpRight className="w-3 h-3" /> : <ArrowDownRight className="w-3 h-3" />}
-                      {kpi.change}
+      {/* KPI Section - Smaller Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 shrink-0 mb-6">
+          {kpis.map((kpi) => (
+            <div
+              key={kpi.name}
+              className="bg-white p-5 rounded-md border border-slate-200 shadow-sm relative overflow-hidden group hover:bg-emerald-600 hover:border-emerald-600 hover:shadow-md transition-all duration-300 cursor-default"
+            >
+              {/* --- KPI (fades out on hover) --- */}
+              <div className="group-hover:opacity-0 transition-opacity duration-300">
+                <div className="absolute top-0 right-0 w-24 h-24 bg-emerald-50 rounded-full -mr-12 -mt-12 group-hover:scale-125 transition-transform duration-700 pointer-events-none opacity-50" />
+
+                <div className="flex items-center gap-4 relative z-10">
+                  <div
+                    className={`w-11 h-11 ${kpi.bgClass} ${kpi.textClass} rounded-md flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform duration-500`}
+                  >
+                    <kpi.icon className="w-5 h-5" />
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-slate-400 font-bold uppercase text-[9px] tracking-widest mb-0.5">
+                      {kpi.name}
+                    </p>
+                    <div className="flex items-baseline gap-2">
+                      <h3 className="text-xl lg:text-2xl font-black text-slate-900 tracking-tight">
+                        {kpi.value}
+                      </h3>
+                      <div
+                        className={`flex items-center gap-0.5 text-[10px] font-black ${kpi.isPositive ? "text-emerald-600" : "text-rose-600"}`}
+                      >
+                        {kpi.isPositive ? (
+                          <ArrowUpRight className="w-3 h-3" />
+                        ) : (
+                          <ArrowDownRight className="w-3 h-3" />
+                        )}
+                        {kpi.change}
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
+
+              {/* --- HOVER STATE (Full Value only, fades in on hover) --- */}
+              <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20">
+                <h3 className="text-lg lg:text-xl font-black text-white tracking-tight">
+                  {kpi.fullValue}
+                </h3>
+              </div>
             </div>
+          ))}
+        </div>
 
-            {/* --- HOVER STATE (Full Value only, fades in on hover) --- */}
-            <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20">
-              <h3 className="text-lg lg:text-xl font-black text-white tracking-tight">
-                {kpi.fullValue}
-              </h3>
-            </div>
-
-          </div>
-        ))}
-      </div>
-
+      <div className="flex-1 overflow-y-auto pr-0.5 pb-4 flex flex-col gap-5 scrollbar-none">
         {/* Table/List Area - Expanded Room */}
         <div className="hidden lg:flex flex-col flex-1 min-h-0">
           <DesktopContributorTable investors={topInvestors} />
@@ -175,7 +194,6 @@ export default function DistributorDashboard() {
         <div className="lg:hidden flex flex-col flex-1 min-h-0 pb-10">
           <MobileContributorList investors={topInvestors} />
         </div>
-
       </div>
     </div>
   );

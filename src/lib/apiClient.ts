@@ -1,7 +1,7 @@
 // src/lib/apiClient.ts
 
 const getAuthToken = () => {
-
+  
   if (typeof document === 'undefined') return null;
   
   // Decide which token to use based on the current path
@@ -73,6 +73,13 @@ export const apiClient = {
     fetchWithConfig<T>(endpoint, { 
       ...options, 
       method: 'POST', 
+      body: JSON.stringify(data) 
+    }),
+  // ADDED PUT METHOD
+  put: <T>(endpoint: string, data: any, options?: RequestInit) => 
+    fetchWithConfig<T>(endpoint, { 
+      ...options, 
+      method: 'PUT', 
       body: JSON.stringify(data) 
     }),
 };

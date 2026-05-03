@@ -1,7 +1,7 @@
 "use client";
 
 import React from 'react';
-import { formatCurrency } from '@/lib/utils';
+import { formatCurrency, toTitleCase } from '@/lib/utils';
 import { Investor } from '@/services/distributor.service';
 
 interface Props {
@@ -31,7 +31,7 @@ export default function DesktopClientTable({ clients, onClientClick }: Props) {
             onClick={() => onClientClick(client.id)}
             className="cursor-pointer transition-colors duration-200 group border-b border-slate-100 hover:bg-emerald-50/50"
           >
-            <td className="px-6 py-4 border-b border-slate-100"><p className="font-bold text-slate-900 group-hover:text-emerald-700">{client.name}</p></td>
+            <td className="px-6 py-4 border-b border-slate-100"><p className="font-bold text-slate-900 group-hover:text-emerald-700">{toTitleCase(client.name)}</p></td>
             <td className="px-6 py-4 border-b border-slate-100"><span className="px-2.5 py-1 bg-slate-100 text-slate-600 rounded-md text-xs font-bold font-mono group-hover:bg-white">{client.pan}</span></td>
             <td className="px-6 py-4 border-b border-slate-100"><p className="font-medium text-slate-600 text-xs">{client.tax_status}</p></td>
             <td className="px-6 py-4 text-right border-b border-slate-100 pr-6"><p className="font-black text-slate-900 tabular-nums">{formatCurrency(client.total_aum)}</p></td>

@@ -1,6 +1,7 @@
 import { apiClient } from '@/lib/apiClient';
 
 export interface TopContributor {
+  id: string;
   name: string;
   pan: string;
   total_current: number;
@@ -41,6 +42,24 @@ export interface PaginatedResponse<T> {
   totalPages: number;
 }
 
+// Add these interfaces near your other ones:
+export interface CompanyUser {
+  id: string;
+  name: string;
+  role: string;
+  arn: string;
+  parent_id: string;
+  share_percentage: number;
+}
+
+export interface CompanyUserPayload {
+  role: string;
+  name: string;
+  arn: string;
+  parent_id: string;
+  share_percentage: number;
+}
+
 export const distributorService = {
   getTopContributors: async (): Promise<ApiResponse<TopContributor[]>> => {
     return apiClient.get<ApiResponse<TopContributor[]>>('/holdings-cache/top-contributors');
@@ -58,9 +77,21 @@ export const distributorService = {
     }
     return apiClient.get<ApiResponse<any>>(`/brokerage-distribution/detailed-summary?${query.toString()}`);
   },
-  
+
   // Fetch specific client's portfolio using the precise API route
   getClientPortfolio: async (id: string): Promise<ApiResponse<any>> => {
     return apiClient.get<ApiResponse<any>>(`/investors/${id}/holdings`);
+  },
+  // --- USER MANAGEMENT ENDPOINTS ---
+  getCompanyUsers: async (): Promise<ApiResponse<CompanyUser[]>> => {
+    return apiClient.get<ApiResponse<CompanyUser[]>>('/admin/users');
+  },
+
+  createCompanyUser: async (data: CompanyUserPayload): Promise<ApiResponse<any>> => {
+    return apiClient.post<ApiResponse<any>>('/admin/users', data);
+  },
+
+  updateCompanyUser: async (id: string, data: CompanyUserPayload): Promise<ApiResponse<any>> => {
+    return apiClient.put<ApiResponse<any>>(`/admin/users/${id}`, data);
   }
 };

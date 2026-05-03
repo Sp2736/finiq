@@ -21,7 +21,7 @@ export default function DistributorLayout({
         className={`flex-1 relative transition-all duration-300 ease-in-out h-screen overflow-hidden
         ${isCollapsed ? 'lg:ml-24' : 'lg:ml-72'}`}
       >
-        <div className="absolute inset-0 bg-[url('/noise.png')] opacity-[0.015] pointer-events-none mix-blend-overlay" />
+        <div className="absolute inset-0 opacity-[0.015] pointer-events-none mix-blend-overlay" />
         <div className="w-full h-full max-w-[1600px] mx-auto p-4 sm:p-5 md:p-6 lg:p-8 flex flex-col relative z-10">
           {children}
         </div>

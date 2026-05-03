@@ -45,8 +45,10 @@ export default function DistributorLoginPage() {
       const fullPhone = `${phoneInfo.countryCode}${phoneInfo.number.replace(/\D/g, '')}`;
       const response = await authService.verifyOtp(fullPhone, otp);
       if (response.success) {
+        // console.log(response.success);
         setAuthCookies(response.data.access_token, response.data.refresh_token);
         router.push("/distributor");
+        
       }
     } catch (err: any) {
       console.error("Verify Error:", err);
