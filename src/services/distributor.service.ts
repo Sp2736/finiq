@@ -42,7 +42,6 @@ export interface PaginatedResponse<T> {
   totalPages: number;
 }
 
-// Updated User Management Interfaces
 export interface CompanyUser {
   id: string;
   name: string;
@@ -66,6 +65,12 @@ export interface CompanyUsersResponse {
   sub_brokers: CompanyUser[];
 }
 
+export interface CapitalGainsPayload {
+  investor_id: string;
+  start_date: string;
+  end_date: string;
+}
+
 export const distributorService = {
   getTopContributors: async (): Promise<ApiResponse<TopContributor[]>> => {
     return apiClient.get<ApiResponse<TopContributor[]>>('/holdings-cache/top-contributors');
@@ -86,6 +91,11 @@ export const distributorService = {
 
   getClientPortfolio: async (id: string): Promise<ApiResponse<any>> => {
     return apiClient.get<ApiResponse<any>>(`/investors/${id}/holdings`);
+  },
+
+  // --- CAPITAL GAINS ENDPOINT ---
+  getCapitalGains: async (data: CapitalGainsPayload): Promise<ApiResponse<any>> => {
+    return apiClient.post<ApiResponse<any>>('/investors/capital-gains', data);
   },
   
   // --- USER MANAGEMENT ENDPOINTS ---

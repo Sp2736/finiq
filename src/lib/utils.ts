@@ -34,3 +34,20 @@ export function toTitleCase(str: string | undefined): string {
     word.charAt(0).toUpperCase() + word.slice(1)
   ).join(' ');
 }
+
+export const getDynamicFinancialYears = (startYear: number = 2010) => {
+  const today = new Date();
+  const currentMonth = today.getMonth(); // 0-indexed (0 = Jan, 3 = Apr)
+  const currentYear = today.getFullYear();
+
+  // If the current month is before April (Jan-Mar), the current FY started last year
+  const maxYear = currentMonth < 3 ? currentYear - 1 : currentYear;
+
+  const fyOptions = [];
+  for (let year = maxYear; year >= startYear; year--) {
+    const nextYearShort = String(year + 1).slice(2);
+    fyOptions.push(`${year}-${nextYearShort}`);
+  }
+  
+  return fyOptions;
+};
