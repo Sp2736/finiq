@@ -8,6 +8,7 @@ import { getDynamicFinancialYears } from "@/lib/utils";
 import {
   ChevronLeft,
   ChevronRight,
+  ChevronDown,
   Loader2,
   PieChart,
   ArrowUpRight,
@@ -23,17 +24,14 @@ import { formatCurrency, toTitleCase } from "@/lib/utils";
 import { ClientPortfolio } from "@/types/investor";
 
 // ─────────────────────────────────────────────────────────────────────────────
-// TODO: Replace this static config with the authenticated distributor's
-//       profile fetched from your API or user context (e.g. useAuth() hook).
-//       Fields: name, address, email, phone, logoBase64 (optional – for PDF header).
-//       Example:  const distributorInfo = useDistributorProfile();
+// DISTRIBUTOR CONFIG
 // ─────────────────────────────────────────────────────────────────────────────
 const DISTRIBUTOR_INFO = {
-  name: "FINIQ DISTRIBUTION NETWORK",
-  address: "712, Tech Park, Startup Road, Bangalore - 560001",
-  email: "support@finiq.com",
-  phone: "+91 98765 43210",
-  // logoBase64: "", // TODO: Provide base64-encoded PNG logo for PDF header
+  name: "SHRINATHJI INVESTMENT",
+  address: "527, 5 TH FLOOR, NAVRANG COMPLEX., RAOPURA, VADODARA-390001",
+  email: "shrinathjiinvestment@gmail.com",
+  phone: "9879786067",
+  logoBase64: "", // Paste your base64 PNG string here later to automatically render it in the PDF
 };
 
 interface ClientHoldingsViewProps {
@@ -42,7 +40,7 @@ interface ClientHoldingsViewProps {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// INLINE NOTIFICATION  (replaces alert() calls)
+// INLINE NOTIFICATION
 // ─────────────────────────────────────────────────────────────────────────────
 type NotifType = "error" | "info" | "warning";
 interface Notif {
@@ -69,7 +67,7 @@ const InlineNotif = ({
   };
   return (
     <div
-      className={`flex items-start gap-2 px-3 py-2.5 rounded-xl border text-xs font-medium ${styles[notif.type]}`}
+      className={`flex items-start gap-2 px-3 py-2.5 rounded-xl border text-xs font-medium mb-4 ${styles[notif.type]}`}
     >
       {icons[notif.type]}
       <span className="flex-1">{notif.message}</span>
@@ -96,16 +94,23 @@ export default function ClientHoldingsView({
     [],
   );
 
-  const [selectedFY, setSelectedFY]         = useState(financialYearOptions[0]);
-  const [portfolioData, setPortfolioData]   = useState<any>(null);
-  const [isLoading, setIsLoading]           = useState(true);
-  const [error, setError]                   = useState<string | null>(null);
-  const [expandedRow, setExpandedRow]       = useState<number | null>(null);
-  const [isCGModalOpen, setIsCGModalOpen]   = useState(false);
-  const [exportingFormat, setExportingFormat] = useState<"pdf" | "excel" | null>(null);
+  const [selectedFY, setSelectedFY]             = useState(financialYearOptions[0]);
+  const [portfolioData, setPortfolioData]       = useState<any>(null);
+  const [isLoading, setIsLoading]               = useState(true);
+  const [error, setError]                       = useState<string | null>(null);
+  const [expandedRow, setExpandedRow]           = useState<number | null>(null);
+  
+  const [isCGModalOpen, setIsCGModalOpen]       = useState(false);
+  const [isFYSelectorOpen, setIsFYSelectorOpen] = useState(false);
+  const [fyPage, setFyPage]                     = useState(0);
 
-  // Replaces alert() — shown inline inside the CG modal
-  const [cgNotif, setCGNotif] = useState<Notif | null>(null);
+  const [exportingFormat, setExportingFormat]   = useState<"pdf" | "excel" | null>(null);
+  const [cgNotif, setCGNotif]                   = useState<Notif | null>(null);
+
+  // ── Pagination Math for Financial Years ──────────────────────────────────
+  const ITEMS_PER_PAGE = 6;
+  const paginatedYears = financialYearOptions.slice(fyPage * ITEMS_PER_PAGE, (fyPage + 1) * ITEMS_PER_PAGE);
+  const maxPages = Math.ceil(financialYearOptions.length / ITEMS_PER_PAGE);
 
   // ── Portfolio fetch ──────────────────────────────────────────────────────
   useEffect(() => {
@@ -128,7 +133,6 @@ export default function ClientHoldingsView({
     fetchHoldings();
   }, [clientId]);
 
-  // ── Normalised portfolio for the stats ribbon ────────────────────────────
   const normalizedPortfolio = useMemo((): ClientPortfolio | null => {
     if (!portfolioData) return null;
     const d = portfolioData;
@@ -156,7 +160,6 @@ export default function ClientHoldingsView({
 
   const funds = portfolioData?.funds || [];
 
-  // ── FY → date range helper ───────────────────────────────────────────────
   const getFYDates = (fy: string) => {
     const startYear = parseInt(fy.split("-")[0]);
     return {
@@ -209,10 +212,11 @@ export default function ClientHoldingsView({
           sellDate:          tx.sell_date,
           holdingDays:       tx.holding_days,
           transactionType:   tx.selling_transaction_type || "Redemption",
+          units:             tx.units_qty ?? tx.units ?? 0,
           sellNav:           tx.sell_nav            || 0,
           sellAmount:        tx.sell_amount          || 0,
           sttAndOthers:      tx.stt_and_others       || 0,
-          tdsAndOthers:      tx.tds_and_others       || 0,  // now forwarded to PDF
+          tdsAndOthers:      tx.tds_and_others       || 0,  
           purchaseDate:      tx.purchase_date        || "N/A",
           purchaseNav:       tx.purchase_nav         || 0,
           netPurchaseAmount: tx.net_sell_amount ?? tx.purchase_amount ?? 0,
@@ -229,7 +233,6 @@ export default function ClientHoldingsView({
     [],
   );
 
-  // ── Capital Gains export handler ─────────────────────────────────────────
   const handleExportCG = async (format: "pdf" | "excel") => {
     setCGNotif(null);
     setExportingFormat(format);
@@ -268,21 +271,15 @@ export default function ClientHoldingsView({
     }
   };
 
-  // ── Close modal & reset local state ─────────────────────────────────────
   const handleCloseModal = () => {
-    if (exportingFormat) return; // prevent close while exporting
+    if (exportingFormat) return; 
     setIsCGModalOpen(false);
+    setIsFYSelectorOpen(false);
     setCGNotif(null);
-    // Intentionally keep selectedFY — user likely wants the same FY next time
   };
 
-  // ─────────────────────────────────────────────────────────────────────────
-  //  RENDER
-  // ─────────────────────────────────────────────────────────────────────────
   return (
     <div className="flex flex-col h-full relative z-10 animate-in slide-in-from-right-4 fade-in duration-300">
-
-      {/* ── Page Header ─────────────────────────────────────────────────── */}
       <div className="shrink-0 mb-4 lg:mb-6 flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
         <div>
           <button
@@ -317,14 +314,12 @@ export default function ClientHoldingsView({
         </button>
       </div>
 
-      {/* ── Stats Ribbon ────────────────────────────────────────────────── */}
       {normalizedPortfolio && (
         <div className="shrink-0 mb-4 lg:mb-6 animate-in fade-in slide-in-from-bottom-2 duration-500 delay-100 fill-both">
           <GlobalStatsRibbon client={normalizedPortfolio} useCompactValues />
         </div>
       )}
 
-      {/* ── Holdings Table ──────────────────────────────────────────────── */}
       <div className="flex-1 min-h-0 bg-white rounded-2xl border border-slate-200 shadow-sm flex flex-col relative overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-500 delay-200 fill-both">
         {isLoading ? (
           <div className="absolute inset-0 bg-white/60 backdrop-blur-[1px] z-50 flex flex-col items-center justify-center gap-4">
@@ -362,21 +357,11 @@ export default function ClientHoldingsView({
               <thead className="bg-slate-50/90 backdrop-blur-sm border-b border-slate-100 text-[10px] uppercase tracking-widest text-slate-500 font-black sticky top-0 z-20 shadow-sm ring-1 ring-slate-200/50">
                 <tr>
                   <th className="p-3 w-10 border-b border-slate-200" />
-                  <th className="py-4 border-b border-slate-200">
-                    Scheme Name &amp; Folio
-                  </th>
-                  <th className="p-4 text-right border-b border-slate-200">
-                    Units &amp; NAV
-                  </th>
-                  <th className="p-4 text-right border-b border-slate-200">
-                    Invested Value
-                  </th>
-                  <th className="p-4 text-right border-b border-slate-200">
-                    Current Value
-                  </th>
-                  <th className="p-4 text-right pr-6 border-b border-slate-200">
-                    Returns (XIRR)
-                  </th>
+                  <th className="py-4 border-b border-slate-200">Scheme Name &amp; Folio</th>
+                  <th className="p-4 text-right border-b border-slate-200">Units &amp; NAV</th>
+                  <th className="p-4 text-right border-b border-slate-200">Invested Value</th>
+                  <th className="p-4 text-right border-b border-slate-200">Current Value</th>
+                  <th className="p-4 text-right pr-6 border-b border-slate-200">Returns (XIRR)</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
@@ -399,103 +384,48 @@ export default function ClientHoldingsView({
                           isExpanded ? "bg-emerald-50/30" : "hover:bg-slate-50/80"
                         }`}
                       >
-                        <td
-                          className={`p-3 text-center border-b border-slate-100 transition-colors ${
-                            isExpanded
-                              ? "bg-[#f0fdf4]"
-                              : "bg-white group-hover:bg-[#f8fafc]"
-                          }`}
-                        >
+                        <td className={`p-3 text-center border-b border-slate-100 transition-colors ${isExpanded ? "bg-[#f0fdf4]" : "bg-white group-hover:bg-[#f8fafc]"}`}>
                           <button
                             aria-label={isExpanded ? "Collapse transactions" : "Expand transactions"}
                             className="text-slate-400 group-hover:text-emerald-600 outline-none p-1 rounded-md group-hover:bg-emerald-100/50 transition-colors"
                           >
-                            <ChevronRight
-                              className={`w-4 h-4 transition-transform duration-300 ${
-                                isExpanded ? "rotate-90 text-emerald-600" : "rotate-0"
-                              }`}
-                            />
+                            <ChevronRight className={`w-4 h-4 transition-transform duration-300 ${isExpanded ? "rotate-90 text-emerald-600" : "rotate-0"}`} />
                           </button>
                         </td>
-
                         <td className="py-4 border-b border-slate-100 pr-4">
-                          <p className="font-bold text-slate-900 group-hover:text-emerald-700 mb-0.5 text-xs max-w-[280px] leading-tight">
-                            {schemeName}
-                          </p>
-                          <span className="inline-block px-2 py-0.5 bg-slate-100 text-slate-500 rounded text-[10px] font-bold font-mono tracking-wide">
-                            Folio: {folio}
-                          </span>
+                          <p className="font-bold text-slate-900 group-hover:text-emerald-700 mb-0.5 text-xs max-w-[280px] leading-tight">{schemeName}</p>
+                          <span className="inline-block px-2 py-0.5 bg-slate-100 text-slate-500 rounded text-[10px] font-bold font-mono tracking-wide">Folio: {folio}</span>
                         </td>
-
                         <td className="p-4 text-right border-b border-slate-100">
-                          <p className="font-bold text-slate-700 tabular-nums text-xs mb-0.5">
-                            {fund.available_units?.toFixed(3) || "0"}
-                          </p>
-                          <p className="text-[10px] font-medium text-slate-400 tabular-nums">
-                            NAV: ₹{fund.current_nav || 0}
-                          </p>
+                          <p className="font-bold text-slate-700 tabular-nums text-xs mb-0.5">{fund.available_units?.toFixed(3) || "0"}</p>
+                          <p className="text-[10px] font-medium text-slate-400 tabular-nums">NAV: ₹{fund.current_nav || 0}</p>
                         </td>
-
                         <td className="p-4 text-right border-b border-slate-100">
-                          <p className="font-medium text-slate-600 tabular-nums text-sm">
-                            {formatCurrency(invested)}
-                          </p>
+                          <p className="font-medium text-slate-600 tabular-nums text-sm">{formatCurrency(invested)}</p>
                         </td>
-
                         <td className="p-4 text-right border-b border-slate-100">
-                          <p className="font-black text-slate-900 tabular-nums text-sm">
-                            {formatCurrency(current)}
-                          </p>
+                          <p className="font-black text-slate-900 tabular-nums text-sm">{formatCurrency(current)}</p>
                         </td>
-
                         <td className="p-4 text-right border-b border-slate-100 pr-6">
                           <div className="flex flex-col items-end">
-                            <div
-                              className={`flex items-center gap-0.5 text-xs font-black ${
-                                isPositive ? "text-emerald-600" : "text-rose-600"
-                              }`}
-                            >
-                              {isPositive ? (
-                                <ArrowUpRight className="w-3.5 h-3.5" />
-                              ) : (
-                                <ArrowDownRight className="w-3.5 h-3.5" />
-                              )}
+                            <div className={`flex items-center gap-0.5 text-xs font-black ${isPositive ? "text-emerald-600" : "text-rose-600"}`}>
+                              {isPositive ? <ArrowUpRight className="w-3.5 h-3.5" /> : <ArrowDownRight className="w-3.5 h-3.5" />}
                               {xirr}%
                             </div>
-                            <span
-                              className={`text-[10px] font-bold mt-0.5 tabular-nums ${
-                                isPositive ? "text-emerald-500" : "text-rose-500"
-                              }`}
-                            >
-                              {formatCurrency(netPnl)}
-                            </span>
+                            <span className={`text-[10px] font-bold mt-0.5 tabular-nums ${isPositive ? "text-emerald-500" : "text-rose-500"}`}>{formatCurrency(netPnl)}</span>
                           </div>
                         </td>
                       </tr>
 
-                      {/* ── Expanded Transaction History ─────────────────── */}
                       <tr className="bg-slate-50/40">
-                        <td
-                          colSpan={6}
-                          className="p-0 border-b border-slate-200/60"
-                        >
-                          <div
-                            className={`grid transition-all duration-300 ease-in-out ${
-                              isExpanded
-                                ? "grid-rows-[1fr] opacity-100"
-                                : "grid-rows-[0fr] opacity-0"
-                            }`}
-                          >
+                        <td colSpan={6} className="p-0 border-b border-slate-200/60">
+                          <div className={`grid transition-all duration-300 ease-in-out ${isExpanded ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"}`}>
                             <div className="overflow-hidden">
                               <div className="p-4 pl-14 pr-6">
                                 <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
                                   <div className="px-4 py-3 border-b border-slate-100 bg-slate-50 flex items-center justify-between">
-                                    <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-500">
-                                      Transaction History
-                                    </h4>
-                                    <p className="text-[10px] font-bold text-slate-400">
-                                      {transactions.length} entries
-                                    </p>
+                                    <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-500">Transaction History</h4>
+                                    <p className="text-[10px] font-bold text-slate-400">{transactions.length} entries</p>
                                   </div>
                                   {transactions.length > 0 ? (
                                     <div className="overflow-x-auto">
@@ -511,42 +441,21 @@ export default function ClientHoldingsView({
                                         </thead>
                                         <tbody className="divide-y divide-slate-50">
                                           {transactions.map((t: any, tid: number) => (
-                                            <tr
-                                              key={tid}
-                                              className="hover:bg-slate-50/50 transition-colors"
-                                            >
+                                            <tr key={tid} className="hover:bg-slate-50/50 transition-colors">
                                               <td className="p-3 pl-4 text-slate-600 font-medium whitespace-nowrap">
-                                                {t.transaction_date
-                                                  ? new Date(
-                                                      t.transaction_date,
-                                                    ).toLocaleDateString("en-GB", {
-                                                      day:   "2-digit",
-                                                      month: "short",
-                                                      year:  "numeric",
-                                                    })
-                                                  : "N/A"}
+                                                {t.transaction_date ? new Date(t.transaction_date).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" }) : "N/A"}
                                               </td>
-                                              <td className="p-3 text-slate-700 font-bold truncate max-w-[200px]">
-                                                {t.transaction_type || "Unknown"}
-                                              </td>
-                                              <td className="p-3 text-right font-black text-slate-900 tabular-nums">
-                                                {formatCurrency(t.amount || 0)}
-                                              </td>
-                                              <td className="p-3 text-right text-slate-500 font-medium tabular-nums">
-                                                ₹{t.nav || 0}
-                                              </td>
-                                              <td className="p-3 text-right text-emerald-600 font-bold tabular-nums pr-4">
-                                                +{t.units?.toFixed(3) || "0"}
-                                              </td>
+                                              <td className="p-3 text-slate-700 font-bold truncate max-w-[200px]">{t.transaction_type || "Unknown"}</td>
+                                              <td className="p-3 text-right font-black text-slate-900 tabular-nums">{formatCurrency(t.amount || 0)}</td>
+                                              <td className="p-3 text-right text-slate-500 font-medium tabular-nums">₹{t.nav || 0}</td>
+                                              <td className="p-3 text-right text-emerald-600 font-bold tabular-nums pr-4">+{t.units?.toFixed(3) || "0"}</td>
                                             </tr>
                                           ))}
                                         </tbody>
                                       </table>
                                     </div>
                                   ) : (
-                                    <div className="p-6 text-center text-slate-400 text-xs font-medium">
-                                      No transactions recorded for this fund.
-                                    </div>
+                                    <div className="p-6 text-center text-slate-400 text-xs font-medium">No transactions recorded for this fund.</div>
                                   )}
                                 </div>
                               </div>
@@ -563,7 +472,6 @@ export default function ClientHoldingsView({
         )}
       </div>
 
-      {/* ── Capital Gains Export Modal ───────────────────────────────────── */}
       {isCGModalOpen && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-in fade-in duration-200"
@@ -571,16 +479,9 @@ export default function ClientHoldingsView({
           aria-modal="true"
           aria-labelledby="cg-modal-title"
         >
-          <div className="bg-white rounded-2xl shadow-xl border border-slate-200 w-full max-w-sm overflow-hidden animate-in zoom-in-95 duration-200">
-
-            {/* Modal Header */}
+          <div className="bg-white rounded-2xl shadow-xl border border-slate-200 w-full max-w-sm overflow-visible animate-in zoom-in-95 duration-200">
             <div className="flex items-center justify-between p-4 border-b border-slate-100">
-              <h3
-                id="cg-modal-title"
-                className="font-black text-slate-900 text-lg"
-              >
-                Capital Gains Report
-              </h3>
+              <h3 id="cg-modal-title" className="font-black text-slate-900 text-lg">Capital Gains Report</h3>
               <button
                 onClick={handleCloseModal}
                 disabled={!!exportingFormat}
@@ -592,74 +493,65 @@ export default function ClientHoldingsView({
             </div>
 
             <div className="p-5 flex flex-col gap-4">
+              {cgNotif && <InlineNotif notif={cgNotif} onDismiss={() => setCGNotif(null)} />}
 
-              {/* Inline notification (replaces alert) */}
-              {cgNotif && (
-                <InlineNotif
-                  notif={cgNotif}
-                  onDismiss={() => setCGNotif(null)}
-                />
-              )}
+              {/* ── Paginated Financial Year Selector UI ── */}
+              <div className="relative">
+                <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">Select Financial Year</label>
+                
+                <button 
+                  onClick={() => setIsFYSelectorOpen(!isFYSelectorOpen)} 
+                  disabled={!!exportingFormat}
+                  className="w-full flex items-center justify-between p-3 bg-slate-50 border border-slate-200 rounded-xl hover:border-slate-300 transition-colors focus:outline-none focus:ring-2 focus:ring-slate-900/10"
+                >
+                  <span className="text-xs font-bold text-slate-500 uppercase tracking-widest">Financial Year</span>
+                  <div className="flex items-center gap-2">
+                    <span className="font-bold text-slate-800 tracking-tight">{selectedFY}</span>
+                    <ChevronDown className={`w-4 h-4 text-slate-500 transition-transform ${isFYSelectorOpen ? 'rotate-180' : ''}`} />
+                  </div>
+                </button>
 
-              {/* Financial Year Selector */}
-              <div>
-                <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-3">
-                  Select Financial Year
-                </label>
-                <div className="grid grid-cols-3 gap-2 max-h-40 overflow-y-auto pr-2 pb-1 table-scrollbar">
-                  {financialYearOptions.map((fy) => (
-                    <button
-                      key={fy}
-                      onClick={() => {
-                        setSelectedFY(fy);
-                        setCGNotif(null); // clear stale notification on FY change
-                      }}
-                      disabled={!!exportingFormat}
-                      aria-pressed={selectedFY === fy}
-                      className={`py-2 px-1 text-xs font-bold rounded-xl border transition-all active:scale-95 flex items-center justify-center ${
-                        selectedFY === fy
-                          ? "bg-emerald-50 border-emerald-500 text-emerald-700 shadow-sm ring-1 ring-emerald-500/20"
-                          : "bg-white border-slate-200 text-slate-600 hover:border-emerald-200 hover:bg-slate-50"
-                      } disabled:opacity-50 disabled:active:scale-100`}
-                    >
-                      {fy}
-                    </button>
-                  ))}
-                </div>
+                {isFYSelectorOpen && (
+                  <div className="absolute top-[110%] left-0 w-full bg-white border border-slate-200 shadow-xl rounded-xl p-3 z-50 animate-in fade-in slide-in-from-top-2">
+                    <div className="flex items-center justify-between mb-3 border-b border-slate-100 pb-2">
+                      <button onClick={() => setFyPage(p => Math.max(0, p - 1))} disabled={fyPage === 0} className="p-1 text-slate-400 hover:text-slate-900 disabled:opacity-30 disabled:hover:text-slate-400">
+                        <ChevronLeft className="w-4 h-4"/>
+                      </button>
+                      <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Page {fyPage + 1} of {maxPages}</span>
+                      <button onClick={() => setFyPage(p => Math.min(maxPages - 1, p + 1))} disabled={fyPage === maxPages - 1} className="p-1 text-slate-400 hover:text-slate-900 disabled:opacity-30 disabled:hover:text-slate-400">
+                        <ChevronRight className="w-4 h-4"/>
+                      </button>
+                    </div>
+                    <div className="grid grid-cols-3 gap-2">
+                      {paginatedYears.map(fy => (
+                        <button key={fy} onClick={() => { setSelectedFY(fy); setIsFYSelectorOpen(false); setCGNotif(null); }} className={`py-2 px-1 text-xs font-bold rounded-lg border transition-all ${selectedFY === fy ? "bg-emerald-50 border-emerald-500 text-emerald-700 shadow-sm" : "bg-white border-slate-200 text-slate-600 hover:border-slate-300 hover:bg-slate-50"}`}>
+                          {fy}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
 
-              {/* Export Buttons */}
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-2 gap-3 mt-4">
                 <button
                   onClick={() => handleExportCG("pdf")}
-                  disabled={!!exportingFormat}
+                  disabled={!!exportingFormat || isFYSelectorOpen}
                   aria-label="Export as PDF"
                   className="flex flex-col items-center justify-center gap-2 p-3 rounded-xl border-2 border-slate-100 hover:border-rose-200 hover:bg-rose-50 text-rose-600 disabled:opacity-50 active:scale-95 transition-all"
                 >
-                  {exportingFormat === "pdf" ? (
-                    <Loader2 className="w-6 h-6 animate-spin" />
-                  ) : (
-                    <FileText className="w-6 h-6" />
-                  )}
-                  <span className="text-xs font-bold">
-                    {exportingFormat === "pdf" ? "Generating…" : "Export PDF"}
-                  </span>
+                  {exportingFormat === "pdf" ? <Loader2 className="w-6 h-6 animate-spin" /> : <FileText className="w-6 h-6" />}
+                  <span className="text-xs font-bold">{exportingFormat === "pdf" ? "Generating…" : "Export PDF"}</span>
                 </button>
 
                 <button
                   onClick={() => handleExportCG("excel")}
-                  disabled={!!exportingFormat}
+                  disabled={!!exportingFormat || isFYSelectorOpen}
                   aria-label="Export as Excel"
                   className="flex flex-col items-center justify-center gap-2 p-3 rounded-xl border-2 border-slate-100 hover:border-emerald-200 hover:bg-emerald-50 text-emerald-600 disabled:opacity-50 active:scale-95 transition-all"
                 >
-                  {exportingFormat === "excel" ? (
-                    <Loader2 className="w-6 h-6 animate-spin" />
-                  ) : (
-                    <FileSpreadsheet className="w-6 h-6" />
-                  )}
-                  <span className="text-xs font-bold">
-                    {exportingFormat === "excel" ? "Generating…" : "Export Excel"}
-                  </span>
+                  {exportingFormat === "excel" ? <Loader2 className="w-6 h-6 animate-spin" /> : <FileSpreadsheet className="w-6 h-6" />}
+                  <span className="text-xs font-bold">{exportingFormat === "excel" ? "Generating…" : "Export Excel"}</span>
                 </button>
               </div>
 
