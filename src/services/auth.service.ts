@@ -31,7 +31,7 @@ export interface SendOtpData {
   message: string;
 }
 
-// Updated to match your exact API response structure
+// Updated to match API response structure
 export interface LoginResponse {
   success: boolean;
   message: string;

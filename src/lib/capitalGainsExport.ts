@@ -1,4 +1,4 @@
-import * as XLSX from 'xlsx';
+import * as XLSX from 'xlsx-js-style';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 
@@ -38,7 +38,7 @@ export const exportCapitalGains = (
   distributorInfo: any,
 ) => {
   if (format === 'excel') {
-    generateExcel(data, fy, distributorInfo);
+    generateExcel(data, fy);
   } else {
     generatePDF(data, fy, distributorInfo);
   }
@@ -47,93 +47,285 @@ export const exportCapitalGains = (
 // ═════════════════════════════════════════════════════════════════════════════
 //  EXCEL GENERATOR
 // ═════════════════════════════════════════════════════════════════════════════
-const generateExcel = (data: any, fy: string, distributorInfo: any) => {
+const generateExcel = (data: any, fy: string) => {
   const wb = XLSX.utils.book_new();
   const inv = data.investorDetails;
 
+  // Dedicated HEX Theme for Excel cell styling (Compatible with xlsx-js-style)
+  const THEME = {
+    navy: "0F2850",
+    navyMid: "194178",
+    steel: "3464A3",
+    steelLight: "DCE8F7",
+    positive: "0E7850",
+    negative: "DC2626", // Bright Red for Disclaimer
+    white: "FFFFFF",
+    offWhite: "F8FAFD",
+    textPrimary: "121928",
+    textMuted: "64738C"
+  };
+
+  const borderAll = {
+    top: { style: "thin", color: { rgb: "C8D7EB" } },
+    bottom: { style: "thin", color: { rgb: "C8D7EB" } },
+    left: { style: "thin", color: { rgb: "C8D7EB" } },
+    right: { style: "thin", color: { rgb: "C8D7EB" } }
+  };
+
   const createSheet = (sheetName: string, funds: any[], isEquity: boolean) => {
-    let sheetData: any[] = [];
+    const sheetData: any[] = [];
+    const merges: XLSX.Range[] = [];
+    const stylesMap: { r: number; c: number; s: any }[] = [];
+    
+    const setS = (rowIdx: number, colIdx: number, style: any) => {
+      stylesMap.push({ r: rowIdx, c: colIdx, s: style });
+    };
 
-    // Header mimicking the Excel sample exactly
-    sheetData.push([distributorInfo.name || "SHRINATHJI INVESTMENT"]);
-    sheetData.push([`Report Generate As on - ${new Date().toLocaleDateString('en-GB')} ${new Date().toLocaleTimeString('en-GB')}`]);
-    sheetData.push([`Realized Capital Gain Report for FY -${fy}`]);
-    sheetData.push([`${inv.name}-${inv.email}-(${inv.pan})`]);
-    sheetData.push([]);
-    sheetData.push([]);
+    let r = 0; // Row Tracker
 
+    // --- Header & Report Metadata (Right Aligned) ---
+    sheetData.push(['Capital Gain Detail Report', '', '', '', '', '', '', '', '', '', '', '', '', '', '']);
+    merges.push({ s: { r, c: 0 }, e: { r, c: 14 } });
+    setS(r, 0, { font: { bold: true, sz: 14, color: { rgb: THEME.navy } }, alignment: { horizontal: "right" } });
+    r++;
+
+    const reportMeta = `FY: ${fy.replace('-', ' – ')}  |  Generated: ${new Date().toLocaleDateString('en-GB')}`;
+    sheetData.push([reportMeta, '', '', '', '', '', '', '', '', '', '', '', '', '', '']);
+    merges.push({ s: { r, c: 0 }, e: { r, c: 14 } });
+    setS(r, 0, { font: { italic: true, sz: 10, color: { rgb: THEME.textMuted } }, alignment: { horizontal: "right" } });
+    r++;
+
+    sheetData.push([]); r++;
+
+    // --- Investor Details Band ---
+    sheetData.push([inv.name.toUpperCase(), '', '', '', '', '', '', '', '', '', '', '', '', '', '']);
+    merges.push({ s: { r, c: 0 }, e: { r, c: 14 } });
+    setS(r, 0, { fill: { fgColor: { rgb: THEME.offWhite } }, font: { bold: true, sz: 11, color: { rgb: THEME.navy } }, alignment: { horizontal: "left" }, border: { top: borderAll.top, left: borderAll.left, right: borderAll.right } });
+    const invBandStartRow = r;
+    r++;
+
+    sheetData.push([`PAN: ${inv.pan}`, '', '', '', '', '', '', '', '', '', '', '', '', `Mobile: ${inv.mobile}`, '']);
+    merges.push({ s: { r, c: 0 }, e: { r, c: 12 } });
+    merges.push({ s: { r, c: 13 }, e: { r, c: 14 } });
+    setS(r, 0, { fill: { fgColor: { rgb: THEME.offWhite } }, font: { sz: 9, color: { rgb: THEME.textPrimary } }, alignment: { horizontal: "left" }, border: { left: borderAll.left } });
+    setS(r, 13, { fill: { fgColor: { rgb: THEME.offWhite } }, font: { sz: 9, color: { rgb: THEME.textPrimary } }, alignment: { horizontal: "right" }, border: { right: borderAll.right } });
+    r++;
+
+    sheetData.push([inv.address, '', '', '', '', '', '', '', '', '', '', '', '', `Email: ${inv.email}`, '']);
+    merges.push({ s: { r, c: 0 }, e: { r, c: 12 } });
+    merges.push({ s: { r, c: 13 }, e: { r, c: 14 } });
+    setS(r, 0, { fill: { fgColor: { rgb: THEME.offWhite } }, font: { sz: 9, color: { rgb: THEME.textPrimary } }, alignment: { horizontal: "left" }, border: { bottom: borderAll.bottom, left: borderAll.left } });
+    setS(r, 13, { fill: { fgColor: { rgb: THEME.offWhite } }, font: { sz: 9, color: { rgb: THEME.textPrimary } }, alignment: { horizontal: "right" }, border: { bottom: borderAll.bottom, right: borderAll.right } });
+    r++;
+
+    sheetData.push([]); r++;
+
+    // --- Mutual Funds Section ---
     if (funds.length > 0) {
       sheetData.push(['Mutual Funds']);
-      sheetData.push([]);
+      merges.push({ s: { r, c: 0 }, e: { r, c: 14 } });
+      setS(r, 0, { fill: { fgColor: { rgb: THEME.navy } }, font: { bold: true, color: { rgb: THEME.white }, sz: 12 }, alignment: { horizontal: "left" } });
+      r++;
+      sheetData.push([]); r++;
 
       funds.forEach((mf: any) => {
-        const row = Array(15).fill('');
-        row[0] = `${mf.fundName} | Folio No: ${mf.folioNo} | ISIN: ${mf.isin}`;
-        row[5] = `Asset Class: ${mf.assetClass}`;
-        row[8] = `Tax Asset Class: ${String(mf.assetClass).toUpperCase()}`;
-        sheetData.push(row);
+        const fundTitle = `${mf.fundName} | Folio No: ${mf.folioNo} | ISIN: ${mf.isin} | Asset Class: ${mf.assetClass}`;
+        sheetData.push([fundTitle]);
+        merges.push({ s: { r, c: 0 }, e: { r, c: 14 } });
+        for(let c = 0; c <= 14; c++) setS(r, c, { fill: { fgColor: { rgb: THEME.steelLight } }, font: { bold: true, color: { rgb: THEME.navy } }, border: borderAll });
+        r++;
         
         sheetData.push([
-          'Withdrawal', '', '', '', '', '', '', 'Corresponding Subscription', '', '', '', 'Grandfathered Value', 'Short Term', 'Long Term'
+          'Withdrawal', '', '', '', '', '', '', 
+          'Corresponding Subscription', '', '', '', '', 
+          'Grandfathered Value', 
+          'Profit & Loss', ''
         ]);
+        merges.push({ s: { r, c: 0 }, e: { r, c: 6 } }); 
+        merges.push({ s: { r, c: 7 }, e: { r, c: 11 } }); 
+        merges.push({ s: { r, c: 13 }, e: { r, c: 14 } }); 
         
+        for(let c = 0; c <= 6; c++) setS(r, c, { fill: { fgColor: { rgb: THEME.navy } }, font: { bold: true, color: { rgb: THEME.white } }, alignment: { horizontal: "center", vertical: "center" }, border: borderAll });
+        for(let c = 7; c <= 11; c++) setS(r, c, { fill: { fgColor: { rgb: THEME.navyMid } }, font: { bold: true, color: { rgb: THEME.white } }, alignment: { horizontal: "center", vertical: "center" }, border: borderAll });
+        setS(r, 12, { fill: { fgColor: { rgb: THEME.navy } }, font: { bold: true, color: { rgb: THEME.white }, sz: 9 }, alignment: { horizontal: "center", vertical: "center", wrapText: true }, border: borderAll });
+        for(let c = 13; c <= 14; c++) setS(r, c, { fill: { fgColor: { rgb: THEME.navyMid } }, font: { bold: true, color: { rgb: THEME.white } }, alignment: { horizontal: "center", vertical: "center" }, border: borderAll });
+        r++;
+
         sheetData.push([
-          'Sell Date', 'Holding Days', 'Trxn Type', 'Units/ Qty.', 'Sell NAV/ Price', 'Sell Amount', 'STT & Others', 
-          'Purchase Date', 'Trxn Type', 'Purchase NAV/Price', 'Net Purchase Amount', 'Stamp Duty', 'Cost Acquisition', 
+          'Sell Date', 'Hold Days', 'Trxn Type', 'Units/Qty', 'Sell NAV', 'Sell Amount', 'STT & Others', 
+          'Pur. Date', 'Trxn Type', 'Pur. NAV', 'Net Pur. Amount', 'Stamp Duty', 
+          'Cost Acqn.', 
           'Short Term', 'Long Term'
         ]);
+        for(let c = 0; c <= 14; c++) setS(r, c, { fill: { fgColor: { rgb: THEME.steel } }, font: { bold: true, color: { rgb: THEME.white }, sz: 9 }, alignment: { horizontal: "center", wrapText: true }, border: borderAll });
+        r++;
 
         let totalSell = 0, totalPur = 0, totalST = 0, totalLT = 0;
 
-        mf.transactions.forEach((tx: any) => {
+        mf.transactions.forEach((tx: any, idx: number) => {
           totalSell += Number(tx.sellAmount || 0);
           totalPur += Number(tx.netPurchaseAmount || 0);
           totalST += Number(tx.shortTermPL || 0);
           totalLT += Number(tx.longTermPL || 0);
 
           sheetData.push([
-            fmtDate(tx.sellDate), tx.holdingDays, tx.transactionType, tx.units, tx.sellNav, tx.sellAmount, tx.sttAndOthers,
+            fmtDate(tx.sellDate), tx.holdingDays ?? '—', tx.transactionType || 'Redemption', tx.units, tx.sellNav, tx.sellAmount, tx.sttAndOthers,
             fmtDate(tx.purchaseDate), 'Fresh', tx.purchaseNav, tx.netPurchaseAmount, tx.stampDuty, tx.costAcquisition,
             tx.shortTermPL, tx.longTermPL
           ]);
+          
+          const rowColor = idx % 2 === 0 ? THEME.white : THEME.offWhite;
+          for(let c = 0; c <= 14; c++) {
+             let cellStyle: any = { fill: { fgColor: { rgb: rowColor } }, border: borderAll, alignment: { horizontal: (c >= 3 && c !== 7 && c !== 8 ? "right" : "center") } };
+             
+             if (c === 13 || c === 14) {
+                const val = c === 13 ? tx.shortTermPL : tx.longTermPL;
+                if (Number(val) > 0) cellStyle.font = { color: { rgb: THEME.positive }, bold: true };
+                else if (Number(val) < 0) cellStyle.font = { color: { rgb: THEME.negative }, bold: true };
+             }
+             setS(r, c, cellStyle);
+          }
+          r++;
         });
 
-        sheetData.push([
-          'Scheme Total', '', '', '', '', totalSell, '', '', '', '', totalPur, '', '', totalST, totalLT
-        ]);
-        sheetData.push([]);
+        sheetData.push(['TOTAL', '', '', '', '', totalSell, '', '', '', '', totalPur, '', '', totalST, totalLT]);
+        merges.push({ s: { r, c: 0 }, e: { r, c: 4 } });
+        for(let c = 0; c <= 14; c++) {
+          setS(r, c, { fill: { fgColor: { rgb: THEME.steelLight } }, font: { bold: true, color: { rgb: THEME.navy } }, alignment: { horizontal: (c >= 5 ? "right" : "center") }, border: borderAll });
+        }
+        r++;
+        sheetData.push([]); r++;
       });
-
-      sheetData.push(['Mutual Funds Total']);
-      sheetData.push([]);
     }
 
     if (isEquity) {
-      sheetData.push(['Investor Name', 'Type', 'Short Term', 'Long Term', 'Total']);
+      // ─────────────────────────────────────────────────────────────
+      // TABLE 1: Period-Wise Capital Gain Summary
+      // ─────────────────────────────────────────────────────────────
+      sheetData.push(['Mutual Funds — Period-Wise Capital Gain Summary']);
+      merges.push({ s: { r, c: 0 }, e: { r, c: 8 } });
+      setS(r, 0, { fill: { fgColor: { rgb: THEME.navy } }, font: { bold: true, color: { rgb: THEME.white } }, alignment: { horizontal: "left" } });
+      r++;
+
+      sheetData.push([
+        'Investor Name', 'Type', 
+        'Short Term', '', '', 
+        'Long Term', '', '', ''
+      ]);
+      merges.push({ s: { r, c: 0 }, e: { r: r + 1, c: 0 } }); // Investor Name
+      merges.push({ s: { r, c: 1 }, e: { r: r + 1, c: 1 } }); // Type
+      merges.push({ s: { r, c: 2 }, e: { r, c: 4 } }); // Short Term
+      merges.push({ s: { r, c: 5 }, e: { r, c: 8 } }); // Long Term
+
+      for(let c = 0; c <= 1; c++) setS(r, c, { fill: { fgColor: { rgb: THEME.navy } }, font: { bold: true, color: { rgb: THEME.white } }, alignment: { horizontal: "center", vertical: "center" }, border: borderAll });
+      for(let c = 2; c <= 4; c++) setS(r, c, { fill: { fgColor: { rgb: THEME.navyMid } }, font: { bold: true, color: { rgb: THEME.white } }, alignment: { horizontal: "center", vertical: "center" }, border: borderAll });
+      for(let c = 5; c <= 8; c++) setS(r, c, { fill: { fgColor: { rgb: THEME.steel } }, font: { bold: true, color: { rgb: THEME.white } }, alignment: { horizontal: "center", vertical: "center" }, border: borderAll });
+      r++;
+
+      sheetData.push([
+        '', '', 
+        'Buy Value', 'Sell Value', 'P&L', 
+        'Buy Value', 'Sell Value', 'Cost Acqn.', 'P&L'
+      ]);
+      for(let c = 2; c <= 4; c++) setS(r, c, { fill: { fgColor: { rgb: THEME.navyMid } }, font: { bold: true, color: { rgb: THEME.white } }, alignment: { horizontal: "center", vertical: "center" }, border: borderAll });
+      for(let c = 5; c <= 8; c++) setS(r, c, { fill: { fgColor: { rgb: THEME.steel } }, font: { bold: true, color: { rgb: THEME.white } }, alignment: { horizontal: "center", vertical: "center" }, border: borderAll });
+      
+      // Preserve borders for merged empty cells underneath Investor Name & Type
+      setS(r, 0, { border: borderAll });
+      setS(r, 1, { border: borderAll });
+      r++;
+
       sheetData.push([
         inv.name,
-        'Purchase On or After 31 Jan 2018',
+        'Purchase on/after 31-Jan-2018',
+        data.capitalGainSummary.shortTerm,
+        data.capitalGainSummary.shortTerm,
         data.capitalGainSummary.shortTerm,
         data.capitalGainSummary.longTerm,
-        data.capitalGainSummary.total
+        data.capitalGainSummary.longTerm,
+        '0.00',
+        data.capitalGainSummary.longTerm
       ]);
-      sheetData.push([]);
+      for(let c = 0; c <= 8; c++) setS(r, c, { border: borderAll, alignment: { horizontal: c > 1 ? "right" : "left" } });
+      r++;
+      sheetData.push([]); r++;
+
+      // ─────────────────────────────────────────────────────────────
+      // TABLE 2: Other Taxes Details
+      // ─────────────────────────────────────────────────────────────
+      sheetData.push([`Mutual Funds Other Taxes Details — FY ${fy.replace('-', ' – ')}`]);
+      merges.push({ s: { r, c: 0 }, e: { r, c: 12 } });
+      setS(r, 0, { fill: { fgColor: { rgb: THEME.navy } }, font: { bold: true, color: { rgb: THEME.white } }, alignment: { horizontal: "left" } });
+      r++;
+
+      sheetData.push([
+        'Investor Name', 'Type', 
+        'Short Term — Quarter-wise', '', '', '', '', 
+        'Long Term — Quarter-wise', '', '', '', '', 
+        'Total'
+      ]);
+      merges.push({ s: { r, c: 0 }, e: { r: r + 1, c: 0 } });
+      merges.push({ s: { r, c: 1 }, e: { r: r + 1, c: 1 } });
+      merges.push({ s: { r, c: 2 }, e: { r, c: 6 } });
+      merges.push({ s: { r, c: 7 }, e: { r, c: 11 } });
+      merges.push({ s: { r, c: 12 }, e: { r: r + 1, c: 12 } });
+
+      for(let c = 0; c <= 1; c++) setS(r, c, { fill: { fgColor: { rgb: THEME.navy } }, font: { bold: true, color: { rgb: THEME.white } }, alignment: { horizontal: "center", vertical: "center" }, border: borderAll });
+      for(let c = 2; c <= 6; c++) setS(r, c, { fill: { fgColor: { rgb: THEME.navyMid } }, font: { bold: true, color: { rgb: THEME.white }, sz: 9 }, alignment: { horizontal: "center", vertical: "center" }, border: borderAll });
+      for(let c = 7; c <= 11; c++) setS(r, c, { fill: { fgColor: { rgb: THEME.steel } }, font: { bold: true, color: { rgb: THEME.white }, sz: 9 }, alignment: { horizontal: "center", vertical: "center" }, border: borderAll });
+      setS(r, 12, { fill: { fgColor: { rgb: THEME.navy } }, font: { bold: true, color: { rgb: THEME.white } }, alignment: { horizontal: "center", vertical: "center" }, border: borderAll });
+      r++;
+
+      sheetData.push([
+        '', '', 
+        'Upto 15-6', '16-6 to 15-9', '16-9 to 15-12', '16-12 to 15-3', '16-3 to 31-3',
+        'Upto 15-6', '16-6 to 15-9', '16-9 to 15-12', '16-12 to 15-3', '16-3 to 31-3',
+        ''
+      ]);
+      for(let c = 2; c <= 6; c++) setS(r, c, { fill: { fgColor: { rgb: THEME.navyMid } }, font: { bold: true, color: { rgb: THEME.white }, sz: 9 }, alignment: { horizontal: "center", vertical: "center" }, border: borderAll });
+      for(let c = 7; c <= 11; c++) setS(r, c, { fill: { fgColor: { rgb: THEME.steel } }, font: { bold: true, color: { rgb: THEME.white }, sz: 9 }, alignment: { horizontal: "center", vertical: "center" }, border: borderAll });
       
-      sheetData.push(['Mutual Funds Period Wise Capital Gain Summary']);
-      sheetData.push(['Investor Name', 'Short Term Total', 'Long Term Total', 'Total']);
-      sheetData.push([inv.name, data.capitalGainSummary.shortTerm, data.capitalGainSummary.longTerm, data.capitalGainSummary.shortTerm + data.capitalGainSummary.longTerm]);
-      sheetData.push([]);
+      setS(r, 0, { border: borderAll });
+      setS(r, 1, { border: borderAll });
+      setS(r, 12, { border: borderAll });
+      r++;
+
+      sheetData.push([
+        inv.name,
+        'Purchase on/after 31-Jan-2018',
+        '0.00', data.capitalGainSummary.shortTerm, '0.00', '0.00', '0.00',
+        '0.00', '0.00', '0.00', '0.00', '0.00',
+        data.capitalGainSummary.shortTerm + data.capitalGainSummary.longTerm
+      ]);
+      for(let c = 0; c <= 12; c++) setS(r, c, { border: borderAll, alignment: { horizontal: c > 1 ? "right" : "left" } });
+      r++;
+      sheetData.push([]); r++;
     }
 
-    const disclaimer = "Disclaimer : We are not tax consultants and nor do we provide any tax or legal advice. Request you to kindly consult with your own tax or professional advisors for any tax or legal matter. The Company or its Employees accept no responsibility for any loss suffered by any investor as a result of the said information.";
+    // --- Big Red Disclaimer ---
+    sheetData.push([]); r++;
+    const disclaimer = "Disclaimer:\nWe are not tax consultants and nor do we provide any tax or legal advice. You are requested to kindly consult your own tax or professional advisors for any tax or legal matter. The Company or its employees accept no responsibility for any loss suffered by any investor as a result of the information contained in this report.";
     sheetData.push([disclaimer]);
+    merges.push({ s: { r, c: 0 }, e: { r, c: 14 } });
+    setS(r, 0, { font: { bold: true, sz: 12, color: { rgb: THEME.negative } }, alignment: { wrapText: true, vertical: "center" } });
+    const disclaimerRowIdx = r;
+    r++;
 
     const ws = XLSX.utils.aoa_to_sheet(sheetData);
-    
+    ws['!merges'] = merges;
     ws['!cols'] = [
-      { wch: 22 }, { wch: 12 }, { wch: 12 }, { wch: 12 }, { wch: 12 }, { wch: 15 }, { wch: 12 }, 
-      { wch: 15 }, { wch: 12 }, { wch: 15 }, { wch: 15 }, { wch: 12 }, { wch: 15 }, { wch: 15 }, { wch: 15 }
+      { wch: 15 }, { wch: 10 }, { wch: 15 }, { wch: 12 }, { wch: 12 }, { wch: 15 }, { wch: 12 }, 
+      { wch: 15 }, { wch: 12 }, { wch: 12 }, { wch: 15 }, { wch: 12 }, { wch: 15 }, { wch: 15 }, { wch: 15 }
     ];
+
+    if (!ws['!rows']) ws['!rows'] = [];
+    ws['!rows'][disclaimerRowIdx] = { hpt: 65 }; // Expand height for wrapped disclaimer
+
+    stylesMap.forEach(({ r, c, s }) => {
+      const addr = XLSX.utils.encode_cell({ r, c });
+      if (!ws[addr]) ws[addr] = { t: 's', v: '' }; 
+      ws[addr].s = s;
+    });
 
     XLSX.utils.book_append_sheet(wb, ws, sheetName);
   };
@@ -175,12 +367,10 @@ const generatePDF = (data: any, fy: string, distributorInfo: any) => {
   const drawHeader = () => {
     const HEADER_H = 22;
 
-    // Removed the blue background, just leaving pure white space
     if (distributorInfo.logoBase64) {
       doc.addImage(distributorInfo.logoBase64, 'PNG', ML, 5, 24, 16);
     }
 
-    // Aligned to the exact right in the same row
     doc.setFontSize(14);
     doc.setFont('helvetica', 'bold');
     doc.setTextColor(...C.navy);
@@ -516,12 +706,11 @@ const generatePDF = (data: any, fy: string, distributorInfo: any) => {
   drawSummaryTable();
   drawTaxesTable();
 
-  // Print Exact Red Bold Disclaimer Required
   const disclaimerText = "Disclaimer:\nWe are not tax consultants and nor do we provide any tax or legal advice. You are requested to kindly consult your own tax or professional\nadvisors for any tax or legal matter. The Company or its employees accept no responsibility for any loss suffered by any investor as a result of\nthe information contained in this report.";
   
   doc.setFontSize(9);
   doc.setFont('helvetica', 'bold');
-  doc.setTextColor(220, 38, 38); // Bright Red Font
+  doc.setTextColor(220, 38, 38); 
   const lines = doc.splitTextToSize(disclaimerText, CW);
   doc.text(lines, ML, Y);
 

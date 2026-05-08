@@ -178,10 +178,11 @@ export default function ClientHoldingsView({
       const mapped = {
         investorDetails: {
           name:    invName,
-          pan:     firstRow.pan     || currentPortfolio?.pan     || "N/A",
+          // Expanded to cover possible API mappings if the backend adds them later
+          pan:     firstRow.pan     || currentPortfolio?.pan     || currentPortfolio?.investor_pan || "N/A",
           address: firstRow.address || currentPortfolio?.address || "Address Not Provided",
-          mobile:  firstRow.mobile  || currentPortfolio?.mobile  || "N/A",
-          email:   firstRow.email   || currentPortfolio?.email   || "N/A",
+          mobile:  firstRow.mobile  || currentPortfolio?.mobile  || currentPortfolio?.login_identifier || "N/A",
+          email:   firstRow.email   || currentPortfolio?.email   || currentPortfolio?.investor_email || "N/A",
         },
         mutualFunds: [] as any[],
         capitalGainSummary: { shortTerm: 0, longTerm: 0, total: 0 },
@@ -219,7 +220,7 @@ export default function ClientHoldingsView({
           tdsAndOthers:      tx.tds_and_others       || 0,  
           purchaseDate:      tx.purchase_date        || "N/A",
           purchaseNav:       tx.purchase_nav         || 0,
-          netPurchaseAmount: tx.net_sell_amount ?? tx.purchase_amount ?? 0,
+          netPurchaseAmount: tx.net_purchase_amount ?? tx.purchase_amount ?? 0,
           stampDuty:         tx.stamp_duty           || 0,
           costAcquisition:   tx.cost_of_acquisition  || 0,
           shortTermPL:       stPL,
