@@ -44,16 +44,16 @@ async function fetchWithConfig<T>(
     });
 
     if (!response.ok) {
-      // // INSTANT REDIRECT ON EXPIRED TOKEN (401)
-      // if (response.status === 401) {
-      //   console.warn("Unauthorized: The token expired or is invalid. Redirecting to login...");
-      //   if (typeof window !== 'undefined') {
-      //     // Redirect distributor to their portal, investor to theirs
-      //     window.location.href = window.location.pathname.startsWith('/distributor') 
-      //       ? '/distributor-portal' 
-      //       : '/login'; // for the investors
-      //   }
-      // }
+      // INSTANT REDIRECT ON EXPIRED TOKEN (401)
+      if (response.status === 401) {
+        console.warn("Unauthorized: The token expired or is invalid. Redirecting to login...");
+        if (typeof window !== 'undefined') {
+          // Redirect distributor to their portal, investor to theirs
+          window.location.href = window.location.pathname.startsWith('/distributor') 
+            ? '/distributor-portal' 
+            : '/login'; // for the investors
+        }
+      }
       
       const errorData = await response.json().catch(() => ({}));
       throw new Error(errorData.message || `API Error: ${response.status}`);

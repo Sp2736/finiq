@@ -5,6 +5,7 @@ import { distributorService } from "@/services/distributor.service";
 import GlobalStatsRibbon from "@/components/investor/GlobalStatsRibbon";
 import { exportCapitalGains } from "@/lib/capitalGainsExport";
 import { getDynamicFinancialYears } from "@/lib/utils";
+import FundAnalyticsModal from "./FundAnalyticsModal"; // NEW IMPORT
 import {
   ChevronLeft,
   ChevronRight,
@@ -19,6 +20,7 @@ import {
   Calculator,
   AlertTriangle,
   Info,
+  BarChart2, // Added for Analytics button
 } from "lucide-react";
 import { formatCurrency, toTitleCase } from "@/lib/utils";
 import { ClientPortfolio } from "@/types/investor";
@@ -31,7 +33,7 @@ const DISTRIBUTOR_INFO = {
   address: "527, 5 TH FLOOR, NAVRANG COMPLEX., RAOPURA, VADODARA-390001",
   email: "shrinathjiinvestment@gmail.com",
   phone: "9879786067",
-  logoBase64: "", // Paste your base64 PNG string here later to automatically render it in the PDF
+  logoBase64: "", 
 };
 
 interface ClientHoldingsViewProps {
@@ -107,6 +109,9 @@ export default function ClientHoldingsView({
   const [exportingFormat, setExportingFormat]   = useState<"pdf" | "excel" | null>(null);
   const [cgNotif, setCGNotif]                   = useState<Notif | null>(null);
 
+  // Modal State for Analytics
+  const [analyticsFund, setAnalyticsFund]       = useState<any>(null);
+
   // ── Pagination Math for Financial Years ──────────────────────────────────
   const ITEMS_PER_PAGE = 6;
   const paginatedYears = financialYearOptions.slice(fyPage * ITEMS_PER_PAGE, (fyPage + 1) * ITEMS_PER_PAGE);
@@ -178,7 +183,6 @@ export default function ClientHoldingsView({
       const mapped = {
         investorDetails: {
           name:    invName,
-          // Expanded to cover possible API mappings if the backend adds them later
           pan:     firstRow.pan     || currentPortfolio?.pan     || currentPortfolio?.investor_pan || "N/A",
           address: firstRow.address || currentPortfolio?.address || "Address Not Provided",
           mobile:  firstRow.mobile  || currentPortfolio?.mobile  || currentPortfolio?.login_identifier || "N/A",
@@ -196,6 +200,7 @@ export default function ClientHoldingsView({
           fundsMap.set(key, {
             fundName:   tx.scheme_name    || "Unknown Fund",
             folioNo:    tx.folio_number   || "N/A",
+            amfiCode:   tx.amfi_code      || "N/A", // AMFI ADDED HERE
             isin:       tx.isin_no        || "N/A",
             assetClass: tx.asset_class    || "Equity",
             transactions: [],
@@ -257,7 +262,8 @@ export default function ClientHoldingsView({
       }
 
       const mappedData = mapBackendToExportFormat(cgDataArray, portfolioData);
-      exportCapitalGains(format, mappedData, selectedFY, DISTRIBUTOR_INFO);
+      
+      await exportCapitalGains(format, mappedData, selectedFY, DISTRIBUTOR_INFO);
       setIsCGModalOpen(false);
     } catch (err: any) {
       console.error("Capital Gains fetch failed:", err);
@@ -281,6 +287,12 @@ export default function ClientHoldingsView({
 
   return (
     <div className="flex flex-col h-full relative z-10 animate-in slide-in-from-right-4 fade-in duration-300">
+      
+      {/* Analytics Modal Injection */}
+      {analyticsFund && (
+        <FundAnalyticsModal fund={analyticsFund} onClose={() => setAnalyticsFund(null)} />
+      )}
+
       <div className="shrink-0 mb-4 lg:mb-6 flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
         <div>
           <button
@@ -388,14 +400,30 @@ export default function ClientHoldingsView({
                         <td className={`p-3 text-center border-b border-slate-100 transition-colors ${isExpanded ? "bg-[#f0fdf4]" : "bg-white group-hover:bg-[#f8fafc]"}`}>
                           <button
                             aria-label={isExpanded ? "Collapse transactions" : "Expand transactions"}
-                            className="text-slate-400 group-hover:text-emerald-600 outline-none p-1 rounded-md group-hover:bg-emerald-100/50 transition-colors"
+                            className="text-slate-400 hover:text-emerald-600 outline-none p-1 rounded-md group-hover:bg-emerald-100/50 transition-colors"
                           >
                             <ChevronRight className={`w-4 h-4 transition-transform duration-300 ${isExpanded ? "rotate-90 text-emerald-600" : "rotate-0"}`} />
                           </button>
                         </td>
                         <td className="py-4 border-b border-slate-100 pr-4">
-                          <p className="font-bold text-slate-900 group-hover:text-emerald-700 mb-0.5 text-xs max-w-[280px] leading-tight">{schemeName}</p>
-                          <span className="inline-block px-2 py-0.5 bg-slate-100 text-slate-500 rounded text-[10px] font-bold font-mono tracking-wide">Folio: {folio}</span>
+                          <div className="flex items-start justify-between gap-3 pr-2">
+                            <div>
+                              <p className="font-bold text-slate-900 group-hover:text-emerald-700 mb-0.5 text-xs max-w-[280px] leading-tight">{schemeName}</p>
+                              <span className="inline-block px-2 py-0.5 bg-slate-100 text-slate-500 rounded text-[10px] font-bold font-mono tracking-wide mt-0.5">Folio: {folio}</span>
+                            </div>
+                            
+                            {/* Analytics Trigger Button */}
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setAnalyticsFund(fund);
+                              }}
+                              title="View Fund Analytics"
+                              className="p-1.5 text-slate-500 bg-white hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors border border-slate-200 hover:border-emerald-200 shadow-sm cursor-pointer"
+                            >
+                              <BarChart2 className="w-4 h-4" />
+                            </button>
+                          </div>
                         </td>
                         <td className="p-4 text-right border-b border-slate-100">
                           <p className="font-bold text-slate-700 tabular-nums text-xs mb-0.5">{fund.available_units?.toFixed(3) || "0"}</p>
@@ -496,7 +524,6 @@ export default function ClientHoldingsView({
             <div className="p-5 flex flex-col gap-4">
               {cgNotif && <InlineNotif notif={cgNotif} onDismiss={() => setCGNotif(null)} />}
 
-              {/* ── Paginated Financial Year Selector UI ── */}
               <div className="relative">
                 <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">Select Financial Year</label>
                 

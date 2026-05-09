@@ -1,4 +1,4 @@
-import * as XLSX from 'xlsx-js-style';
+import ExcelJS from 'exceljs';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 
@@ -31,134 +31,142 @@ const fmtDate = (d: any): string => {
   try { return new Date(d).toLocaleDateString('en-GB'); } catch { return '—'; }
 };
 
-export const exportCapitalGains = (
+// Now exported as async so Excel generation can be awaited
+export const exportCapitalGains = async (
   format: 'pdf' | 'excel',
   data: any,
   fy: string,
   distributorInfo: any,
 ) => {
   if (format === 'excel') {
-    generateExcel(data, fy);
+    await generateExcel(data, fy);
   } else {
     generatePDF(data, fy, distributorInfo);
   }
 };
 
 // ═════════════════════════════════════════════════════════════════════════════
-//  EXCEL GENERATOR
+//  EXCEL GENERATOR (via ExcelJS)
 // ═════════════════════════════════════════════════════════════════════════════
-const generateExcel = (data: any, fy: string) => {
-  const wb = XLSX.utils.book_new();
+const generateExcel = async (data: any, fy: string) => {
+  const wb = new ExcelJS.Workbook();
   const inv = data.investorDetails;
 
-  // Dedicated HEX Theme for Excel cell styling (Compatible with xlsx-js-style)
+  // Dedicated ARGB Hex Theme for ExcelJS styling
   const THEME = {
-    navy: "0F2850",
-    navyMid: "194178",
-    steel: "3464A3",
-    steelLight: "DCE8F7",
-    positive: "0E7850",
-    negative: "DC2626", // Bright Red for Disclaimer
-    white: "FFFFFF",
-    offWhite: "F8FAFD",
-    textPrimary: "121928",
-    textMuted: "64738C"
+    navy: "FF0F2850",
+    navyMid: "FF194178",
+    steel: "FF3464A3",
+    steelLight: "FFDCE8F7",
+    positive: "FF0E7850",
+    negative: "FFDC2626", 
+    white: "FFFFFFFF",
+    offWhite: "FFF8FAFD",
+    textPrimary: "FF121928",
+    textMuted: "FF64738C",
+    border: "FFC8D7EB"
   };
 
   const borderAll = {
-    top: { style: "thin", color: { rgb: "C8D7EB" } },
-    bottom: { style: "thin", color: { rgb: "C8D7EB" } },
-    left: { style: "thin", color: { rgb: "C8D7EB" } },
-    right: { style: "thin", color: { rgb: "C8D7EB" } }
+    top: { style: 'thin' as const, color: { argb: THEME.border } },
+    bottom: { style: 'thin' as const, color: { argb: THEME.border } },
+    left: { style: 'thin' as const, color: { argb: THEME.border } },
+    right: { style: 'thin' as const, color: { argb: THEME.border } }
   };
 
   const createSheet = (sheetName: string, funds: any[], isEquity: boolean) => {
-    const sheetData: any[] = [];
-    const merges: XLSX.Range[] = [];
-    const stylesMap: { r: number; c: number; s: any }[] = [];
+    const ws = wb.addWorksheet(sheetName);
     
-    const setS = (rowIdx: number, colIdx: number, style: any) => {
-      stylesMap.push({ r: rowIdx, c: colIdx, s: style });
+    ws.columns = [
+      { width: 15 }, { width: 10 }, { width: 15 }, { width: 12 }, { width: 12 }, 
+      { width: 15 }, { width: 12 }, { width: 15 }, { width: 12 }, { width: 12 }, 
+      { width: 15 }, { width: 12 }, { width: 15 }, { width: 15 }, { width: 15 }
+    ];
+
+    // Helper to dynamically style a range of cells
+    const applyStyle = (sRow: number, sCol: number, eRow: number, eCol: number, style: any) => {
+      for (let r = sRow; r <= eRow; r++) {
+        for (let c = sCol; c <= eCol; c++) {
+          const cell = ws.getCell(r, c);
+          if (style.font) cell.font = { ...cell.font, ...style.font };
+          if (style.fill) cell.fill = style.fill;
+          if (style.border) cell.border = style.border;
+          if (style.alignment) cell.alignment = { ...cell.alignment, ...style.alignment };
+        }
+      }
     };
 
-    let r = 0; // Row Tracker
-
-    // --- Header & Report Metadata (Right Aligned) ---
-    sheetData.push(['Capital Gain Detail Report', '', '', '', '', '', '', '', '', '', '', '', '', '', '']);
-    merges.push({ s: { r, c: 0 }, e: { r, c: 14 } });
-    setS(r, 0, { font: { bold: true, sz: 14, color: { rgb: THEME.navy } }, alignment: { horizontal: "right" } });
-    r++;
+    // --- Header & Report Metadata ---
+    const r1 = ws.addRow(['Capital Gain Detail Report']).number;
+    ws.mergeCells(r1, 1, r1, 15);
+    applyStyle(r1, 1, r1, 15, { font: { bold: true, size: 14, color: { argb: THEME.navy } }, alignment: { horizontal: 'right' } });
 
     const reportMeta = `FY: ${fy.replace('-', ' – ')}  |  Generated: ${new Date().toLocaleDateString('en-GB')}`;
-    sheetData.push([reportMeta, '', '', '', '', '', '', '', '', '', '', '', '', '', '']);
-    merges.push({ s: { r, c: 0 }, e: { r, c: 14 } });
-    setS(r, 0, { font: { italic: true, sz: 10, color: { rgb: THEME.textMuted } }, alignment: { horizontal: "right" } });
-    r++;
+    const r2 = ws.addRow([reportMeta]).number;
+    ws.mergeCells(r2, 1, r2, 15);
+    applyStyle(r2, 1, r2, 15, { font: { italic: true, size: 10, color: { argb: THEME.textMuted } }, alignment: { horizontal: 'right' } });
 
-    sheetData.push([]); r++;
+    ws.addRow([]);
 
     // --- Investor Details Band ---
-    sheetData.push([inv.name.toUpperCase(), '', '', '', '', '', '', '', '', '', '', '', '', '', '']);
-    merges.push({ s: { r, c: 0 }, e: { r, c: 14 } });
-    setS(r, 0, { fill: { fgColor: { rgb: THEME.offWhite } }, font: { bold: true, sz: 11, color: { rgb: THEME.navy } }, alignment: { horizontal: "left" }, border: { top: borderAll.top, left: borderAll.left, right: borderAll.right } });
-    const invBandStartRow = r;
-    r++;
+    const r4 = ws.addRow([inv.name.toUpperCase()]).number;
+    ws.mergeCells(r4, 1, r4, 15);
+    applyStyle(r4, 1, r4, 15, { 
+      fill: { type: 'pattern', pattern: 'solid', fgColor: { argb: THEME.offWhite } },
+      font: { bold: true, size: 11, color: { argb: THEME.navy } },
+      alignment: { horizontal: 'left' },
+      border: { top: borderAll.top, left: borderAll.left, right: borderAll.right }
+    });
 
-    sheetData.push([`PAN: ${inv.pan}`, '', '', '', '', '', '', '', '', '', '', '', '', `Mobile: ${inv.mobile}`, '']);
-    merges.push({ s: { r, c: 0 }, e: { r, c: 12 } });
-    merges.push({ s: { r, c: 13 }, e: { r, c: 14 } });
-    setS(r, 0, { fill: { fgColor: { rgb: THEME.offWhite } }, font: { sz: 9, color: { rgb: THEME.textPrimary } }, alignment: { horizontal: "left" }, border: { left: borderAll.left } });
-    setS(r, 13, { fill: { fgColor: { rgb: THEME.offWhite } }, font: { sz: 9, color: { rgb: THEME.textPrimary } }, alignment: { horizontal: "right" }, border: { right: borderAll.right } });
-    r++;
+    const r5 = ws.addRow([`PAN: ${inv.pan}`, '', '', '', '', '', '', '', '', '', '', '', '', `Mobile: ${inv.mobile}`, '']).number;
+    ws.mergeCells(r5, 1, r5, 13);
+    ws.mergeCells(r5, 14, r5, 15);
+    applyStyle(r5, 1, r5, 13, { fill: { type: 'pattern', pattern: 'solid', fgColor: { argb: THEME.offWhite } }, font: { size: 9, color: { argb: THEME.textPrimary } }, alignment: { horizontal: 'left' }, border: { left: borderAll.left } });
+    applyStyle(r5, 14, r5, 15, { fill: { type: 'pattern', pattern: 'solid', fgColor: { argb: THEME.offWhite } }, font: { size: 9, color: { argb: THEME.textPrimary } }, alignment: { horizontal: 'right' }, border: { right: borderAll.right } });
 
-    sheetData.push([inv.address, '', '', '', '', '', '', '', '', '', '', '', '', `Email: ${inv.email}`, '']);
-    merges.push({ s: { r, c: 0 }, e: { r, c: 12 } });
-    merges.push({ s: { r, c: 13 }, e: { r, c: 14 } });
-    setS(r, 0, { fill: { fgColor: { rgb: THEME.offWhite } }, font: { sz: 9, color: { rgb: THEME.textPrimary } }, alignment: { horizontal: "left" }, border: { bottom: borderAll.bottom, left: borderAll.left } });
-    setS(r, 13, { fill: { fgColor: { rgb: THEME.offWhite } }, font: { sz: 9, color: { rgb: THEME.textPrimary } }, alignment: { horizontal: "right" }, border: { bottom: borderAll.bottom, right: borderAll.right } });
-    r++;
+    const r6 = ws.addRow([inv.address, '', '', '', '', '', '', '', '', '', '', '', '', `Email: ${inv.email}`, '']).number;
+    ws.mergeCells(r6, 1, r6, 13);
+    ws.mergeCells(r6, 14, r6, 15);
+    applyStyle(r6, 1, r6, 13, { fill: { type: 'pattern', pattern: 'solid', fgColor: { argb: THEME.offWhite } }, font: { size: 9, color: { argb: THEME.textPrimary } }, alignment: { horizontal: 'left' }, border: { bottom: borderAll.bottom, left: borderAll.left } });
+    applyStyle(r6, 14, r6, 15, { fill: { type: 'pattern', pattern: 'solid', fgColor: { argb: THEME.offWhite } }, font: { size: 9, color: { argb: THEME.textPrimary } }, alignment: { horizontal: 'right' }, border: { bottom: borderAll.bottom, right: borderAll.right } });
 
-    sheetData.push([]); r++;
+    ws.addRow([]);
 
     // --- Mutual Funds Section ---
     if (funds.length > 0) {
-      sheetData.push(['Mutual Funds']);
-      merges.push({ s: { r, c: 0 }, e: { r, c: 14 } });
-      setS(r, 0, { fill: { fgColor: { rgb: THEME.navy } }, font: { bold: true, color: { rgb: THEME.white }, sz: 12 }, alignment: { horizontal: "left" } });
-      r++;
-      sheetData.push([]); r++;
+      const rMF = ws.addRow(['Mutual Funds']).number;
+      ws.mergeCells(rMF, 1, rMF, 15);
+      applyStyle(rMF, 1, rMF, 15, { fill: { type: 'pattern', pattern: 'solid', fgColor: { argb: THEME.navy } }, font: { bold: true, color: { argb: THEME.white }, size: 12 }, alignment: { horizontal: 'left' } });
+      ws.addRow([]);
 
       funds.forEach((mf: any) => {
         const fundTitle = `${mf.fundName} | Folio No: ${mf.folioNo} | ISIN: ${mf.isin} | Asset Class: ${mf.assetClass}`;
-        sheetData.push([fundTitle]);
-        merges.push({ s: { r, c: 0 }, e: { r, c: 14 } });
-        for(let c = 0; c <= 14; c++) setS(r, c, { fill: { fgColor: { rgb: THEME.steelLight } }, font: { bold: true, color: { rgb: THEME.navy } }, border: borderAll });
-        r++;
-        
-        sheetData.push([
+        const rTitle = ws.addRow([fundTitle]).number;
+        ws.mergeCells(rTitle, 1, rTitle, 15);
+        applyStyle(rTitle, 1, rTitle, 15, { fill: { type: 'pattern', pattern: 'solid', fgColor: { argb: THEME.steelLight } }, font: { bold: true, color: { argb: THEME.navy } }, border: borderAll });
+
+        const rSuper = ws.addRow([
           'Withdrawal', '', '', '', '', '', '', 
           'Corresponding Subscription', '', '', '', '', 
           'Grandfathered Value', 
           'Profit & Loss', ''
-        ]);
-        merges.push({ s: { r, c: 0 }, e: { r, c: 6 } }); 
-        merges.push({ s: { r, c: 7 }, e: { r, c: 11 } }); 
-        merges.push({ s: { r, c: 13 }, e: { r, c: 14 } }); 
+        ]).number;
+        ws.mergeCells(rSuper, 1, rSuper, 7); 
+        ws.mergeCells(rSuper, 8, rSuper, 12); 
+        ws.mergeCells(rSuper, 14, rSuper, 15); 
         
-        for(let c = 0; c <= 6; c++) setS(r, c, { fill: { fgColor: { rgb: THEME.navy } }, font: { bold: true, color: { rgb: THEME.white } }, alignment: { horizontal: "center", vertical: "center" }, border: borderAll });
-        for(let c = 7; c <= 11; c++) setS(r, c, { fill: { fgColor: { rgb: THEME.navyMid } }, font: { bold: true, color: { rgb: THEME.white } }, alignment: { horizontal: "center", vertical: "center" }, border: borderAll });
-        setS(r, 12, { fill: { fgColor: { rgb: THEME.navy } }, font: { bold: true, color: { rgb: THEME.white }, sz: 9 }, alignment: { horizontal: "center", vertical: "center", wrapText: true }, border: borderAll });
-        for(let c = 13; c <= 14; c++) setS(r, c, { fill: { fgColor: { rgb: THEME.navyMid } }, font: { bold: true, color: { rgb: THEME.white } }, alignment: { horizontal: "center", vertical: "center" }, border: borderAll });
-        r++;
+        applyStyle(rSuper, 1, rSuper, 7, { fill: { type: 'pattern', pattern: 'solid', fgColor: { argb: THEME.navy } }, font: { bold: true, color: { argb: THEME.white } }, alignment: { horizontal: 'center', vertical: 'middle' }, border: borderAll });
+        applyStyle(rSuper, 8, rSuper, 12, { fill: { type: 'pattern', pattern: 'solid', fgColor: { argb: THEME.navyMid } }, font: { bold: true, color: { argb: THEME.white } }, alignment: { horizontal: 'center', vertical: 'middle' }, border: borderAll });
+        applyStyle(rSuper, 13, rSuper, 13, { fill: { type: 'pattern', pattern: 'solid', fgColor: { argb: THEME.navy } }, font: { bold: true, color: { argb: THEME.white }, size: 9 }, alignment: { horizontal: 'center', vertical: 'middle', wrapText: true }, border: borderAll });
+        applyStyle(rSuper, 14, rSuper, 15, { fill: { type: 'pattern', pattern: 'solid', fgColor: { argb: THEME.navyMid } }, font: { bold: true, color: { argb: THEME.white } }, alignment: { horizontal: 'center', vertical: 'middle' }, border: borderAll });
 
-        sheetData.push([
+        const rSub = ws.addRow([
           'Sell Date', 'Hold Days', 'Trxn Type', 'Units/Qty', 'Sell NAV', 'Sell Amount', 'STT & Others', 
           'Pur. Date', 'Trxn Type', 'Pur. NAV', 'Net Pur. Amount', 'Stamp Duty', 
           'Cost Acqn.', 
           'Short Term', 'Long Term'
-        ]);
-        for(let c = 0; c <= 14; c++) setS(r, c, { fill: { fgColor: { rgb: THEME.steel } }, font: { bold: true, color: { rgb: THEME.white }, sz: 9 }, alignment: { horizontal: "center", wrapText: true }, border: borderAll });
-        r++;
+        ]).number;
+        applyStyle(rSub, 1, rSub, 15, { fill: { type: 'pattern', pattern: 'solid', fgColor: { argb: THEME.steel } }, font: { bold: true, color: { argb: THEME.white }, size: 9 }, alignment: { horizontal: 'center', vertical: 'middle', wrapText: true }, border: borderAll });
 
         let totalSell = 0, totalPur = 0, totalST = 0, totalLT = 0;
 
@@ -168,166 +176,130 @@ const generateExcel = (data: any, fy: string) => {
           totalST += Number(tx.shortTermPL || 0);
           totalLT += Number(tx.longTermPL || 0);
 
-          sheetData.push([
+          const rTx = ws.addRow([
             fmtDate(tx.sellDate), tx.holdingDays ?? '—', tx.transactionType || 'Redemption', tx.units, tx.sellNav, tx.sellAmount, tx.sttAndOthers,
             fmtDate(tx.purchaseDate), 'Fresh', tx.purchaseNav, tx.netPurchaseAmount, tx.stampDuty, tx.costAcquisition,
             tx.shortTermPL, tx.longTermPL
-          ]);
-          
+          ]).number;
+
           const rowColor = idx % 2 === 0 ? THEME.white : THEME.offWhite;
-          for(let c = 0; c <= 14; c++) {
-             let cellStyle: any = { fill: { fgColor: { rgb: rowColor } }, border: borderAll, alignment: { horizontal: (c >= 3 && c !== 7 && c !== 8 ? "right" : "center") } };
+          applyStyle(rTx, 1, rTx, 15, { fill: { type: 'pattern', pattern: 'solid', fgColor: { argb: rowColor } }, border: borderAll });
+          
+          for (let c = 1; c <= 15; c++) {
+             const align = (c >= 4 && c !== 8 && c !== 9) ? 'right' : 'center'; 
+             ws.getCell(rTx, c).alignment = { horizontal: align, vertical: 'middle' };
              
-             if (c === 13 || c === 14) {
-                const val = c === 13 ? tx.shortTermPL : tx.longTermPL;
-                if (Number(val) > 0) cellStyle.font = { color: { rgb: THEME.positive }, bold: true };
-                else if (Number(val) < 0) cellStyle.font = { color: { rgb: THEME.negative }, bold: true };
-             }
-             setS(r, c, cellStyle);
+             // Number formatting for specific columns
+             if ([4,5,6,7,10,11,12,13,14,15].includes(c)) ws.getCell(rTx, c).numFmt = '#,##0.00';
           }
-          r++;
+          
+          // Highlights for ST and LT
+          if (Number(tx.shortTermPL) > 0) ws.getCell(rTx, 14).font = { color: { argb: THEME.positive }, bold: true };
+          else if (Number(tx.shortTermPL) < 0) ws.getCell(rTx, 14).font = { color: { argb: THEME.negative }, bold: true };
+
+          if (Number(tx.longTermPL) > 0) ws.getCell(rTx, 15).font = { color: { argb: THEME.positive }, bold: true };
+          else if (Number(tx.longTermPL) < 0) ws.getCell(rTx, 15).font = { color: { argb: THEME.negative }, bold: true };
         });
 
-        sheetData.push(['TOTAL', '', '', '', '', totalSell, '', '', '', '', totalPur, '', '', totalST, totalLT]);
-        merges.push({ s: { r, c: 0 }, e: { r, c: 4 } });
-        for(let c = 0; c <= 14; c++) {
-          setS(r, c, { fill: { fgColor: { rgb: THEME.steelLight } }, font: { bold: true, color: { rgb: THEME.navy } }, alignment: { horizontal: (c >= 5 ? "right" : "center") }, border: borderAll });
+        const rTot = ws.addRow(['TOTAL', '', '', '', '', totalSell, '', '', '', '', totalPur, '', '', totalST, totalLT]).number;
+        ws.mergeCells(rTot, 1, rTot, 5);
+        applyStyle(rTot, 1, rTot, 15, { fill: { type: 'pattern', pattern: 'solid', fgColor: { argb: THEME.steelLight } }, font: { bold: true, color: { argb: THEME.navy } }, border: borderAll });
+        ws.getCell(rTot, 1).alignment = { horizontal: 'center' };
+        for(let c = 6; c <= 15; c++) {
+          ws.getCell(rTot, c).alignment = { horizontal: 'right' };
+          if ([6, 11, 14, 15].includes(c)) ws.getCell(rTot, c).numFmt = '#,##0.00';
         }
-        r++;
-        sheetData.push([]); r++;
+        ws.addRow([]);
       });
     }
 
     if (isEquity) {
-      // ─────────────────────────────────────────────────────────────
-      // TABLE 1: Period-Wise Capital Gain Summary
-      // ─────────────────────────────────────────────────────────────
-      sheetData.push(['Mutual Funds — Period-Wise Capital Gain Summary']);
-      merges.push({ s: { r, c: 0 }, e: { r, c: 8 } });
-      setS(r, 0, { fill: { fgColor: { rgb: THEME.navy } }, font: { bold: true, color: { rgb: THEME.white } }, alignment: { horizontal: "left" } });
-      r++;
+      // TABLE 1: Period-wise summary
+      const rEq1 = ws.addRow(['Mutual Funds — Period-Wise Capital Gain Summary']).number;
+      ws.mergeCells(rEq1, 1, rEq1, 9);
+      applyStyle(rEq1, 1, rEq1, 9, { fill: { type: 'pattern', pattern: 'solid', fgColor: { argb: THEME.navy } }, font: { bold: true, color: { argb: THEME.white } }, alignment: { horizontal: 'left' } });
 
-      sheetData.push([
-        'Investor Name', 'Type', 
-        'Short Term', '', '', 
-        'Long Term', '', '', ''
-      ]);
-      merges.push({ s: { r, c: 0 }, e: { r: r + 1, c: 0 } }); // Investor Name
-      merges.push({ s: { r, c: 1 }, e: { r: r + 1, c: 1 } }); // Type
-      merges.push({ s: { r, c: 2 }, e: { r, c: 4 } }); // Short Term
-      merges.push({ s: { r, c: 5 }, e: { r, c: 8 } }); // Long Term
+      const rEq2 = ws.addRow(['Investor Name', 'Type', 'Short Term', '', '', 'Long Term', '', '', '']).number;
+      ws.mergeCells(rEq2, 1, rEq2 + 1, 1);
+      ws.mergeCells(rEq2, 2, rEq2 + 1, 2);
+      ws.mergeCells(rEq2, 3, rEq2, 5);
+      ws.mergeCells(rEq2, 6, rEq2, 9);
 
-      for(let c = 0; c <= 1; c++) setS(r, c, { fill: { fgColor: { rgb: THEME.navy } }, font: { bold: true, color: { rgb: THEME.white } }, alignment: { horizontal: "center", vertical: "center" }, border: borderAll });
-      for(let c = 2; c <= 4; c++) setS(r, c, { fill: { fgColor: { rgb: THEME.navyMid } }, font: { bold: true, color: { rgb: THEME.white } }, alignment: { horizontal: "center", vertical: "center" }, border: borderAll });
-      for(let c = 5; c <= 8; c++) setS(r, c, { fill: { fgColor: { rgb: THEME.steel } }, font: { bold: true, color: { rgb: THEME.white } }, alignment: { horizontal: "center", vertical: "center" }, border: borderAll });
-      r++;
+      applyStyle(rEq2, 1, rEq2, 2, { fill: { type: 'pattern', pattern: 'solid', fgColor: { argb: THEME.navy } }, font: { bold: true, color: { argb: THEME.white } }, alignment: { horizontal: 'center', vertical: 'middle' }, border: borderAll });
+      applyStyle(rEq2, 3, rEq2, 5, { fill: { type: 'pattern', pattern: 'solid', fgColor: { argb: THEME.navyMid } }, font: { bold: true, color: { argb: THEME.white } }, alignment: { horizontal: 'center', vertical: 'middle' }, border: borderAll });
+      applyStyle(rEq2, 6, rEq2, 9, { fill: { type: 'pattern', pattern: 'solid', fgColor: { argb: THEME.steel } }, font: { bold: true, color: { argb: THEME.white } }, alignment: { horizontal: 'center', vertical: 'middle' }, border: borderAll });
 
-      sheetData.push([
-        '', '', 
-        'Buy Value', 'Sell Value', 'P&L', 
-        'Buy Value', 'Sell Value', 'Cost Acqn.', 'P&L'
-      ]);
-      for(let c = 2; c <= 4; c++) setS(r, c, { fill: { fgColor: { rgb: THEME.navyMid } }, font: { bold: true, color: { rgb: THEME.white } }, alignment: { horizontal: "center", vertical: "center" }, border: borderAll });
-      for(let c = 5; c <= 8; c++) setS(r, c, { fill: { fgColor: { rgb: THEME.steel } }, font: { bold: true, color: { rgb: THEME.white } }, alignment: { horizontal: "center", vertical: "center" }, border: borderAll });
-      
-      // Preserve borders for merged empty cells underneath Investor Name & Type
-      setS(r, 0, { border: borderAll });
-      setS(r, 1, { border: borderAll });
-      r++;
+      const rEq3 = ws.addRow(['', '', 'Buy Value', 'Sell Value', 'P&L', 'Buy Value', 'Sell Value', 'Cost Acqn.', 'P&L']).number;
+      applyStyle(rEq3, 3, rEq3, 5, { fill: { type: 'pattern', pattern: 'solid', fgColor: { argb: THEME.navyMid } }, font: { bold: true, color: { argb: THEME.white } }, alignment: { horizontal: 'center', vertical: 'middle' }, border: borderAll });
+      applyStyle(rEq3, 6, rEq3, 9, { fill: { type: 'pattern', pattern: 'solid', fgColor: { argb: THEME.steel } }, font: { bold: true, color: { argb: THEME.white } }, alignment: { horizontal: 'center', vertical: 'middle' }, border: borderAll });
+      applyStyle(rEq3, 1, rEq3, 2, { border: borderAll });
 
-      sheetData.push([
-        inv.name,
-        'Purchase on/after 31-Jan-2018',
-        data.capitalGainSummary.shortTerm,
-        data.capitalGainSummary.shortTerm,
-        data.capitalGainSummary.shortTerm,
-        data.capitalGainSummary.longTerm,
-        data.capitalGainSummary.longTerm,
-        '0.00',
-        data.capitalGainSummary.longTerm
-      ]);
-      for(let c = 0; c <= 8; c++) setS(r, c, { border: borderAll, alignment: { horizontal: c > 1 ? "right" : "left" } });
-      r++;
-      sheetData.push([]); r++;
+      const rEq4 = ws.addRow([
+        inv.name, 'Purchase on/after 31-Jan-2018',
+        data.capitalGainSummary.shortTerm, data.capitalGainSummary.shortTerm, data.capitalGainSummary.shortTerm,
+        data.capitalGainSummary.longTerm, data.capitalGainSummary.longTerm, 0, data.capitalGainSummary.longTerm
+      ]).number;
+      applyStyle(rEq4, 1, rEq4, 9, { border: borderAll });
+      for (let c = 3; c <= 9; c++) {
+        ws.getCell(rEq4, c).alignment = { horizontal: 'right' };
+        ws.getCell(rEq4, c).numFmt = '#,##0.00';
+      }
+      ws.addRow([]);
 
-      // ─────────────────────────────────────────────────────────────
-      // TABLE 2: Other Taxes Details
-      // ─────────────────────────────────────────────────────────────
-      sheetData.push([`Mutual Funds Other Taxes Details — FY ${fy.replace('-', ' – ')}`]);
-      merges.push({ s: { r, c: 0 }, e: { r, c: 12 } });
-      setS(r, 0, { fill: { fgColor: { rgb: THEME.navy } }, font: { bold: true, color: { rgb: THEME.white } }, alignment: { horizontal: "left" } });
-      r++;
+      // TABLE 2: Taxes summary
+      const rTax1 = ws.addRow([`Mutual Funds Other Taxes Details — FY ${fy.replace('-', ' – ')}`]).number;
+      ws.mergeCells(rTax1, 1, rTax1, 13);
+      applyStyle(rTax1, 1, rTax1, 13, { fill: { type: 'pattern', pattern: 'solid', fgColor: { argb: THEME.navy } }, font: { bold: true, color: { argb: THEME.white } }, alignment: { horizontal: 'left' } });
 
-      sheetData.push([
+      const rTax2 = ws.addRow([
         'Investor Name', 'Type', 
         'Short Term — Quarter-wise', '', '', '', '', 
         'Long Term — Quarter-wise', '', '', '', '', 
         'Total'
-      ]);
-      merges.push({ s: { r, c: 0 }, e: { r: r + 1, c: 0 } });
-      merges.push({ s: { r, c: 1 }, e: { r: r + 1, c: 1 } });
-      merges.push({ s: { r, c: 2 }, e: { r, c: 6 } });
-      merges.push({ s: { r, c: 7 }, e: { r, c: 11 } });
-      merges.push({ s: { r, c: 12 }, e: { r: r + 1, c: 12 } });
+      ]).number;
+      ws.mergeCells(rTax2, 1, rTax2 + 1, 1);
+      ws.mergeCells(rTax2, 2, rTax2 + 1, 2);
+      ws.mergeCells(rTax2, 3, rTax2, 7);
+      ws.mergeCells(rTax2, 8, rTax2, 12);
+      ws.mergeCells(rTax2, 13, rTax2 + 1, 13);
 
-      for(let c = 0; c <= 1; c++) setS(r, c, { fill: { fgColor: { rgb: THEME.navy } }, font: { bold: true, color: { rgb: THEME.white } }, alignment: { horizontal: "center", vertical: "center" }, border: borderAll });
-      for(let c = 2; c <= 6; c++) setS(r, c, { fill: { fgColor: { rgb: THEME.navyMid } }, font: { bold: true, color: { rgb: THEME.white }, sz: 9 }, alignment: { horizontal: "center", vertical: "center" }, border: borderAll });
-      for(let c = 7; c <= 11; c++) setS(r, c, { fill: { fgColor: { rgb: THEME.steel } }, font: { bold: true, color: { rgb: THEME.white }, sz: 9 }, alignment: { horizontal: "center", vertical: "center" }, border: borderAll });
-      setS(r, 12, { fill: { fgColor: { rgb: THEME.navy } }, font: { bold: true, color: { rgb: THEME.white } }, alignment: { horizontal: "center", vertical: "center" }, border: borderAll });
-      r++;
+      applyStyle(rTax2, 1, rTax2, 2, { fill: { type: 'pattern', pattern: 'solid', fgColor: { argb: THEME.navy } }, font: { bold: true, color: { argb: THEME.white } }, alignment: { horizontal: 'center', vertical: 'middle' }, border: borderAll });
+      applyStyle(rTax2, 3, rTax2, 7, { fill: { type: 'pattern', pattern: 'solid', fgColor: { argb: THEME.navyMid } }, font: { bold: true, color: { argb: THEME.white }, size: 9 }, alignment: { horizontal: 'center', vertical: 'middle' }, border: borderAll });
+      applyStyle(rTax2, 8, rTax2, 12, { fill: { type: 'pattern', pattern: 'solid', fgColor: { argb: THEME.steel } }, font: { bold: true, color: { argb: THEME.white }, size: 9 }, alignment: { horizontal: 'center', vertical: 'middle' }, border: borderAll });
+      applyStyle(rTax2, 13, rTax2, 13, { fill: { type: 'pattern', pattern: 'solid', fgColor: { argb: THEME.navy } }, font: { bold: true, color: { argb: THEME.white } }, alignment: { horizontal: 'center', vertical: 'middle' }, border: borderAll });
 
-      sheetData.push([
+      const rTax3 = ws.addRow([
         '', '', 
         'Upto 15-6', '16-6 to 15-9', '16-9 to 15-12', '16-12 to 15-3', '16-3 to 31-3',
         'Upto 15-6', '16-6 to 15-9', '16-9 to 15-12', '16-12 to 15-3', '16-3 to 31-3',
         ''
-      ]);
-      for(let c = 2; c <= 6; c++) setS(r, c, { fill: { fgColor: { rgb: THEME.navyMid } }, font: { bold: true, color: { rgb: THEME.white }, sz: 9 }, alignment: { horizontal: "center", vertical: "center" }, border: borderAll });
-      for(let c = 7; c <= 11; c++) setS(r, c, { fill: { fgColor: { rgb: THEME.steel } }, font: { bold: true, color: { rgb: THEME.white }, sz: 9 }, alignment: { horizontal: "center", vertical: "center" }, border: borderAll });
-      
-      setS(r, 0, { border: borderAll });
-      setS(r, 1, { border: borderAll });
-      setS(r, 12, { border: borderAll });
-      r++;
+      ]).number;
+      applyStyle(rTax3, 3, rTax3, 7, { fill: { type: 'pattern', pattern: 'solid', fgColor: { argb: THEME.navyMid } }, font: { bold: true, color: { argb: THEME.white }, size: 9 }, alignment: { horizontal: 'center', vertical: 'middle' }, border: borderAll });
+      applyStyle(rTax3, 8, rTax3, 12, { fill: { type: 'pattern', pattern: 'solid', fgColor: { argb: THEME.steel } }, font: { bold: true, color: { argb: THEME.white }, size: 9 }, alignment: { horizontal: 'center', vertical: 'middle' }, border: borderAll });
+      applyStyle(rTax3, 1, rTax3, 2, { border: borderAll });
+      applyStyle(rTax3, 13, rTax3, 13, { border: borderAll });
 
-      sheetData.push([
-        inv.name,
-        'Purchase on/after 31-Jan-2018',
-        '0.00', data.capitalGainSummary.shortTerm, '0.00', '0.00', '0.00',
-        '0.00', '0.00', '0.00', '0.00', '0.00',
+      const rTax4 = ws.addRow([
+        inv.name, 'Purchase on/after 31-Jan-2018',
+        0, data.capitalGainSummary.shortTerm, 0, 0, 0,
+        0, 0, 0, 0, 0,
         data.capitalGainSummary.shortTerm + data.capitalGainSummary.longTerm
-      ]);
-      for(let c = 0; c <= 12; c++) setS(r, c, { border: borderAll, alignment: { horizontal: c > 1 ? "right" : "left" } });
-      r++;
-      sheetData.push([]); r++;
+      ]).number;
+      applyStyle(rTax4, 1, rTax4, 13, { border: borderAll });
+      for (let c = 3; c <= 13; c++) {
+        ws.getCell(rTax4, c).alignment = { horizontal: 'right' };
+        ws.getCell(rTax4, c).numFmt = '#,##0.00';
+      }
+      ws.addRow([]);
     }
 
     // --- Big Red Disclaimer ---
-    sheetData.push([]); r++;
     const disclaimer = "Disclaimer:\nWe are not tax consultants and nor do we provide any tax or legal advice. You are requested to kindly consult your own tax or professional advisors for any tax or legal matter. The Company or its employees accept no responsibility for any loss suffered by any investor as a result of the information contained in this report.";
-    sheetData.push([disclaimer]);
-    merges.push({ s: { r, c: 0 }, e: { r, c: 14 } });
-    setS(r, 0, { font: { bold: true, sz: 12, color: { rgb: THEME.negative } }, alignment: { wrapText: true, vertical: "center" } });
-    const disclaimerRowIdx = r;
-    r++;
-
-    const ws = XLSX.utils.aoa_to_sheet(sheetData);
-    ws['!merges'] = merges;
-    ws['!cols'] = [
-      { wch: 15 }, { wch: 10 }, { wch: 15 }, { wch: 12 }, { wch: 12 }, { wch: 15 }, { wch: 12 }, 
-      { wch: 15 }, { wch: 12 }, { wch: 12 }, { wch: 15 }, { wch: 12 }, { wch: 15 }, { wch: 15 }, { wch: 15 }
-    ];
-
-    if (!ws['!rows']) ws['!rows'] = [];
-    ws['!rows'][disclaimerRowIdx] = { hpt: 65 }; // Expand height for wrapped disclaimer
-
-    stylesMap.forEach(({ r, c, s }) => {
-      const addr = XLSX.utils.encode_cell({ r, c });
-      if (!ws[addr]) ws[addr] = { t: 's', v: '' }; 
-      ws[addr].s = s;
-    });
-
-    XLSX.utils.book_append_sheet(wb, ws, sheetName);
+    const rowDisc = ws.addRow([disclaimer]);
+    rowDisc.height = 65; 
+    const rDisc = rowDisc.number;
+    ws.mergeCells(rDisc, 1, rDisc, 15);
+    applyStyle(rDisc, 1, rDisc, 15, { font: { bold: true, size: 12, color: { argb: THEME.negative } }, alignment: { wrapText: true, vertical: 'top' } });
   };
 
   const equityFunds = data.mutualFunds.filter((mf: any) => String(mf.assetClass).toLowerCase().includes('equity'));
@@ -339,7 +311,17 @@ const generateExcel = (data: any, fy: string) => {
   createSheet('Equity Detail', equityFunds, true);
   createSheet('Debt Detail', debtFunds, false);
 
-  XLSX.writeFile(wb, `Capital_Gains_${data.investorDetails.name.replace(/[^a-z0-9]/gi, '_')}_${fy}.xlsx`);
+  // Trigger client-side download using ExcelJS writeBuffer
+  const buffer = await wb.xlsx.writeBuffer();
+  const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+  const url = window.URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `Capital_Gains_${data.investorDetails.name.replace(/[^a-z0-9]/gi, '_')}_${fy}.xlsx`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  window.URL.revokeObjectURL(url);
 };
 
 // ═════════════════════════════════════════════════════════════════════════════

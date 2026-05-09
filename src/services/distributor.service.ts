@@ -109,5 +109,27 @@ export const distributorService = {
 
   updateCompanyUser: async (id: string, data: CompanyUserPayload): Promise<ApiResponse<any>> => {
     return apiClient.put<ApiResponse<any>>(`/admin/users/${id}`, data);
-  }
+  },
+
+  // ─── FUND ANALYTICS ─────────────────────────────────────────────────────────
+  getFundReturns: async (amfiCode: string) => {
+    const response = await apiClient.get(`/fund-analytics/returns/${amfiCode}`);
+    return response.data;
+  },
+  getFundMonthlyReturns: async (amfiCode: string) => {
+    const response = await apiClient.get(`/fund-analytics/monthly-returns/${amfiCode}`);
+    return response.data;
+  },
+  getFundRiskStats: async (amfiCode: string) => {
+    const response = await apiClient.get(`/fund-analytics/risk-stats/${amfiCode}`);
+    return response.data;
+  },
+  getFundSectorAllocation: async (amfiCode: string) => {
+    const response = await apiClient.get(`/fund-analytics/sector-allocation/${amfiCode}`);
+    return response.data;
+  },
+  getFundStyleBox: async (amfiCode: string) => {
+    const response = await apiClient.get(`/fund-analytics/stylebox/${amfiCode}`);
+    return response.data;
+  },
 };

@@ -12,7 +12,7 @@ export const setAuthCookies = (accessToken: string, refreshToken?: string, porta
 
   // Calculate explicit expiration dates for cross-browser persistence
   const accessExpires = new Date();
-  accessExpires.setTime(accessExpires.getTime() + 100 * 60 * 60 * 1000); // 100 hours
+  accessExpires.setTime(accessExpires.getTime() + 500 * 60 * 60 * 1000); // 500 hours
 
   document.cookie = `${access}=${accessToken}; path=/; expires=${accessExpires.toUTCString()}; max-age=360000; SameSite=Lax`;
 
