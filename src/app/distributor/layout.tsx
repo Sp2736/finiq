@@ -11,7 +11,7 @@ export default function DistributorLayout({
   const [isCollapsed, setIsCollapsed] = useState(false);
 
   return (
-    <div className="flex h-screen bg-slate-50/50 overflow-hidden selection:bg-emerald-100 selection:text-emerald-900">
+    <div className="flex h-screen bg-slate-50/50 overflow-hidden selection:bg-distributor-100 selection:text-distributor-900">
       <Sidebar isCollapsed={isCollapsed} setIsCollapsed={setIsCollapsed} />
       
       {/* CRITICAL CHANGE: Changed overflow-y-auto to overflow-hidden and forced h-screen. 

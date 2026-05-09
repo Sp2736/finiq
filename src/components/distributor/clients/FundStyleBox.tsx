@@ -47,7 +47,7 @@ export default function FundStyleBox({ amfiCode }: FundStyleBoxProps) {
   if (isLoading) {
     return (
       <div className="flex flex-col items-center justify-center py-12 border border-slate-200 rounded-xl bg-white shadow-sm w-full h-[250px]">
-        <Loader2 className="w-6 h-6 animate-spin text-emerald-500 mb-2" />
+        <Loader2 className="w-6 h-6 animate-spin text-distributor-500 mb-2" />
         <p className="text-slate-500 font-bold text-[10px] uppercase tracking-widest">Loading Style Box...</p>
       </div>
     );
@@ -82,7 +82,7 @@ export default function FundStyleBox({ amfiCode }: FundStyleBoxProps) {
       {/* WIDGET 1: Equity Style Box Matrix */}
       <div className="border border-slate-200 rounded-xl overflow-hidden shadow-sm bg-white flex flex-col">
         <div className="bg-slate-50 px-4 py-3 border-b border-slate-200 flex items-center gap-2">
-          <Grid3X3 className="w-4 h-4 text-emerald-600" />
+          <Grid3X3 className="w-4 h-4 text-distributor-600" />
           <h3 className="text-xs font-black text-slate-700 uppercase tracking-widest">Equity Style Box</h3>
         </div>
         <div className="p-5 flex-1 flex flex-col items-center justify-center relative">
@@ -113,7 +113,7 @@ export default function FundStyleBox({ amfiCode }: FundStyleBoxProps) {
                   <div 
                     key={i} 
                     className={`flex items-center justify-center border border-slate-200/80 transition-all duration-300 ${
-                      isActive ? "bg-emerald-500 shadow-md shadow-emerald-500/30 z-10 scale-[1.02]" : "bg-white"
+                      isActive ? "bg-distributor-500 shadow-md shadow-distributor-500/30 z-10 scale-[1.02]" : "bg-white"
                     }`}
                   >
                     {isActive}
@@ -129,7 +129,7 @@ export default function FundStyleBox({ amfiCode }: FundStyleBoxProps) {
       <div className="border border-slate-200 rounded-xl overflow-hidden shadow-sm bg-white flex flex-col">
         <div className="bg-slate-50 px-4 py-3 border-b border-slate-200 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <BarChart3 className="w-4 h-4 text-emerald-600" />
+            <BarChart3 className="w-4 h-4 text-distributor-600" />
             <h3 className="text-xs font-black text-slate-700 uppercase tracking-widest">Market Capitalization</h3>
           </div>
         </div>
@@ -145,7 +145,7 @@ export default function FundStyleBox({ amfiCode }: FundStyleBoxProps) {
               {marketCapTable.map((cap, i) => (
                 <tr key={i} className="hover:bg-slate-50/50 transition-colors">
                   <td className="p-4 font-bold text-slate-700 border-r border-slate-50">{cap.size}</td>
-                  <td className="p-4 text-right font-black text-emerald-700 bg-emerald-50/20">
+                  <td className="p-4 text-right font-black text-distributor-700 bg-distributor-50/20">
                     {cap.pct > 0 ? `${cap.pct.toFixed(2)}%` : "—"}
                   </td>
                 </tr>

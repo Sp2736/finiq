@@ -59,7 +59,7 @@ const InlineNotif = ({
 }) => {
   const styles: Record<NotifType, string> = {
     error:   "bg-rose-50 border-rose-200 text-rose-700",
-    info:    "bg-blue-50 border-blue-200 text-blue-700",
+    info:    "bg-distributor-50 border-distributor-200 text-distributor-700",
     warning: "bg-amber-50 border-amber-200 text-amber-700",
   };
   const icons: Record<NotifType, React.ReactNode> = {
@@ -305,11 +305,11 @@ export default function ClientHoldingsView({
             {portfolioData?.investor_name ? (
               <>
                 {toTitleCase(portfolioData.investor_name)}&apos;s{" "}
-                <span className="text-emerald-600">Portfolio</span>
+                <span className="text-distributor-600">Portfolio</span>
               </>
             ) : (
               <>
-                Client <span className="text-emerald-600">Portfolio</span>
+                Client <span className="text-distributor-600">Portfolio</span>
               </>
             )}
           </h1>
@@ -336,7 +336,7 @@ export default function ClientHoldingsView({
       <div className="flex-1 min-h-0 bg-white rounded-2xl border border-slate-200 shadow-sm flex flex-col relative overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-500 delay-200 fill-both">
         {isLoading ? (
           <div className="absolute inset-0 bg-white/60 backdrop-blur-[1px] z-50 flex flex-col items-center justify-center gap-4">
-            <Loader2 className="w-8 h-8 animate-spin text-emerald-600" />
+            <Loader2 className="w-8 h-8 animate-spin text-distributor-600" />
             <p className="text-sm font-bold text-slate-500">
               Loading portfolio securely...
             </p>
@@ -394,21 +394,21 @@ export default function ClientHoldingsView({
                       <tr
                         onClick={() => setExpandedRow(isExpanded ? null : i)}
                         className={`cursor-pointer transition-colors duration-200 group border-b border-slate-100 ${
-                          isExpanded ? "bg-emerald-50/30" : "hover:bg-slate-50/80"
+                          isExpanded ? "bg-distributor-50/30" : "hover:bg-slate-50/80"
                         }`}
                       >
                         <td className={`p-3 text-center border-b border-slate-100 transition-colors ${isExpanded ? "bg-[#f0fdf4]" : "bg-white group-hover:bg-[#f8fafc]"}`}>
                           <button
                             aria-label={isExpanded ? "Collapse transactions" : "Expand transactions"}
-                            className="text-slate-400 hover:text-emerald-600 outline-none p-1 rounded-md group-hover:bg-emerald-100/50 transition-colors"
+                            className="text-slate-400 hover:text-distributor-600 outline-none p-1 rounded-md group-hover:bg-distributor-100/50 transition-colors"
                           >
-                            <ChevronRight className={`w-4 h-4 transition-transform duration-300 ${isExpanded ? "rotate-90 text-emerald-600" : "rotate-0"}`} />
+                            <ChevronRight className={`w-4 h-4 transition-transform duration-300 ${isExpanded ? "rotate-90 text-distributor-600" : "rotate-0"}`} />
                           </button>
                         </td>
                         <td className="py-4 border-b border-slate-100 pr-4">
                           <div className="flex items-start justify-between gap-3 pr-2">
                             <div>
-                              <p className="font-bold text-slate-900 group-hover:text-emerald-700 mb-0.5 text-xs max-w-[280px] leading-tight">{schemeName}</p>
+                              <p className="font-bold text-slate-900 group-hover:text-distributor-700 mb-0.5 text-xs max-w-[280px] leading-tight">{schemeName}</p>
                               <span className="inline-block px-2 py-0.5 bg-slate-100 text-slate-500 rounded text-[10px] font-bold font-mono tracking-wide mt-0.5">Folio: {folio}</span>
                             </div>
                             
@@ -419,7 +419,7 @@ export default function ClientHoldingsView({
                                 setAnalyticsFund(fund);
                               }}
                               title="View Fund Analytics"
-                              className="p-1.5 text-slate-500 bg-white hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors border border-slate-200 hover:border-emerald-200 shadow-sm cursor-pointer"
+                              className="p-1.5 text-slate-500 bg-white hover:text-distributor-600 hover:bg-distributor-50 rounded-lg transition-colors border border-slate-200 hover:border-distributor-200 shadow-sm cursor-pointer"
                             >
                               <BarChart2 className="w-4 h-4" />
                             </button>
@@ -437,11 +437,11 @@ export default function ClientHoldingsView({
                         </td>
                         <td className="p-4 text-right border-b border-slate-100 pr-6">
                           <div className="flex flex-col items-end">
-                            <div className={`flex items-center gap-0.5 text-xs font-black ${isPositive ? "text-emerald-600" : "text-rose-600"}`}>
+                            <div className={`flex items-center gap-0.5 text-xs font-black ${isPositive ? "text-distributor-600" : "text-rose-600"}`}>
                               {isPositive ? <ArrowUpRight className="w-3.5 h-3.5" /> : <ArrowDownRight className="w-3.5 h-3.5" />}
                               {xirr}%
                             </div>
-                            <span className={`text-[10px] font-bold mt-0.5 tabular-nums ${isPositive ? "text-emerald-500" : "text-rose-500"}`}>{formatCurrency(netPnl)}</span>
+                            <span className={`text-[10px] font-bold mt-0.5 tabular-nums ${isPositive ? "text-distributor-500" : "text-rose-500"}`}>{formatCurrency(netPnl)}</span>
                           </div>
                         </td>
                       </tr>
@@ -477,7 +477,7 @@ export default function ClientHoldingsView({
                                               <td className="p-3 text-slate-700 font-bold truncate max-w-[200px]">{t.transaction_type || "Unknown"}</td>
                                               <td className="p-3 text-right font-black text-slate-900 tabular-nums">{formatCurrency(t.amount || 0)}</td>
                                               <td className="p-3 text-right text-slate-500 font-medium tabular-nums">₹{t.nav || 0}</td>
-                                              <td className="p-3 text-right text-emerald-600 font-bold tabular-nums pr-4">+{t.units?.toFixed(3) || "0"}</td>
+                                              <td className="p-3 text-right text-distributor-600 font-bold tabular-nums pr-4">+{t.units?.toFixed(3) || "0"}</td>
                                             </tr>
                                           ))}
                                         </tbody>
@@ -552,7 +552,7 @@ export default function ClientHoldingsView({
                     </div>
                     <div className="grid grid-cols-3 gap-2">
                       {paginatedYears.map(fy => (
-                        <button key={fy} onClick={() => { setSelectedFY(fy); setIsFYSelectorOpen(false); setCGNotif(null); }} className={`py-2 px-1 text-xs font-bold rounded-lg border transition-all ${selectedFY === fy ? "bg-emerald-50 border-emerald-500 text-emerald-700 shadow-sm" : "bg-white border-slate-200 text-slate-600 hover:border-slate-300 hover:bg-slate-50"}`}>
+                        <button key={fy} onClick={() => { setSelectedFY(fy); setIsFYSelectorOpen(false); setCGNotif(null); }} className={`py-2 px-1 text-xs font-bold rounded-lg border transition-all ${selectedFY === fy ? "bg-distributor-50 border-distributor-500 text-distributor-700 shadow-sm" : "bg-white border-slate-200 text-slate-600 hover:border-slate-300 hover:bg-slate-50"}`}>
                           {fy}
                         </button>
                       ))}
@@ -576,7 +576,7 @@ export default function ClientHoldingsView({
                   onClick={() => handleExportCG("excel")}
                   disabled={!!exportingFormat || isFYSelectorOpen}
                   aria-label="Export as Excel"
-                  className="flex flex-col items-center justify-center gap-2 p-3 rounded-xl border-2 border-slate-100 hover:border-emerald-200 hover:bg-emerald-50 text-emerald-600 disabled:opacity-50 active:scale-95 transition-all"
+                  className="flex flex-col items-center justify-center gap-2 p-3 rounded-xl border-2 border-slate-100 hover:border-distributor-200 hover:bg-distributor-50 text-distributor-600 disabled:opacity-50 active:scale-95 transition-all"
                 >
                   {exportingFormat === "excel" ? <Loader2 className="w-6 h-6 animate-spin" /> : <FileSpreadsheet className="w-6 h-6" />}
                   <span className="text-xs font-bold">{exportingFormat === "excel" ? "Generating…" : "Export Excel"}</span>

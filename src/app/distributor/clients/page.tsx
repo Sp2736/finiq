@@ -171,7 +171,7 @@ export default function InvestorsPage() {
       <div className="shrink-0 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
         <div>
           <h1 className="text-2xl lg:text-3xl font-black tracking-tight text-slate-900 mb-1">
-            <span className="text-emerald-600">Investors</span>
+            <span className="text-distributor-600">Investors</span>
           </h1>
           <p className="text-slate-500 font-medium text-xs lg:text-sm">
             Manage your network of mapped investors and portfolios.
@@ -187,7 +187,7 @@ export default function InvestorsPage() {
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleSearchTrigger()}
-              className="w-full pl-9 pr-4 py-2 bg-white border border-slate-200 rounded-xl text-sm focus:border-emerald-600 transition-all shadow-sm"
+              className="w-full pl-9 pr-4 py-2 bg-white border border-slate-200 rounded-xl text-sm focus:border-distributor-600 transition-all shadow-sm"
             />
           </div>
           
@@ -208,7 +208,7 @@ export default function InvestorsPage() {
         {/* Loading Overlay */}
         {(isLoading || isCaching) && (
           <div className="absolute inset-0 bg-white/60 backdrop-blur-[2px] z-50 flex flex-col gap-3 items-center justify-center">
-            <Loader2 className="w-8 h-8 text-emerald-600 animate-spin" />
+            <Loader2 className="w-8 h-8 text-distributor-600 animate-spin" />
             {isCaching && (
               <p className="text-xs font-bold text-slate-500 animate-pulse flex items-center gap-1.5">
                 <Database className="w-3.5 h-3.5" /> Building global directory cache...

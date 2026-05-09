@@ -22,7 +22,7 @@ export default function GlobalBrokerageStats({ stats }: StatsProps) {
         <p className="text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-1">Total Earnings (YTD)</p>
         <h2 className="text-3xl font-black text-slate-900 tracking-tight">{formatCurrency(stats.totalEarnings)}</h2>
         <div className="mt-3 flex items-center gap-2">
-          <span className="text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded">+{stats.ytdGrowth}%</span>
+          <span className="text-xs font-bold text-distributor-600 bg-distributor-50 px-2 py-0.5 rounded">+{stats.ytdGrowth}%</span>
           <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">vs last month</span>
         </div>
       </div>

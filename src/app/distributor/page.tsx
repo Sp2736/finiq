@@ -73,8 +73,8 @@ export default function DistributorDashboard() {
           change: `${(((summary.total_current - summary.total_invested) / summary.total_invested) * 100).toFixed(1)}%`,
           isPositive: summary.total_current >= summary.total_invested,
           icon: Briefcase,
-          bgClass: "bg-emerald-50",
-          textClass: "text-emerald-600",
+          bgClass: "bg-distributor-50",
+          textClass: "text-distributor-600",
         },
         {
           name: "Total Invested",
@@ -83,8 +83,8 @@ export default function DistributorDashboard() {
           change: "Capital",
           isPositive: true,
           icon: TrendingUp,
-          bgClass: "bg-emerald-50",
-          textClass: "text-emerald-600",
+          bgClass: "bg-distributor-50",
+          textClass: "text-distributor-600",
         },
         {
           name: "Total Clients",
@@ -93,8 +93,8 @@ export default function DistributorDashboard() {
           change: "Active",
           isPositive: true,
           icon: Users,
-          bgClass: "bg-emerald-50",
-          textClass: "text-emerald-600",
+          bgClass: "bg-distributor-50",
+          textClass: "text-distributor-600",
         },
       ]
     : [];
@@ -103,7 +103,7 @@ export default function DistributorDashboard() {
     return (
       <div className="flex items-center justify-center h-full">
         <div className="flex flex-col items-center gap-3">
-          <div className="w-10 h-10 border-3 border-emerald-600 border-t-transparent rounded-full animate-spin" />
+          <div className="w-10 h-10 border-3 border-distributor-600 border-t-transparent rounded-full animate-spin" />
           <p className="text-slate-400 font-bold tracking-widest uppercase text-[10px]">
             Syncing...
           </p>
@@ -118,14 +118,14 @@ export default function DistributorDashboard() {
       <div className="shrink-0 flex flex-col md:flex-row justify-between items-start md:items-end gap-4 mb-5">
         <div>
           <h1 className="text-2xl lg:text-3xl font-black tracking-tight text-slate-900 mb-1">
-            Client and <span className="text-emerald-600">AUM Insights</span>
+            Client and <span className="text-distributor-600">AUM Insights</span>
           </h1>
           <p className="text-slate-500 font-medium text-xs lg:text-sm max-w-xl">
             Synchronization of contributor pipelines.
           </p>
         </div>
         <div className="flex gap-2.5">
-          {/* <button className="flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 rounded-md text-slate-600 font-bold text-xs hover:border-emerald-600 hover:text-emerald-600 transition-all shadow-sm active:scale-95">
+          {/* <button className="flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 rounded-md text-slate-600 font-bold text-xs hover:border-distributor-600 hover:text-distributor-600 transition-all shadow-sm active:scale-95">
             <Filter className="w-3.5 h-3.5" />
             <span>Filters</span>
           </button>
@@ -140,11 +140,11 @@ export default function DistributorDashboard() {
           {kpis.map((kpi) => (
             <div
               key={kpi.name}
-              className="bg-white p-5 rounded-md border border-slate-200 shadow-sm relative overflow-hidden group hover:bg-emerald-600 hover:border-emerald-600 hover:shadow-md transition-all duration-300 cursor-default"
+              className="bg-white p-5 rounded-md border border-slate-200 shadow-sm relative overflow-hidden group hover:bg-distributor-600 hover:border-distributor-600 hover:shadow-md transition-all duration-300 cursor-default"
             >
               {/* --- KPI (fades out on hover) --- */}
               <div className="group-hover:opacity-0 transition-opacity duration-300">
-                <div className="absolute top-0 right-0 w-24 h-24 bg-emerald-50 rounded-full -mr-12 -mt-12 group-hover:scale-125 transition-transform duration-700 pointer-events-none opacity-50" />
+                <div className="absolute top-0 right-0 w-24 h-24 bg-distributor-50 rounded-full -mr-12 -mt-12 group-hover:scale-125 transition-transform duration-700 pointer-events-none opacity-50" />
 
                 <div className="flex items-center gap-4 relative z-10">
                   <div
@@ -161,7 +161,7 @@ export default function DistributorDashboard() {
                         {kpi.value}
                       </h3>
                       <div
-                        className={`flex items-center gap-0.5 text-[10px] font-black ${kpi.isPositive ? "text-emerald-600" : "text-rose-600"}`}
+                        className={`flex items-center gap-0.5 text-[10px] font-black ${kpi.isPositive ? "text-distributor-600" : "text-rose-600"}`}
                       >
                         {kpi.isPositive ? (
                           <ArrowUpRight className="w-3 h-3" />

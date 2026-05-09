@@ -63,13 +63,13 @@ export default function DesktopBrokerageTable({ data, totals }: { data: any[], t
                 return (
                   <React.Fragment key={user.id}>
                     <tr 
-                      className={`group border-b border-slate-100 cursor-pointer transition-colors duration-200 ${isUserExpanded ? 'bg-emerald-50/30' : 'hover:bg-slate-50/80'}`}
+                      className={`group border-b border-slate-100 cursor-pointer transition-colors duration-200 ${isUserExpanded ? 'bg-distributor-50/30' : 'hover:bg-slate-50/80'}`}
                       onClick={() => { if(hasAmc) toggleUser(user.id); }}
                     >
                       <td className={`p-3 text-center sticky left-0 z-10 border-r border-slate-100 transition-colors ${isUserExpanded ? 'bg-[#f0fdf4]' : 'bg-white group-hover:bg-[#f8fafc]'}`}>
                         {hasAmc ? (
-                          <button className="text-slate-400 hover:text-emerald-600 outline-none p-1 rounded-md hover:bg-emerald-100/50">
-                            <svg className={`w-3.5 h-3.5 transition-transform duration-300 ${isUserExpanded ? 'rotate-90 text-emerald-600' : 'rotate-0'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <button className="text-slate-400 hover:text-distributor-600 outline-none p-1 rounded-md hover:bg-distributor-100/50">
+                            <svg className={`w-3.5 h-3.5 transition-transform duration-300 ${isUserExpanded ? 'rotate-90 text-distributor-600' : 'rotate-0'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M9 5l7 7-7 7" />
                             </svg>
                           </button>
@@ -87,7 +87,7 @@ export default function DesktopBrokerageTable({ data, totals }: { data: any[], t
                       <td className="p-3 text-right font-medium text-slate-600 tabular-nums">{formatCurrency(user.gross)}</td>
                       <td className="p-3 text-right font-medium text-slate-500 tabular-nums">{formatCurrency(user.paid)}</td>
                       <td className="p-3 text-right font-medium text-slate-500 tabular-nums">{formatCurrency(user.paidSub)}</td>
-                      <td className="p-3 text-right font-bold text-emerald-600 tabular-nums">{formatCurrency(totalPaid)}</td>
+                      <td className="p-3 text-right font-bold text-distributor-600 tabular-nums">{formatCurrency(totalPaid)}</td>
                       <td className="p-3 text-right tabular-nums pr-4">
                         <span className="font-black block text-slate-900">{formatCurrency(netReceivable)}</span>
                       </td>
@@ -98,10 +98,10 @@ export default function DesktopBrokerageTable({ data, totals }: { data: any[], t
                         <td colSpan={7} className="p-0 border-b border-slate-200/60">
                           <div className={`grid transition-all duration-300 ease-in-out ${isUserExpanded ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'}`}>
                             <div className="overflow-hidden">
-                              <div className="p-4 pl-10 border-l-2 border-emerald-300 ml-3 my-2">
+                              <div className="p-4 pl-10 border-l-2 border-distributor-300 ml-3 my-2">
                                 
                                 <div className="mb-2 flex items-center justify-between">
-                                  <h4 className="text-[10px] font-bold uppercase tracking-widest text-emerald-700 flex items-center gap-2">
+                                  <h4 className="text-[10px] font-bold uppercase tracking-widest text-distributor-700 flex items-center gap-2">
                                     <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                                     </svg>
@@ -134,7 +134,7 @@ export default function DesktopBrokerageTable({ data, totals }: { data: any[], t
                                               <td className="p-2 w-[15%] text-right font-medium text-slate-600 tabular-nums">{formatCurrency(amc.gross)}</td>
                                               <td className="p-2 w-[15%] text-right text-slate-500 font-medium tabular-nums">{formatCurrency(amc.paid)}</td>
                                               <td className="p-2 w-[15%] text-right text-slate-500 font-medium tabular-nums">{formatCurrency(amc.paidSub)}</td>
-                                              <td className="p-2 w-[15%] text-right font-bold text-emerald-600 tabular-nums">{formatCurrency(amcTotal)}</td>
+                                              <td className="p-2 w-[15%] text-right font-bold text-distributor-600 tabular-nums">{formatCurrency(amcTotal)}</td>
                                               <td className="p-2 w-[15%] text-right font-black text-slate-900 tabular-nums pr-4">{formatCurrency(amcNet)}</td>
                                             </tr>
                                           )
@@ -160,7 +160,7 @@ export default function DesktopBrokerageTable({ data, totals }: { data: any[], t
               <td className="px-3 py-3 text-right font-black tabular-nums">{formatCurrency(totals.gross)}</td>
               <td className="px-3 py-3 text-right font-black text-slate-300 tabular-nums">{formatCurrency(totals.paid)}</td>
               <td className="px-3 py-3 text-right font-black text-slate-300 tabular-nums">{formatCurrency(totals.paidSub)}</td>
-              <td className="px-3 py-3 text-right font-black text-emerald-400 tabular-nums">{formatCurrency(totals.paid + totals.paidSub)}</td>
+              <td className="px-3 py-3 text-right font-black text-distributor-400 tabular-nums">{formatCurrency(totals.paid + totals.paidSub)}</td>
               <td className="px-3 py-3 text-right font-black text-amber-400 tabular-nums pr-4">{formatCurrency(totals.gross - (totals.paid + totals.paidSub))}</td>
             </tr>
           </tfoot>

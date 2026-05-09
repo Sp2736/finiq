@@ -103,7 +103,7 @@ export default function UsersPage() {
       <div className="shrink-0 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
         <div>
           <h1 className="text-2xl lg:text-3xl font-black tracking-tight text-slate-900 mb-1">
-            User <span className="text-emerald-600">Management</span>
+            User <span className="text-distributor-600">Management</span>
           </h1>
           <p className="text-slate-500 font-medium text-xs lg:text-sm">
             Manage roles, hierarchy, and access for your distributor network.
@@ -112,7 +112,7 @@ export default function UsersPage() {
         
         <button 
           onClick={() => handleOpenModal()}
-          className="flex items-center gap-2 px-5 py-2.5 bg-emerald-600 text-white rounded-xl text-sm font-bold shadow-md hover:bg-emerald-700 transition-all active:scale-95"
+          className="flex items-center gap-2 px-5 py-2.5 bg-distributor-600 text-white rounded-xl text-sm font-bold shadow-md hover:bg-distributor-700 transition-all active:scale-95"
         >
           <Plus className="w-4 h-4" />
           Add New User
@@ -123,7 +123,7 @@ export default function UsersPage() {
       <div className="flex-1 min-h-0 bg-white rounded-2xl border border-slate-200 shadow-sm flex flex-col relative overflow-hidden">
         {isLoading ? (
           <div className="absolute inset-0 bg-white/60 backdrop-blur-[1px] z-50 flex items-center justify-center">
-            <Loader2 className="w-8 h-8 text-emerald-600 animate-spin" />
+            <Loader2 className="w-8 h-8 text-distributor-600 animate-spin" />
           </div>
         ) : users.length === 0 ? (
           <div className="flex-1 flex flex-col items-center justify-center text-center p-8">
@@ -153,7 +153,7 @@ export default function UsersPage() {
                       {toTitleCase(user.name)}
                     </td>
                     <td className="p-4">
-                      <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-emerald-50 text-emerald-700 text-[10px] font-black uppercase tracking-wider">
+                      <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-distributor-50 text-distributor-700 text-[10px] font-black uppercase tracking-wider">
                         <Shield className="w-3 h-3" />
                         {user.role ? user.role.replace('_', ' ') : 'SUB BROKER'}
                       </span>
@@ -170,7 +170,7 @@ export default function UsersPage() {
                     <td className="p-4 pr-6 text-right">
                       <button 
                         onClick={() => handleOpenModal(user)}
-                        className="inline-flex items-center justify-center p-2 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors"
+                        className="inline-flex items-center justify-center p-2 text-slate-400 hover:text-distributor-600 hover:bg-distributor-50 rounded-lg transition-colors"
                       >
                         <Edit2 className="w-4 h-4" />
                       </button>
@@ -207,7 +207,7 @@ export default function UsersPage() {
                   <select 
                     value={formData.role}
                     onChange={(e) => setFormData({...formData, role: e.target.value})}
-                    className="w-full pl-9 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold text-slate-700 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 appearance-none cursor-not-allowed"
+                    className="w-full pl-9 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold text-slate-700 focus:outline-none focus:border-distributor-500 focus:ring-1 focus:ring-distributor-500 appearance-none cursor-not-allowed"
                   >
                     <option value="SUB_BROKER">Sub Broker</option>
                   </select>
@@ -225,7 +225,7 @@ export default function UsersPage() {
                     value={formData.name}
                     onChange={(e) => setFormData({...formData, name: e.target.value})}
                     placeholder="e.g. Aman Gupta"
-                    className="w-full pl-9 pr-4 py-2.5 border border-slate-200 rounded-xl text-sm font-medium focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500"
+                    className="w-full pl-9 pr-4 py-2.5 border border-slate-200 rounded-xl text-sm font-medium focus:outline-none focus:border-distributor-500 focus:ring-1 focus:ring-distributor-500"
                   />
                 </div>
               </div>
@@ -241,7 +241,7 @@ export default function UsersPage() {
                       value={formData.arn_id}
                       onChange={(e) => setFormData({...formData, arn_id: e.target.value})}
                       placeholder="ARN-XXXX"
-                      className="w-full pl-9 pr-4 py-2.5 border border-slate-200 rounded-xl text-sm font-mono focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500"
+                      className="w-full pl-9 pr-4 py-2.5 border border-slate-200 rounded-xl text-sm font-mono focus:outline-none focus:border-distributor-500 focus:ring-1 focus:ring-distributor-500"
                     />
                   </div>
                 </div>
@@ -257,7 +257,7 @@ export default function UsersPage() {
                       value={formData.share_percentage === null ? '' : formData.share_percentage}
                       onChange={(e) => setFormData({...formData, share_percentage: e.target.value === '' ? null : Number(e.target.value)})}
                       placeholder="0"
-                      className="w-full pl-9 pr-4 py-2.5 border border-slate-200 rounded-xl text-sm font-black tabular-nums focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500"
+                      className="w-full pl-9 pr-4 py-2.5 border border-slate-200 rounded-xl text-sm font-black tabular-nums focus:outline-none focus:border-distributor-500 focus:ring-1 focus:ring-distributor-500"
                     />
                   </div>
                 </div>
@@ -271,7 +271,7 @@ export default function UsersPage() {
                   <select 
                     value={formData.parent_id || ''}
                     onChange={(e) => setFormData({...formData, parent_id: e.target.value})}
-                    className="w-full pl-9 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm font-medium focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 appearance-none"
+                    className="w-full pl-9 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm font-medium focus:outline-none focus:border-distributor-500 focus:ring-1 focus:ring-distributor-500 appearance-none"
                   >
                     <option value="">Independent (No Parent)</option>
                     {users.filter(u => u.id !== editingUserId).map(u => (

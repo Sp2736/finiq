@@ -27,10 +27,10 @@ export default function DistributorFluidBackground() {
       const w = canvas.width;
       const h = canvas.height;
 
-      // 1. Base Background: Clean, crisp White/Mint
+      // 1. Base Background: Clean, crisp White to Ice Blue
       const bgGrad = ctx.createLinearGradient(0, 0, w, h);
       bgGrad.addColorStop(0, "#ffffff"); // Pure white
-      bgGrad.addColorStop(1, "#f0fdf4"); // Very soft emerald tint (emerald-50)
+      bgGrad.addColorStop(1, "#BAD8FF"); // Soft blue tint
       ctx.fillStyle = bgGrad;
       ctx.fillRect(0, 0, w, h);
 
@@ -66,14 +66,14 @@ export default function DistributorFluidBackground() {
         ctx.fill();
       };
 
-      // 2. Top Wave: Pearlescent Mint (High readability for header area)
-      drawWave(h * 0.35, 120, 1.5, 0, "rgba(236, 253, 245, 0.8)", "rgba(209, 250, 229, 0.9)", true);
+      // 2. Top Wave: Soft Ice/Sky Blue (High readability)
+      drawWave(h * 0.35, 120, 1.5, 0, "rgba(219, 234, 254, 0.6)", "rgba(191, 219, 254, 0.8)", true);
 
-      // 3. Middle Wave: Vibrant Emerald / Teal (Growth & Prosperity)
-      drawWave(h * 0.6, 150, 1.2, 2, "rgba(16, 185, 129, 0.85)", "rgba(13, 148, 136, 0.9)", false);
+      // 3. Middle Wave: Primary Brand Blue (#274C9C)
+      drawWave(h * 0.6, 150, 1.2, 2, "rgba(59, 130, 246, 0.8)", "rgba(39, 76, 156, 0.9)", false);
 
-      // 4. Bottom Wave: Deep Institutional Forest Green (Stability & Wealth)
-      drawWave(h * 0.75, 100, 1.8, 4, "rgba(6, 78, 59, 0.95)", "rgba(2, 44, 34, 1)", false);
+      // 4. Bottom Wave: Deep Navy / Midnight Blue (Stability & Wealth)
+      drawWave(h * 0.75, 100, 1.8, 4, "rgba(30, 58, 138, 0.95)", "rgba(23, 37, 84, 1)", false);
 
       animationFrameId = requestAnimationFrame(render);
     };

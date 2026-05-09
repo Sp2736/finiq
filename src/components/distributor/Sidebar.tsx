@@ -71,7 +71,7 @@ export default function Sidebar({ isCollapsed, setIsCollapsed }: SidebarProps) {
       >
         <div className={`p-8 pb-10 flex items-center ${isCollapsed ? 'justify-center px-4' : 'justify-between'}`}>
           <Link href="/distributor" className="flex items-center gap-3 group overflow-hidden">
-            <div className="w-10 h-10 shrink-0 bg-gradient-to-br from-emerald-600 to-teal-800 rounded-md flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+            <div className="w-10 h-10 shrink-0 bg-gradient-to-br from-distributor-600 to-teal-800 rounded-md flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
               <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M13 10V3L4 14h7v7l9-11h-7z" />
               </svg>
@@ -79,7 +79,7 @@ export default function Sidebar({ isCollapsed, setIsCollapsed }: SidebarProps) {
             {!isCollapsed && (
               <div className="animate-[fadeIn_0.2s_ease-in] whitespace-nowrap">
                 <span className="text-xl font-black tracking-tight text-slate-900 block leading-none">FinIQ</span>
-                <span className="text-[10px] font-bold text-emerald-600 uppercase tracking-widest mt-1 block">Distributor</span>
+                <span className="text-[10px] font-bold text-distributor-600 uppercase tracking-widest mt-1 block">Distributor</span>
               </div>
             )}
           </Link>
@@ -95,7 +95,7 @@ export default function Sidebar({ isCollapsed, setIsCollapsed }: SidebarProps) {
             href="/distributor"
             onClick={() => setIsMobileOpen(false)}
             className={`flex items-center overflow-hidden ${isCollapsed ? 'justify-center' : 'justify-between'} px-4 py-3 rounded-md transition-all duration-300 group ${
-              pathname === '/distributor' ? 'bg-emerald-600 text-white' : 'text-slate-600 hover:bg-emerald-50 hover:text-emerald-700'
+              pathname === '/distributor' ? 'bg-distributor-600 text-white' : 'text-slate-600 hover:bg-distributor-50 hover:text-distributor-700'
             }`}
           >
             <div className="flex items-center gap-3">
@@ -110,7 +110,7 @@ export default function Sidebar({ isCollapsed, setIsCollapsed }: SidebarProps) {
             href="/distributor/clients"
             onClick={() => setIsMobileOpen(false)}
             className={`flex items-center overflow-hidden ${isCollapsed ? 'justify-center' : 'justify-between'} px-4 py-3 rounded-md transition-all duration-300 group ${
-              pathname.startsWith('/distributor/clients') ? 'bg-emerald-600 text-white' : 'text-slate-600 hover:bg-emerald-50 hover:text-emerald-700'
+              pathname.startsWith('/distributor/clients') ? 'bg-distributor-600 text-white' : 'text-slate-600 hover:bg-distributor-50 hover:text-distributor-700'
             }`}
           >
             <div className="flex items-center gap-3">
@@ -125,7 +125,7 @@ export default function Sidebar({ isCollapsed, setIsCollapsed }: SidebarProps) {
             href="/distributor/users"
             onClick={() => setIsMobileOpen(false)}
             className={`flex items-center overflow-hidden ${isCollapsed ? 'justify-center' : 'justify-between'} px-4 py-3 rounded-md transition-all duration-300 group ${
-              pathname.startsWith('/distributor/users') ? 'bg-emerald-600 text-white' : 'text-slate-600 hover:bg-emerald-50 hover:text-emerald-700'
+              pathname.startsWith('/distributor/users') ? 'bg-distributor-600 text-white' : 'text-slate-600 hover:bg-distributor-50 hover:text-distributor-700'
             }`}
           >
             <div className="flex items-center gap-3">
@@ -140,15 +140,15 @@ export default function Sidebar({ isCollapsed, setIsCollapsed }: SidebarProps) {
             <button
               onClick={handleReportsClick}
               className={`w-full flex items-center overflow-hidden ${isCollapsed ? 'justify-center' : 'justify-between'} px-4 py-3 rounded-md transition-all duration-300 group ${
-                pathname.startsWith('/distributor/reports') ? 'bg-emerald-50 text-emerald-700' : 'text-slate-600 hover:bg-emerald-50 hover:text-emerald-700'
+                pathname.startsWith('/distributor/reports') ? 'bg-distributor-50 text-distributor-700' : 'text-slate-600 hover:bg-distributor-50 hover:text-distributor-700'
               }`}
             >
               <div className="flex items-center gap-3">
-                <BarChart3 className={`w-5 h-5 shrink-0 transition-transform duration-300 ${pathname.startsWith('/distributor/reports') ? 'scale-110 text-emerald-600' : 'group-hover:scale-110'}`} />
+                <BarChart3 className={`w-5 h-5 shrink-0 transition-transform duration-300 ${pathname.startsWith('/distributor/reports') ? 'scale-110 text-distributor-600' : 'group-hover:scale-110'}`} />
                 {!isCollapsed && <span className="font-bold text-sm tracking-tight whitespace-nowrap">Reports</span>}
               </div>
               {!isCollapsed && (
-                <ChevronDown className={`w-4 h-4 shrink-0 transition-transform duration-300 ${isReportsOpen ? 'rotate-180 text-emerald-600' : 'text-slate-400'}`} />
+                <ChevronDown className={`w-4 h-4 shrink-0 transition-transform duration-300 ${isReportsOpen ? 'rotate-180 text-distributor-600' : 'text-slate-400'}`} />
               )}
             </button>
             
@@ -159,7 +159,7 @@ export default function Sidebar({ isCollapsed, setIsCollapsed }: SidebarProps) {
                   href="/distributor/reports/hierarchy"
                   onClick={() => setIsMobileOpen(false)}
                   className={`flex items-center gap-3 px-4 py-2.5 rounded-md transition-all duration-200 ${
-                    pathname === '/distributor/reports/hierarchy' ? 'bg-white text-emerald-700 ring-1 ring-emerald-100' : 'text-slate-500 hover:text-emerald-600 hover:bg-white/50'
+                    pathname === '/distributor/reports/hierarchy' ? 'bg-white text-distributor-700 ring-1 ring-distributor-100' : 'text-slate-500 hover:text-distributor-600 hover:bg-white/50'
                   }`}
                 >
                   <Network className="w-4 h-4 shrink-0" />
@@ -174,7 +174,7 @@ export default function Sidebar({ isCollapsed, setIsCollapsed }: SidebarProps) {
             href="/distributor/calculators"
             onClick={() => setIsMobileOpen(false)}
             className={`flex items-center overflow-hidden ${isCollapsed ? 'justify-center' : 'justify-between'} px-4 py-3 rounded-md transition-all duration-300 group ${
-              pathname.startsWith('/distributor/calculators') ? 'bg-emerald-600 text-white' : 'text-slate-600 hover:bg-emerald-50 hover:text-emerald-700'
+              pathname.startsWith('/distributor/calculators') ? 'bg-distributor-600 text-white' : 'text-slate-600 hover:bg-distributor-50 hover:text-distributor-700'
             }`}
           >
             <div className="flex items-center gap-3">
@@ -199,7 +199,7 @@ export default function Sidebar({ isCollapsed, setIsCollapsed }: SidebarProps) {
           <Link 
             href="/distributor/settings" 
             title={isCollapsed ? "Settings" : undefined}
-            className={`flex items-center overflow-hidden ${isCollapsed ? 'justify-center' : 'gap-3 px-4'} py-2 text-slate-500 hover:text-emerald-600 transition-colors group`}
+            className={`flex items-center overflow-hidden ${isCollapsed ? 'justify-center' : 'gap-3 px-4'} py-2 text-slate-500 hover:text-distributor-600 transition-colors group`}
           >
             <Settings className="w-5 h-5 shrink-0 group-hover:rotate-45 transition-transform duration-500" />
             {!isCollapsed && <span className="text-sm font-bold uppercase tracking-wider whitespace-nowrap">Settings</span>}

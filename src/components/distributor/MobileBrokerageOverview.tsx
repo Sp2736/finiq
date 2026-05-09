@@ -38,7 +38,7 @@ export default function MobileBrokerageOverview({ data, totals }: { data: any[],
       
       {/* Light Theme Grand Totals Card */}
       <div className="bg-white p-5 rounded-md border border-slate-200 shadow-sm relative overflow-hidden mb-2">
-        <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-50 rounded-full blur-2xl -mr-10 -mt-10 pointer-events-none" />
+        <div className="absolute top-0 right-0 w-32 h-32 bg-distributor-50 rounded-full blur-2xl -mr-10 -mt-10 pointer-events-none" />
         <h3 className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-4 relative z-10">Grand Totals</h3>
         
         <div className="grid grid-cols-2 gap-4 relative z-10 mb-4">
@@ -47,8 +47,8 @@ export default function MobileBrokerageOverview({ data, totals }: { data: any[],
             <p className="text-sm font-black text-slate-900">{formatCurrency(totals.gross)}</p>
           </div>
           <div>
-            <p className="text-[10px] text-emerald-600 uppercase font-bold tracking-wider mb-1">Total Paid</p>
-            <p className="text-sm font-black text-emerald-700">{formatCurrency(grandTotalPaid)}</p>
+            <p className="text-[10px] text-distributor-600 uppercase font-bold tracking-wider mb-1">Total Paid</p>
+            <p className="text-sm font-black text-distributor-700">{formatCurrency(grandTotalPaid)}</p>
           </div>
         </div>
         
@@ -75,14 +75,14 @@ export default function MobileBrokerageOverview({ data, totals }: { data: any[],
             <div key={user.id} className="flex flex-col mb-1">
               <div 
                 onClick={() => toggleUser(user.id)}
-                className={`bg-white p-4 rounded-md border cursor-pointer ${isUserExpanded ? 'border-emerald-200 shadow-md ring-1 ring-emerald-50' : 'border-slate-200 shadow-sm'} relative overflow-hidden transition-all group`}
+                className={`bg-white p-4 rounded-md border cursor-pointer ${isUserExpanded ? 'border-distributor-200 shadow-md ring-1 ring-distributor-50' : 'border-slate-200 shadow-sm'} relative overflow-hidden transition-all group`}
               >
-                <div className={`absolute left-0 top-0 bottom-0 w-1 transition-colors ${isUserExpanded ? 'bg-emerald-500' : 'bg-slate-200 group-hover:bg-emerald-300'}`} />
+                <div className={`absolute left-0 top-0 bottom-0 w-1 transition-colors ${isUserExpanded ? 'bg-distributor-500' : 'bg-slate-200 group-hover:bg-distributor-300'}`} />
                 
                 {/* Collapsed/Header View */}
                 <div className="flex justify-between items-start pl-2">
                   <div className="flex items-start gap-3">
-                    <button className={`mt-0.5 text-slate-400 p-1 rounded-md transition-colors ${isUserExpanded ? 'bg-emerald-50 text-emerald-600' : 'bg-slate-50 group-hover:bg-emerald-50 group-hover:text-emerald-600'}`}>
+                    <button className={`mt-0.5 text-slate-400 p-1 rounded-md transition-colors ${isUserExpanded ? 'bg-distributor-50 text-distributor-600' : 'bg-slate-50 group-hover:bg-distributor-50 group-hover:text-distributor-600'}`}>
                       <ChevronRight className={`w-4 h-4 transition-transform ${isUserExpanded ? 'rotate-90' : ''}`} />
                     </button>
                     <div>
@@ -115,7 +115,7 @@ export default function MobileBrokerageOverview({ data, totals }: { data: any[],
                       </div>
                       <div>
                         <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Total Paid</p>
-                        <p className="text-sm font-black text-emerald-600">{formatCurrency(totalPaid)}</p>
+                        <p className="text-sm font-black text-distributor-600">{formatCurrency(totalPaid)}</p>
                       </div>
                       <div className="col-span-2 pt-2.5 border-t border-slate-200 flex justify-between items-end">
                         <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Net Receivable</p>
@@ -125,10 +125,10 @@ export default function MobileBrokerageOverview({ data, totals }: { data: any[],
 
                     {/* AMC Breakdown Section */}
                     {hasAmc && (
-                      <div className="mt-2 mb-1 space-y-2 border-l-2 border-emerald-200 pl-3 ml-3">
+                      <div className="mt-2 mb-1 space-y-2 border-l-2 border-distributor-200 pl-3 ml-3">
                         <div className="flex items-center gap-2 mb-2 pt-1">
-                          <Building2 className="w-4 h-4 text-emerald-600" />
-                          <h4 className="text-[10px] font-black text-emerald-700 uppercase tracking-widest">AMC Breakdown</h4>
+                          <Building2 className="w-4 h-4 text-distributor-600" />
+                          <h4 className="text-[10px] font-black text-distributor-700 uppercase tracking-widest">AMC Breakdown</h4>
                         </div>
                         {user.amcBreakdown.map((amc: any) => {
                           const amcTotal = amc.paid + amc.paidSub;
@@ -138,7 +138,7 @@ export default function MobileBrokerageOverview({ data, totals }: { data: any[],
                               <h5 className="font-bold text-xs text-slate-800">{amc.amcName}</h5>
                               <div className="flex justify-between items-center">
                                 <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Gross: {formatCurrency(amc.gross)}</span>
-                                <span className="text-[10px] font-bold text-emerald-600 uppercase tracking-widest">Paid: {formatCurrency(amcTotal)}</span>
+                                <span className="text-[10px] font-bold text-distributor-600 uppercase tracking-widest">Paid: {formatCurrency(amcTotal)}</span>
                               </div>
                               <div className="pt-2 border-t border-slate-100 flex justify-between items-center">
                                 <span className="text-[10px] font-black text-slate-700 uppercase tracking-widest">Net Rec</span>

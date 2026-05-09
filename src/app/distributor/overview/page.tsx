@@ -18,7 +18,7 @@ export default function DistributorOverviewPage() {
       <div className="shrink-0 flex flex-col md:flex-row justify-between items-start md:items-end gap-4 mb-6">
         <div>
           <h1 className="text-3xl font-black tracking-tight text-slate-900">
-            Distributor <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-800">Overview</span>
+            Distributor <span className="text-transparent bg-clip-text bg-gradient-to-r from-distributor-600 via-teal-600 to-distributor-800">Overview</span>
           </h1>
           <p className="text-slate-500 font-medium mt-1 text-sm">Welcome back. Here is the summary of your distribution business.</p>
         </div>
@@ -28,13 +28,13 @@ export default function DistributorOverviewPage() {
       <div className="flex-1 overflow-y-auto pr-2 pb-6 flex flex-col gap-6 scrollbar-none">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           {kpis.map((kpi, idx) => (
-            <div key={idx} className="bg-white p-6 rounded-md border border-slate-200 shadow-sm relative overflow-hidden group hover:border-emerald-200 transition-all">
+            <div key={idx} className="bg-white p-6 rounded-md border border-slate-200 shadow-sm relative overflow-hidden group hover:border-distributor-200 transition-all">
               <div className="flex justify-between items-start mb-4">
-                <div className="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-md flex items-center justify-center group-hover:scale-110 transition-transform">
+                <div className="w-12 h-12 bg-distributor-50 text-distributor-600 rounded-md flex items-center justify-center group-hover:scale-110 transition-transform">
                   <kpi.icon className="w-6 h-6" />
                 </div>
                 {kpi.isPositive !== null && (
-                  <span className={`flex items-center gap-1 text-xs font-bold px-2 py-1 rounded-md ${kpi.isPositive ? 'bg-emerald-50 text-emerald-700' : 'bg-rose-50 text-rose-700'}`}>
+                  <span className={`flex items-center gap-1 text-xs font-bold px-2 py-1 rounded-md ${kpi.isPositive ? 'bg-distributor-50 text-distributor-700' : 'bg-rose-50 text-rose-700'}`}>
                     {kpi.isPositive ? <ArrowUpRight className="w-3 h-3" /> : null}
                     {kpi.change}
                   </span>

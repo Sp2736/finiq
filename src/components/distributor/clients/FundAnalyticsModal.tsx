@@ -114,7 +114,7 @@ export default function FundAnalyticsModal({
     if (isNaN(num)) return <span className="text-slate-300">—</span>;
     if (num > 0)
       return (
-        <span className="text-emerald-600 font-bold">+{num.toFixed(2)}%</span>
+        <span className="text-distributor-600 font-bold">+{num.toFixed(2)}%</span>
       );
     if (num < 0)
       return <span className="text-rose-600 font-bold">{num.toFixed(2)}%</span>;
@@ -466,7 +466,7 @@ export default function FundAnalyticsModal({
               <h2 className="text-lg sm:text-xl lg:text-2xl font-black text-slate-900 leading-tight">
                 {commonInfo.fundName}
               </h2>
-              <span className="bg-emerald-50 text-emerald-700 border border-emerald-100 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-widest whitespace-nowrap">
+              <span className="bg-distributor-50 text-distributor-700 border border-distributor-100 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-widest whitespace-nowrap">
                 {commonInfo.category}
               </span>
             </div>
@@ -528,13 +528,13 @@ export default function FundAnalyticsModal({
               onClick={() => setActiveTab(tab)}
               className={`py-3 sm:py-4 px-2 text-xs sm:text-sm font-bold capitalize tracking-wide transition-all border-b-2 whitespace-nowrap outline-none ${
                 activeTab === tab
-                  ? "border-emerald-500 text-emerald-700"
+                  ? "border-distributor-500 text-distributor-700"
                   : "border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300"
               }`}
             >
-              {tab === "performance" && <TrendingUp className={`w-3.5 h-3.5 sm:w-4 sm:h-4 inline-block mr-1.5 sm:mr-2 -mt-0.5 ${activeTab === tab ? "text-emerald-500" : "text-slate-400"}`} />}
-              {tab === "risk" && <ShieldAlert className={`w-3.5 h-3.5 sm:w-4 sm:h-4 inline-block mr-1.5 sm:mr-2 -mt-0.5 ${activeTab === tab ? "text-emerald-500" : "text-slate-400"}`} />}
-              {tab === "portfolio" && <PieChart className={`w-3.5 h-3.5 sm:w-4 sm:h-4 inline-block mr-1.5 sm:mr-2 -mt-0.5 ${activeTab === tab ? "text-emerald-500" : "text-slate-400"}`} />}
+              {tab === "performance" && <TrendingUp className={`w-3.5 h-3.5 sm:w-4 sm:h-4 inline-block mr-1.5 sm:mr-2 -mt-0.5 ${activeTab === tab ? "text-distributor-500" : "text-slate-400"}`} />}
+              {tab === "risk" && <ShieldAlert className={`w-3.5 h-3.5 sm:w-4 sm:h-4 inline-block mr-1.5 sm:mr-2 -mt-0.5 ${activeTab === tab ? "text-distributor-500" : "text-slate-400"}`} />}
+              {tab === "portfolio" && <PieChart className={`w-3.5 h-3.5 sm:w-4 sm:h-4 inline-block mr-1.5 sm:mr-2 -mt-0.5 ${activeTab === tab ? "text-distributor-500" : "text-slate-400"}`} />}
               {tab}
             </button>
           ))}
@@ -543,7 +543,7 @@ export default function FundAnalyticsModal({
         <div className="flex-1 overflow-y-auto bg-white p-4 sm:p-5 lg:p-7 table-scrollbar relative rounded-b-2xl">
           {isLoading ? (
             <div className="absolute inset-0 flex flex-col items-center justify-center bg-white/80 z-10 backdrop-blur-[1px]">
-              <Loader2 className="w-8 h-8 sm:w-10 sm:h-10 animate-spin text-emerald-500 mb-3 sm:mb-4" />
+              <Loader2 className="w-8 h-8 sm:w-10 sm:h-10 animate-spin text-distributor-500 mb-3 sm:mb-4" />
               <p className="text-slate-500 font-bold text-xs sm:text-sm">Fetching real-time analytics...</p>
             </div>
           ) : error ? (
