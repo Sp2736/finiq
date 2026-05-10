@@ -161,7 +161,7 @@ export default function DistributorDashboard() {
                         {kpi.value}
                       </h3>
                       <div
-                        className={`flex items-center gap-0.5 text-[10px] font-black ${kpi.isPositive ? "text-distributor-600" : "text-rose-600"}`}
+                        className={`flex items-center gap-0.5 text-[10px] font-black ${kpi.isPositive ? "text-emerald-600" : "text-rose-600"}`}
                       >
                         {kpi.isPositive ? (
                           <ArrowUpRight className="w-3 h-3" />

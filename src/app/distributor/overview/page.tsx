@@ -34,7 +34,7 @@ export default function DistributorOverviewPage() {
                   <kpi.icon className="w-6 h-6" />
                 </div>
                 {kpi.isPositive !== null && (
-                  <span className={`flex items-center gap-1 text-xs font-bold px-2 py-1 rounded-md ${kpi.isPositive ? 'bg-distributor-50 text-distributor-700' : 'bg-rose-50 text-rose-700'}`}>
+                  <span className={`flex items-center gap-1 text-xs font-bold px-2 py-1 rounded-md ${kpi.isPositive ? 'bg-distributor-50 text-emerald-700' : 'bg-rose-50 text-rose-700'}`}>
                     {kpi.isPositive ? <ArrowUpRight className="w-3 h-3" /> : null}
                     {kpi.change}
                   </span>

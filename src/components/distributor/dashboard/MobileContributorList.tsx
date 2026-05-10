@@ -66,14 +66,14 @@ export default function MobileContributorList({ investors }: { investors: TopCon
               </div>
               <div>
                 <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-0.5">Notional P&L</p>
-                <p className={`font-bold tabular-nums text-xs flex items-center gap-0.5 ${isPositive ? 'text-distributor-600' : 'text-rose-600'}`} title={formatCurrency(investor.notional_pl)}>
+                <p className={`font-bold tabular-nums text-xs flex items-center gap-0.5 ${isPositive ? 'text-emerald-600' : 'text-rose-600'}`} title={formatCurrency(investor.notional_pl)}>
                   {isPositive ? <ArrowUpRight className="w-3 h-3" /> : <ArrowDownRight className="w-3 h-3" />}
                   {formatCompactNumber(Math.abs(investor.notional_pl))}
                 </p>
               </div>
               <div className="text-right">
                 <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-0.5">Return</p>
-                <span className={`inline-block px-1.5 py-0.5 rounded text-[10px] font-black ${isPositive ? 'bg-distributor-50 text-distributor-600' : 'bg-rose-50 text-rose-600'}`}>
+                <span className={`inline-block px-1.5 py-0.5 rounded text-[10px] font-black ${isPositive ? 'bg-distributor-50 text-emerald-600' : 'bg-rose-50 text-rose-600'}`}>
                   {investor.abs_pct}%
                 </span>
               </div>

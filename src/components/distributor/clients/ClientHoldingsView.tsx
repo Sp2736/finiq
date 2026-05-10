@@ -437,11 +437,11 @@ export default function ClientHoldingsView({
                         </td>
                         <td className="p-4 text-right border-b border-slate-100 pr-6">
                           <div className="flex flex-col items-end">
-                            <div className={`flex items-center gap-0.5 text-xs font-black ${isPositive ? "text-distributor-600" : "text-rose-600"}`}>
+                            <div className={`flex items-center gap-0.5 text-xs font-black ${isPositive ? "text-emerald-600" : "text-rose-600"}`}>
                               {isPositive ? <ArrowUpRight className="w-3.5 h-3.5" /> : <ArrowDownRight className="w-3.5 h-3.5" />}
                               {xirr}%
                             </div>
-                            <span className={`text-[10px] font-bold mt-0.5 tabular-nums ${isPositive ? "text-distributor-500" : "text-rose-500"}`}>{formatCurrency(netPnl)}</span>
+                            <span className={`text-[10px] font-bold mt-0.5 tabular-nums ${isPositive ? "text-emerald-500" : "text-rose-500"}`}>{formatCurrency(netPnl)}</span>
                           </div>
                         </td>
                       </tr>

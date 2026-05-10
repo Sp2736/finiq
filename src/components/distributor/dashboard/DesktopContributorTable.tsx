@@ -100,14 +100,14 @@ export default function DesktopContributorTable({ investors }: { investors: TopC
                     </span>
                   </td>
                   
-                  <td className={`px-5 py-1.5 text-right font-bold tabular-nums border-b border-slate-50 ${isPositive ? 'text-distributor-600' : 'text-rose-600'}`}>
+                  <td className={`px-5 py-1.5 text-right font-bold tabular-nums border-b border-slate-50 ${isPositive ? 'text-emerald-600' : 'text-rose-600'}`}>
                     <div className="flex items-center justify-end gap-1" title={formatCurrency(investor.notional_pl)}>
                       <span className="hidden sm:inline">{formatCompactNumber(investor.notional_pl)}</span>
                     </div>
                   </td>
                   
                   <td className="px-5 py-1.5 text-center border-b border-slate-50">
-                    <span className={`px-2.5 py-1 rounded-md text-xs font-black ${isPositive ? 'bg-distributor-50 text-distributor-600' : 'bg-rose-50 text-rose-600'}`}>
+                    <span className={`px-2.5 py-1 rounded-md text-xs font-black ${isPositive ? 'bg-distributor-50 text-emerald-600' : 'bg-rose-50 text-rose-600'}`}>
                       {investor.abs_pct}%
                     </span>
                   </td>

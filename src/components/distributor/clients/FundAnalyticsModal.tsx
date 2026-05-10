@@ -114,7 +114,7 @@ export default function FundAnalyticsModal({
     if (isNaN(num)) return <span className="text-slate-300">—</span>;
     if (num > 0)
       return (
-        <span className="text-distributor-600 font-bold">+{num.toFixed(2)}%</span>
+        <span className="text-emerald-600 font-bold">+{num.toFixed(2)}%</span>
       );
     if (num < 0)
       return <span className="text-rose-600 font-bold">{num.toFixed(2)}%</span>;

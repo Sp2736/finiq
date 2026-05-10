@@ -211,7 +211,7 @@ export default function InvestorsPage() {
             <Loader2 className="w-8 h-8 text-distributor-600 animate-spin" />
             {isCaching && (
               <p className="text-xs font-bold text-slate-500 animate-pulse flex items-center gap-1.5">
-                <Database className="w-3.5 h-3.5" /> Building global directory cache...
+                <Database className="w-3.5 h-3.5" /> Please Wait...
               </p>
             )}
           </div>
