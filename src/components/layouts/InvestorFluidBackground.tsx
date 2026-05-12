@@ -22,15 +22,15 @@ export default function InvestorFluidBackground() {
     window.addEventListener("resize", setSize);
 
     const render = () => {
-      // Smoother, slightly slower animation for a calm, professional feel
-      time += 0.0025; 
+      // Ultra-smooth, slow animation for a premium feel
+      time += 0.0015; 
       const w = canvas.width;
       const h = canvas.height;
 
-      // 1. Base Background: Clean, crisp Slate/White
+      // 1. Base Background: Pure White to investor-50 (#eef2ff)
       const bgGrad = ctx.createLinearGradient(0, 0, w, h);
-      bgGrad.addColorStop(0, "#ffffff"); // Pure white
-      bgGrad.addColorStop(1, "#f8fafc"); // Very soft slate
+      bgGrad.addColorStop(0, "#ffffff"); 
+      bgGrad.addColorStop(1, "#eef2ff"); 
       ctx.fillStyle = bgGrad;
       ctx.fillRect(0, 0, w, h);
 
@@ -45,19 +45,15 @@ export default function InvestorFluidBackground() {
         isTopWave: boolean
       ) => {
         ctx.beginPath();
-        // Start drawing from the left edge
         ctx.moveTo(0, isTopWave ? 0 : h);
         
         for (let x = 0; x <= w; x += 20) {
           const normX = x / w;
-          // Complex waveform combining two sine waves for organic, fluid movement
           const wave1 = Math.sin(normX * Math.PI * frequency + time + phase) * amplitude;
           const wave2 = Math.cos(normX * Math.PI * (frequency * 0.5) - time * 0.8) * (amplitude * 0.4);
-          
           ctx.lineTo(x, yOffset + wave1 + wave2);
         }
 
-        // Complete the path to fill either the top or bottom area
         ctx.lineTo(w, isTopWave ? 0 : h);
         ctx.lineTo(0, isTopWave ? 0 : h);
         ctx.closePath();
@@ -69,14 +65,14 @@ export default function InvestorFluidBackground() {
         ctx.fill();
       };
 
-      // 2. Top Wave: Pearlescent Ice Blue (Keeps dark text highly readable)
-      drawWave(h * 0.35, 120, 1.5, 0, "rgba(241, 245, 249, 0.8)", "rgba(224, 231, 255, 0.9)", true);
+      // 2. Top Wave: investor-100 to investor-200 (Soft depth)
+      drawWave(h * 0.35, 120, 1.5, 0, "rgba(224, 231, 255, 0.5)", "rgba(199, 210, 254, 0.7)", true);
 
-      // 3. Middle Wave: Modern SaaS Indigo / Azure Blue (Tech & Intelligence)
-      drawWave(h * 0.6, 150, 1.2, 2, "rgba(99, 102, 241, 0.85)", "rgba(37, 99, 235, 0.9)", false);
+      // 3. Middle Wave: Core Brand Indigo (#4f46e5 / investor-600)
+      drawWave(h * 0.6, 150, 1.2, 2, "rgba(99, 102, 241, 0.8)", "rgba(79, 70, 229, 0.9)", false);
 
-      // 4. Bottom Wave: Deep Institutional Navy (Security & Stability)
-      drawWave(h * 0.75, 100, 1.8, 4, "rgba(30, 58, 138, 0.95)", "rgba(2, 6, 23, 1)", false);
+      // 4. Bottom Wave: investor-800 to investor-950 (Deep Wealth Stability)
+      drawWave(h * 0.75, 100, 1.8, 4, "rgba(55, 48, 163, 0.95)", "rgba(30, 27, 75, 1)", false);
 
       animationFrameId = requestAnimationFrame(render);
     };
@@ -91,7 +87,7 @@ export default function InvestorFluidBackground() {
   return (
     <canvas
       ref={canvasRef}
-      className="absolute inset-0 w-full h-full block z-0"
+      className="absolute inset-0 w-full h-full block z-0 pointer-events-none"
     />
   );
 }

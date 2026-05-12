@@ -17,6 +17,11 @@ import {
   Filter,
 } from "lucide-react";
 
+// ─── GLOBAL CACHE TO SURVIVE TAB SWITCHES ───
+let globalTopInvestorsCache: TopContributor[] | null = null;
+let globalSummaryCache: any | null = null;
+let globalDashboardPromise: Promise<void> | null = null;
+
 const formatCurrency = (amount: number) => {
   return new Intl.NumberFormat("en-IN", {
     style: "currency",
@@ -26,41 +31,66 @@ const formatCurrency = (amount: number) => {
 };
 
 export default function DistributorDashboard() {
-  const [topInvestors, setTopInvestors] = useState<TopContributor[]>([]);
-  const [summary, setSummary] = useState<CompanySummary | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [topInvestors, setTopInvestors] = useState<TopContributor[]>(globalTopInvestorsCache || []);
+  const [summary, setSummary] = useState<any | null>(globalSummaryCache);
+  // Default to loading ONLY if cache is empty
+  const [isLoading, setIsLoading] = useState(!globalTopInvestorsCache || !globalSummaryCache);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchDashboardData = async () => {
-      try {
-        setIsLoading(true);
-        // distributorService now returns Promise<ApiResponse<T>>
-        const [contributorsRes, summaryRes] = await Promise.all([
-          distributorService.getTopContributors(),
-          distributorService.getCompanySummary(),
-        ]);
-
-        if (contributorsRes.success) {
-          setTopInvestors(contributorsRes.data); // Accessing .data from ApiResponse
-        }
-        if (summaryRes.success) {
-          setSummary(summaryRes.data); // Accessing .data from ApiResponse
-        }
-
-        if (!contributorsRes.success || !summaryRes.success) {
-          setError(
-            contributorsRes.message ||
-              summaryRes.message ||
-              "Failed to load data",
-          );
-        }
-      } catch (err: any) {
-        setError(err.message || "An unexpected error occurred");
-      } finally {
+      // 1. INSTANT RETURN: If data is already cached, bypass network entirely
+      if (globalTopInvestorsCache && globalSummaryCache) {
+        setTopInvestors(globalTopInvestorsCache);
+        setSummary(globalSummaryCache);
         setIsLoading(false);
+        return;
       }
+
+      // 2. PROMISE HOOKING: If another component already started the fetch, wait for it
+      if (globalDashboardPromise) {
+        setIsLoading(true);
+        await globalDashboardPromise;
+        setTopInvestors(globalTopInvestorsCache || []);
+        setSummary(globalSummaryCache);
+        setIsLoading(false);
+        return;
+      }
+
+      // 3. FIRST LOAD: Fetch from API and save to Global Cache
+      setIsLoading(true);
+      globalDashboardPromise = (async () => {
+        try {
+          const [contributorsRes, summaryRes] = await Promise.all([
+            distributorService.getTopContributors(),
+            distributorService.getCompanySummary(),
+          ]);
+
+          if (contributorsRes.success) {
+            globalTopInvestorsCache = contributorsRes.data;
+          }
+          if (summaryRes.success) {
+            globalSummaryCache = summaryRes.data;
+          }
+
+          if (!contributorsRes.success || !summaryRes.success) {
+            setError(
+              contributorsRes.message ||
+                summaryRes.message ||
+                "Failed to load data",
+            );
+          }
+        } catch (err: any) {
+          setError(err.message || "An unexpected error occurred");
+        }
+      })();
+
+      await globalDashboardPromise;
+      setTopInvestors(globalTopInvestorsCache || []);
+      setSummary(globalSummaryCache);
+      setIsLoading(false);
     };
+
     fetchDashboardData();
   }, []);
 
@@ -124,15 +154,6 @@ export default function DistributorDashboard() {
             Synchronization of contributor pipelines.
           </p>
         </div>
-        <div className="flex gap-2.5">
-          {/* <button className="flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 rounded-md text-slate-600 font-bold text-xs hover:border-distributor-600 hover:text-distributor-600 transition-all shadow-sm active:scale-95">
-            <Filter className="w-3.5 h-3.5" />
-            <span>Filters</span>
-          </button>
-          <button className="px-5 py-2 bg-slate-900 text-white rounded-md font-bold text-xs hover:bg-slate-800 transition-all shadow-md active:scale-95">
-            Generate Report
-          </button> */}
-        </div>
       </div>
 
       {/* KPI Section - Smaller Cards */}
@@ -161,7 +182,7 @@ export default function DistributorDashboard() {
                         {kpi.value}
                       </h3>
                       <div
-                        className={`flex items-center gap-0.5 text-[10px] font-black ${kpi.isPositive ? "text-emerald-600" : "text-rose-600"}`}
+                        className={`flex items-center gap-0.5 text-[10px] font-black ${kpi.isPositive ? "text-distributor-600" : "text-rose-600"}`}
                       >
                         {kpi.isPositive ? (
                           <ArrowUpRight className="w-3 h-3" />

@@ -1,0 +1,3 @@
+* handle the loading and rendering portions properly
+* for the fund analytics popup, properly render all the components together
+* when redirecting to dashboard, the cache for client list should also happen

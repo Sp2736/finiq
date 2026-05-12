@@ -71,6 +71,21 @@ export interface CapitalGainsPayload {
   end_date: string;
 }
 
+const analyticsApiCache = new Map<string, Promise<any>>();
+
+const cachedApiGet = (url: string) => {
+  // If we already fetched (or are currently fetching) this URL, return the saved promise!
+  if (analyticsApiCache.has(url)) {
+    return analyticsApiCache.get(url)!;
+  }
+  // Otherwise, make the network call and cache it
+  const promise = apiClient.get(url);
+  analyticsApiCache.set(url, promise);
+  // If it fails, remove it from the cache so we can try again later
+  promise.catch(() => analyticsApiCache.delete(url));
+  return promise;
+};
+
 export const distributorService = {
   getTopContributors: async (): Promise<ApiResponse<TopContributor[]>> => {
     return apiClient.get<ApiResponse<TopContributor[]>>('/holdings-cache/top-contributors');
@@ -80,6 +95,9 @@ export const distributorService = {
   },
   getInvestors: async (page: number = 1, limit: number = 30): Promise<ApiResponse<PaginatedResponse<Investor>>> => {
     return apiClient.get<ApiResponse<PaginatedResponse<Investor>>>(`/holdings-cache/investors?page=${page}&limit=${limit}`);
+  },
+  downloadInvestorList: async (page: number = 1, limit: number = 30, maxLimit: number = 5000): Promise<ApiResponse<PaginatedResponse<Investor>>> => {
+    return apiClient.get<ApiResponse<PaginatedResponse<Investor>>>(`/holdings-cache/investors?page=${page}&limit=${limit}&maxLimit=${maxLimit}`);
   },
   getBrokerageSummary: async (fromDate: string, toDate: string, groupBy: string = "AMC"): Promise<ApiResponse<any>> => {
     const query = new URLSearchParams({ fromDate, toDate });
@@ -113,23 +131,31 @@ export const distributorService = {
 
   // ─── FUND ANALYTICS ─────────────────────────────────────────────────────────
   getFundReturns: async (amfiCode: string) => {
-    const response = await apiClient.get(`/fund-analytics/returns/${amfiCode}`);
+    const response = await cachedApiGet(`/fund-analytics/returns/${amfiCode}`);
     return response.data;
   },
   getFundMonthlyReturns: async (amfiCode: string) => {
-    const response = await apiClient.get(`/fund-analytics/monthly-returns/${amfiCode}`);
+    const response = await cachedApiGet(`/fund-analytics/monthly-returns/${amfiCode}`);
     return response.data;
   },
-  getFundRiskStats: async (amfiCode: string) => {
-    const response = await apiClient.get(`/fund-analytics/risk-stats/${amfiCode}`);
-    return response.data;
-  },
-  getFundSectorAllocation: async (amfiCode: string) => {
-    const response = await apiClient.get(`/fund-analytics/sector-allocation/${amfiCode}`);
+  getFundComposition: async (amfiCode: string) => {
+    const response = await cachedApiGet(`/fund-analytics/composition/${amfiCode}`);
     return response.data;
   },
   getFundStyleBox: async (amfiCode: string) => {
-    const response = await apiClient.get(`/fund-analytics/stylebox/${amfiCode}`);
+    const response = await cachedApiGet(`/fund-analytics/stylebox/${amfiCode}`);
     return response.data;
   },
+  getFundRiskStats: async (amfiCode: string) => {
+    const response = await cachedApiGet(`/fund-analytics/risk-stats/${amfiCode}`);
+    return response.data;
+  },
+  getFundSectorAllocation: async (amfiCode: string) => {
+    const response = await cachedApiGet(`/fund-analytics/sector-allocation/${amfiCode}`);
+    return response.data;
+  },
+  getFundHoldings: async (amfiCode: string) => {
+    const response = await cachedApiGet(`/fund-analytics/holdings/${amfiCode}`);
+    return response.data;
+  }
 };

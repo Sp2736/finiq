@@ -1,9 +1,10 @@
 "use client";
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { UnifiedFund, ClientPortfolio, Transaction } from "@/types/investor";
 import LogoutButton from "@/components/investor/LogoutButton";
 import { usePortfolio } from "@/hooks/usePortfolio";
+import { distributorService } from "@/services/distributor.service"; 
 
 // Desktop Components
 import GlobalStatsRibbon from "@/components/investor/GlobalStatsRibbon";
@@ -14,11 +15,12 @@ import DesktopFundTable from "@/components/investor/DesktopFundTable";
 import MobileHoldings from "@/components/investor/MobileHoldings";
 import MobileFundDetails from "@/components/investor/MobileFundDetails";
 
+// Shared Modal Component
+import FundAnalyticsModal from "@/components/distributor/clients/FundAnalyticsModal";
+
 export default function UnifiedPortfolioApp() {
-  // --- REAL DATA FETCHING ---
   const { portfolio, isLoading, error } = usePortfolio();
 
-  // --- DATA NORMALIZER (Transforms API snake_case to Frontend camelCase) ---
   const normalizedPortfolio = useMemo((): ClientPortfolio | null => {
     if (!portfolio) return null;
     const d = portfolio.data || portfolio; 
@@ -39,7 +41,8 @@ export default function UnifiedPortfolioApp() {
       xirr: d.xirr_percent ?? d.xirr ?? 0,
       abs: d.abs_percent ?? d.abs ?? 0,
       avgHoldingDays: d.avg_days ?? d.avgHoldingDays ?? 0,
-      funds: (d.funds || []).map((f: any): UnifiedFund => ({
+      funds: (d.funds || []).map((f: any): UnifiedFund & { amfiCode?: string } => ({
+        amfiCode: f.amfi_code || f.amfiCode || "N/A", 
         folioNo: f.folio_number || f.folioNo || "N/A",
         fundName: f.fund_name || f.fundName || "Unknown Fund",
         category: f.category || "Equity",
@@ -117,15 +120,75 @@ export default function UnifiedPortfolioApp() {
     };
   }, [portfolio]);
 
-  // --- SHARED STATE ---
   const [activeFilterType, setActiveFilterType] = useState<string>("All");
   const [activeFilterValue, setActiveFilterValue] = useState<string>("All");
 
-  // --- MOBILE SPECIFIC STATE ---
   const [mobileActiveScreen, setMobileActiveScreen] = useState<'holdings' | 'fund_details'>('holdings');
   const [mobileSelectedFund, setMobileSelectedFund] = useState<UnifiedFund | null>(null);
+  
+  const [analyticsFund, setAnalyticsFund] = useState<UnifiedFund | null>(null);
 
-  // --- FILTER LOGIC ---
+  // ─── SMART BACKGROUND QUEUE STATE ───
+  const prefetchQueue = useRef<string[]>([]);
+  const isQueueInitialized = useRef(false);
+
+  // 1. Initialize the unique queue only once upon portfolio load
+  useEffect(() => {
+    if (normalizedPortfolio?.funds && !isQueueInitialized.current) {
+      const uniqueAmfiCodes = Array.from(
+        new Set(
+          normalizedPortfolio.funds
+            .map((f) => f.amfiCode)
+            .filter((code): code is string => Boolean(code) && code !== "N/A")
+        )
+      );
+      prefetchQueue.current = uniqueAmfiCodes;
+      isQueueInitialized.current = true;
+    }
+  }, [normalizedPortfolio]);
+
+  // 2. Process the queue, but strictly PAUSE if a modal is opened
+  useEffect(() => {
+    let isActive = true;
+
+    const processQueue = async () => {
+      // If modal is open, completely stop pulling from the queue.
+      // This dedicates 100% of browser network connections to the clicked fund!
+      if (analyticsFund) return;
+
+      while (prefetchQueue.current.length > 0 && isActive) {
+        const code = prefetchQueue.current.shift(); // take the first item
+        if (code) {
+          // Silently trigger all the APIs for this fund (cached automatically)
+          distributorService.getFundReturns(code).catch(() => {});
+          distributorService.getFundRiskStats(code).catch(() => {});
+          distributorService.getFundSectorAllocation(code).catch(() => {});
+          distributorService.getFundStyleBox(code).catch(() => {});
+          distributorService.getFundHoldings(code).catch(() => {});
+          distributorService.getFundMonthlyReturns(code).catch(() => {});
+
+          // Wait 1.5 seconds between batches to keep the main thread smooth
+          await new Promise((resolve) => setTimeout(resolve, 1500));
+        }
+      }
+    };
+
+    processQueue();
+
+    return () => {
+      isActive = false; // Cleanup to prevent race conditions
+    };
+  }, [analyticsFund]); // Re-evaluates instantly when modal state changes
+
+  // 3. Custom handler to prioritize the clicked fund
+  const handleOpenAnalytics = (fund: UnifiedFund) => {
+    if (fund.amfiCode) {
+      // Remove it from the background queue so we don't double-fetch it later
+      prefetchQueue.current = prefetchQueue.current.filter((c) => c !== fund.amfiCode);
+    }
+    setAnalyticsFund(fund); // Opens modal, triggering the pause in the useEffect
+  };
+
   const filterOptions = useMemo(() => {
     const options = new Set<string>();
     if (normalizedPortfolio?.funds) {
@@ -149,7 +212,6 @@ export default function UnifiedPortfolioApp() {
     });
   }, [activeFilterType, activeFilterValue, normalizedPortfolio]);
 
-  // --- HELPER: Initials ---
   const getInitials = (name: string) => {
     if (!name || name === "Investor") return "IV";
     const parts = name.trim().split(" ");
@@ -157,17 +219,15 @@ export default function UnifiedPortfolioApp() {
     return name.substring(0, 2).toUpperCase();
   };
 
-  // --- RENDER: LOADING STATE ---
   if (isLoading) {
     return (
       <div className="h-[100dvh] flex flex-col items-center justify-center bg-slate-50">
-        <div className="w-8 h-8 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin mb-4" />
+        <div className="w-8 h-8 border-4 border-investor-600 border-t-transparent rounded-full animate-spin mb-4" />
         <p className="text-slate-500 font-bold text-sm tracking-wide uppercase">Decrypting Portfolio...</p>
       </div>
     );
   }
 
-  // --- RENDER: ERROR STATE ---
   if (error || !normalizedPortfolio) {
     return (
       <div className="h-[100dvh] flex flex-col items-center justify-center bg-slate-50 px-4">
@@ -183,12 +243,10 @@ export default function UnifiedPortfolioApp() {
     );
   }
 
-  // --- RENDER: MAIN DASHBOARD ---
   return (
-    <div className="h-[100dvh] overflow-hidden bg-gradient-to-br from-slate-50 via-white to-slate-100 font-sans relative selection:bg-indigo-500/20 selection:text-indigo-900">
+    <div className="h-[100dvh] overflow-hidden bg-gradient-to-br from-slate-50 via-white to-slate-100 font-sans relative selection:bg-investor-500/20 selection:text-investor-900">
       <div className="fixed inset-0 z-0 opacity-[0.35] bg-[radial-gradient(#94a3b8_1px,transparent_1px)] [background-size:24px_24px] pointer-events-none" />
       
-      {/* --- MOBILE/TABLET VIEW --- */}
       <div className="flex flex-col lg:hidden relative z-10 w-full bg-slate-50 h-full">
         {mobileActiveScreen === 'holdings' ? (
           <MobileHoldings 
@@ -217,22 +275,19 @@ export default function UnifiedPortfolioApp() {
         )}
       </div>
       
-      {/* --- DESKTOP VIEW --- */}
-      {/* TIGHTENED LAYOUT: py-4 and space-y-3 instead of py-8 and space-y-6 */}
       <div className="hidden lg:flex flex-col relative z-10 px-4 sm:px-8 lg:px-12 py-4 max-w-[1800px] mx-auto space-y-3 animate-[fadeIn_0.5s_ease-out] h-full">
         
-        {/* Header */}
         <div className="shrink-0 flex justify-between items-end gap-4">
           <div>
             <h1 className="text-3xl font-black tracking-tight text-slate-900">
-              Portfolio <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-indigo-600 to-primary/80">Overview</span>
+              Portfolio <span className="text-transparent bg-clip-text bg-gradient-to-r from-investor-500 via-investor-600">Overview</span>
             </h1>
             <p className="text-slate-500 font-medium mt-0 text-sm">Holistic view of your capital allocation and performance.</p>
             <div className="mt-2 flex items-center gap-2">
-              <span className="flex items-center justify-center w-6 h-6 rounded-full bg-indigo-100 text-indigo-700 font-bold text-[10px]">
+              <span className="flex items-center justify-center w-6 h-6 rounded-full bg-investor-100 text-investor-700 font-bold text-[10px]">
                 {getInitials(normalizedPortfolio.clientName)}
               </span>
-              <h2 className="text-sm font-bold text-indigo-700 tracking-wide uppercase">{normalizedPortfolio.clientName}</h2>
+              <h2 className="text-sm font-bold text-investor-700 tracking-wide uppercase">{normalizedPortfolio.clientName}</h2>
             </div>
           </div>
           <div className="mb-2">
@@ -256,9 +311,18 @@ export default function UnifiedPortfolioApp() {
         </div>
         
         <div className="flex-1 min-h-0 pb-4 w-full">
-          <DesktopFundTable funds={filteredFunds} />
+          {/* Note the updated onOpenAnalytics handler here! */}
+          <DesktopFundTable funds={filteredFunds} onOpenAnalytics={handleOpenAnalytics} />
         </div>
       </div>
+
+      {analyticsFund && (
+        <FundAnalyticsModal 
+          fund={analyticsFund} 
+          onClose={() => setAnalyticsFund(null)} 
+        />
+      )}
+
     </div>
   );
 }

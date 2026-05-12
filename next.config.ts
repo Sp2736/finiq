@@ -5,7 +5,8 @@ const nextConfig: NextConfig = {
     return [
       {
         source: '/api/:path*',
-        destination: 'https://finiqapibeta.kaelivtech.com/api/:path*',
+        destination: 'http://localhost:3000/api/:path*'
+        // destination: 'http://finiqapibeta.kaelivtech.com/api/:path*',
       },
     ];
   },

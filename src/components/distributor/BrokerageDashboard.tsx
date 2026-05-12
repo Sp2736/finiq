@@ -7,6 +7,10 @@ import { distributorService } from '@/services/distributor.service';
 import { formatCompactNumber } from '@/lib/utils';
 import { Search, Download, Calendar, AlertCircle, RefreshCw, Loader2 } from 'lucide-react';
 
+// ─── GLOBAL CACHE FOR BROKERAGE VIEWS ───
+const globalHierarchyCache = new Map<string, any[]>();
+const globalHierarchyPromiseCache = new Map<string, Promise<any[]>>();
+
 // Mapper to translate API Response into UI format
 const mapHierarchyData = (subBrokers: any[]) => {
   if (!subBrokers || !Array.isArray(subBrokers)) return [];
@@ -24,7 +28,7 @@ const mapHierarchyData = (subBrokers: any[]) => {
         amcName: amc.amc_name || "Uncategorized AMC",
         gross: amc.total_brokerage || 0,
         paid: amc.paid_brokerage || 0,
-        paidSub: 0 // Sub-split not present in this specific endpoint level
+        paidSub: 0 
       };
     });
 
@@ -37,7 +41,7 @@ const mapHierarchyData = (subBrokers: any[]) => {
       paid: totalPaid,
       paidSub: 0,
       amcBreakdown: amcBreakdown,
-      children: [] // Assuming flat list of sub-brokers for this view
+      children: [] 
     };
   });
 };
@@ -52,36 +56,69 @@ export default function BrokerageDashboard() {
     toDate: '2026-02-28'
   });
   
-  const [hierarchyData, setHierarchyData] = useState<any[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const cacheKey = `${activeGroup}-${dateRange.fromDate}-${dateRange.toDate}`;
+  
+  const [hierarchyData, setHierarchyData] = useState<any[]>(globalHierarchyCache.get(cacheKey) || []);
+  const [isLoading, setIsLoading] = useState(!globalHierarchyCache.has(cacheKey));
   const [error, setError] = useState<string | null>(null);
 
-  const fetchHierarchy = async () => {
-    setIsLoading(true);
-    setError(null);
-    try {
-      const res = await distributorService.getBrokerageSummary(
-        dateRange.fromDate, 
-        dateRange.toDate, 
-        activeGroup
-      );
-      
-      if (res.success && res.data) {
-        // Extract the sub_brokers array from the API response and map it
-        const subBrokers = res.data.sub_brokers || [];
-        const mappedData = mapHierarchyData(subBrokers);
-        setHierarchyData(mappedData);
-      } else {
-        setError(res.message || "Failed to load hierarchy data");
-      }
-    } catch (err: any) {
-      setError(err.message || "An unexpected error occurred");
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   useEffect(() => {
+    const fetchHierarchy = async () => {
+      const currentCacheKey = `${activeGroup}-${dateRange.fromDate}-${dateRange.toDate}`;
+
+      // 1. INSTANT RETURN
+      if (globalHierarchyCache.has(currentCacheKey)) {
+        setHierarchyData(globalHierarchyCache.get(currentCacheKey)!);
+        setIsLoading(false);
+        return;
+      }
+
+      setIsLoading(true);
+      setError(null);
+
+      // 2. PROMISE HOOKING
+      if (globalHierarchyPromiseCache.has(currentCacheKey)) {
+        try {
+          const data = await globalHierarchyPromiseCache.get(currentCacheKey)!;
+          setHierarchyData(data);
+        } catch (e) {
+          setError("Failed to load hierarchy data");
+        } finally {
+          setIsLoading(false);
+        }
+        return;
+      }
+
+      // 3. FETCH AND CACHE
+      const fetchPromise = (async () => {
+        const res = await distributorService.getBrokerageSummary(
+          dateRange.fromDate, 
+          dateRange.toDate, 
+          activeGroup
+        );
+        
+        if (res.success && res.data) {
+          const mappedData = mapHierarchyData(res.data.sub_brokers || []);
+          globalHierarchyCache.set(currentCacheKey, mappedData);
+          return mappedData;
+        } else {
+          throw new Error(res.message || "Failed to load hierarchy data");
+        }
+      })();
+
+      globalHierarchyPromiseCache.set(currentCacheKey, fetchPromise);
+
+      try {
+        const mappedData = await fetchPromise;
+        setHierarchyData(mappedData);
+      } catch (err: any) {
+        setError(err.message || "An unexpected error occurred");
+        globalHierarchyPromiseCache.delete(currentCacheKey); // Allow retrying if it failed
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
     fetchHierarchy();
   }, [activeGroup, dateRange]);
 
@@ -108,9 +145,6 @@ export default function BrokerageDashboard() {
 
   const grandTotalPaid = totals.paid + totals.paidSub;
   const grandNetReceivable = totals.gross - grandTotalPaid;
-  const pendingPercentage = totals.gross > 0 
-    ? ((grandNetReceivable / totals.gross) * 100).toFixed(1) 
-    : "0";
 
   return (
     <div className="flex flex-col h-full animate-[fadeIn_0.5s_ease-out] overflow-hidden">

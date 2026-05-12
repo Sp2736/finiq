@@ -3,7 +3,8 @@
 import React, { useEffect, useState } from "react";
 import { Loader2, ShieldAlert, PieChart } from "lucide-react";
 import { distributorService } from "@/services/distributor.service";
-import FundStyleBox from "./FundStyleBox"; // IMPORT OUR NEW WIDGET
+import FundStyleBox from "./FundStyleBox";
+import FundHoldingDetail from "./FundHoldingDetail";
 
 interface FundPortfolioTabProps {
   amfiCode: string;
@@ -223,7 +224,7 @@ export default function FundPortfolioTab({ amfiCode }: FundPortfolioTabProps) {
                       y={y}
                       width={BAR_WIDTH}
                       height={Math.max(barHeight, 2)}
-                      fill="#3b82f6"
+                      fill="#2C6CD4BC"
                       rx="2"
                       className="transition-all duration-300 group-hover:fill-[#274C9C] cursor-pointer"
                     />
@@ -290,6 +291,7 @@ export default function FundPortfolioTab({ amfiCode }: FundPortfolioTabProps) {
           </div>
         </div>
       </div>
+      <FundHoldingDetail amfiCode={amfiCode} />
     </div>
   );
 }

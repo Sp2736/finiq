@@ -5,7 +5,9 @@ import { distributorService } from "@/services/distributor.service";
 import GlobalStatsRibbon from "@/components/investor/GlobalStatsRibbon";
 import { exportCapitalGains } from "@/lib/capitalGainsExport";
 import { getDynamicFinancialYears } from "@/lib/utils";
-import FundAnalyticsModal from "./FundAnalyticsModal"; // NEW IMPORT
+import FundAnalyticsModal from "./FundAnalyticsModal";
+import HoldingsReport from "./HoldingsReport";
+import { generatePortfolioValuationPDF } from "@/lib/portfolioExport";
 import {
   ChevronLeft,
   ChevronRight,
@@ -20,7 +22,8 @@ import {
   Calculator,
   AlertTriangle,
   Info,
-  BarChart2, // Added for Analytics button
+  BarChart2,
+  Eye, 
 } from "lucide-react";
 import { formatCurrency, toTitleCase } from "@/lib/utils";
 import { ClientPortfolio } from "@/types/investor";
@@ -109,8 +112,10 @@ export default function ClientHoldingsView({
   const [exportingFormat, setExportingFormat]   = useState<"pdf" | "excel" | null>(null);
   const [cgNotif, setCGNotif]                   = useState<Notif | null>(null);
 
-  // Modal State for Analytics
+  // Modal States
   const [analyticsFund, setAnalyticsFund]       = useState<any>(null);
+  const [showReportPreview, setShowReportPreview] = useState(false);
+  const [isExportingPdf, setIsExportingPdf]     = useState(false);
 
   // ── Pagination Math for Financial Years ──────────────────────────────────
   const ITEMS_PER_PAGE = 6;
@@ -159,7 +164,7 @@ export default function ClientHoldingsView({
       xirr: d.xirr_percent || 0,
       abs: d.abs_percent || 0,
       avgHoldingDays: 0,
-      funds: [],
+      funds: d.funds || [],
     } as unknown as ClientPortfolio;
   }, [portfolioData, clientId]);
 
@@ -200,7 +205,7 @@ export default function ClientHoldingsView({
           fundsMap.set(key, {
             fundName:   tx.scheme_name    || "Unknown Fund",
             folioNo:    tx.folio_number   || "N/A",
-            amfiCode:   tx.amfi_code      || "N/A", // AMFI ADDED HERE
+            amfiCode:   tx.amfi_code      || "N/A", 
             isin:       tx.isin_no        || "N/A",
             assetClass: tx.asset_class    || "Equity",
             transactions: [],
@@ -256,7 +261,7 @@ export default function ClientHoldingsView({
       if (cgDataArray.length === 0) {
         setCGNotif({
           type: "info",
-          message: `No capital gains records found for FY ${selectedFY}. Please try a different year.`,
+          message: `No capital Gains records found for FY ${selectedFY}. Please try a different year.`,
         });
         return;
       }
@@ -288,7 +293,8 @@ export default function ClientHoldingsView({
   return (
     <div className="flex flex-col h-full relative z-10 animate-in slide-in-from-right-4 fade-in duration-300">
       
-      {/* Analytics Modal Injection */}
+      {/* ─── ANALYTICS MODAL ─── */}
+      {/* Removed the rounded-xl wrapper. The FundAnalyticsModal handles its own backdrop perfectly */}
       {analyticsFund && (
         <FundAnalyticsModal fund={analyticsFund} onClose={() => setAnalyticsFund(null)} />
       )}
@@ -318,13 +324,24 @@ export default function ClientHoldingsView({
           </p>
         </div>
 
-        <button
-          onClick={() => setIsCGModalOpen(true)}
-          aria-label="Open Capital Gains report export"
-          className="flex items-center gap-2 px-5 py-2.5 bg-slate-900 text-white rounded-xl text-sm font-bold shadow-md hover:bg-slate-800 transition-all active:scale-95"
-        >
-          <Calculator className="w-4 h-4" /> Capital Gains
-        </button>
+        {/* ─── ACTION BUTTONS ─── */}
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => setShowReportPreview(true)}
+            disabled={!portfolioData}
+            className="flex items-center gap-2 px-5 py-2.5 bg-white border border-slate-200 text-slate-700 rounded-xl text-sm font-bold shadow-sm hover:border-distributor-300 hover:bg-distributor-50 hover:text-distributor-700 transition-all active:scale-95 disabled:opacity-50"
+          >
+            <Eye className="w-4 h-4" /> Holdings Report
+          </button>
+
+          <button
+            onClick={() => setIsCGModalOpen(true)}
+            aria-label="Open Capital Gains report export"
+            className="flex items-center gap-2 px-5 py-2.5 bg-distributor-600 text-white rounded-xl text-sm font-bold shadow-md hover:bg-distributor-800 transition-all active:scale-95"
+          >
+            <Calculator className="w-4 h-4" /> Capital Gains
+          </button>
+        </div>
       </div>
 
       {normalizedPortfolio && (
@@ -501,20 +518,21 @@ export default function ClientHoldingsView({
         )}
       </div>
 
+      {/* ─── CAPITAL GAINS MODAL (Clean absolute white glass backdrop) ─── */}
       {isCGModalOpen && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-in fade-in duration-200"
+          className="absolute inset-0 z-[100] flex items-center justify-center p-4 bg-white/80 backdrop-blur-sm animate-in fade-in duration-200"
           role="dialog"
           aria-modal="true"
-          aria-labelledby="cg-modal-title"
         >
-          <div className="bg-white rounded-2xl shadow-xl border border-slate-200 w-full max-w-sm overflow-visible animate-in zoom-in-95 duration-200">
+          <div className="absolute inset-0" onClick={handleCloseModal} />
+          
+          <div className="bg-white rounded-2xl shadow-xl border border-slate-200 w-full max-w-sm overflow-visible animate-in zoom-in-95 duration-200 relative z-10">
             <div className="flex items-center justify-between p-4 border-b border-slate-100">
               <h3 id="cg-modal-title" className="font-black text-slate-900 text-lg">Capital Gains Report</h3>
               <button
                 onClick={handleCloseModal}
                 disabled={!!exportingFormat}
-                aria-label="Close modal"
                 className="p-1.5 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-lg disabled:opacity-40 disabled:cursor-not-allowed"
               >
                 <X className="w-5 h-5" />
@@ -565,7 +583,6 @@ export default function ClientHoldingsView({
                 <button
                   onClick={() => handleExportCG("pdf")}
                   disabled={!!exportingFormat || isFYSelectorOpen}
-                  aria-label="Export as PDF"
                   className="flex flex-col items-center justify-center gap-2 p-3 rounded-xl border-2 border-slate-100 hover:border-rose-200 hover:bg-rose-50 text-rose-600 disabled:opacity-50 active:scale-95 transition-all"
                 >
                   {exportingFormat === "pdf" ? <Loader2 className="w-6 h-6 animate-spin" /> : <FileText className="w-6 h-6" />}
@@ -575,7 +592,6 @@ export default function ClientHoldingsView({
                 <button
                   onClick={() => handleExportCG("excel")}
                   disabled={!!exportingFormat || isFYSelectorOpen}
-                  aria-label="Export as Excel"
                   className="flex flex-col items-center justify-center gap-2 p-3 rounded-xl border-2 border-slate-100 hover:border-distributor-200 hover:bg-distributor-50 text-distributor-600 disabled:opacity-50 active:scale-95 transition-all"
                 >
                   {exportingFormat === "excel" ? <Loader2 className="w-6 h-6 animate-spin" /> : <FileSpreadsheet className="w-6 h-6" />}
@@ -587,6 +603,32 @@ export default function ClientHoldingsView({
           </div>
         </div>
       )}
+
+      {/* ─── REPORT PREVIEW MODAL (Maximized full-screen layout) ─── */}
+      {showReportPreview && portfolioData && (
+        <div className="absolute inset-0 z-[100] bg-white/80 backdrop-blur-sm flex items-center justify-center p-2 sm:p-4 lg:p-6">
+          <div className="absolute inset-0" onClick={() => setShowReportPreview(false)} />
+          
+          {/* Notice: No inner padding, flex-col, overflow-hidden */}
+          <div className="w-full max-w-6xl h-[95%] rounded-xl flex flex-col overflow-hidden shadow-2xl border border-slate-200 relative z-10 animate-in zoom-in-95 duration-200 bg-white">
+            <HoldingsReport 
+              data={portfolioData} 
+              isExporting={isExportingPdf}
+              onClose={() => setShowReportPreview(false)}
+              onExportPdf={() => {
+                setIsExportingPdf(true);
+                setTimeout(() => {
+                  if (portfolioData) {
+                    generatePortfolioValuationPDF(portfolioData, DISTRIBUTOR_INFO);
+                  }
+                  setIsExportingPdf(false);
+                }, 500);
+              }} 
+            />
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }

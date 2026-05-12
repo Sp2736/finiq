@@ -28,8 +28,8 @@ export default function FilterBar({
             onClick={() => { setActiveFilterType(filter); setActiveFilterValue("All"); }}
             className={`px-4 py-2 rounded-md text-xs font-bold transition-all duration-200 ${
               activeFilterType === filter 
-                ? 'bg-slate-900 text-white shadow-md' 
-                : 'text-slate-600 hover:bg-slate-100/80 hover:text-slate-900'
+                ? 'bg-distributor-800 text-white shadow-md' 
+                : 'text-slate-600 hover:bg-slate-100/80 hover:text-distributor-900'
             }`}
           >
             {filter}
