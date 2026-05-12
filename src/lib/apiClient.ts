@@ -48,6 +48,14 @@ async function fetchWithConfig<T>(
       if (response.status === 401) {
         console.warn("Unauthorized: The token expired or is invalid. Redirecting to login...");
         if (typeof window !== 'undefined') {
+          // ─── THE FIX: DESTROY DEAD COOKIES BEFORE REDIRECTING ───
+          document.cookie = "staff-auth-token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+          document.cookie = "investor-auth-token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+          
+          // Clear storages just in case you use them for other user data caching
+          localStorage.clear();
+          sessionStorage.clear();
+
           // Redirect distributor to their portal, investor to theirs
           window.location.href = window.location.pathname.startsWith('/distributor') 
             ? '/distributor-portal' 

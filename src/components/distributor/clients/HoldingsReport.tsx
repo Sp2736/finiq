@@ -87,7 +87,7 @@ export default function HoldingsReport({ data, onExportPdf, isExporting, onClose
             <button
               onClick={onExportPdf}
               disabled={isExporting}
-              className="flex items-center gap-1.5 px-3 py-1.5 bg-investor-600 text-white rounded-lg text-xs font-bold shadow-sm hover:bg-investor-700 transition-all active:scale-95 disabled:opacity-70 disabled:active:scale-100"
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-distributor-600 text-white rounded-lg text-xs font-bold shadow-sm hover:bg-distributor-700 transition-all active:scale-95 disabled:opacity-70 disabled:active:scale-100"
             >
               {isExporting ? <div className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <Download className="w-3.5 h-3.5" />}
               <span className="hidden sm:inline">{isExporting ? "Generating..." : "Download PDF"}</span>

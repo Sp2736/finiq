@@ -29,13 +29,11 @@ export default function InvestorsPage() {
   }, []);
 
   // ─── 1. DEBOUNCING LOGIC ───
-  // Waits for the user to stop typing for 500ms before triggering the search.
   useEffect(() => {
     const handler = setTimeout(() => {
       setSearchTerm(searchInput.trim());
     }, 500);
 
-    // If the user types again before 500ms, clear the timeout and start over
     return () => clearTimeout(handler);
   }, [searchInput]);
 
@@ -43,8 +41,6 @@ export default function InvestorsPage() {
   const fetchClients = async (pageToLoad: number, currentSearchTerm: string = "") => {
     setIsLoading(true);
     try {
-
-      // e.g., getInvestors(page, limit, searchKeyword)
       const res = await distributorService.getInvestors(pageToLoad, 30, currentSearchTerm);
       
       if (res.success && res.data) {
@@ -63,21 +59,21 @@ export default function InvestorsPage() {
     }
   };
 
-  // Trigger fetch when page loads, or when the debounced searchTerm changes
   useEffect(() => {
     fetchClients(1, searchTerm);
   }, [searchTerm]);
 
-  // Force an immediate search if they press Enter (bypassing the 500ms wait)
   const handleSearchTrigger = () => {
     setSearchTerm(searchInput.trim());
   };
 
-  // ─── 3. ON-DEMAND EXPORT ───
+  // ─── 3. SEARCH-AWARE EXPORT ───
   const handleExportExcel = async () => {
     setIsExporting(true);
     try {
-      const res = await distributorService.downloadInvestorList(1, maxLimit, maxLimit);
+      const limitToFetch = maxLimit ? maxLimit : 5000;
+      // Pass the searchTerm so the export matches what the user sees!
+      const res = await distributorService.downloadInvestorList(1, limitToFetch, limitToFetch, searchTerm);
       
       if (res.success && res.data && res.data.data) {
         const allClientsToExport = res.data.data;
@@ -151,24 +147,20 @@ export default function InvestorsPage() {
       {/* Table Area */}
       <div className="flex-1 min-h-0 bg-white rounded-2xl border border-slate-200 shadow-sm flex flex-col relative overflow-hidden mt-1 md:mt-0">
         
-        {/* Loading Overlay */}
         {isLoading && (
           <div className="absolute inset-0 bg-white/60 backdrop-blur-[2px] z-50 flex flex-col gap-3 items-center justify-center">
             <Loader2 className="w-8 h-8 text-distributor-600 animate-spin" />
           </div>
         )}
         
-        {/* Desktop View */}
         <div className="hidden lg:flex flex-col flex-1 overflow-auto table-scrollbar">
           <DesktopClientTable clients={clients} onClientClick={setActiveClientId} />
         </div>
 
-        {/* Mobile & Tablet View */}
         <div className="lg:hidden flex flex-col flex-1 overflow-y-auto bg-slate-50/30">
           <MobileClientList clients={clients} onClientClick={setActiveClientId} />
         </div>
 
-        {/* Pagination Footer */}
         <div className="shrink-0 p-4 border-t border-slate-100 flex items-center justify-between bg-slate-50/50">
           <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">
             Total {pagination.totalItems.toLocaleString('en-IN')} Clients

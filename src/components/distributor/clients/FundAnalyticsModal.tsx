@@ -135,31 +135,11 @@ export default function FundAnalyticsModal({
       { key: "7d", label: "7D", trailing: null, rolling: rr.ret_7days },
       { key: "14d", label: "14D", trailing: null, rolling: rr.ret_14days },
       { key: "21d", label: "21D", trailing: null, rolling: rr.ret_21days },
-      {
-        key: "1m",
-        label: "1M",
-        trailing: tr.ret_1month,
-        rolling: rr.ret_28days,
-      },
-      {
-        key: "3m",
-        label: "3M",
-        trailing: tr.ret_3month,
-        rolling: rr.ret_90days,
-      },
-      {
-        key: "6m",
-        label: "6M",
-        trailing: tr.ret_6month,
-        rolling: rr.ret_180days,
-      },
+      { key: "1m", label: "1M", trailing: tr.ret_1month, rolling: rr.ret_28days },
+      { key: "3m", label: "3M", trailing: tr.ret_3month, rolling: rr.ret_90days },
+      { key: "6m", label: "6M", trailing: tr.ret_6month, rolling: rr.ret_180days },
       { key: "ytd", label: "YTD", trailing: tr.ret_ytd, rolling: null },
-      {
-        key: "1y",
-        label: "1Y",
-        trailing: tr.ret_1year,
-        rolling: rr.ret_365days,
-      },
+      { key: "1y", label: "1Y", trailing: tr.ret_1year, rolling: rr.ret_365days },
       { key: "3y", label: "3Y", trailing: tr.ret_3year, rolling: null },
       { key: "5y", label: "5Y", trailing: tr.ret_5year, rolling: null },
       { key: "7y", label: "7Y", trailing: tr.ret_7year, rolling: null },
@@ -167,10 +147,10 @@ export default function FundAnalyticsModal({
     ];
 
     return (
-      <div className="flex flex-col gap-5">
+      <div className="flex flex-col gap-4">
         <div className="rounded-xl overflow-hidden shadow-sm">
-          <div className="bg-slate-50 px-4 py-3 border border-slate-200 border-b-0 rounded-t-xl">
-            <h3 className="text-xs font-black text-slate-700 uppercase tracking-widest">
+          <div className="bg-slate-50 px-3 py-2 border border-slate-200 border-b-0 rounded-t-xl">
+            <h3 className="text-[10px] font-black text-slate-700 uppercase tracking-widest">
               Fund Returns Overview (%)
             </h3>
           </div>
@@ -178,14 +158,11 @@ export default function FundAnalyticsModal({
             <table className="w-full text-center text-[10px] sm:text-[11px] border-collapse">
               <thead className="bg-slate-50 text-slate-500 font-bold uppercase tracking-wider">
                 <tr>
-                  <th className="p-2 border border-slate-200 text-left font-black text-slate-700 bg-slate-50 sticky left-0 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)] z-10 w-20 sm:w-28 border-r border-slate-100">
+                  <th className="px-2 py-1.5 border border-slate-200 text-left font-black text-slate-700 bg-slate-50 sticky left-0 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)] z-10 w-20 sm:w-28 border-r border-slate-100">
                     Type
                   </th>
                   {periods.map((p) => (
-                    <th
-                      key={p.key}
-                      className="p-2 border border-slate-200 bg-slate-50 whitespace-nowrap"
-                    >
+                    <th key={p.key} className="px-2 py-1.5 border border-slate-200 bg-slate-50 whitespace-nowrap">
                       {p.label}
                     </th>
                   ))}
@@ -193,27 +170,21 @@ export default function FundAnalyticsModal({
               </thead>
               <tbody>
                 <tr className="hover:bg-slate-50/50 transition-colors">
-                  <td className="p-2 border border-slate-200 text-left font-bold text-slate-700 bg-slate-50 sticky left-0 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)] z-10 border-r border-slate-100">
+                  <td className="px-2 py-1.5 border border-slate-200 text-left font-bold text-slate-700 bg-slate-50 sticky left-0 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)] z-10 border-r border-slate-100">
                     Trailing
                   </td>
                   {periods.map((p) => (
-                    <td
-                      key={`tr-${p.key}`}
-                      className="p-2 border border-slate-200 whitespace-nowrap"
-                    >
+                    <td key={`tr-${p.key}`} className="px-2 py-1.5 border border-slate-200 whitespace-nowrap">
                       {formatReturn(p.trailing)}
                     </td>
                   ))}
                 </tr>
                 <tr className="hover:bg-slate-50/50 transition-colors">
-                  <td className="p-2 border border-slate-200 text-left font-bold text-slate-700 bg-slate-50 sticky left-0 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)] z-10 border-r border-slate-100">
+                  <td className="px-2 py-1.5 border border-slate-200 text-left font-bold text-slate-700 bg-slate-50 sticky left-0 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)] z-10 border-r border-slate-100">
                     Rolling
                   </td>
                   {periods.map((p) => (
-                    <td
-                      key={`rr-${p.key}`}
-                      className="p-2 border border-slate-200 whitespace-nowrap"
-                    >
+                    <td key={`rr-${p.key}`} className="px-2 py-1.5 border border-slate-200 whitespace-nowrap">
                       {formatReturn(p.rolling)}
                     </td>
                   ))}
@@ -231,20 +202,7 @@ export default function FundAnalyticsModal({
   const renderMonthlyReturnsMatrix = () => {
     if (!monthlyData || monthlyData.length === 0) return null;
 
-    const months = [
-      "Jan",
-      "Feb",
-      "Mar",
-      "Apr",
-      "May",
-      "Jun",
-      "Jul",
-      "Aug",
-      "Sep",
-      "Oct",
-      "Nov",
-      "Dec",
-    ];
+    const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
     const matrix: Record<string, Record<string, number>> = {};
 
     monthlyData.forEach((item: any) => {
@@ -257,14 +215,12 @@ export default function FundAnalyticsModal({
       matrix[year][month] = parseFloat(item.returns);
     });
 
-    const sortedYears = Object.keys(matrix).sort(
-      (a, b) => Number(b) - Number(a),
-    );
+    const sortedYears = Object.keys(matrix).sort((a, b) => Number(b) - Number(a));
 
     return (
       <div className="rounded-xl overflow-hidden shadow-sm">
-        <div className="bg-slate-50 px-4 py-3 border border-slate-200 border-b-0 rounded-t-xl">
-          <h3 className="text-xs font-black text-slate-700 uppercase tracking-widest">
+        <div className="bg-slate-50 px-3 py-2 border border-slate-200 border-b-0 rounded-t-xl">
+          <h3 className="text-[10px] font-black text-slate-700 uppercase tracking-widest">
             Monthly Returns Matrix (%)
           </h3>
         </div>
@@ -272,14 +228,11 @@ export default function FundAnalyticsModal({
           <table className="w-full text-center text-[10px] sm:text-[11px] border-collapse">
             <thead className="bg-slate-50 text-slate-500 font-bold uppercase tracking-wider">
               <tr>
-                <th className="p-2 border border-slate-200 text-left font-black text-slate-700 bg-slate-50 sticky left-0 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)] z-10 w-16">
+                <th className="px-2 py-1.5 border border-slate-200 text-left font-black text-slate-700 bg-slate-50 sticky left-0 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)] z-10 w-16">
                   Year
                 </th>
                 {months.map((m) => (
-                  <th
-                    key={m}
-                    className="p-2 border border-slate-200 bg-slate-50"
-                  >
+                  <th key={m} className="px-2 py-1.5 border border-slate-200 bg-slate-50">
                     {m}
                   </th>
                 ))}
@@ -287,23 +240,13 @@ export default function FundAnalyticsModal({
             </thead>
             <tbody>
               {sortedYears.map((year) => (
-                <tr
-                  key={year}
-                  className="hover:bg-slate-50/50 transition-colors"
-                >
-                  <td className="p-2 border border-slate-200 text-left font-bold text-slate-700 bg-slate-50 sticky left-0 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)] z-10">
+                <tr key={year} className="hover:bg-slate-50/50 transition-colors">
+                  <td className="px-2 py-1.5 border border-slate-200 text-left font-bold text-slate-700 bg-slate-50 sticky left-0 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)] z-10">
                     {year}
                   </td>
                   {months.map((month) => (
-                    <td
-                      key={month}
-                      className="p-2 border border-slate-200 whitespace-nowrap"
-                    >
-                      {matrix[year][month] !== undefined ? (
-                        formatReturn(matrix[year][month])
-                      ) : (
-                        <span className="text-slate-300">—</span>
-                      )}
+                    <td key={month} className="px-2 py-1.5 border border-slate-200 whitespace-nowrap">
+                      {matrix[year][month] !== undefined ? formatReturn(matrix[year][month]) : <span className="text-slate-300">—</span>}
                     </td>
                   ))}
                 </tr>
@@ -320,51 +263,29 @@ export default function FundAnalyticsModal({
     const rrm = riskData.relative_risk_measures || {};
 
     return (
-      <div className="flex flex-col gap-6">
+      <div className="flex flex-col gap-4">
         <div className="rounded-xl overflow-hidden shadow-sm">
-          <div className="bg-slate-50 px-4 py-3 border border-slate-200 border-b-0 rounded-t-xl">
-            <h3 className="text-xs font-black text-slate-700 uppercase tracking-widest">
+          <div className="bg-slate-50 px-3 py-2 border border-slate-200 border-b-0 rounded-t-xl">
+            <h3 className="text-[10px] font-black text-slate-700 uppercase tracking-widest">
               Risk Measures
             </h3>
           </div>
           <div className="overflow-x-auto w-full table-scrollbar">
-            <table className="w-full text-center text-[10px] sm:text-xs border-collapse">
+            <table className="w-full text-center text-[10px] sm:text-[11px] border-collapse">
               <thead className="bg-slate-50 text-slate-500 font-bold tracking-wider">
                 <tr>
-                  <th className="p-2 border border-slate-200 bg-slate-50 align-middle">
-                    Mean
-                  </th>
-                  <th className="p-2 border border-slate-200 bg-slate-50 align-middle">
-                    Standard
-                    <br />
-                    Deviation
-                  </th>
-                  <th className="p-2 border border-slate-200 bg-slate-50 align-middle">
-                    Sharpe
-                    <br />
-                    Ratio
-                  </th>
-                  <th className="p-2 border border-slate-200 bg-slate-50 align-middle">
-                    Sortino
-                    <br />
-                    Ratio
-                  </th>
+                  <th className="px-2 py-1.5 border border-slate-200 bg-slate-50 align-middle">Mean</th>
+                  <th className="px-2 py-1.5 border border-slate-200 bg-slate-50 align-middle">Standard Deviation</th>
+                  <th className="px-2 py-1.5 border border-slate-200 bg-slate-50 align-middle">Sharpe Ratio</th>
+                  <th className="px-2 py-1.5 border border-slate-200 bg-slate-50 align-middle">Sortino Ratio</th>
                 </tr>
               </thead>
               <tbody>
                 <tr className="hover:bg-slate-50/50 transition-colors">
-                  <td className="p-2 border border-slate-200 font-black text-slate-800 align-middle">
-                    {formatNum(rm.mean)}
-                  </td>
-                  <td className="p-2 border border-slate-200 font-black text-slate-800 align-middle">
-                    {formatNum(rm.standard_deviation)}
-                  </td>
-                  <td className="p-2 border border-slate-200 font-black text-slate-800 align-middle">
-                    {formatNum(rm.sharpe_ratio)}
-                  </td>
-                  <td className="p-2 border border-slate-200 font-black text-slate-800 align-middle">
-                    {formatNum(rm.sortino_ratio)}
-                  </td>
+                  <td className="px-2 py-1.5 border border-slate-200 font-black text-slate-800 align-middle">{formatNum(rm.mean)}</td>
+                  <td className="px-2 py-1.5 border border-slate-200 font-black text-slate-800 align-middle">{formatNum(rm.standard_deviation)}</td>
+                  <td className="px-2 py-1.5 border border-slate-200 font-black text-slate-800 align-middle">{formatNum(rm.sharpe_ratio)}</td>
+                  <td className="px-2 py-1.5 border border-slate-200 font-black text-slate-800 align-middle">{formatNum(rm.sortino_ratio)}</td>
                 </tr>
               </tbody>
             </table>
@@ -372,8 +293,8 @@ export default function FundAnalyticsModal({
         </div>
 
         <div className="rounded-xl overflow-hidden shadow-sm">
-          <div className="bg-slate-50 px-4 py-3 border border-slate-200 border-b-0 rounded-t-xl">
-            <h3 className="text-xs font-black text-slate-700 uppercase tracking-widest">
+          <div className="bg-slate-50 px-3 py-2 border border-slate-200 border-b-0 rounded-t-xl">
+            <h3 className="text-[10px] font-black text-slate-700 uppercase tracking-widest">
               Relative Risk Measures
             </h3>
           </div>
@@ -381,68 +302,26 @@ export default function FundAnalyticsModal({
             <table className="w-full text-center text-[9px] sm:text-[11px] leading-tight border-collapse">
               <thead className="bg-slate-50 text-slate-500 font-bold tracking-wider">
                 <tr>
-                  <th className="p-2 border border-slate-200 bg-slate-50 align-middle">
-                    R-Squared
-                  </th>
-                  <th className="p-2 border border-slate-200 bg-slate-50 align-middle">
-                    Alpha
-                  </th>
-                  <th className="p-2 border border-slate-200 bg-slate-50 align-middle">
-                    Alpha
-                    <br />
-                    (Stated)
-                  </th>
-                  <th className="p-2 border border-slate-200 bg-slate-50 align-middle">
-                    Beta
-                  </th>
-                  <th className="p-2 border border-slate-200 bg-slate-50 align-middle">
-                    Beta
-                    <br />
-                    (Stated)
-                  </th>
-                  <th className="p-2 border border-slate-200 bg-slate-50 align-middle">
-                    Treynor
-                    <br />
-                    Ratio
-                  </th>
-                  <th className="p-2 border border-slate-200 bg-slate-50 align-middle">
-                    Treynor
-                    <br />
-                    (Stated)
-                  </th>
-                  <th className="p-2 border border-slate-200 bg-slate-50 align-middle">
-                    Information
-                    <br />
-                    Ratio
-                  </th>
+                  <th className="px-2 py-1.5 border border-slate-200 bg-slate-50 align-middle">R-Squared</th>
+                  <th className="px-2 py-1.5 border border-slate-200 bg-slate-50 align-middle">Alpha</th>
+                  <th className="px-2 py-1.5 border border-slate-200 bg-slate-50 align-middle">Alpha (Stated)</th>
+                  <th className="px-2 py-1.5 border border-slate-200 bg-slate-50 align-middle">Beta</th>
+                  <th className="px-2 py-1.5 border border-slate-200 bg-slate-50 align-middle">Beta (Stated)</th>
+                  <th className="px-2 py-1.5 border border-slate-200 bg-slate-50 align-middle">Treynor Ratio</th>
+                  <th className="px-2 py-1.5 border border-slate-200 bg-slate-50 align-middle">Treynor (Stated)</th>
+                  <th className="px-2 py-1.5 border border-slate-200 bg-slate-50 align-middle">Information Ratio</th>
                 </tr>
               </thead>
               <tbody>
                 <tr className="hover:bg-slate-50/50 transition-colors">
-                  <td className="p-2 border border-slate-200 font-black text-slate-800 align-middle">
-                    {formatNum(rrm.rsquared)}
-                  </td>
-                  <td className="p-2 border border-slate-200 font-black text-slate-800 align-middle">
-                    {formatNum(rrm.alpha)}
-                  </td>
-                  <td className="p-2 border border-slate-200 font-black text-slate-800 align-middle">
-                    {formatNum(rrm.alpha_stated)}
-                  </td>
-                  <td className="p-2 border border-slate-200 font-black text-slate-800 align-middle">
-                    {formatNum(rrm.beta)}
-                  </td>
-                  <td className="p-2 border border-slate-200 font-black text-slate-800 align-middle">
-                    {formatNum(rrm.beta_stated)}
-                  </td>
-                  <td className="p-2 border border-slate-200 font-black text-slate-800 align-middle">
-                    {formatNum(rrm.treynor)}
-                  </td>
-                  <td className="p-2 border border-slate-200 font-black text-slate-800 align-middle">
-                    {formatNum(rrm.treynor_stated)}
-                  </td>
-                  <td className="p-2 border border-slate-200 font-black text-slate-800 align-middle">
-                    {formatNum(rrm.information_ratio)}
-                  </td>
+                  <td className="px-2 py-1.5 border border-slate-200 font-black text-slate-800 align-middle">{formatNum(rrm.rsquared)}</td>
+                  <td className="px-2 py-1.5 border border-slate-200 font-black text-slate-800 align-middle">{formatNum(rrm.alpha)}</td>
+                  <td className="px-2 py-1.5 border border-slate-200 font-black text-slate-800 align-middle">{formatNum(rrm.alpha_stated)}</td>
+                  <td className="px-2 py-1.5 border border-slate-200 font-black text-slate-800 align-middle">{formatNum(rrm.beta)}</td>
+                  <td className="px-2 py-1.5 border border-slate-200 font-black text-slate-800 align-middle">{formatNum(rrm.beta_stated)}</td>
+                  <td className="px-2 py-1.5 border border-slate-200 font-black text-slate-800 align-middle">{formatNum(rrm.treynor)}</td>
+                  <td className="px-2 py-1.5 border border-slate-200 font-black text-slate-800 align-middle">{formatNum(rrm.treynor_stated)}</td>
+                  <td className="px-2 py-1.5 border border-slate-200 font-black text-slate-800 align-middle">{formatNum(rrm.information_ratio)}</td>
                 </tr>
               </tbody>
             </table>
@@ -454,119 +333,92 @@ export default function FundAnalyticsModal({
   };
 
   return (
-    <div className="absolute inset-0 z-[99999] flex items-center justify-center bg-white/80 backdrop-blur-sm p-4 sm:p-6 lg:p-8 w-full h-full overflow-hidden pointer-events-none">
+    <div className="absolute inset-0 z-[99999] flex items-center justify-center bg-white/80 backdrop-blur-sm p-2 sm:p-4 lg:p-6 w-full h-full overflow-hidden pointer-events-none">
       <div className="absolute inset-0 pointer-events-auto" onClick={onClose} />
       
-      <div className="bg-white rounded-2xl shadow-2xl border border-slate-200 flex flex-col w-full max-w-5xl h-full sm:h-[95%] relative pointer-events-auto animate-in zoom-in-95 duration-200 overflow-hidden">
+      <div className="bg-white rounded-xl shadow-2xl border border-slate-200 flex flex-col w-full max-w-5xl h-full sm:h-[95%] relative pointer-events-auto animate-in zoom-in-95 duration-200 overflow-hidden">
         
-        {/* ─── LOADING & ERROR STATES WRAP THE ENTIRE MODAL CONTENT ─── */}
+        {/* ─── LOADING & ERROR STATES ─── */}
         {isLoading ? (
           <div className="flex flex-col items-center justify-center h-full w-full relative">
-            <button
-              onClick={onClose}
-              className="absolute top-4 right-4 sm:top-6 sm:right-6 p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-xl transition-colors"
-            >
-              <X className="w-6 h-6" />
+            <button onClick={onClose} className="absolute top-4 right-4 p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-xl transition-colors">
+              <X className="w-5 h-5" />
             </button>
-            <Loader2 className="w-10 h-10 sm:w-12 sm:h-12 animate-spin text-distributor-500 mb-4" />
-            <p className="text-slate-500 font-bold text-sm tracking-widest">
-              Loading Fund Analytics...
-            </p>
+            <Loader2 className="w-8 h-8 sm:w-10 sm:h-10 animate-spin text-distributor-500 mb-3" />
+            <p className="text-slate-500 font-bold text-xs sm:text-sm tracking-widest uppercase">Loading Analytics...</p>
           </div>
         ) : error ? (
-          <div className="flex flex-col items-center justify-center h-full w-full relative py-8 sm:py-12">
-            <button
-              onClick={onClose}
-              className="absolute top-4 right-4 sm:top-6 sm:right-6 p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-xl transition-colors"
-            >
-              <X className="w-6 h-6" />
+          <div className="flex flex-col items-center justify-center h-full w-full relative py-8">
+            <button onClick={onClose} className="absolute top-4 right-4 p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-xl transition-colors">
+              <X className="w-5 h-5" />
             </button>
-            <ShieldAlert className="w-12 h-12 sm:w-14 sm:h-14 text-rose-300 mb-4" />
-            <p className="text-rose-600 font-bold text-center max-w-sm text-sm sm:text-base">{error}</p>
+            <ShieldAlert className="w-10 h-10 text-rose-300 mb-3" />
+            <p className="text-rose-600 font-bold text-center max-w-sm text-sm">{error}</p>
           </div>
         ) : (
           <>
-            <div className="flex items-start justify-between p-5 lg:px-7 border-b border-slate-100 bg-white shrink-0 rounded-t-2xl">
+            {/* ─── ULTRA COMPACT HEADER ─── */}
+            <div className="flex items-start justify-between px-4 py-3 sm:px-5 sm:py-4 border-b border-slate-100 bg-white shrink-0">
               <div className="pr-2 sm:pr-4 flex-1">
-                <div className="flex flex-wrap items-center gap-3 mb-3">
-                  <h2 className="text-lg sm:text-xl lg:text-2xl font-black text-slate-900 leading-tight">
+                
+                <div className="flex flex-wrap items-center gap-2 mb-1.5">
+                  <h2 className="text-lg sm:text-xl font-black text-slate-900 leading-tight">
                     {commonInfo.fundName}
                   </h2>
-                  <span className="bg-distributor-50 text-distributor-700 border border-distributor-100 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-widest whitespace-nowrap">
+                  <span className="bg-slate-50 text-slate-600 border border-slate-200 px-1.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-widest whitespace-nowrap">
                     {commonInfo.category}
                   </span>
                 </div>
 
-                <table className="text-[10px] sm:text-xs text-slate-600 mb-3 border-collapse">
-                  <tbody>
-                    <tr>
-                      <td className="py-1 pr-6 sm:pr-10 whitespace-nowrap">
-                        <span className="text-slate-400 mr-1.5">Allotment:</span>
-                        <strong className="text-slate-800">{commonInfo.allotmentDate}</strong>
-                      </td>
-                      <td className="py-1 whitespace-nowrap">
-                        <span className="text-slate-400 mr-1.5">Risk:</span>
-                        <strong className="text-rose-600 uppercase">{commonInfo.riskometer}</strong>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td className="py-1 pr-6 sm:pr-10 whitespace-nowrap">
-                        <span className="text-slate-400 mr-1.5">AUM:</span>
-                        <strong className="text-slate-800">{commonInfo.aum}</strong>
-                      </td>
-                      <td></td>
-                    </tr>
-                    <tr>
-                      <td className="py-1" colSpan={2}>
-                        <span className="text-slate-400 mr-1.5">Benchmark:</span>
-                        <strong className="text-slate-800">{commonInfo.benchmark}</strong>
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
+                <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-[10px] sm:text-[11px] text-slate-600 mb-1.5">
+                  <div className="flex items-center gap-1"><span className="text-slate-400">Allotment:</span><strong className="text-slate-800">{commonInfo.allotmentDate}</strong></div>
+                  <div className="flex items-center gap-1"><span className="text-slate-400">Risk:</span><strong className="text-rose-600 uppercase">{commonInfo.riskometer}</strong></div>
+                  <div className="flex items-center gap-1"><span className="text-slate-400">AUM:</span><strong className="text-slate-800">{commonInfo.aum}</strong></div>
+                  <div className="flex items-center gap-1"><span className="text-slate-400">Benchmark:</span><strong className="text-slate-800">{commonInfo.benchmark}</strong></div>
+                </div>
 
                 {commonInfo.fundManagersList.length > 0 && (
-                  <div className="flex items-start gap-2 max-w-full">
-                    <span className="text-[9px] sm:text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1.5">Managers:</span>
-                    <div className="flex flex-wrap gap-1.5">
+                  <div className="flex items-center gap-2 max-w-full mt-1">
+                    <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Managers:</span>
+                    <div className="flex flex-wrap gap-1">
                       {commonInfo.fundManagersList.map((m: any, i: number) => (
-                        <span key={i} className="bg-slate-50 border border-slate-200 text-slate-700 px-2 py-1 rounded-md text-[9px] sm:text-[10px] font-semibold whitespace-nowrap">
+                        <span key={i} className="bg-slate-50 border border-slate-200 text-slate-600 px-1.5 py-0.5 rounded-md text-[9px] font-semibold whitespace-nowrap">
                           {m.person_name} <span className="text-slate-400 font-medium">(Since {formatDateDDMMYYYY(m.date_from)})</span>
                         </span>
                       ))}
                     </div>
                   </div>
                 )}
+
               </div>
 
-              <button
-                onClick={onClose}
-                className="p-1.5 sm:p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-xl transition-colors shrink-0"
-              >
-                <X className="w-5 h-5 sm:w-6 sm:h-6" />
+              <button onClick={onClose} className="p-1 sm:p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors shrink-0 -mt-1 -mr-1">
+                <X className="w-5 h-5" />
               </button>
             </div>
 
-            <div className="flex items-center gap-2 sm:gap-6 px-4 sm:px-7 border-b border-slate-100 bg-slate-50/50 shrink-0 overflow-x-auto table-scrollbar">
+            {/* ─── COMPACT TAB NAVIGATION ─── */}
+            <div className="flex items-center gap-4 px-4 sm:px-5 border-b border-slate-100 bg-slate-50/50 shrink-0 overflow-x-auto table-scrollbar">
               {(["performance", "risk", "portfolio"] as const).map((tab) => (
                 <button
                   key={tab}
                   onClick={() => setActiveTab(tab)}
-                  className={`py-3 sm:py-4 px-2 text-xs sm:text-sm font-bold capitalize tracking-wide transition-all border-b-2 whitespace-nowrap outline-none ${
+                  className={`py-2 sm:py-2.5 px-1 text-[11px] sm:text-xs font-bold capitalize tracking-wide transition-all border-b-2 whitespace-nowrap outline-none ${
                     activeTab === tab
                       ? "border-distributor-500 text-distributor-700"
                       : "border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300"
                   }`}
                 >
-                  {tab === "performance" && <TrendingUp className={`w-3.5 h-3.5 sm:w-4 sm:h-4 inline-block mr-1.5 sm:mr-2 -mt-0.5 ${activeTab === tab ? "text-distributor-500" : "text-slate-400"}`} />}
-                  {tab === "risk" && <ShieldAlert className={`w-3.5 h-3.5 sm:w-4 sm:h-4 inline-block mr-1.5 sm:mr-2 -mt-0.5 ${activeTab === tab ? "text-distributor-500" : "text-slate-400"}`} />}
-                  {tab === "portfolio" && <PieChart className={`w-3.5 h-3.5 sm:w-4 sm:h-4 inline-block mr-1.5 sm:mr-2 -mt-0.5 ${activeTab === tab ? "text-distributor-500" : "text-slate-400"}`} />}
+                  {tab === "performance" && <TrendingUp className={`w-3.5 h-3.5 inline-block mr-1.5 -mt-0.5 ${activeTab === tab ? "text-distributor-500" : "text-slate-400"}`} />}
+                  {tab === "risk" && <ShieldAlert className={`w-3.5 h-3.5 inline-block mr-1.5 -mt-0.5 ${activeTab === tab ? "text-distributor-500" : "text-slate-400"}`} />}
+                  {tab === "portfolio" && <PieChart className={`w-3.5 h-3.5 inline-block mr-1.5 -mt-0.5 ${activeTab === tab ? "text-distributor-500" : "text-slate-400"}`} />}
                   {tab}
                 </button>
               ))}
             </div>
 
-            <div className="flex-1 overflow-y-auto bg-white p-4 sm:p-5 lg:p-7 table-scrollbar relative rounded-b-2xl">
+            {/* ─── TAB CONTENT (Expanded Room) ─── */}
+            <div className="flex-1 overflow-y-auto bg-white p-3 sm:p-4 lg:p-5 table-scrollbar relative">
               <div className={activeTab === "performance" ? "block" : "hidden"}>
                 {renderPerformanceTab()}
               </div>

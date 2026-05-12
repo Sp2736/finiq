@@ -45,7 +45,9 @@ export interface PaginatedResponse<T> {
 export interface CompanyUser {
   id: string;
   name: string;
-  role?: string; 
+  email?: string;
+  role?: string;
+  company_id?: string;  
   arn_id: string | null;
   parent_id: string | null;
   parent_name: string | null;
@@ -54,6 +56,8 @@ export interface CompanyUser {
 }
 
 export interface CompanyUserPayload {
+  company_id?: string;
+  email?: string;
   role: string;
   name: string;
   arn_id: string;
@@ -74,14 +78,11 @@ export interface CapitalGainsPayload {
 const analyticsApiCache = new Map<string, Promise<any>>();
 
 const cachedApiGet = (url: string) => {
-  // If we already fetched (or are currently fetching) this URL, return the saved promise!
   if (analyticsApiCache.has(url)) {
     return analyticsApiCache.get(url)!;
   }
-  // Otherwise, make the network call and cache it
   const promise = apiClient.get(url);
   analyticsApiCache.set(url, promise);
-  // If it fails, remove it from the cache so we can try again later
   promise.catch(() => analyticsApiCache.delete(url));
   return promise;
 };
@@ -93,12 +94,25 @@ export const distributorService = {
   getCompanySummary: async (): Promise<ApiResponse<CompanySummary>> => {
     return apiClient.get<ApiResponse<CompanySummary>>('/holdings-cache/company-summary');
   },
-  getInvestors: async (page: number = 1, limit: number = 30): Promise<ApiResponse<PaginatedResponse<Investor>>> => {
-    return apiClient.get<ApiResponse<PaginatedResponse<Investor>>>(`/holdings-cache/investors?page=${page}&limit=${limit}`);
+  
+  // ─── ADDED SEARCH PARAMETER TO URL ───
+  getInvestors: async (page: number = 1, limit: number = 30, search: string = ""): Promise<ApiResponse<PaginatedResponse<Investor>>> => {
+    let url = `/holdings-cache/investors?page=${page}&limit=${limit}`;
+    if (search && search.trim() !== "") {
+      url += `&search=${encodeURIComponent(search.trim())}`;
+    }
+    return apiClient.get<ApiResponse<PaginatedResponse<Investor>>>(url);
   },
-  downloadInvestorList: async (page: number = 1, limit: number = 30, maxLimit: number = 5000): Promise<ApiResponse<PaginatedResponse<Investor>>> => {
-    return apiClient.get<ApiResponse<PaginatedResponse<Investor>>>(`/holdings-cache/investors?page=${page}&limit=${limit}&maxLimit=${maxLimit}`);
+  
+  // ─── ADDED SEARCH PARAMETER TO URL ───
+  downloadInvestorList: async (page: number = 1, limit: number = 30, maxLimit: number = 5000, search: string = ""): Promise<ApiResponse<PaginatedResponse<Investor>>> => {
+    let url = `/holdings-cache/investors?page=${page}&limit=${limit}&maxLimit=${maxLimit}`;
+    if (search && search.trim() !== "") {
+      url += `&search=${encodeURIComponent(search.trim())}`;
+    }
+    return apiClient.get<ApiResponse<PaginatedResponse<Investor>>>(url);
   },
+
   getBrokerageSummary: async (fromDate: string, toDate: string, groupBy: string = "AMC"): Promise<ApiResponse<any>> => {
     const query = new URLSearchParams({ fromDate, toDate });
     if (groupBy.toLowerCase() === 'client' || groupBy.toLowerCase() === 'investor' || groupBy.toLowerCase() === 'family') {
@@ -111,12 +125,10 @@ export const distributorService = {
     return apiClient.get<ApiResponse<any>>(`/investors/${id}/holdings`);
   },
 
-  // --- CAPITAL GAINS ENDPOINT ---
   getCapitalGains: async (data: CapitalGainsPayload): Promise<ApiResponse<any>> => {
     return apiClient.post<ApiResponse<any>>('/investors/capital-gains', data);
   },
   
-  // --- USER MANAGEMENT ENDPOINTS ---
   getCompanyUsers: async (): Promise<ApiResponse<CompanyUsersResponse>> => {
     return apiClient.get<ApiResponse<CompanyUsersResponse>>('/admin/users');
   },
@@ -129,7 +141,6 @@ export const distributorService = {
     return apiClient.put<ApiResponse<any>>(`/admin/users/${id}`, data);
   },
 
-  // ─── FUND ANALYTICS ─────────────────────────────────────────────────────────
   getFundReturns: async (amfiCode: string) => {
     const response = await cachedApiGet(`/fund-analytics/returns/${amfiCode}`);
     return response.data;
