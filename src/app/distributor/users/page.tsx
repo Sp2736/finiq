@@ -304,7 +304,7 @@ export default function UsersPage() {
         
         <button 
           onClick={() => handleOpenModal()}
-          className="group flex items-center gap-2 px-5 py-2.5 bg-slate-900 text-white rounded-xl text-sm font-bold shadow-md hover:bg-distributor-600 transition-all duration-300 active:scale-95"
+          className="group flex items-center gap-2 px-5 py-2.5 bg-distributor-700 text-white rounded-xl text-sm font-bold shadow-md hover:bg-distributor-800 transition-all duration-300 active:scale-95"
         >
           <div className="bg-white/20 p-1 rounded-md group-hover:bg-white/30 transition-colors">
             <Plus className="w-3.5 h-3.5" />
@@ -418,10 +418,6 @@ export default function UsersPage() {
                     onChange={(e) => setFormData({...formData, role: e.target.value})}
                     className="w-full pl-9 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm font-bold text-slate-700 focus:outline-none focus:border-distributor-500 focus:ring-1 focus:ring-distributor-500 appearance-none shadow-sm hover:border-slate-300 transition-all"
                   >
-                    <option value="COMPANY_USER">Company User</option>
-                    <option value="COMPANY_ADMIN">Company Admin</option>
-                    <option value="TENANT_ADMIN">Tenant Admin</option>
-                    <option value="FINIQ_ADMIN">FinIQ Admin</option>
                     <option value="SUB_BROKER">Sub Broker</option>
                   </select>
                 </div>
@@ -491,7 +487,7 @@ export default function UsersPage() {
                 <button 
                   type="submit" 
                   disabled={isSubmitting}
-                  className="flex items-center gap-2 px-6 py-2.5 bg-slate-900 text-white rounded-xl text-sm font-bold shadow-md hover:bg-distributor-600 transition-all duration-300 disabled:opacity-70 active:scale-95"
+                  className="flex items-center gap-2 px-6 py-2.5 bg-distributor-700 text-white rounded-xl text-sm font-bold shadow-md hover:bg-distributor-800 transition-all duration-300 disabled:opacity-70 active:scale-95"
                 >
                   {isSubmitting ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
                   {editingUserId ? 'Save Changes' : 'Create User'}

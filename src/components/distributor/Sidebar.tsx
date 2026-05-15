@@ -1,14 +1,14 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import LogoutButton from '@/components/investor/LogoutButton';
-import { 
-  LayoutDashboard, 
-  Users, 
-  UserSquare2, 
-  BarChart3, 
+import React, { useState, useEffect } from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import LogoutButton from "@/components/investor/LogoutButton";
+import {
+  LayoutDashboard,
+  Users,
+  UserSquare2,
+  BarChart3,
   Calculator,
   Settings,
   ChevronRight,
@@ -17,8 +17,9 @@ import {
   Menu,
   X,
   FilePieChart,
-  Network
-} from 'lucide-react';
+  Wallet,
+  Network,
+} from "lucide-react";
 
 interface SidebarProps {
   isCollapsed: boolean;
@@ -32,7 +33,7 @@ export default function Sidebar({ isCollapsed, setIsCollapsed }: SidebarProps) {
 
   // Auto-expand reports menu if we are inside a reports route
   useEffect(() => {
-    if (pathname.startsWith('/distributor/reports')) {
+    if (pathname.startsWith("/distributor/reports")) {
       setIsReportsOpen(true);
     }
   }, [pathname]);
@@ -49,7 +50,7 @@ export default function Sidebar({ isCollapsed, setIsCollapsed }: SidebarProps) {
 
   return (
     <>
-      <button 
+      <button
         onClick={() => setIsMobileOpen(true)}
         className="lg:hidden fixed top-4 right-4 z-50 p-2.5 bg-white border border-slate-200 rounded-md shadow-s text-slate-600"
       >
@@ -57,33 +58,55 @@ export default function Sidebar({ isCollapsed, setIsCollapsed }: SidebarProps) {
       </button>
 
       {isMobileOpen && (
-        <div 
+        <div
           className="lg:hidden fixed inset-0 bg-slate-900/20 backdrop-blur-sm z-40"
           onClick={() => setIsMobileOpen(false)}
         />
       )}
 
       {/* Added overflow-x-hidden here to prevent the main scrollbar glitch */}
-      <aside 
+      <aside
         className={`h-screen bg-white/80 backdrop-blur-xl border-r border-slate-200 flex flex-col fixed left-0 top-0 z-50 transition-all duration-300 ease-in-out overflow-x-hidden
-        ${isMobileOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'} 
-        ${isCollapsed ? 'w-24' : 'w-72'}`}
+        ${isMobileOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"} 
+        ${isCollapsed ? "w-24" : "w-72"}`}
       >
-        <div className={`p-8 pb-10 flex items-center ${isCollapsed ? 'justify-center px-4' : 'justify-between'}`}>
-          <Link href="/distributor" className="flex items-center gap-3 group overflow-hidden">
-            <div className="w-10 h-10 shrink-0 bg-gradient-to-br from-distributor-600 to-teal-800 rounded-md flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-              <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M13 10V3L4 14h7v7l9-11h-7z" />
+        <div
+          className={`p-8 pb-10 flex items-center ${isCollapsed ? "justify-center px-4" : "justify-between"}`}
+        >
+          <Link
+            href="/distributor"
+            className="flex items-center gap-3 group overflow-hidden"
+          >
+            <div className="w-10 h-10 shrink-0 bg-gradient-to-br from-distributor-600 to-distributor-800 rounded-md flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+              <svg
+                className="w-6 h-6 text-white"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2.5}
+                  d="M13 10V3L4 14h7v7l9-11h-7z"
+                />
               </svg>
             </div>
             {!isCollapsed && (
               <div className="animate-[fadeIn_0.2s_ease-in] whitespace-nowrap">
-                <span className="text-xl font-black tracking-tight text-slate-900 block leading-none">FinIQ</span>
-                <span className="text-[10px] font-bold text-distributor-600 uppercase tracking-widest mt-1 block">Distributor</span>
+                <span className="text-xl font-black tracking-tight text-slate-900 block leading-none">
+                  FinIQ
+                </span>
+                <span className="text-[10px] font-bold text-distributor-600 uppercase tracking-widest mt-1 block">
+                  Distributor
+                </span>
               </div>
             )}
           </Link>
-          <button onClick={() => setIsMobileOpen(false)} className="lg:hidden text-slate-400">
+          <button
+            onClick={() => setIsMobileOpen(false)}
+            className="lg:hidden text-slate-400"
+          >
             <X className="w-5 h-5" />
           </button>
         </div>
@@ -94,64 +117,104 @@ export default function Sidebar({ isCollapsed, setIsCollapsed }: SidebarProps) {
           <Link
             href="/distributor"
             onClick={() => setIsMobileOpen(false)}
-            className={`flex items-center overflow-hidden ${isCollapsed ? 'justify-center' : 'justify-between'} px-4 py-3 rounded-md transition-all duration-300 group ${
-              pathname === '/distributor' ? 'bg-distributor-600 text-white' : 'text-slate-600 hover:bg-distributor-50 hover:text-distributor-700'
+            className={`flex items-center overflow-hidden ${isCollapsed ? "justify-center" : "justify-between"} px-4 py-3 rounded-md transition-all duration-300 group ${
+              pathname === "/distributor"
+                ? "bg-distributor-600 text-white"
+                : "text-slate-600 hover:bg-distributor-50 hover:text-distributor-700"
             }`}
           >
             <div className="flex items-center gap-3">
-              <LayoutDashboard className={`w-5 h-5 shrink-0 transition-transform duration-300 ${pathname === '/distributor' ? 'scale-110' : 'group-hover:scale-110'}`} />
-              {!isCollapsed && <span className="font-bold text-sm tracking-tight whitespace-nowrap">Dashboard</span>}
+              <LayoutDashboard
+                className={`w-5 h-5 shrink-0 transition-transform duration-300 ${pathname === "/distributor" ? "scale-110" : "group-hover:scale-110"}`}
+              />
+              {!isCollapsed && (
+                <span className="font-bold text-sm tracking-tight whitespace-nowrap">
+                  Dashboard
+                </span>
+              )}
             </div>
-            {!isCollapsed && pathname === '/distributor' && <div className="w-1.5 h-1.5 shrink-0 bg-white rounded-full" />}
+            {!isCollapsed && pathname === "/distributor" && (
+              <div className="w-1.5 h-1.5 shrink-0 bg-white rounded-full" />
+            )}
           </Link>
 
           {/* Client Management */}
           <Link
             href="/distributor/clients"
             onClick={() => setIsMobileOpen(false)}
-            className={`flex items-center overflow-hidden ${isCollapsed ? 'justify-center' : 'justify-between'} px-4 py-3 rounded-md transition-all duration-300 group ${
-              pathname.startsWith('/distributor/clients') ? 'bg-distributor-600 text-white' : 'text-slate-600 hover:bg-distributor-50 hover:text-distributor-700'
+            className={`flex items-center overflow-hidden ${isCollapsed ? "justify-center" : "justify-between"} px-4 py-3 rounded-md transition-all duration-300 group ${
+              pathname.startsWith("/distributor/clients")
+                ? "bg-distributor-600 text-white"
+                : "text-slate-600 hover:bg-distributor-50 hover:text-distributor-700"
             }`}
           >
             <div className="flex items-center gap-3">
-              <Users className={`w-5 h-5 shrink-0 transition-transform duration-300 ${pathname.startsWith('/distributor/clients') ? 'scale-110' : 'group-hover:scale-110'}`} />
-              {!isCollapsed && <span className="font-bold text-sm tracking-tight whitespace-nowrap">Investors</span>}
+              <Users
+                className={`w-5 h-5 shrink-0 transition-transform duration-300 ${pathname.startsWith("/distributor/clients") ? "scale-110" : "group-hover:scale-110"}`}
+              />
+              {!isCollapsed && (
+                <span className="font-bold text-sm tracking-tight whitespace-nowrap">
+                  Investors
+                </span>
+              )}
             </div>
-            {!isCollapsed && pathname.startsWith('/distributor/clients') && <div className="w-1.5 h-1.5 shrink-0 bg-white rounded-full" />}
+            {!isCollapsed && pathname.startsWith("/distributor/clients") && (
+              <div className="w-1.5 h-1.5 shrink-0 bg-white rounded-full" />
+            )}
           </Link>
 
           {/* User Management */}
           <Link
             href="/distributor/users"
             onClick={() => setIsMobileOpen(false)}
-            className={`flex items-center overflow-hidden ${isCollapsed ? 'justify-center' : 'justify-between'} px-4 py-3 rounded-md transition-all duration-300 group ${
-              pathname.startsWith('/distributor/users') ? 'bg-distributor-600 text-white' : 'text-slate-600 hover:bg-distributor-50 hover:text-distributor-700'
+            className={`flex items-center overflow-hidden ${isCollapsed ? "justify-center" : "justify-between"} px-4 py-3 rounded-md transition-all duration-300 group ${
+              pathname.startsWith("/distributor/users")
+                ? "bg-distributor-600 text-white"
+                : "text-slate-600 hover:bg-distributor-50 hover:text-distributor-700"
             }`}
           >
             <div className="flex items-center gap-3">
-              <UserSquare2 className={`w-5 h-5 shrink-0 transition-transform duration-300 ${pathname.startsWith('/distributor/users') ? 'scale-110' : 'group-hover:scale-110'}`} />
-              {!isCollapsed && <span className="font-bold text-sm tracking-tight whitespace-nowrap">User Management</span>}
+              <UserSquare2
+                className={`w-5 h-5 shrink-0 transition-transform duration-300 ${pathname.startsWith("/distributor/users") ? "scale-110" : "group-hover:scale-110"}`}
+              />
+              {!isCollapsed && (
+                <span className="font-bold text-sm tracking-tight whitespace-nowrap">
+                  User Management
+                </span>
+              )}
             </div>
-            {!isCollapsed && pathname.startsWith('/distributor/users') && <div className="w-1.5 h-1.5 shrink-0 bg-white rounded-full" />}
+            {!isCollapsed && pathname.startsWith("/distributor/users") && (
+              <div className="w-1.5 h-1.5 shrink-0 bg-white rounded-full" />
+            )}
           </Link>
 
           {/* Reports (Nested Menu) */}
           <div className="space-y-1">
             <button
               onClick={handleReportsClick}
-              className={`w-full flex items-center overflow-hidden ${isCollapsed ? 'justify-center' : 'justify-between'} px-4 py-3 rounded-md transition-all duration-300 group ${
-                pathname.startsWith('/distributor/reports') ? 'bg-distributor-50 text-distributor-700' : 'text-slate-600 hover:bg-distributor-50 hover:text-distributor-700'
+              className={`w-full flex items-center overflow-hidden ${isCollapsed ? "justify-center" : "justify-between"} px-4 py-3 rounded-md transition-all duration-300 group ${
+                pathname.startsWith("/distributor/reports")
+                  ? "bg-distributor-50 text-distributor-700"
+                  : "text-slate-600 hover:bg-distributor-50 hover:text-distributor-700"
               }`}
             >
               <div className="flex items-center gap-3">
-                <BarChart3 className={`w-5 h-5 shrink-0 transition-transform duration-300 ${pathname.startsWith('/distributor/reports') ? 'scale-110 text-distributor-600' : 'group-hover:scale-110'}`} />
-                {!isCollapsed && <span className="font-bold text-sm tracking-tight whitespace-nowrap">Reports</span>}
+                <BarChart3
+                  className={`w-5 h-5 shrink-0 transition-transform duration-300 ${pathname.startsWith("/distributor/reports") ? "scale-110 text-distributor-600" : "group-hover:scale-110"}`}
+                />
+                {!isCollapsed && (
+                  <span className="font-bold text-sm tracking-tight whitespace-nowrap">
+                    Reports
+                  </span>
+                )}
               </div>
               {!isCollapsed && (
-                <ChevronDown className={`w-4 h-4 shrink-0 transition-transform duration-300 ${isReportsOpen ? 'rotate-180 text-distributor-600' : 'text-slate-400'}`} />
+                <ChevronDown
+                  className={`w-4 h-4 shrink-0 transition-transform duration-300 ${isReportsOpen ? "rotate-180 text-distributor-600" : "text-slate-400"}`}
+                />
               )}
             </button>
-            
+
             {/* Sub-menu Items */}
             {!isCollapsed && isReportsOpen && (
               <div className="pl-4 pr-2 py-1 space-y-1 animate-[fadeIn_0.3s_ease-out]">
@@ -159,11 +222,25 @@ export default function Sidebar({ isCollapsed, setIsCollapsed }: SidebarProps) {
                   href="/distributor/reports/hierarchy"
                   onClick={() => setIsMobileOpen(false)}
                   className={`flex items-center gap-3 px-4 py-2.5 rounded-md transition-all duration-200 ${
-                    pathname === '/distributor/reports/hierarchy' ? 'bg-white text-distributor-700 ring-1 ring-distributor-100' : 'text-slate-500 hover:text-distributor-600 hover:bg-white/50'
+                    pathname === "/distributor/reports/hierarchy"
+                      ? "bg-white text-distributor-700 ring-1 ring-distributor-100"
+                      : "text-slate-500 hover:text-distributor-600 hover:bg-white/50"
                   }`}
                 >
                   <Network className="w-4 h-4 shrink-0" />
                   <span className="text-xs font-bold">Hierarchy Earnings</span>
+                </Link>
+                <Link
+                  href="/distributor/reports/ledger"
+                  onClick={() => setIsMobileOpen(false)}
+                  className={`flex items-center gap-3 px-4 py-2.5 rounded-md transition-all duration-200 ${
+                    pathname === "/distributor/reports/ledger"
+                      ? "bg-white text-distributor-700 ring-1 ring-distributor-100"
+                      : "text-slate-500 hover:text-distributor-600 hover:bg-white/50"
+                  }`}
+                >
+                  <Wallet className="w-4 h-4 shrink-0" />
+                  <span className="text-xs font-bold">Broker Ledger</span>
                 </Link>
               </div>
             )}
@@ -173,46 +250,86 @@ export default function Sidebar({ isCollapsed, setIsCollapsed }: SidebarProps) {
           <Link
             href="/distributor/calculators"
             onClick={() => setIsMobileOpen(false)}
-            className={`flex items-center overflow-hidden ${isCollapsed ? 'justify-center' : 'justify-between'} px-4 py-3 rounded-md transition-all duration-300 group ${
-              pathname.startsWith('/distributor/calculators') ? 'bg-distributor-600 text-white' : 'text-slate-600 hover:bg-distributor-50 hover:text-distributor-700'
+            className={`flex items-center overflow-hidden ${isCollapsed ? "justify-center" : "justify-between"} px-4 py-3 rounded-md transition-all duration-300 group ${
+              pathname.startsWith("/distributor/calculators")
+                ? "bg-distributor-600 text-white"
+                : "text-slate-600 hover:bg-distributor-50 hover:text-distributor-700"
             }`}
           >
             <div className="flex items-center gap-3">
-              <Calculator className={`w-5 h-5 shrink-0 transition-transform duration-300 ${pathname.startsWith('/distributor/calculators') ? 'scale-110' : 'group-hover:scale-110'}`} />
-              {!isCollapsed && <span className="font-bold text-sm tracking-tight whitespace-nowrap">Calculators</span>}
+              <Calculator
+                className={`w-5 h-5 shrink-0 transition-transform duration-300 ${pathname.startsWith("/distributor/calculators") ? "scale-110" : "group-hover:scale-110"}`}
+              />
+              {!isCollapsed && (
+                <span className="font-bold text-sm tracking-tight whitespace-nowrap">
+                  Calculators
+                </span>
+              )}
             </div>
-            {!isCollapsed && pathname.startsWith('/distributor/calculators') && <div className="w-1.5 h-1.5 shrink-0 bg-white rounded-full" />}
+            {!isCollapsed &&
+              pathname.startsWith("/distributor/calculators") && (
+                <div className="w-1.5 h-1.5 shrink-0 bg-white rounded-full" />
+              )}
           </Link>
-
         </nav>
 
         <div className="p-6 mt-auto border-t border-slate-100 flex flex-col gap-4">
-          <button 
+          <button
             onClick={() => setIsCollapsed(!isCollapsed)}
-            className={`hidden lg:flex items-center overflow-hidden ${isCollapsed ? 'justify-center' : 'gap-3 px-4'} py-2 text-slate-400 hover:text-slate-700 transition-colors w-full`}
+            className={`hidden lg:flex items-center overflow-hidden ${isCollapsed ? "justify-center" : "gap-3 px-4"} py-2 text-slate-400 hover:text-slate-700 transition-colors w-full`}
             title={isCollapsed ? "Expand Sidebar" : "Collapse Sidebar"}
           >
-            {isCollapsed ? <ChevronRight className="w-5 h-5 shrink-0" /> : <ChevronLeft className="w-5 h-5 shrink-0" />}
-            {!isCollapsed && <span className="text-sm font-bold uppercase tracking-wider whitespace-nowrap">Collapse</span>}
+            {isCollapsed ? (
+              <ChevronRight className="w-5 h-5 shrink-0" />
+            ) : (
+              <ChevronLeft className="w-5 h-5 shrink-0" />
+            )}
+            {!isCollapsed && (
+              <span className="text-sm font-bold uppercase tracking-wider whitespace-nowrap">
+                Collapse
+              </span>
+            )}
           </button>
 
-          <Link 
-            href="/distributor/settings" 
+          <Link
+            href="/distributor/settings"
             title={isCollapsed ? "Settings" : undefined}
-            className={`flex items-center overflow-hidden ${isCollapsed ? 'justify-center' : 'gap-3 px-4'} py-2 text-slate-500 hover:text-distributor-600 transition-colors group`}
+            className={`flex items-center overflow-hidden ${isCollapsed ? "justify-center" : "gap-3 px-4"} py-2 text-slate-500 hover:text-distributor-600 transition-colors group`}
           >
             <Settings className="w-5 h-5 shrink-0 group-hover:rotate-45 transition-transform duration-500" />
-            {!isCollapsed && <span className="text-sm font-bold uppercase tracking-wider whitespace-nowrap">Settings</span>}
+            {!isCollapsed && (
+              <span className="text-sm font-bold uppercase tracking-wider whitespace-nowrap">
+                Settings
+              </span>
+            )}
           </Link>
-          
-          <div className={`w-full overflow-hidden ${isCollapsed ? 'flex justify-center' : ''}`}>
-             {isCollapsed ? (
-                <Link href="/distributor-portal" title="Sign Out" className="p-2 text-slate-400 hover:text-rose-600 transition-colors">
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
-                </Link>
-             ) : (
-                <LogoutButton portal="staff" redirectTo="/distributor-portal" />
-             )}
+
+          <div
+            className={`w-full overflow-hidden ${isCollapsed ? "flex justify-center" : ""}`}
+          >
+            {isCollapsed ? (
+              <Link
+                href="/distributor-portal"
+                title="Sign Out"
+                className="p-2 text-slate-400 hover:text-rose-600 transition-colors"
+              >
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+                  ></path>
+                </svg>
+              </Link>
+            ) : (
+              <LogoutButton portal="staff" redirectTo="/distributor-portal" />
+            )}
           </div>
         </div>
       </aside>

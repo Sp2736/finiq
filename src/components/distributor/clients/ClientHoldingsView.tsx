@@ -414,7 +414,7 @@ export default function ClientHoldingsView({
                           isExpanded ? "bg-distributor-50/30" : "hover:bg-slate-50/80"
                         }`}
                       >
-                        <td className={`p-3 text-center border-b border-slate-100 transition-colors ${isExpanded ? "bg-[#f0fdf4]" : "bg-white group-hover:bg-[#f8fafc]"}`}>
+                        <td className={`p-3 text-center border-b border-slate-100 transition-colors ${isExpanded ? "bg-[#b0ddff0b]" : "bg-white group-hover:bg-[#f8fafc]"}`}>
                           <button
                             aria-label={isExpanded ? "Collapse transactions" : "Expand transactions"}
                             className="text-slate-400 hover:text-distributor-600 outline-none p-1 rounded-md group-hover:bg-distributor-100/50 transition-colors"
