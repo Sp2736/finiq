@@ -1,3 +1,1 @@
-* handle the loading and rendering portions properly
-* for the fund analytics popup, properly render all the components together
-* when redirecting to dashboard, the cache for client list should also happen
+* make a new module (frontend, api, as well as backend changes if required) to show details of ACTIVE MUTUAL FUNDS, GROUPED AS PER COMPANY. the data comes from the karvy_sip_registrations and cams_sip_stp_details tables.
