@@ -66,7 +66,7 @@ export default function DesktopBrokerageTable({ data, totals }: { data: any[], t
                       className={`group border-b border-slate-100 cursor-pointer transition-colors duration-200 ${isUserExpanded ? 'bg-distributor-50/30' : 'hover:bg-slate-50/80'}`}
                       onClick={() => { if(hasAmc) toggleUser(user.id); }}
                     >
-                      <td className={`p-3 text-center sticky left-0 z-10 border-r border-slate-100 transition-colors ${isUserExpanded ? 'bg-[#f0fdf4]' : 'bg-white group-hover:bg-[#f8fafc]'}`}>
+                      <td className={`p-3 text-center sticky left-0 z-10 border-r border-slate-100 transition-colors ${isUserExpanded ? 'bg-[#9be4ff1b]' : 'bg-white group-hover:bg-[#f8fafc]'}`}>
                         {hasAmc ? (
                           <button className="text-slate-400 hover:text-distributor-600 outline-none p-1 rounded-md hover:bg-distributor-100/50">
                             <svg className={`w-3.5 h-3.5 transition-transform duration-300 ${isUserExpanded ? 'rotate-90 text-distributor-600' : 'rotate-0'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -77,7 +77,7 @@ export default function DesktopBrokerageTable({ data, totals }: { data: any[], t
                           <div className="w-3.5 h-3.5 mx-auto" />
                         )}
                       </td>
-                      <td className={`p-3 sticky left-10 z-10 border-r border-slate-50 transition-colors ${isUserExpanded ? 'bg-[#f0fdf4]' : 'bg-white group-hover:bg-[#f8fafc]'}`}>
+                      <td className={`p-3 sticky left-10 z-10 border-r border-slate-50 transition-colors ${isUserExpanded ? 'bg-[#9be4ff1b]' : 'bg-white group-hover:bg-[#f8fafc]'}`}>
                         <span className="font-bold text-slate-900 block mb-1 truncate w-[220px] xl:w-[280px]">{user.user}</span>
                         <div className="flex flex-wrap items-center gap-1.5">
                           <Badge intent="neutral">{user.type}</Badge>

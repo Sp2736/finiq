@@ -153,7 +153,7 @@ export default function BrokerageDashboard() {
       <div className="shrink-0 flex flex-col md:flex-row justify-between items-start md:items-end gap-2 mb-3 lg:mb-6">
         <div>
           <h1 className="text-2xl lg:text-3xl font-black tracking-tight text-slate-900">
-            Hierarchy <span className="text-transparent bg-clip-text bg-gradient-to-r from-distributor-600 to-teal-700">Earnings</span>
+            Hierarchy <span className="text-transparent bg-clip-text bg-gradient-to-r from-distributor-600 to-distributor-800">Earnings</span>
           </h1>
         </div>
         <div className="hidden md:flex gap-3">

@@ -242,6 +242,19 @@ export default function Sidebar({ isCollapsed, setIsCollapsed }: SidebarProps) {
                   <Wallet className="w-4 h-4 shrink-0" />
                   <span className="text-xs font-bold">Broker Ledger</span>
                 </Link>
+                {/* ─── NEW ACTIVE SIPS LINK ─── */}
+                <Link
+                  href="/distributor/reports/sips"
+                  onClick={() => setIsMobileOpen(false)}
+                  className={`flex items-center gap-3 px-4 py-2.5 rounded-md transition-all duration-200 ${
+                    pathname === "/distributor/reports/sips"
+                      ? "bg-white text-distributor-700 ring-1 ring-distributor-100"
+                      : "text-slate-500 hover:text-distributor-600 hover:bg-white/50"
+                  }`}
+                >
+                  <FilePieChart className="w-4 h-4 shrink-0" />
+                  <span className="text-xs font-bold">Active SIPs</span>
+                </Link>
               </div>
             )}
           </div>

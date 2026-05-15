@@ -110,6 +110,41 @@ export interface LedgerEntryPayload {
   reference_id: string;
 }
 
+export interface SipSummary {
+  total_company_sips: number;
+  total_company_value: number;
+  investor_breakdown: {
+    investor_id: string;
+    investor_name: string;
+    total_sips: number;
+    total_sip_value: number;
+  }[];
+}
+
+export interface InvestorSip {
+  id: string;
+  source: "CAMS" | "KARVY";
+  product_name: string;
+  folio_no: string;
+  installment_amount: number;
+  frequency: string;
+  status: string;
+  start_date: string;
+}
+
+export interface SipDetail {
+  rta: string;
+  scheme_name: string;
+  folio_no: string;
+  sip_amount: number;
+  from_date: string;
+  to_date: string;
+  frequency: string;
+  status: string;
+  investor_name: string;
+  remarks?: string;
+}
+
 const analyticsApiCache = new Map<string, Promise<any>>();
 
 const cachedApiGet = (url: string) => {
@@ -244,7 +279,6 @@ export const distributorService = {
   // ─── NEW METHODS FOR BANK ACCOUNTS & LEDGER ───
 
   // Fetch bank accounts (pass subBrokerId to filter for a specific user, omit for main company accounts)
-  // TODO: MAKE THE FOLLOWING APIs
   getBankAccounts: async (
     subBrokerId?: string,
   ): Promise<ApiResponse<BankAccount[]>> => {
@@ -269,6 +303,29 @@ export const distributorService = {
     return apiClient.post<ApiResponse<any>>(
       "/brokerage-distribution/ledger-entries",
       data,
+    );
+  },
+
+  // ─── SIP TRACKING ENDPOINTS ───
+
+  getCompanySipSummary: async (): Promise<ApiResponse<SipSummary>> => {
+    return apiClient.get<ApiResponse<SipSummary>>("/sips/company/summary");
+  },
+
+  getInvestorSips: async (
+    investorId: string,
+  ): Promise<ApiResponse<InvestorSip[]>> => {
+    return apiClient.get<ApiResponse<InvestorSip[]>>(
+      `/sips/investor/${investorId}`,
+    );
+  },
+
+  getSipDetail: async (
+    source: string,
+    id: string,
+  ): Promise<ApiResponse<SipDetail>> => {
+    return apiClient.get<ApiResponse<SipDetail>>(
+      `/sips/detail/${source}/${id}`,
     );
   },
 };
