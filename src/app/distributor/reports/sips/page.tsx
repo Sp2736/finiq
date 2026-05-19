@@ -13,8 +13,9 @@ import {
   Hash,
   CalendarRange,
   Clock,
+  Search,
 } from "lucide-react";
-import { formatCurrency } from "@/lib/utils";
+import { formatCompactNumber, formatCurrency } from "@/lib/utils";
 import {
   distributorService,
   SipSummary,
@@ -26,6 +27,11 @@ export default function ActiveSipsDashboard() {
   // --- States ---
   const [summary, setSummary] = useState<SipSummary | null>(null);
   const [isLoadingSummary, setIsLoadingSummary] = useState(true);
+  const [isSearching, setIsSearching] = useState(false);
+
+  // --- Search States ---
+  const [searchTerm, setSearchTerm] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
 
   // Modal 1: Investor SIP List
   const [selectedInvestorId, setSelectedInvestorId] = useState<string | null>(
@@ -43,20 +49,38 @@ export default function ActiveSipsDashboard() {
   const [sipDetail, setSipDetail] = useState<SipDetail | null>(null);
   const [isLoadingDetail, setIsLoadingDetail] = useState(false);
 
+  // ─── DEBOUNCE EFFECT FOR SEARCH ───
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(searchTerm);
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
+
   // --- Data Fetching ---
   useEffect(() => {
+    let isMounted = true;
     const fetchSummary = async () => {
       try {
-        const res = await distributorService.getCompanySipSummary();
-        if (res.success) setSummary(res.data);
+        setIsSearching(true);
+        const res =
+          await distributorService.getCompanySipSummary(debouncedSearch);
+        if (isMounted && res.success) setSummary(res.data);
       } catch (error) {
         console.error("Failed to load SIP summary", error);
       } finally {
-        setIsLoadingSummary(false);
+        if (isMounted) {
+          setIsLoadingSummary(false);
+          setIsSearching(false);
+        }
       }
     };
     fetchSummary();
-  }, []);
+
+    return () => {
+      isMounted = false;
+    };
+  }, [debouncedSearch]);
 
   const openInvestorSips = async (investorId: string, investorName: string) => {
     setSelectedInvestorId(investorId);
@@ -101,7 +125,7 @@ export default function ActiveSipsDashboard() {
         <div className="flex flex-col items-center gap-3 text-slate-400">
           <div className="w-8 h-8 border-4 border-slate-200 border-t-distributor-600 rounded-full animate-spin"></div>
           <p className="text-sm font-bold animate-pulse">
-            Aggregating Active SIP Book...
+            Loading Active SIP Book...
           </p>
         </div>
       </div>
@@ -143,7 +167,7 @@ export default function ActiveSipsDashboard() {
                 Monthly Inflow (Expected)
               </p>
               <h2 className="text-3xl font-black text-slate-800">
-                {formatCurrency(summary?.total_company_value || 0)}
+                {formatCompactNumber(summary?.total_company_value || 0)}
               </h2>
             </div>
           </div>
@@ -152,8 +176,29 @@ export default function ActiveSipsDashboard() {
 
       {/* ─── COMPANY INVESTOR LIST ─── */}
       <div className="bg-white border border-slate-200 rounded-2xl shadow-sm flex flex-col flex-1 min-h-0 w-full overflow-hidden">
+        {/* ─── SEARCH BAR HEADER ─── */}
+        <div className="p-5 border-b border-slate-100 bg-white flex flex-col sm:flex-row justify-between sm:items-center gap-4 rounded-t-2xl shrink-0">
+          <h3 className="font-bold text-slate-800">
+            Investors & their Active SIPs
+          </h3>
+          <div className="relative w-full sm:max-w-sm">
+            <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
+            <input
+              type="text"
+              placeholder="Search investors by name..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full pl-10 pr-10 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold text-slate-700 focus:bg-white focus:ring-2 focus:ring-distributor-500/20 focus:border-distributor-500 transition-all outline-none"
+            />
+            {isSearching && (
+              <div className="absolute right-3.5 top-1/2 -translate-y-1/2 w-4 h-4 border-2 border-slate-300 border-t-distributor-600 rounded-full animate-spin" />
+            )}
+          </div>
+        </div>
+
         <div className="overflow-auto flex-1 scrollbar-thin scrollbar-thumb-slate-200 scrollbar-track-transparent">
-          <table className="w-full text-left border-collapse relative">
+          {/* DESKTOP VIEW (TABLE) - Hidden on mobile */}
+          <table className="hidden md:table w-full text-left border-collapse relative">
             <thead className="sticky top-0 z-10 bg-slate-50/95 backdrop-blur-sm border-b border-slate-200 shadow-sm">
               <tr className="text-xs uppercase tracking-wider font-black text-slate-400">
                 <th className="p-4 sm:p-5 font-semibold">Investor Name</th>
@@ -166,7 +211,9 @@ export default function ActiveSipsDashboard() {
                 <th className="p-4 sm:p-5 font-semibold text-center">Action</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100">
+            <tbody
+              className={`divide-y divide-slate-100 ${isSearching && summary ? "opacity-50" : "opacity-100"} transition-opacity duration-200`}
+            >
               {summary?.investor_breakdown.map((inv) => (
                 <tr
                   key={inv.investor_id}
@@ -209,20 +256,78 @@ export default function ActiveSipsDashboard() {
                     colSpan={4}
                     className="p-8 text-center text-slate-400 font-medium text-sm"
                   >
-                    No active SIPs found in the system.
+                    {searchTerm
+                      ? "No active SIPs found matching your search."
+                      : "No active SIPs found in the system."}
                   </td>
                 </tr>
               )}
             </tbody>
           </table>
+
+          {/* MOBILE VIEW (CARDS) - Hidden on desktop */}
+          <div
+            className={`flex md:hidden flex-col divide-y divide-slate-100 ${isSearching && summary ? "opacity-50" : "opacity-100"} transition-opacity duration-200`}
+          >
+            {summary?.investor_breakdown.map((inv) => (
+              <div
+                key={inv.investor_id}
+                className="p-4 flex flex-col gap-4 hover:bg-slate-50/50 transition-colors"
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-distributor-100 text-distributor-700 flex items-center justify-center text-sm font-bold shrink-0">
+                      {inv.investor_name.charAt(0)}
+                    </div>
+                    <span className="text-base font-bold text-slate-800">
+                      {inv.investor_name}
+                    </span>
+                  </div>
+                  <button
+                    onClick={() =>
+                      openInvestorSips(inv.investor_id, inv.investor_name)
+                    }
+                    className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center text-distributor-600 hover:bg-distributor-50 transition-colors shrink-0 border border-slate-100"
+                  >
+                    <ArrowRight className="w-5 h-5" />
+                  </button>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="bg-slate-50 rounded-xl p-3 border border-slate-100">
+                    <p className="text-[10px] font-black uppercase tracking-wider text-slate-400 mb-1">
+                      Active SIPs
+                    </p>
+                    <p className="text-sm font-bold text-slate-700">
+                      {inv.total_sips}
+                    </p>
+                  </div>
+                  <div className="bg-distributor-50/50 rounded-xl p-3 border border-distributor-100">
+                    <p className="text-[10px] font-black uppercase tracking-wider text-distributor-600/70 mb-1">
+                      Total Value
+                    </p>
+                    <p className="text-sm font-black text-distributor-700">
+                      {formatCurrency(Number(inv.total_sip_value))}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            ))}
+            {(!summary?.investor_breakdown ||
+              summary.investor_breakdown.length === 0) && (
+              <div className="p-8 text-center text-slate-400 font-medium text-sm">
+                {searchTerm
+                  ? "No active SIPs found matching your search."
+                  : "No active SIPs found in the system."}
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
       {/* ─── MODAL 1: INVESTOR SIP LIST ─── */}
       {selectedInvestorId && (
-        // ABSOLUTE INSET-0: Contains the modal perfectly within the dashboard pane
         <div className="absolute inset-0 z-50 flex items-center justify-center p-4 sm:p-6 lg:p-8 animate-in fade-in duration-200 overflow-hidden">
-          {/* WHITE FROSTED BACKDROP */}
           <div
             className="absolute inset-0 bg-white/60 backdrop-blur-sm"
             onClick={closeInvestorList}
@@ -308,9 +413,7 @@ export default function ActiveSipsDashboard() {
 
       {/* ─── MODAL 2: SIP DETAILS (Detailed Drill-down) ─── */}
       {selectedSipInfo && sipDetail && !isLoadingDetail && (
-        // ABSOLUTE INSET-0: Contains the modal perfectly within the dashboard pane
         <div className="absolute inset-0 z-[60] flex items-center justify-center p-4 sm:p-6 lg:p-8 animate-in fade-in duration-200 overflow-hidden">
-          {/* WHITE FROSTED BACKDROP */}
           <div
             className="absolute inset-0 bg-white/60 backdrop-blur-sm"
             onClick={closeSipDetail}

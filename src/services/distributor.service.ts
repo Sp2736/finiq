@@ -308,8 +308,14 @@ export const distributorService = {
 
   // ─── SIP TRACKING ENDPOINTS ───
 
-  getCompanySipSummary: async (): Promise<ApiResponse<SipSummary>> => {
-    return apiClient.get<ApiResponse<SipSummary>>("/sips/company/summary");
+  getCompanySipSummary: async (
+    search?: string,
+  ): Promise<ApiResponse<SipSummary>> => {
+    // Append the search query if it exists
+    const query = search ? `?search=${encodeURIComponent(search)}` : "";
+    return apiClient.get<ApiResponse<SipSummary>>(
+      `/sips/company/summary${query}`,
+    );
   },
 
   getInvestorSips: async (
