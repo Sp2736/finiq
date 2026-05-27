@@ -103,7 +103,7 @@ export default function FundPortfolioTab({ amfiCode }: FundPortfolioTabProps) {
 
   if (sectors.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center py-16 text-center border-2 border-dashed border-slate-100 rounded-2xl bg-slate-50/50">
+      <div className="flex flex-col items-center justify-center py-16 text-center border-2 border-dashed border-slate-100 rounded-md bg-slate-50/50">
         <PieChart className="w-10 h-10 text-slate-300 mb-3" />
         <h3 className="text-xs font-black text-slate-700 uppercase tracking-widest mb-1">
           No Data

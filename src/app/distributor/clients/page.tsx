@@ -145,7 +145,7 @@ export default function InvestorsPage() {
       </div>
 
       {/* Table Area */}
-      <div className="flex-1 min-h-0 bg-white rounded-2xl border border-slate-200 shadow-sm flex flex-col relative overflow-hidden mt-1 md:mt-0">
+      <div className="flex-1 min-h-0 bg-white rounded-md border border-slate-200 shadow-sm flex flex-col relative overflow-hidden mt-1 md:mt-0">
         
         {isLoading && (
           <div className="absolute inset-0 bg-white/60 backdrop-blur-[2px] z-50 flex flex-col gap-3 items-center justify-center">

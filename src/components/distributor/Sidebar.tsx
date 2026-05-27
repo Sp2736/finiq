@@ -19,6 +19,12 @@ import {
   FilePieChart,
   Wallet,
   Network,
+  TrendingUp,
+  Target,
+  PiggyBank,
+  TrendingDown,
+  ArrowRightLeft,
+  RefreshCcw,
 } from "lucide-react";
 
 interface SidebarProps {
@@ -29,12 +35,18 @@ interface SidebarProps {
 export default function Sidebar({ isCollapsed, setIsCollapsed }: SidebarProps) {
   const pathname = usePathname();
   const [isMobileOpen, setIsMobileOpen] = useState(false);
-  const [isReportsOpen, setIsReportsOpen] = useState(false);
 
-  // Auto-expand reports menu if we are inside a reports route
+  // Menu States
+  const [isReportsOpen, setIsReportsOpen] = useState(false);
+  const [isCalculatorsOpen, setIsCalculatorsOpen] = useState(false);
+
+  // Auto-expand menus if we are inside their respective routes
   useEffect(() => {
     if (pathname.startsWith("/distributor/reports")) {
       setIsReportsOpen(true);
+    }
+    if (pathname.startsWith("/distributor/calculators")) {
+      setIsCalculatorsOpen(true);
     }
   }, [pathname]);
 
@@ -48,15 +60,27 @@ export default function Sidebar({ isCollapsed, setIsCollapsed }: SidebarProps) {
     }
   };
 
+  const handleCalculatorsClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (isCollapsed) {
+      setIsCollapsed(false);
+      setIsCalculatorsOpen(true);
+    } else {
+      setIsCalculatorsOpen(!isCalculatorsOpen);
+    }
+  };
+
   return (
     <>
+      {/* Mobile Hamburger */}
       <button
         onClick={() => setIsMobileOpen(true)}
-        className="lg:hidden fixed top-4 right-4 z-50 p-2.5 bg-white border border-slate-200 rounded-md shadow-s text-slate-600"
+        className="lg:hidden fixed top-4 right-4 z-50 p-2.5 bg-white border border-slate-200 rounded-md shadow-sm text-slate-600"
       >
         <Menu className="w-5 h-5" />
       </button>
 
+      {/* Mobile Backdrop */}
       {isMobileOpen && (
         <div
           className="lg:hidden fixed inset-0 bg-slate-900/20 backdrop-blur-sm z-40"
@@ -64,12 +88,13 @@ export default function Sidebar({ isCollapsed, setIsCollapsed }: SidebarProps) {
         />
       )}
 
-      {/* Added overflow-x-hidden here to prevent the main scrollbar glitch */}
+      {/* Sidebar Container */}
       <aside
         className={`h-screen bg-white/80 backdrop-blur-xl border-r border-slate-200 flex flex-col fixed left-0 top-0 z-50 transition-all duration-300 ease-in-out overflow-x-hidden
         ${isMobileOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"} 
         ${isCollapsed ? "w-24" : "w-72"}`}
       >
+        {/* Brand Header */}
         <div
           className={`p-8 pb-10 flex items-center ${isCollapsed ? "justify-center px-4" : "justify-between"}`}
         >
@@ -111,8 +136,8 @@ export default function Sidebar({ isCollapsed, setIsCollapsed }: SidebarProps) {
           </button>
         </div>
 
-        {/* Added overflow-x-hidden to the nav wrapper */}
-        <nav className="flex-1 px-4 space-y-1.5 overflow-y-auto overflow-x-hidden scrollbar-none">
+        {/* Navigation Area */}
+        <nav className="flex-1 px-4 space-y-1.5 overflow-y-auto overflow-x-hidden scrollbar-none pb-4">
           {/* Dashboard */}
           <Link
             href="/distributor"
@@ -138,7 +163,7 @@ export default function Sidebar({ isCollapsed, setIsCollapsed }: SidebarProps) {
             )}
           </Link>
 
-          {/* Client Management */}
+          {/* Investors */}
           <Link
             href="/distributor/clients"
             onClick={() => setIsMobileOpen(false)}
@@ -215,17 +240,12 @@ export default function Sidebar({ isCollapsed, setIsCollapsed }: SidebarProps) {
               )}
             </button>
 
-            {/* Sub-menu Items */}
             {!isCollapsed && isReportsOpen && (
               <div className="pl-4 pr-2 py-1 space-y-1 animate-[fadeIn_0.3s_ease-out]">
                 <Link
                   href="/distributor/reports/hierarchy"
                   onClick={() => setIsMobileOpen(false)}
-                  className={`flex items-center gap-3 px-4 py-2.5 rounded-md transition-all duration-200 ${
-                    pathname === "/distributor/reports/hierarchy"
-                      ? "bg-white text-distributor-700 ring-1 ring-distributor-100"
-                      : "text-slate-500 hover:text-distributor-600 hover:bg-white/50"
-                  }`}
+                  className={`flex items-center gap-3 px-4 py-2.5 rounded-md transition-all duration-200 ${pathname === "/distributor/reports/hierarchy" ? "bg-white text-distributor-700 ring-1 ring-distributor-100" : "text-slate-500 hover:text-distributor-600 hover:bg-white/50"}`}
                 >
                   <Network className="w-4 h-4 shrink-0" />
                   <span className="text-xs font-bold">Hierarchy Earnings</span>
@@ -233,24 +253,15 @@ export default function Sidebar({ isCollapsed, setIsCollapsed }: SidebarProps) {
                 <Link
                   href="/distributor/reports/ledger"
                   onClick={() => setIsMobileOpen(false)}
-                  className={`flex items-center gap-3 px-4 py-2.5 rounded-md transition-all duration-200 ${
-                    pathname === "/distributor/reports/ledger"
-                      ? "bg-white text-distributor-700 ring-1 ring-distributor-100"
-                      : "text-slate-500 hover:text-distributor-600 hover:bg-white/50"
-                  }`}
+                  className={`flex items-center gap-3 px-4 py-2.5 rounded-md transition-all duration-200 ${pathname === "/distributor/reports/ledger" ? "bg-white text-distributor-700 ring-1 ring-distributor-100" : "text-slate-500 hover:text-distributor-600 hover:bg-white/50"}`}
                 >
                   <Wallet className="w-4 h-4 shrink-0" />
                   <span className="text-xs font-bold">Broker Ledger</span>
                 </Link>
-                {/* ─── NEW ACTIVE SIPS LINK ─── */}
                 <Link
                   href="/distributor/reports/sips"
                   onClick={() => setIsMobileOpen(false)}
-                  className={`flex items-center gap-3 px-4 py-2.5 rounded-md transition-all duration-200 ${
-                    pathname === "/distributor/reports/sips"
-                      ? "bg-white text-distributor-700 ring-1 ring-distributor-100"
-                      : "text-slate-500 hover:text-distributor-600 hover:bg-white/50"
-                  }`}
+                  className={`flex items-center gap-3 px-4 py-2.5 rounded-md transition-all duration-200 ${pathname === "/distributor/reports/sips" ? "bg-white text-distributor-700 ring-1 ring-distributor-100" : "text-slate-500 hover:text-distributor-600 hover:bg-white/50"}`}
                 >
                   <FilePieChart className="w-4 h-4 shrink-0" />
                   <span className="text-xs font-bold">Active SIPs</span>
@@ -259,72 +270,123 @@ export default function Sidebar({ isCollapsed, setIsCollapsed }: SidebarProps) {
             )}
           </div>
 
-          {/* Calculators */}
-          <Link
-            href="/distributor/calculators"
-            onClick={() => setIsMobileOpen(false)}
-            className={`flex items-center overflow-hidden ${isCollapsed ? "justify-center" : "justify-between"} px-4 py-3 rounded-md transition-all duration-300 group ${
-              pathname.startsWith("/distributor/calculators")
-                ? "bg-distributor-600 text-white"
-                : "text-slate-600 hover:bg-distributor-50 hover:text-distributor-700"
-            }`}
-          >
-            <div className="flex items-center gap-3">
-              <Calculator
-                className={`w-5 h-5 shrink-0 transition-transform duration-300 ${pathname.startsWith("/distributor/calculators") ? "scale-110" : "group-hover:scale-110"}`}
-              />
+          {/* Calculators (Nested Menu) */}
+          <div className="space-y-1">
+            <button
+              onClick={handleCalculatorsClick}
+              className={`w-full flex items-center overflow-hidden ${isCollapsed ? "justify-center" : "justify-between"} px-4 py-3 rounded-md transition-all duration-300 group ${
+                pathname.startsWith("/distributor/calculators")
+                  ? "bg-distributor-50 text-distributor-700"
+                  : "text-slate-600 hover:bg-distributor-50 hover:text-distributor-700"
+              }`}
+            >
+              <div className="flex items-center gap-3">
+                <Calculator
+                  className={`w-5 h-5 shrink-0 transition-transform duration-300 ${pathname.startsWith("/distributor/calculators") ? "scale-110 text-distributor-600" : "group-hover:scale-110"}`}
+                />
+                {!isCollapsed && (
+                  <span className="font-bold text-sm tracking-tight whitespace-nowrap">
+                    Calculators
+                  </span>
+                )}
+              </div>
               {!isCollapsed && (
-                <span className="font-bold text-sm tracking-tight whitespace-nowrap">
-                  Calculators
-                </span>
+                <ChevronDown
+                  className={`w-4 h-4 shrink-0 transition-transform duration-300 ${isCalculatorsOpen ? "rotate-180 text-distributor-600" : "text-slate-400"}`}
+                />
               )}
-            </div>
-            {!isCollapsed &&
-              pathname.startsWith("/distributor/calculators") && (
-                <div className="w-1.5 h-1.5 shrink-0 bg-white rounded-full" />
-              )}
-          </Link>
+            </button>
+
+            {!isCollapsed && isCalculatorsOpen && (
+              <div className="pl-4 pr-2 py-1 space-y-1 animate-[fadeIn_0.3s_ease-out]">
+                <Link
+                  href="/distributor/calculators/mf-returns"
+                  onClick={() => setIsMobileOpen(false)}
+                  className={`flex items-center gap-3 px-4 py-2.5 rounded-md transition-all duration-200 ${pathname === "/distributor/calculators/mf-returns" ? "bg-white text-distributor-700 ring-1 ring-distributor-100" : "text-slate-500 hover:text-distributor-600 hover:bg-white/50"}`}
+                >
+                  <TrendingUp className="w-4 h-4 shrink-0" />
+                  <span className="text-xs font-bold">MF Returns</span>
+                </Link>
+                <Link
+                  href="/distributor/calculators/goal"
+                  onClick={() => setIsMobileOpen(false)}
+                  className={`flex items-center gap-3 px-4 py-2.5 rounded-md transition-all duration-200 ${pathname === "/distributor/calculators/goal" ? "bg-white text-distributor-700 ring-1 ring-distributor-100" : "text-slate-500 hover:text-distributor-600 hover:bg-white/50"}`}
+                >
+                  <Target className="w-4 h-4 shrink-0" />
+                  <span className="text-xs font-bold">Goal Planner</span>
+                </Link>
+                <Link
+                  href="/distributor/calculators/fd"
+                  onClick={() => setIsMobileOpen(false)}
+                  className={`flex items-center gap-3 px-4 py-2.5 rounded-md transition-all duration-200 ${pathname === "/distributor/calculators/fd" ? "bg-white text-distributor-700 ring-1 ring-distributor-100" : "text-slate-500 hover:text-distributor-600 hover:bg-white/50"}`}
+                >
+                  <PiggyBank className="w-4 h-4 shrink-0" />
+                  <span className="text-xs font-bold">FD Calculator</span>
+                </Link>
+                <Link
+                  href="/distributor/calculators/swp"
+                  onClick={() => setIsMobileOpen(false)}
+                  className={`flex items-center gap-3 px-4 py-2.5 rounded-md transition-all duration-200 ${pathname === "/distributor/calculators/swp" ? "bg-white text-distributor-700 ring-1 ring-distributor-100" : "text-slate-500 hover:text-distributor-600 hover:bg-white/50"}`}
+                >
+                  <TrendingDown className="w-4 h-4 shrink-0" />
+                  <span className="text-xs font-bold">SWP Calculator</span>
+                </Link>
+                <Link
+                  href="/distributor/calculators/stp"
+                  onClick={() => setIsMobileOpen(false)}
+                  className={`flex items-center gap-3 px-4 py-2.5 rounded-md transition-all duration-200 ${pathname === "/distributor/calculators/stp" ? "bg-white text-distributor-700 ring-1 ring-distributor-100" : "text-slate-500 hover:text-distributor-600 hover:bg-white/50"}`}
+                >
+                  <ArrowRightLeft className="w-4 h-4 shrink-0" />
+                  <span className="text-xs font-bold">STP Calculator</span>
+                </Link>
+                <Link
+                  href="/distributor/calculators/reverse-emi"
+                  onClick={() => setIsMobileOpen(false)}
+                  className={`flex items-center gap-3 px-4 py-2.5 rounded-md transition-all duration-200 ${pathname === "/distributor/calculators/reverse-emi" ? "bg-white text-distributor-700 ring-1 ring-distributor-100" : "text-slate-500 hover:text-distributor-600 hover:bg-white/50"}`}
+                >
+                  <RefreshCcw className="w-4 h-4 shrink-0" />
+                  <span className="text-xs font-bold">Reverse EMI</span>
+                </Link>
+              </div>
+            )}
+          </div>
         </nav>
 
-        <div className="p-6 mt-auto border-t border-slate-100 flex flex-col gap-4">
+        {/* ─── COMPACT BOTTOM ACTIONS ROW ─── */}
+        <div
+          className={`p-4 mt-auto border-t border-slate-100 bg-white/50 flex ${isCollapsed ? "flex-col items-center gap-3" : "items-center gap-2"} shrink-0`}
+        >
+          {/* Settings Icon */}
+          <Link
+            href="/distributor/settings"
+            title="Settings"
+            className="p-2.5 text-slate-400 hover:text-distributor-600 hover:bg-distributor-50 rounded-lg transition-colors group shrink-0"
+          >
+            <Settings className="w-5 h-5 group-hover:rotate-45 transition-transform duration-500" />
+          </Link>
+
+          {/* Collapse Icon */}
           <button
             onClick={() => setIsCollapsed(!isCollapsed)}
-            className={`hidden lg:flex items-center overflow-hidden ${isCollapsed ? "justify-center" : "gap-3 px-4"} py-2 text-slate-400 hover:text-slate-700 transition-colors w-full`}
+            className="hidden lg:flex p-2.5 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-lg transition-colors shrink-0"
             title={isCollapsed ? "Expand Sidebar" : "Collapse Sidebar"}
           >
             {isCollapsed ? (
-              <ChevronRight className="w-5 h-5 shrink-0" />
+              <ChevronRight className="w-5 h-5" />
             ) : (
-              <ChevronLeft className="w-5 h-5 shrink-0" />
-            )}
-            {!isCollapsed && (
-              <span className="text-sm font-bold uppercase tracking-wider whitespace-nowrap">
-                Collapse
-              </span>
+              <ChevronLeft className="w-5 h-5" />
             )}
           </button>
 
-          <Link
-            href="/distributor/settings"
-            title={isCollapsed ? "Settings" : undefined}
-            className={`flex items-center overflow-hidden ${isCollapsed ? "justify-center" : "gap-3 px-4"} py-2 text-slate-500 hover:text-distributor-600 transition-colors group`}
-          >
-            <Settings className="w-5 h-5 shrink-0 group-hover:rotate-45 transition-transform duration-500" />
-            {!isCollapsed && (
-              <span className="text-sm font-bold uppercase tracking-wider whitespace-nowrap">
-                Settings
-              </span>
-            )}
-          </Link>
-
+          {/* Logout Button */}
           <div
-            className={`w-full overflow-hidden ${isCollapsed ? "flex justify-center" : ""}`}
+            className={`${isCollapsed ? "w-full flex justify-center" : "flex-1 min-w-0"}`}
           >
             {isCollapsed ? (
               <Link
                 href="/distributor-portal"
                 title="Sign Out"
-                className="p-2 text-slate-400 hover:text-rose-600 transition-colors"
+                className="p-2.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors flex items-center justify-center"
               >
                 <svg
                   className="w-5 h-5"

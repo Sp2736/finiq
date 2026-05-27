@@ -15,6 +15,7 @@ export type Transaction = {
 export type UnifiedFund = {
   // Desktop & Shared Fields
   folioNo: string;
+  amfiCode: string;
   fundName: string;
   purchaseDate: string;
   totalCapital: number;

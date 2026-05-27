@@ -165,7 +165,7 @@ export default function BrokerageDashboard() {
       </div>
 
       {/* Filter Bar - Compressed Padding & Layout */}
-      <div className="shrink-0 bg-white/80 backdrop-blur-xl border border-slate-200 rounded-xl md:rounded-2xl p-2 md:p-3 mb-3 lg:mb-6 shadow-sm flex flex-col md:flex-row items-stretch md:items-center gap-2">
+      <div className="shrink-0 bg-white/80 backdrop-blur-xl border border-slate-200 rounded-xl md:rounded-md p-2 md:p-3 mb-3 lg:mb-6 shadow-sm flex flex-col md:flex-row items-stretch md:items-center gap-2">
         
         <div className="flex items-center justify-between gap-2">
           <div className="flex items-center bg-slate-100 p-1 rounded-lg overflow-x-auto hide-scrollbar flex-1">

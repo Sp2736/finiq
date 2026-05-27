@@ -59,7 +59,7 @@ export default function DistributorReportsPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 shrink-0">
           {REPORTS.map((report) => (
             <div key={report.id} className="bg-white p-7 rounded-[2rem] border border-slate-200 shadow-sm hover:border-distributor-200 transition-all group flex flex-col h-full min-h-[300px]">
-              <div className={`w-14 h-14 ${report.bg} ${report.color} rounded-2xl mb-6 flex items-center justify-center shrink-0`}>
+              <div className={`w-14 h-14 ${report.bg} ${report.color} rounded-md mb-6 flex items-center justify-center shrink-0`}>
                 <report.icon className="w-7 h-7" />
               </div>
               <h3 className="text-xl font-black text-slate-900 tracking-tight mb-2 shrink-0">{report.title}</h3>

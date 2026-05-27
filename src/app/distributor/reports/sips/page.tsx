@@ -145,7 +145,7 @@ export default function ActiveSipsDashboard() {
         </p>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 lg:gap-6">
-          <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm flex items-center gap-5">
+          <div className="bg-white border border-slate-200 rounded-md p-6 shadow-sm flex items-center gap-5">
             <div className="w-14 h-14 bg-distributor-50 text-distributor-600 rounded-full flex items-center justify-center shrink-0">
               <Activity className="w-6 h-6" />
             </div>
@@ -158,7 +158,7 @@ export default function ActiveSipsDashboard() {
               </h2>
             </div>
           </div>
-          <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm flex items-center gap-5">
+          <div className="bg-white border border-slate-200 rounded-md p-6 shadow-sm flex items-center gap-5">
             <div className="w-14 h-14 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center shrink-0">
               <IndianRupee className="w-6 h-6" />
             </div>
@@ -175,7 +175,7 @@ export default function ActiveSipsDashboard() {
       </div>
 
       {/* ─── COMPANY INVESTOR LIST ─── */}
-      <div className="bg-white border border-slate-200 rounded-2xl shadow-sm flex flex-col flex-1 min-h-0 w-full overflow-hidden">
+      <div className="bg-white border border-slate-200 rounded-md shadow-sm flex flex-col flex-1 min-h-0 w-full overflow-hidden">
         {/* ─── SEARCH BAR HEADER ─── */}
         <div className="p-5 border-b border-slate-100 bg-white flex flex-col sm:flex-row justify-between sm:items-center gap-4 rounded-t-2xl shrink-0">
           <h3 className="font-bold text-slate-800">
@@ -333,7 +333,7 @@ export default function ActiveSipsDashboard() {
             onClick={closeInvestorList}
           />
 
-          <div className="relative w-full max-w-4xl bg-white rounded-2xl shadow-2xl flex flex-col max-h-full border border-slate-200/50 animate-in zoom-in-95 slide-in-from-bottom-4 duration-200">
+          <div className="relative w-full max-w-4xl bg-white rounded-md shadow-2xl flex flex-col max-h-full border border-slate-200/50 animate-in zoom-in-95 slide-in-from-bottom-4 duration-200">
             <div className="flex justify-between items-center bg-white border-b border-slate-100 p-5 px-6 shrink-0 rounded-t-2xl">
               <div>
                 <h3 className="text-lg lg:text-xl font-black text-slate-800 tracking-tight">
@@ -363,7 +363,7 @@ export default function ActiveSipsDashboard() {
                     <div
                       key={`${sip.id}-${idx}`}
                       onClick={() => openSipDetail(sip.id, sip.source)}
-                      className="bg-white border border-slate-200 rounded-2xl p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 cursor-pointer hover:border-distributor-300 hover:shadow-md transition-all duration-200 group"
+                      className="bg-white border border-slate-200 rounded-md p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 cursor-pointer hover:border-distributor-300 hover:shadow-md transition-all duration-200 group"
                     >
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-1.5">
@@ -419,7 +419,7 @@ export default function ActiveSipsDashboard() {
             onClick={closeSipDetail}
           />
 
-          <div className="relative w-full max-w-2xl bg-white rounded-2xl shadow-2xl flex flex-col max-h-full border border-slate-200/50 animate-in zoom-in-95 duration-200">
+          <div className="relative w-full max-w-2xl bg-white rounded-md shadow-2xl flex flex-col max-h-full border border-slate-200/50 animate-in zoom-in-95 duration-200">
             <div className="flex justify-between items-start bg-slate-50 border-b border-slate-200 p-6 rounded-t-2xl shrink-0">
               <div className="pr-6">
                 <div className="flex items-center gap-2 mb-2">
@@ -444,7 +444,7 @@ export default function ActiveSipsDashboard() {
 
             <div className="p-6 overflow-y-auto scrollbar-thin scrollbar-thumb-slate-200 space-y-6 rounded-b-2xl">
               {/* Highlight Amount Box */}
-              <div className="bg-distributor-50 border border-distributor-100 rounded-2xl p-5 flex items-center justify-between">
+              <div className="bg-distributor-50 border border-distributor-100 rounded-md p-5 flex items-center justify-between">
                 <div>
                   <p className="text-[11px] font-black text-distributor-600/70 uppercase tracking-widest mb-1">
                     Installment Amount
@@ -465,7 +465,7 @@ export default function ActiveSipsDashboard() {
 
               {/* Data Grid */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="bg-white border border-slate-200 rounded-2xl p-4 flex gap-3">
+                <div className="bg-white border border-slate-200 rounded-md p-4 flex gap-3">
                   <User className="w-5 h-5 text-slate-400 shrink-0" />
                   <div>
                     <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-0.5">
@@ -477,7 +477,7 @@ export default function ActiveSipsDashboard() {
                   </div>
                 </div>
 
-                <div className="bg-white border border-slate-200 rounded-2xl p-4 flex gap-3">
+                <div className="bg-white border border-slate-200 rounded-md p-4 flex gap-3">
                   <Hash className="w-5 h-5 text-slate-400 shrink-0" />
                   <div>
                     <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-0.5">
@@ -489,7 +489,7 @@ export default function ActiveSipsDashboard() {
                   </div>
                 </div>
 
-                <div className="bg-white border border-slate-200 rounded-2xl p-4 flex gap-3">
+                <div className="bg-white border border-slate-200 rounded-md p-4 flex gap-3">
                   <CalendarClock className="w-5 h-5 text-slate-400 shrink-0" />
                   <div>
                     <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-0.5">
@@ -506,7 +506,7 @@ export default function ActiveSipsDashboard() {
                   </div>
                 </div>
 
-                <div className="bg-white border border-slate-200 rounded-2xl p-4 flex gap-3">
+                <div className="bg-white border border-slate-200 rounded-md p-4 flex gap-3">
                   <CalendarRange className="w-5 h-5 text-slate-400 shrink-0" />
                   <div>
                     <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-0.5">
@@ -526,7 +526,7 @@ export default function ActiveSipsDashboard() {
 
               {/* Remarks/Notes (If any exist) */}
               {sipDetail.remarks && (
-                <div className="bg-amber-50 border border-amber-100 rounded-2xl p-4">
+                <div className="bg-amber-50 border border-amber-100 rounded-md p-4">
                   <p className="text-[10px] font-black text-amber-600/70 uppercase tracking-widest mb-1">
                     RTA Remarks
                   </p>
