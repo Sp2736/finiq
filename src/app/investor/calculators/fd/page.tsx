@@ -209,30 +209,24 @@ export default function FDCalculator() {
     let plotIntervals: number[] = [];
     const start = duration - 2 * baseStep;
 
+    // Calculate strictly the next multiples of 5 after the selected duration
+    const next1 = Math.ceil((duration + 1) / 5) * 5;
+    const next2 = next1 + 5;
+    const next3 = next2 + 5;
+    const next4 = next3 + 5;
+
     if (start >= 1) {
       plotIntervals = [
         duration - 2 * baseStep,
         duration - baseStep,
         duration,
-        duration + baseStep,
-        duration + 2 * baseStep,
+        next1, // 1st multiple of 5 after duration
+        next2, // 2nd multiple of 5 after duration
       ];
     } else if (duration - baseStep >= 1) {
-      plotIntervals = [
-        duration - baseStep,
-        duration,
-        duration + baseStep,
-        duration + 2 * baseStep,
-        duration + 3 * baseStep,
-      ];
+      plotIntervals = [duration - baseStep, duration, next1, next2, next3];
     } else {
-      plotIntervals = [
-        duration,
-        duration + baseStep,
-        duration + 2 * baseStep,
-        duration + 3 * baseStep,
-        duration + 4 * baseStep,
-      ];
+      plotIntervals = [duration, next1, next2, next3, next4];
     }
 
     return plotIntervals.map((y) => {
@@ -300,7 +294,7 @@ export default function FDCalculator() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 shrink-0">
         <div>
           <h1 className="text-2xl lg:text-3xl font-black tracking-tight text-slate-900 mb-1">
-            Fixed <span className="text-distributor-600">Deposits</span>
+            Fixed <span className="text-investor-600">Deposits</span>
           </h1>
           <p className="text-sm font-medium text-slate-500">
             Calculate secure returns with accurate compounding rules.
@@ -449,7 +443,7 @@ export default function FDCalculator() {
                 : `Payout (${fdType.replace("_", " ")})`,
             val:
               fdType === "CUMULATIVE"
-                ? results.estAnnualReturn
+                ? results.avgAnnualReturn
                 : results.periodicPayout,
             color: "text-emerald-600",
           },

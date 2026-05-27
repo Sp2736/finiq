@@ -456,7 +456,7 @@ export default function FDCalculator() {
                 : `Payout (${fdType.replace("_", " ")})`,
             val:
               fdType === "CUMULATIVE"
-                ? results.estAnnualReturn
+                ? results.avgAnnualReturn
                 : results.periodicPayout,
             color: "text-emerald-600",
           },

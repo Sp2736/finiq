@@ -53,7 +53,10 @@ export default function UnifiedPortfolioApp() {
           fundName: f.fund_name || f.fundName || "Unknown Fund",
           category: f.category || "Equity",
           amc: f.amc || "AMC",
-          statusTag: f.sip_status || f.statusTag || "N/A",
+          statusTag: // todo: check if this logic is correct here for status
+            (f.sip_status === "Active" ? "SIP" : f.sip_status) ||
+            f.statusTag ||
+            "N/A",
           purchaseDate: f.purchase_date
             ? new Date(f.purchase_date).toLocaleDateString("en-GB")
             : f.purchaseDate,
@@ -71,7 +74,10 @@ export default function UnifiedPortfolioApp() {
           unrealisedGainPercent: f.abs_percent ?? f.unrealisedGainPercent ?? 0,
           realisedGain: f.realised_gain || 0,
           securityType: f.security_type || "Mutual Fund",
-          sipStatus: f.sip_status || f.sipStatus || "N/A",
+          sipStatus:
+            (f.sip_status === "Active" ? "SIP" : f.sip_status) ||
+            f.sipStatus ||
+            "N/A",
           xirr: f.xirr_percent ?? f.xirr ?? 0,
           oneDayChange: f.todays_pnl || f.oneDayChange || 0,
           oneDayPercent: f.todays_pnl_percent || 0,

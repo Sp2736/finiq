@@ -306,6 +306,18 @@ export const distributorService = {
     );
   },
 
+  getBrokerLedgerSummary: async (): Promise<ApiResponse<any>> => {
+    return apiClient.get<ApiResponse<any>>(
+      "/brokerage-distribution/ledger/summary"
+    );
+  },
+
+  getBrokerTransactionHistory: async (subBrokerId: string): Promise<ApiResponse<any>> => {
+    return apiClient.get<ApiResponse<any>>(
+      `/brokerage-distribution/ledger/transactions/${subBrokerId}`
+    );
+  },
+
   // ─── SIP TRACKING ENDPOINTS ───
 
   getCompanySipSummary: async (

@@ -24,13 +24,18 @@ import { toTitleCase } from "@/lib/utils";
 
 // ─── UTILITIES ───
 const extractRole = (user: any): string => {
-  const foundRole =
-    user.role ||
-    user.user_role ||
-    user.role_name ||
-    user.type ||
-    user.user_type;
-  return foundRole ? String(foundRole).toUpperCase() : "SUB_BROKER";
+  // 1. Primary Check: If they have a parent, they are a Sub-Broker
+  if (user.parent_id || user.parent_name) {
+    return "SUB_BROKER";
+  }
+
+  // 2. Secondary Check: If they have no parent and possess an ARN, they are a Distributor
+  if (user.arn_id && String(user.arn_id).trim() !== "") {
+    return "DISTRIBUTOR";
+  }
+
+  // 3. Fallback: Anyone without a parent sits at the root hierarchy
+  return "DISTRIBUTOR";
 };
 
 const getRoleBadgeStyle = (role: string) => {
@@ -38,10 +43,12 @@ const getRoleBadgeStyle = (role: string) => {
     case "FINIQ_ADMIN":
     case "TENANT_ADMIN":
       return "bg-purple-50 text-purple-700 border border-purple-100";
+    case "DISTRIBUTOR":
     case "COMPANY_ADMIN":
-      return "bg-rose-50 text-rose-700 border border-rose-100";
-    case "COMPANY_USER":
       return "bg-distributor-50 text-distributor-700 border border-distributor-100";
+    case "SUB_BROKER":
+    case "COMPANY_USER":
+      return "bg-sky-50 text-sky-700 border border-sky-100";
     default:
       return "bg-slate-50 text-slate-600 border border-slate-200";
   }
@@ -362,7 +369,7 @@ export default function UsersPage() {
   const [editingUserId, setEditingUserId] = useState<string | null>(null);
 
   const [formData, setFormData] = useState<CompanyUserPayload>({
-    role: "COMPANY_USER",
+    role: "DISTRIBUTOR",
     name: "",
     email: "",
     arn_id: "",
@@ -409,7 +416,7 @@ export default function UsersPage() {
     } else {
       setEditingUserId(null);
       setFormData({
-        role: "COMPANY_USER",
+        role: "DISTRIBUTOR", // Base role when Parent ID is empty
         name: "",
         email: "",
         arn_id: "",
@@ -430,7 +437,7 @@ export default function UsersPage() {
     setIsSubmitting(true);
     try {
       const payload: CompanyUserPayload = {
-        role: formData.role,
+        role: formData.parent_id ? "SUB_BROKER" : "DISTRIBUTOR",
         name: formData.name,
         email: formData.email,
         arn_id: formData.arn_id,
@@ -620,23 +627,28 @@ export default function UsersPage() {
                 </div>
               </div>
 
-              {/* Role Selection */}
+              {/* Dynamic Auto-Assigned Role Selection */}
               <div>
-                <label className="block text-[11px] font-black text-slate-500 uppercase tracking-widest mb-2">
-                  Assign Role
+                <label className="block text-[11px] font-black text-slate-500 uppercase tracking-widest mb-2 flex justify-between items-center">
+                  <span>Assigned Role</span>
+                  <span className="text-[9px] bg-distributor-50 text-distributor-600 px-1.5 py-0.5 rounded tracking-wide">
+                    Auto-assigned
+                  </span>
                 </label>
                 <div className="relative group">
-                  <Shield className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-distributor-600 transition-colors" />
+                  <Shield className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 transition-colors" />
                   <select
-                    value={formData.role}
-                    onChange={(e) =>
-                      setFormData({ ...formData, role: e.target.value })
-                    }
-                    className="w-full pl-9 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm font-bold text-slate-700 focus:outline-none focus:border-distributor-500 focus:ring-1 focus:ring-distributor-500 appearance-none shadow-sm hover:border-slate-300 transition-all"
+                    value={formData.parent_id ? "SUB_BROKER" : "DISTRIBUTOR"}
+                    disabled
+                    className="w-full pl-9 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold text-slate-500 appearance-none shadow-sm cursor-not-allowed opacity-90 transition-all"
                   >
+                    <option value="DISTRIBUTOR">Distributor (Root)</option>
                     <option value="SUB_BROKER">Sub Broker</option>
                   </select>
                 </div>
+                <p className="text-[10px] text-slate-400 mt-1.5 ml-1">
+                  Roles are assigned automatically based on hierarchy.
+                </p>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -700,10 +712,15 @@ export default function UsersPage() {
                   <Briefcase className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-distributor-600 transition-colors" />
                   <select
                     value={formData.parent_id || ""}
-                    onChange={(e) =>
-                      setFormData({ ...formData, parent_id: e.target.value })
-                    }
-                    className="w-full pl-9 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm font-medium focus:outline-none focus:border-distributor-500 focus:ring-1 focus:ring-distributor-500 appearance-none shadow-sm hover:border-slate-300 transition-all"
+                    onChange={(e) => {
+                      const newParentId = e.target.value;
+                      setFormData({ 
+                        ...formData, 
+                        parent_id: newParentId,
+                        role: newParentId ? "SUB_BROKER" : "DISTRIBUTOR" 
+                      });
+                    }}
+                    className="w-full pl-9 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm font-medium focus:outline-none focus:border-distributor-500 focus:ring-1 focus:ring-distributor-500 appearance-none shadow-sm hover:border-slate-300 transition-all cursor-pointer"
                   >
                     <option value="">Independent (No Parent)</option>
                     {users

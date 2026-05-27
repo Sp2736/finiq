@@ -41,6 +41,7 @@ const calculateSTP = (
   equityRate: number,
   months: number,
 ) => {
+
   const rLiquid = liquidRate / 12 / 100;
   const rEquity = equityRate / 12 / 100;
 
@@ -52,8 +53,10 @@ const calculateSTP = (
   let totalTransferred = 0;
 
   for (let m = 1; m <= months; m++) {
+
     // Prevent floating overflow
-    const transfer = Math.min(monthlySTP, liquidCorpus);
+    const transfer =
+      Math.min(monthlySTP, liquidCorpus);
 
     // Transfer out from liquid
     liquidCorpus -= transfer;
@@ -64,20 +67,24 @@ const calculateSTP = (
     totalTransferred += transfer;
 
     // Remaining balances grow
-    liquidCorpus *= 1 + rLiquid;
+    liquidCorpus *= (1 + rLiquid);
 
-    equityCorpus *= 1 + rEquity;
+    equityCorpus *= (1 + rEquity);
   }
 
   liquidCorpus = Math.max(0, liquidCorpus);
 
-  const remainingPrincipal = principal - totalTransferred;
+  const remainingPrincipal =
+    principal - totalTransferred;
 
-  const liquidReturns = liquidCorpus - Math.max(0, remainingPrincipal);
+  const liquidReturns =
+    liquidCorpus - Math.max(0, remainingPrincipal);
 
-  const equityReturns = equityCorpus - totalTransferred;
+  const equityReturns =
+    equityCorpus - totalTransferred;
 
-  const finalValue = liquidCorpus + equityCorpus;
+  const finalValue =
+    liquidCorpus + equityCorpus;
 
   return {
     invested: principal,
@@ -211,30 +218,36 @@ export default function STPCalculator() {
     let plotIntervals: number[] = [];
     const start = duration - 2 * baseStep;
 
+    // Calculate strictly the next multiples of 5 after the selected duration
+    const next1 = Math.ceil((duration + 1) / 5) * 5;
+    const next2 = next1 + 5;
+    const next3 = next2 + 5;
+    const next4 = next3 + 5;
+
     // Shift window appropriately to always show exactly 5 bars with median targeted
     if (start >= 1) {
       plotIntervals = [
         duration - 2 * baseStep,
         duration - baseStep,
         duration,
-        duration + baseStep,
-        duration + 2 * baseStep,
+        next1, // 1st multiple of 5 after duration
+        next2, // 2nd multiple of 5 after duration
       ];
     } else if (duration - baseStep >= 1) {
       plotIntervals = [
         duration - baseStep,
         duration,
-        duration + baseStep,
-        duration + 2 * baseStep,
-        duration + 3 * baseStep,
+        next1,
+        next2,
+        next3,
       ];
     } else {
       plotIntervals = [
         duration,
-        duration + baseStep,
-        duration + 2 * baseStep,
-        duration + 3 * baseStep,
-        duration + 4 * baseStep,
+        next1,
+        next2,
+        next3,
+        next4,
       ];
     }
 
@@ -301,7 +314,7 @@ export default function STPCalculator() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 shrink-0">
         <div>
           <h1 className="text-2xl lg:text-3xl font-black tracking-tight text-slate-900 mb-1">
-            STP <span className="text-distributor-600">Calculator</span>
+            STP <span className="text-investor-600">Calculator</span>
           </h1>
           <p className="text-sm font-medium text-slate-500">
             Simulate wealth creation with Systematic Transfer Plans.
@@ -419,7 +432,7 @@ export default function STPCalculator() {
                 dataKey="equityReturns"
                 name="Equity Returns"
                 stackId="a"
-                fill="#10b981"
+                fill="#10b981" 
                 radius={[4, 4, 0, 0]}
                 maxBarSize={60}
                 animationDuration={800}

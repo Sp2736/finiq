@@ -6,6 +6,7 @@ import DesktopClientTable from '@/components/distributor/clients/DesktopClientTa
 import MobileClientList from '@/components/distributor/clients/MobileClientList';
 import ClientHoldingsView from '@/components/distributor/clients/ClientHoldingsView';
 import { Search, ChevronLeft, ChevronRight, Loader2, Download } from 'lucide-react';
+import ExcelJS from 'exceljs';
 
 export default function InvestorsPage() {
   const [clients, setClients] = useState<Investor[]>([]);
@@ -67,7 +68,7 @@ export default function InvestorsPage() {
     setSearchTerm(searchInput.trim());
   };
 
-  // ─── 3. SEARCH-AWARE EXPORT ───
+  // ─── 3. SEARCH-AWARE EXCEL EXPORT (USING EXCELJS) ───
   const handleExportExcel = async () => {
     setIsExporting(true);
     try {
@@ -77,21 +78,60 @@ export default function InvestorsPage() {
       
       if (res.success && res.data && res.data.data) {
         const allClientsToExport = res.data.data;
-        const headers = ["Name", "PAN", "Tax Status", "Email", "DOB", "Total AUM"];
-        const csvContent = allClientsToExport.map((c: any) => 
-          `"${c.name || ''}","${c.pan || ''}","${c.tax_status || ''}","${c.email || ''}","${c.date_of_birth || ''}","${c.total_aum || 0}"`
-        );
         
-        const csvString = [headers.join(','), ...csvContent].join('\n');
-        const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
+        // Initialize Workbook and Worksheet
+        const wb = new ExcelJS.Workbook();
+        const ws = wb.addWorksheet('Investors Report');
+
+        // Define columns
+        ws.columns = [
+          { header: 'Name', key: 'name', width: 30 },
+          { header: 'PAN', key: 'pan', width: 15 },
+          { header: 'Tax Status', key: 'tax_status', width: 20 },
+          { header: 'Email', key: 'email', width: 35 },
+          { header: 'Date of Birth', key: 'dob', width: 15 },
+          { header: 'Total AUM (₹)', key: 'total_aum', width: 20 },
+        ];
+
+        // Style the header row
+        const headerRow = ws.getRow(1);
+        headerRow.font = { bold: true, color: { argb: 'FFFFFFFF' }, size: 11 };
+        headerRow.fill = {
+          type: 'pattern',
+          pattern: 'solid',
+          fgColor: { argb: 'FF0F2850' } // Navy blue theme
+        };
+        headerRow.alignment = { vertical: 'middle', horizontal: 'center' };
+
+        // Add rows
+        allClientsToExport.forEach((c: any) => {
+          const row = ws.addRow({
+            name: c.name || '',
+            pan: c.pan || '',
+            tax_status: c.tax_status || '',
+            email: c.email || '',
+            dob: c.date_of_birth || '',
+            total_aum: c.total_aum || 0
+          });
+          
+          // Format AUM column as currency/number
+          row.getCell('total_aum').numFmt = '#,##0.00';
+        });
+
+        // Generate and trigger download
+        const buffer = await wb.xlsx.writeBuffer();
+        const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
         const url = URL.createObjectURL(blob);
         
         const link = document.createElement("a");
         link.setAttribute("href", url);
-        link.setAttribute("download", searchTerm ? `Investors_Report_${searchTerm}.csv` : `All_Investors_Report.csv`);
+        link.setAttribute("download", searchTerm ? `Investors_Report_${searchTerm}.xlsx` : `All_Investors_Report.xlsx`);
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
+        
+        // Clean up
+        window.URL.revokeObjectURL(url);
       }
     } catch (error) {
       console.error("Export failed:", error);

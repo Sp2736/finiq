@@ -50,6 +50,7 @@ const calculateSWP = (
   let depletionMonth: number | null = null;
 
   for (let m = 1; m <= totalMonths; m++) {
+
     // Withdraw first
     if (corpus >= monthlyWithdrawal) {
       corpus -= monthlyWithdrawal;
@@ -62,10 +63,11 @@ const calculateSWP = (
     }
 
     // Remaining corpus grows
-    corpus *= 1 + r;
+    corpus *= (1 + r);
   }
 
-  const totalReturns = corpus + totalWithdrawn - principal;
+  const totalReturns =
+    (corpus + totalWithdrawn) - principal;
 
   return {
     invested: principal,
@@ -197,30 +199,36 @@ export default function SWPCalculator() {
     let plotIntervals: number[] = [];
     const start = duration - 2 * baseStep;
 
+    // Calculate strictly the next multiples of 5 after the selected duration
+    const next1 = Math.ceil((duration + 1) / 5) * 5;
+    const next2 = next1 + 5;
+    const next3 = next2 + 5;
+    const next4 = next3 + 5;
+
     // Use the exact same sliding median window approach
     if (start >= 1) {
       plotIntervals = [
         duration - 2 * baseStep,
         duration - baseStep,
         duration,
-        duration + baseStep,
-        duration + 2 * baseStep,
+        next1, // 1st multiple of 5 after duration
+        next2, // 2nd multiple of 5 after duration
       ];
     } else if (duration - baseStep >= 1) {
       plotIntervals = [
         duration - baseStep,
         duration,
-        duration + baseStep,
-        duration + 2 * baseStep,
-        duration + 3 * baseStep,
+        next1,
+        next2,
+        next3,
       ];
     } else {
       plotIntervals = [
         duration,
-        duration + baseStep,
-        duration + 2 * baseStep,
-        duration + 3 * baseStep,
-        duration + 4 * baseStep,
+        next1,
+        next2,
+        next3,
+        next4,
       ];
     }
 
@@ -284,7 +292,7 @@ export default function SWPCalculator() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 shrink-0">
         <div>
           <h1 className="text-2xl lg:text-3xl font-black tracking-tight text-slate-900 mb-1">
-            SWP <span className="text-distributor-600">Calculator</span>
+            SWP <span className="text-investor-600">Calculator</span>
           </h1>
           <p className="text-sm font-medium text-slate-500">
             Analyze the sustainability of your systematic withdrawals.

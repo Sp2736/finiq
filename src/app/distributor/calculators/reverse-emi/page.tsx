@@ -35,92 +35,6 @@ const formatCompactCurrency = (val: number): string => {
   }).format(val);
 };
 
-// // ─── FINANCIAL MATH LOGIC ───
-// const calculateEMI = (
-//   principal: number,
-//   annualRate: number,
-//   years: number,
-// ) => {
-
-//   const r = annualRate / 12 / 100;
-//   const n = years * 12;
-
-//   let emi = 0;
-
-//   if (r === 0) {
-//     emi = principal / n;
-//   } else {
-//     emi =
-//       (principal * r * Math.pow(1 + r, n)) /
-//       (Math.pow(1 + r, n) - 1);
-//   }
-
-//   const totalRepayment = emi * n;
-
-//   const totalInterest =
-//     totalRepayment - principal;
-
-//   return {
-//     principal: Number(principal.toFixed(2)),
-
-//     emi: Number(emi.toFixed(2)),
-
-//     totalInterest:
-//       Number(totalInterest.toFixed(2)),
-
-//     totalRepayment:
-//       Number(totalRepayment.toFixed(2)),
-//   };
-// };
-
-// const calculateRequiredSIP = (
-//   targetAmount: number,
-//   annualRate: number,
-//   years: number,
-// ) => {
-
-//   const r = annualRate / 12 / 100;
-
-//   const n = years * 12;
-
-//   let requiredSIP = 0;
-
-//   if (r === 0) {
-
-//     requiredSIP = targetAmount / n;
-
-//   } else {
-
-//     const denominator =
-//       ((Math.pow(1 + r, n) - 1) / r) *
-//       (1 + r);
-
-//     requiredSIP =
-//       targetAmount / denominator;
-//   }
-
-//   const investedInSIP =
-//     requiredSIP * n;
-
-//   const expectedReturns =
-//     targetAmount - investedInSIP;
-
-//   return {
-
-//     requiredSIP:
-//       Math.max(0, requiredSIP),
-
-//     investedInSIP:
-//       Math.max(0, investedInSIP),
-
-//     expectedReturns:
-//       Math.max(0, expectedReturns),
-
-//     recoveredValue:
-//       Math.max(0, targetAmount),
-//   };
-// };
-
 // ─── FINANCIAL MATH LOGIC ───
 const calculateEMI = (principal: number, annualRate: number, years: number) => {
   if (principal <= 0 || years <= 0) {
@@ -328,29 +242,35 @@ export default function ReverseEMICalculator() {
     let plotIntervals: number[] = [];
     const start = tenure - 2 * baseStep;
 
+    // Calculate strictly the next multiples of 5 after the selected tenure
+    const next1 = Math.ceil((tenure + 1) / 5) * 5;
+    const next2 = next1 + 5;
+    const next3 = next2 + 5;
+    const next4 = next3 + 5;
+
     if (start >= 1) {
       plotIntervals = [
         tenure - 2 * baseStep,
         tenure - baseStep,
         tenure,
-        tenure + baseStep,
-        tenure + 2 * baseStep,
+        next1, // 1st multiple of 5 after tenure
+        next2, // 2nd multiple of 5 after tenure
       ];
     } else if (tenure - baseStep >= 1) {
       plotIntervals = [
         tenure - baseStep,
         tenure,
-        tenure + baseStep,
-        tenure + 2 * baseStep,
-        tenure + 3 * baseStep,
+        next1,
+        next2,
+        next3,
       ];
     } else {
       plotIntervals = [
         tenure,
-        tenure + baseStep,
-        tenure + 2 * baseStep,
-        tenure + 3 * baseStep,
-        tenure + 4 * baseStep,
+        next1,
+        next2,
+        next3,
+        next4,
       ];
     }
 

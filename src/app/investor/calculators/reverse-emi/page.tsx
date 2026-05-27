@@ -13,6 +13,8 @@ import {
   Legend,
 } from "recharts";
 
+// fix: check for the formulae for expected returns and recovered value
+
 // ─── UTILITY ───
 const formatCurrency = (val: number): string => {
   if (isNaN(val)) return "₹0";
@@ -74,9 +76,9 @@ const calculateRequiredSIP = (
 ) => {
   if (targetAmount <= 0 || years <= 0) {
     return {
-      requiredSIP: 0,
-      totalInvested: 0,
-      wealthGained: 0,
+      requiredSIP:      0,
+      totalInvested:    0,
+      wealthGained:     0,
       corpusAtMaturity: 0,
     };
   }
@@ -98,10 +100,9 @@ const calculateRequiredSIP = (
   const requiredSIP = Math.round(rawSIP);
 
   // FIX: Recompute actual corpus from the rounded SIP (not targetAmount)
-  const corpusAtMaturity =
-    r === 0
-      ? requiredSIP * n
-      : requiredSIP * ((Math.pow(1 + r, n) - 1) / r) * (1 + r);
+  const corpusAtMaturity = r === 0
+    ? requiredSIP * n
+    : requiredSIP * ((Math.pow(1 + r, n) - 1) / r) * (1 + r);
 
   const totalInvested = requiredSIP * n;
 
@@ -109,9 +110,9 @@ const calculateRequiredSIP = (
   const wealthGained = corpusAtMaturity - totalInvested;
 
   return {
-    requiredSIP: Number(requiredSIP.toFixed(2)),
-    totalInvested: Number(Math.max(0, totalInvested).toFixed(2)),
-    wealthGained: Number(Math.max(0, wealthGained).toFixed(2)),
+    requiredSIP:      Number(requiredSIP.toFixed(2)),
+    totalInvested:    Number(Math.max(0, totalInvested).toFixed(2)),
+    wealthGained:     Number(Math.max(0, wealthGained).toFixed(2)),
     corpusAtMaturity: Number(Math.max(0, corpusAtMaturity).toFixed(2)),
   };
 };
@@ -242,29 +243,35 @@ export default function ReverseEMICalculator() {
     let plotIntervals: number[] = [];
     const start = tenure - 2 * baseStep;
 
+    // Calculate strictly the next multiples of 5 after the selected tenure
+    const next1 = Math.ceil((tenure + 1) / 5) * 5;
+    const next2 = next1 + 5;
+    const next3 = next2 + 5;
+    const next4 = next3 + 5;
+
     if (start >= 1) {
       plotIntervals = [
         tenure - 2 * baseStep,
         tenure - baseStep,
         tenure,
-        tenure + baseStep,
-        tenure + 2 * baseStep,
+        next1, // 1st multiple of 5 after tenure
+        next2, // 2nd multiple of 5 after tenure
       ];
     } else if (tenure - baseStep >= 1) {
       plotIntervals = [
         tenure - baseStep,
         tenure,
-        tenure + baseStep,
-        tenure + 2 * baseStep,
-        tenure + 3 * baseStep,
+        next1,
+        next2,
+        next3,
       ];
     } else {
       plotIntervals = [
         tenure,
-        tenure + baseStep,
-        tenure + 2 * baseStep,
-        tenure + 3 * baseStep,
-        tenure + 4 * baseStep,
+        next1,
+        next2,
+        next3,
+        next4,
       ];
     }
 
@@ -329,7 +336,7 @@ export default function ReverseEMICalculator() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 shrink-0">
         <div>
           <h1 className="text-2xl lg:text-3xl font-black tracking-tight text-slate-900 mb-1">
-            Reverse <span className="text-distributor-600">EMI</span>
+            Reverse <span className="text-investor-600">EMI</span>
           </h1>
           <p className="text-sm font-medium text-slate-500">
             Calculate loan repayment and formulate a SIP offset strategy.

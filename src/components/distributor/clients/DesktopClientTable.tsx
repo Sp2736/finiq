@@ -21,12 +21,12 @@ export default function DesktopClientTable({ clients, onClientClick }: Props) {
           <th className="px-6 py-3 text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100">Investor Name</th>
           <th className="px-6 py-3 text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100">PAN</th>
           <th className="px-6 py-3 text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100">Tax Status</th>
-          <th className="px-6 py-3 text-[10px] font-black text-slate-400 uppercase tracking-widest text-right border-b border-slate-100 pr-6">Exact AUM</th>
+          <th className="px-6 py-3 text-[10px] font-black text-slate-400 uppercase tracking-widest text-right border-b border-slate-100 pr-6">AUM</th>
         </tr>
       </thead>
       <tbody className="text-sm">
         {clients.map((client) => (
-          <tr 
+          <tr
             key={client.id}
             onClick={() => onClientClick(client.id)}
             className="cursor-pointer transition-colors duration-200 group border-b border-slate-100 hover:bg-distributor-50/50"

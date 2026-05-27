@@ -6,7 +6,6 @@ import GlobalStatsRibbon from "@/components/investor/GlobalStatsRibbon";
 import { exportCapitalGains } from "@/lib/capitalGainsExport";
 import { getDynamicFinancialYears } from "@/lib/utils";
 import FundAnalyticsModal from "./FundAnalyticsModal";
-import HoldingsReport from "./HoldingsReport";
 import { generatePortfolioValuationPDF } from "@/lib/portfolioExport";
 import {
   ChevronLeft,
@@ -23,7 +22,7 @@ import {
   AlertTriangle,
   Info,
   BarChart2,
-  Eye,
+  Download,
 } from "lucide-react";
 import { formatCurrency, toTitleCase } from "@/lib/utils";
 import { ClientPortfolio } from "@/types/investor";
@@ -116,7 +115,6 @@ export default function ClientHoldingsView({
 
   // Modal States
   const [analyticsFund, setAnalyticsFund] = useState<any>(null);
-  const [showReportPreview, setShowReportPreview] = useState(false);
   const [isExportingPdf, setIsExportingPdf] = useState(false);
 
   // ── Pagination Math for Financial Years ──────────────────────────────────
@@ -353,11 +351,27 @@ export default function ClientHoldingsView({
 
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3 w-full md:w-auto mt-2 md:mt-0">
           <button
-            onClick={() => setShowReportPreview(true)}
-            disabled={!portfolioData}
+            onClick={() => {
+              setIsExportingPdf(true);
+              setTimeout(() => {
+                if (portfolioData) {
+                  generatePortfolioValuationPDF(
+                    portfolioData,
+                    DISTRIBUTOR_INFO,
+                  );
+                }
+                setIsExportingPdf(false);
+              }, 500);
+            }}
+            disabled={!portfolioData || isExportingPdf}
             className="flex flex-1 md:flex-none items-center justify-center gap-2 px-5 py-2.5 bg-white border border-slate-200 text-slate-700 rounded-xl text-sm font-bold shadow-sm hover:border-distributor-300 hover:bg-distributor-50 hover:text-distributor-700 transition-all active:scale-95 disabled:opacity-50"
           >
-            <Eye className="w-4 h-4" /> Holdings Report
+            {isExportingPdf ? (
+              <Loader2 className="w-4 h-4 animate-spin" />
+            ) : (
+              <Download className="w-4 h-4" />
+            )}{" "}
+            Holdings Report
           </button>
 
           <button
@@ -439,6 +453,8 @@ export default function ClientHoldingsView({
                     const isExpanded = expandedRow === i;
                     const schemeName = fund.fund_name || "N/A";
                     const folio = fund.folio_number || "N/A";
+                    const category =
+                      fund.asset_class || fund.category || "Equity";
                     const invested = fund.total_capital || 0;
                     const current = fund.current_value || 0;
                     const netPnl = fund.net_pnl || 0;
@@ -475,12 +491,31 @@ export default function ClientHoldingsView({
                           <td className="py-4 border-b border-slate-100 pr-4">
                             <div className="flex items-start justify-between gap-3 pr-2">
                               <div>
-                                <p className="font-bold text-slate-900 group-hover:text-distributor-700 mb-0.5 text-xs max-w-[280px] leading-tight">
+                                <p className="font-bold text-slate-900 group-hover:text-distributor-700 mb-0.5 text-xs max-w-[280px] leading-tight flex flex-wrap items-center gap-1.5">
                                   {schemeName}
+                                  {fund.sip_status && (
+                                    <span
+                                      className={`text-[9px] font-bold uppercase rounded px-1.5 py-0.5 whitespace-nowrap ${
+                                        fund.sip_status === "Active" ||
+                                        fund.sip_status === "SIP"
+                                          ? "text-emerald-600 bg-emerald-50"
+                                          : "text-amber-600 bg-amber-50"
+                                      }`}
+                                    >
+                                      {fund.sip_status === "Active"
+                                        ? "SIP"
+                                        : fund.sip_status}
+                                    </span>
+                                  )}
                                 </p>
-                                <span className="inline-block px-2 py-0.5 bg-slate-100 text-slate-500 rounded text-[10px] font-bold font-mono tracking-wide mt-0.5">
-                                  Folio: {folio}
-                                </span>
+                                <div className="flex flex-wrap items-center gap-1.5 mt-1">
+                                  <span className="inline-block px-2 py-0.5 bg-slate-100 text-slate-500 rounded text-[10px] font-bold font-mono tracking-wide">
+                                    Folio: {folio}
+                                  </span>
+                                  <span className="inline-block px-2 py-0.5 bg-distributor-50 text-distributor-700 border border-distributor-100 rounded text-[10px] font-bold tracking-wide uppercase">
+                                    {category}
+                                  </span>
+                                </div>
                               </div>
 
                               {/* Analytics Trigger Button */}
@@ -640,6 +675,8 @@ export default function ClientHoldingsView({
                   const isExpanded = expandedRow === i;
                   const schemeName = fund.fund_name || "N/A";
                   const folio = fund.folio_number || "N/A";
+                  const category =
+                    fund.asset_class || fund.category || "Mutual Fund";
                   const invested = fund.total_capital || 0;
                   const current = fund.current_value || 0;
                   const netPnl = fund.net_pnl || 0;
@@ -655,12 +692,31 @@ export default function ClientHoldingsView({
                       {/* Card Header */}
                       <div className="p-3 sm:p-4 border-b border-slate-100 flex justify-between items-start gap-3">
                         <div className="flex-1 min-w-0">
-                          <p className="font-bold text-slate-900 text-sm leading-snug">
+                          <p className="font-bold text-slate-900 text-sm leading-snug flex flex-wrap items-center gap-1.5">
                             {schemeName}
+                            {fund.sip_status && (
+                              <span
+                                className={`text-[9px] font-bold uppercase rounded px-1.5 py-0.5 whitespace-nowrap ${
+                                  fund.sip_status === "Active" ||
+                                  fund.sip_status === "SIP"
+                                    ? "text-emerald-600 bg-emerald-50"
+                                    : "text-amber-600 bg-amber-50"
+                                }`}
+                              >
+                                {fund.sip_status === "Active"
+                                  ? "SIP"
+                                  : fund.sip_status}
+                              </span>
+                            )}
                           </p>
-                          <span className="inline-block px-2 py-0.5 bg-slate-100 text-slate-500 rounded text-[10px] font-bold font-mono tracking-wide mt-1.5">
-                            Folio: {folio}
-                          </span>
+                          <div className="flex flex-wrap items-center gap-1.5 mt-1.5">
+                            <span className="inline-block px-2 py-0.5 bg-slate-100 text-slate-500 rounded text-[10px] font-bold font-mono tracking-wide">
+                              Folio: {folio}
+                            </span>
+                            <span className="inline-block px-2 py-0.5 bg-distributor-50 text-distributor-700 border border-distributor-100 rounded text-[10px] font-bold tracking-wide uppercase">
+                              {category}
+                            </span>
+                          </div>
                         </div>
                         <button
                           onClick={(e) => {
@@ -927,36 +983,6 @@ export default function ClientHoldingsView({
                 </button>
               </div>
             </div>
-          </div>
-        </div>
-      )}
-
-      {/* ─── REPORT PREVIEW MODAL ─── */}
-      {showReportPreview && portfolioData && (
-        <div className="absolute inset-0 z-[100] bg-white/80 backdrop-blur-sm flex items-center justify-center p-2 sm:p-4 lg:p-6">
-          <div
-            className="absolute inset-0"
-            onClick={() => setShowReportPreview(false)}
-          />
-
-          <div className="w-full max-w-6xl h-[95%] rounded-xl flex flex-col overflow-hidden shadow-2xl border border-slate-200 relative z-10 animate-in zoom-in-95 duration-200 bg-white">
-            <HoldingsReport
-              data={portfolioData}
-              isExporting={isExportingPdf}
-              onClose={() => setShowReportPreview(false)}
-              onExportPdf={() => {
-                setIsExportingPdf(true);
-                setTimeout(() => {
-                  if (portfolioData) {
-                    generatePortfolioValuationPDF(
-                      portfolioData,
-                      DISTRIBUTOR_INFO,
-                    );
-                  }
-                  setIsExportingPdf(false);
-                }, 500);
-              }}
-            />
           </div>
         </div>
       )}

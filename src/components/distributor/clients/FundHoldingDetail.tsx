@@ -169,9 +169,7 @@ export default function FundHoldingDetail({
                   {/* Shares / Count */}
                   <td className="py-3.5 px-4 text-right text-xs text-slate-500 tabular-nums font-medium">
                     {holding.count
-                      ? formatCurr(Number(holding.count)).toLocaleString(
-                          "en-IN",
-                        )
+                      ? Number(holding.count).toLocaleString("en-IN")
                       : "—"}
                   </td>
 
