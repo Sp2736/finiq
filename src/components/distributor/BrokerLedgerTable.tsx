@@ -54,7 +54,7 @@ export default function BrokerLedgerTable() {
   };
 
   return (
-    <div className="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+    <div className="bg-white border border-slate-200 rounded-md shadow-sm overflow-hidden">
       <table className="w-full text-left text-sm">
         <thead className="bg-slate-50 border-b border-slate-100 text-xs uppercase tracking-widest text-slate-500 font-bold">
           <tr>
@@ -94,7 +94,7 @@ export default function BrokerLedgerTable() {
                   <tr className="bg-slate-50/30">
                     <td colSpan={3} className="p-0 border-b border-slate-200">
                       <div className="p-4 pl-16 pr-6 animate-in slide-in-from-top-2 duration-200">
-                        <div className="bg-white rounded-lg border border-slate-200 shadow-sm overflow-hidden">
+                        <div className="bg-white rounded-md border border-slate-200 shadow-sm overflow-hidden">
                           <table className="w-full text-left text-xs">
                             <thead className="bg-slate-50 border-b border-slate-100 text-[10px] uppercase text-slate-400 font-bold">
                               <tr>

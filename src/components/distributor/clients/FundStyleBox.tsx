@@ -46,7 +46,7 @@ export default function FundStyleBox({ amfiCode }: FundStyleBoxProps) {
 
   if (isLoading) {
     return (
-      <div className="flex flex-col items-center justify-center py-12 border border-slate-200 rounded-xl bg-white shadow-sm w-full h-[250px]">
+      <div className="flex flex-col items-center justify-center py-12 border border-slate-200 rounded-md bg-white shadow-sm w-full h-[250px]">
         <Loader2 className="w-6 h-6 animate-spin text-distributor-500 mb-2" />
         <p className="text-slate-500 font-bold text-[10px] uppercase tracking-widest">Loading Style Box...</p>
       </div>
@@ -55,7 +55,7 @@ export default function FundStyleBox({ amfiCode }: FundStyleBoxProps) {
 
   if (error) {
     return (
-      <div className="flex flex-col items-center justify-center py-12 border border-slate-200 rounded-xl bg-white shadow-sm w-full h-[250px]">
+      <div className="flex flex-col items-center justify-center py-12 border border-slate-200 rounded-md bg-white shadow-sm w-full h-[250px]">
         <ShieldAlert className="w-8 h-8 text-rose-300 mb-2" />
         <p className="text-rose-600 font-bold text-xs">{error}</p>
       </div>
@@ -80,7 +80,7 @@ export default function FundStyleBox({ amfiCode }: FundStyleBoxProps) {
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 w-full">
       
       {/* WIDGET 1: Equity Style Box Matrix */}
-      <div className="border border-slate-200 rounded-xl overflow-hidden shadow-sm bg-white flex flex-col">
+      <div className="border border-slate-200 rounded-md overflow-hidden shadow-sm bg-white flex flex-col">
         <div className="bg-slate-50 px-4 py-3 border-b border-slate-200 flex items-center gap-2">
           <Grid3X3 className="w-4 h-4 text-distributor-600" />
           <h3 className="text-xs font-black text-slate-700 uppercase tracking-widest">Equity Style Box</h3>
@@ -103,7 +103,7 @@ export default function FundStyleBox({ amfiCode }: FundStyleBoxProps) {
             </div>
             
             {/* 3x3 Grid Matrix */}
-            <div className="grid grid-cols-3 grid-rows-3 w-[180px] h-[180px] border-2 border-slate-200 bg-slate-50 rounded-lg overflow-hidden shrink-0 shadow-inner">
+            <div className="grid grid-cols-3 grid-rows-3 w-[180px] h-[180px] border-2 border-slate-200 bg-slate-50 rounded-md overflow-hidden shrink-0 shadow-inner">
               {Array.from({ length: 9 }).map((_, i) => {
                 const row = Math.floor(i / 3);
                 const col = i % 3;
@@ -126,7 +126,7 @@ export default function FundStyleBox({ amfiCode }: FundStyleBoxProps) {
       </div>
 
       {/* WIDGET 2: Market Capitalization Table */}
-      <div className="border border-slate-200 rounded-xl overflow-hidden shadow-sm bg-white flex flex-col">
+      <div className="border border-slate-200 rounded-md overflow-hidden shadow-sm bg-white flex flex-col">
         <div className="bg-slate-50 px-4 py-3 border-b border-slate-200 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <BarChart3 className="w-4 h-4 text-distributor-600" />

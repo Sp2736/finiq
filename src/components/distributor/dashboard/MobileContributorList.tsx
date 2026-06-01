@@ -27,7 +27,7 @@ export default function MobileContributorList({ investors }: { investors: TopCon
         const isPositive = investor.notional_pl >= 0;
         
         return (
-          <div key={investor.id || investor.pan} onClick={() => handleCardClick(investor)} className="bg-white cursor-pointer p-3 rounded-xl border border-slate-200 shadow-sm flex flex-col gap-3 relative overflow-hidden group">
+          <div key={investor.id || investor.pan} onClick={() => handleCardClick(investor)} className="bg-white cursor-pointer p-3 rounded-md border border-slate-200 shadow-sm flex flex-col gap-3 relative overflow-hidden group">
             {/* Rank Badge Background */}
             <div className="absolute -right-2 -top-4 text-[60px] font-black text-slate-50 opacity-50 pointer-events-none select-none">
               #{idx + 1}

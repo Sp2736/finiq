@@ -71,7 +71,7 @@ const InlineNotif = ({
   };
   return (
     <div
-      className={`flex items-start gap-2 px-3 py-2.5 rounded-xl border text-xs font-medium mb-4 ${styles[notif.type]}`}
+      className={`flex items-start gap-2 px-3 py-2.5 rounded-sm border text-xs font-medium mb-4 ${styles[notif.type]}`}
     >
       {icons[notif.type]}
       <span className="flex-1">{notif.message}</span>
@@ -98,11 +98,29 @@ export default function ClientHoldingsView({
     [],
   );
 
+  const calendarYearOptions = useMemo(() => {
+    const currentYear = new Date().getFullYear();
+    const years = [];
+    for (let y = currentYear; y >= 2010; y--) {
+      years.push(y.toString());
+    }
+    return years;
+  }, []);
+
   const [selectedFY, setSelectedFY] = useState(financialYearOptions[0]);
   const [portfolioData, setPortfolioData] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [expandedRow, setExpandedRow] = useState<number | null>(null);
+
+  // Capital Gains Period Configurations
+  const [cgReportType, setCgReportType] = useState<"FY" | "CY" | "CUSTOM">("FY");
+  const [selectedCY, setSelectedCY] = useState(calendarYearOptions[0]);
+  const [isCYSelectorOpen, setIsCYSelectorOpen] = useState(false);
+  const [cyPage, setCyPage] = useState(0);
+
+  const [customStartDate, setCustomStartDate] = useState("");
+  const [customEndDate, setCustomEndDate] = useState("");
 
   const [isCGModalOpen, setIsCGModalOpen] = useState(false);
   const [isFYSelectorOpen, setIsFYSelectorOpen] = useState(false);
@@ -124,6 +142,14 @@ export default function ClientHoldingsView({
     (fyPage + 1) * ITEMS_PER_PAGE,
   );
   const maxPages = Math.ceil(financialYearOptions.length / ITEMS_PER_PAGE);
+
+  // ── Pagination Math for Calendar Years ───────────────────────────────────
+  const CY_ITEMS_PER_PAGE = 6;
+  const paginatedCYYears = calendarYearOptions.slice(
+    cyPage * CY_ITEMS_PER_PAGE,
+    (cyPage + 1) * CY_ITEMS_PER_PAGE,
+  );
+  const maxCYPages = Math.ceil(calendarYearOptions.length / CY_ITEMS_PER_PAGE);
 
   // ── Portfolio fetch ──────────────────────────────────────────────────────
   useEffect(() => {
@@ -167,6 +193,8 @@ export default function ClientHoldingsView({
       xirr: d.xirr_percent || 0,
       abs: d.abs_percent || 0,
       avgHoldingDays: 0,
+      unrealisedGainST: d.unrealised_gains_st || 0,
+      unrealisedGainLT: d.unrealised_gains_lt || 0,
       funds: d.funds || [],
     } as unknown as ClientPortfolio;
   }, [portfolioData, clientId]);
@@ -264,8 +292,41 @@ export default function ClientHoldingsView({
 
   const handleExportCG = async (format: "pdf" | "excel") => {
     setCGNotif(null);
+
+    let start_date = "";
+    let end_date = "";
+    let periodLabel = "";
+
+    if (cgReportType === "FY") {
+      const dates = getFYDates(selectedFY);
+      start_date = dates.start_date;
+      end_date = dates.end_date;
+      periodLabel = selectedFY;
+    } else if (cgReportType === "CY") {
+      start_date = `${selectedCY}-01-01`;
+      end_date = `${selectedCY}-12-31`;
+      periodLabel = `CY ${selectedCY}`;
+    } else if (cgReportType === "CUSTOM") {
+      if (!customStartDate || !customEndDate) {
+        setCGNotif({
+          type: "error",
+          message: "Please select both Start Date and End Date.",
+        });
+        return;
+      }
+      if (customStartDate > customEndDate) {
+        setCGNotif({
+          type: "error",
+          message: "Start Date must be before or equal to End Date.",
+        });
+        return;
+      }
+      start_date = customStartDate;
+      end_date = customEndDate;
+      periodLabel = `${customStartDate} to ${customEndDate}`;
+    }
+
     setExportingFormat(format);
-    const { start_date, end_date } = getFYDates(selectedFY);
 
     try {
       const res = await distributorService.getCapitalGains({
@@ -277,9 +338,10 @@ export default function ClientHoldingsView({
       const cgDataArray: any[] = res.data?.[0]?.get_capital_gains_vr || [];
 
       if (cgDataArray.length === 0) {
+        const typeLabel = cgReportType === "FY" ? `FY ${selectedFY}` : cgReportType === "CY" ? `CY ${selectedCY}` : `Custom period`;
         setCGNotif({
           type: "info",
-          message: `No capital Gains records found for FY ${selectedFY}. Please try a different year.`,
+          message: `No capital Gains records found for ${typeLabel}. Please try a different range.`,
         });
         return;
       }
@@ -289,7 +351,7 @@ export default function ClientHoldingsView({
       await exportCapitalGains(
         format,
         mappedData,
-        selectedFY,
+        periodLabel,
         DISTRIBUTOR_INFO,
       );
       setIsCGModalOpen(false);
@@ -310,6 +372,7 @@ export default function ClientHoldingsView({
     if (exportingFormat) return;
     setIsCGModalOpen(false);
     setIsFYSelectorOpen(false);
+    setIsCYSelectorOpen(false);
     setCGNotif(null);
   };
 
@@ -364,7 +427,7 @@ export default function ClientHoldingsView({
               }, 500);
             }}
             disabled={!portfolioData || isExportingPdf}
-            className="flex flex-1 md:flex-none items-center justify-center gap-2 px-5 py-2.5 bg-white border border-slate-200 text-slate-700 rounded-xl text-sm font-bold shadow-sm hover:border-distributor-300 hover:bg-distributor-50 hover:text-distributor-700 transition-all active:scale-95 disabled:opacity-50"
+            className="flex flex-1 md:flex-none items-center justify-center gap-2 px-5 py-2.5 bg-white border border-slate-200 text-slate-700 rounded-sm text-sm font-bold shadow-sm hover:border-distributor-300 hover:bg-distributor-50 hover:text-distributor-700 transition-all active:scale-95 disabled:opacity-50"
           >
             {isExportingPdf ? (
               <Loader2 className="w-4 h-4 animate-spin" />
@@ -377,7 +440,7 @@ export default function ClientHoldingsView({
           <button
             onClick={() => setIsCGModalOpen(true)}
             aria-label="Open Capital Gains report export"
-            className="flex flex-1 md:flex-none items-center justify-center gap-2 px-5 py-2.5 bg-distributor-600 text-white rounded-xl text-sm font-bold shadow-md hover:bg-distributor-800 transition-all active:scale-95"
+            className="flex flex-1 md:flex-none items-center justify-center gap-2 px-5 py-2.5 bg-distributor-600 text-white rounded-sm text-sm font-bold shadow-md hover:bg-distributor-800 transition-all active:scale-95"
           >
             <Calculator className="w-4 h-4" /> Capital Gains
           </button>
@@ -392,7 +455,7 @@ export default function ClientHoldingsView({
       )}
 
       {/* ─── DATA CONTAINER ─── */}
-      <div className="flex-1 min-h-0 bg-white rounded-md border border-slate-200 shadow-sm flex flex-col relative overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-500 delay-200 fill-both">
+      <div className="flex-1 min-h-0 bg-white rounded-sm border border-slate-200 shadow-sm flex flex-col relative overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-500 delay-200 fill-both">
         {isLoading ? (
           <div className="absolute inset-0 bg-white/60 backdrop-blur-[1px] z-50 flex flex-col items-center justify-center gap-4">
             <Loader2 className="w-8 h-8 animate-spin text-distributor-600" />
@@ -402,7 +465,7 @@ export default function ClientHoldingsView({
           </div>
         ) : error ? (
           <div className="flex-1 flex flex-col items-center justify-center p-8 text-center">
-            <div className="w-12 h-12 bg-rose-50 rounded-full flex items-center justify-center mb-3">
+            <div className="w-12 h-12 bg-rose-50 rounded-sm flex items-center justify-center mb-3">
               <PieChart className="w-6 h-6 text-rose-300" />
             </div>
             <p className="text-rose-600 font-bold mb-1">
@@ -412,7 +475,7 @@ export default function ClientHoldingsView({
           </div>
         ) : funds.length === 0 ? (
           <div className="flex-1 flex flex-col items-center justify-center p-8 text-center">
-            <div className="w-12 h-12 bg-slate-50 rounded-full flex items-center justify-center mb-3">
+            <div className="w-12 h-12 bg-slate-50 rounded-sm flex items-center justify-center mb-3">
               <PieChart className="w-6 h-6 text-slate-300" />
             </div>
             <p className="text-base font-bold text-slate-600">
@@ -443,6 +506,9 @@ export default function ClientHoldingsView({
                     <th className="p-4 text-right border-b border-slate-200">
                       Current Value
                     </th>
+                    <th className="p-4 text-right border-b border-slate-200">
+                      Unrealised Gains
+                    </th>
                     <th className="p-4 text-right pr-6 border-b border-slate-200">
                       Returns (XIRR)
                     </th>
@@ -466,11 +532,10 @@ export default function ClientHoldingsView({
                       <React.Fragment key={`desktop-${i}`}>
                         <tr
                           onClick={() => setExpandedRow(isExpanded ? null : i)}
-                          className={`cursor-pointer transition-colors duration-200 group border-b border-slate-100 ${
-                            isExpanded
-                              ? "bg-distributor-50/30"
-                              : "hover:bg-slate-50/80"
-                          }`}
+                          className={`cursor-pointer transition-colors duration-200 group border-b border-slate-100 ${isExpanded
+                            ? "bg-distributor-50/30"
+                            : "hover:bg-slate-50/80"
+                            }`}
                         >
                           <td
                             className={`p-3 text-center border-b border-slate-100 transition-colors ${isExpanded ? "bg-[#b0ddff0b]" : "bg-white group-hover:bg-[#f8fafc]"}`}
@@ -481,7 +546,7 @@ export default function ClientHoldingsView({
                                   ? "Collapse transactions"
                                   : "Expand transactions"
                               }
-                              className="text-slate-400 hover:text-distributor-600 outline-none p-1 rounded-md group-hover:bg-distributor-100/50 transition-colors"
+                              className="text-slate-400 hover:text-distributor-600 outline-none p-1 rounded-sm group-hover:bg-distributor-100/50 transition-colors"
                             >
                               <ChevronRight
                                 className={`w-4 h-4 transition-transform duration-300 ${isExpanded ? "rotate-90 text-distributor-600" : "rotate-0"}`}
@@ -493,20 +558,6 @@ export default function ClientHoldingsView({
                               <div>
                                 <p className="font-bold text-slate-900 group-hover:text-distributor-700 mb-0.5 text-xs max-w-[280px] leading-tight flex flex-wrap items-center gap-1.5">
                                   {schemeName}
-                                  {fund.sip_status && (
-                                    <span
-                                      className={`text-[9px] font-bold uppercase rounded px-1.5 py-0.5 whitespace-nowrap ${
-                                        fund.sip_status === "Active" ||
-                                        fund.sip_status === "SIP"
-                                          ? "text-emerald-600 bg-emerald-50"
-                                          : "text-amber-600 bg-amber-50"
-                                      }`}
-                                    >
-                                      {fund.sip_status === "Active"
-                                        ? "SIP"
-                                        : fund.sip_status}
-                                    </span>
-                                  )}
                                 </p>
                                 <div className="flex flex-wrap items-center gap-1.5 mt-1">
                                   <span className="inline-block px-2 py-0.5 bg-slate-100 text-slate-500 rounded text-[10px] font-bold font-mono tracking-wide">
@@ -515,6 +566,19 @@ export default function ClientHoldingsView({
                                   <span className="inline-block px-2 py-0.5 bg-distributor-50 text-distributor-700 border border-distributor-100 rounded text-[10px] font-bold tracking-wide uppercase">
                                     {category}
                                   </span>
+                                  {fund.sip_status && (
+                                    <span
+                                      className={`text-[9px] font-bold uppercase rounded px-1.5 py-0.5 whitespace-nowrap ${fund.sip_status === "Active" ||
+                                        fund.sip_status === "SIP"
+                                        ? "text-emerald-600 bg-emerald-50"
+                                        : "text-amber-600 bg-amber-50"
+                                        }`}
+                                    >
+                                      {fund.sip_status === "Active"
+                                        ? "SIP"
+                                        : fund.sip_status}
+                                    </span>
+                                  )}
                                 </div>
                               </div>
 
@@ -525,7 +589,7 @@ export default function ClientHoldingsView({
                                   setAnalyticsFund(fund);
                                 }}
                                 title="View Fund Analytics"
-                                className="p-1.5 text-slate-500 bg-white hover:text-distributor-600 hover:bg-distributor-50 rounded-lg transition-colors border border-slate-200 hover:border-distributor-200 shadow-sm cursor-pointer shrink-0"
+                                className="p-1.5 text-slate-500 bg-white hover:text-distributor-600 hover:bg-distributor-50 rounded-sm transition-colors border border-slate-200 hover:border-distributor-200 shadow-sm cursor-pointer shrink-0"
                               >
                                 <BarChart2 className="w-4 h-4" />
                               </button>
@@ -533,10 +597,13 @@ export default function ClientHoldingsView({
                           </td>
                           <td className="p-4 text-right border-b border-slate-100">
                             <p className="font-bold text-slate-700 tabular-nums text-xs mb-0.5">
-                              {fund.available_units?.toFixed(3) || "0"}
+                              {fund.available_units?.toFixed(3) || "0"} U
                             </p>
-                            <p className="text-[10px] font-medium text-slate-400 tabular-nums">
-                              NAV: ₹{fund.current_nav || 0}
+                            <p className="text-[10px] font-bold text-slate-600 tabular-nums leading-tight">
+                              Cur: ₹{(fund.current_nav ?? 0).toFixed(4)}
+                            </p>
+                            <p className="text-[9px] font-medium text-slate-400 tabular-nums leading-tight">
+                              Avg: ₹{(fund.avg_nav ?? 0).toFixed(4)}
                             </p>
                           </td>
                           <td className="p-4 text-right border-b border-slate-100">
@@ -548,6 +615,19 @@ export default function ClientHoldingsView({
                             <p className="font-black text-slate-900 tabular-nums text-sm">
                               {formatCurrency(current)}
                             </p>
+                          </td>
+                          <td className="p-4 text-right border-b border-slate-100">
+                            <div className="flex flex-col items-end">
+                              <span
+                                className={`text-[10px] font-bold tabular-nums ${isPositive ? "text-emerald-500" : "text-rose-500"}`}
+                              >
+                                {formatCurrency(netPnl)}
+                              </span>
+                              <div className="flex flex-col items-end text-[9px] font-bold text-slate-400/80 mt-1 leading-tight select-none">
+                                <span>LT: {formatCurrency(fund.unrealised_gains_lt || 0)}</span>
+                                <span>ST: {formatCurrency(fund.unrealised_gains_st || 0)}</span>
+                              </div>
+                            </div>
                           </td>
                           <td className="p-4 text-right border-b border-slate-100 pr-6">
                             <div className="flex flex-col items-end">
@@ -561,18 +641,13 @@ export default function ClientHoldingsView({
                                 )}
                                 {xirr}%
                               </div>
-                              <span
-                                className={`text-[10px] font-bold mt-0.5 tabular-nums ${isPositive ? "text-emerald-500" : "text-rose-500"}`}
-                              >
-                                {formatCurrency(netPnl)}
-                              </span>
                             </div>
                           </td>
                         </tr>
 
                         <tr className="bg-slate-50/40">
                           <td
-                            colSpan={6}
+                            colSpan={7}
                             className="p-0 border-b border-slate-200/60"
                           >
                             <div
@@ -580,7 +655,7 @@ export default function ClientHoldingsView({
                             >
                               <div className="overflow-hidden">
                                 <div className="p-4 pl-14 pr-6">
-                                  <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+                                  <div className="bg-white rounded-sm border border-slate-200 shadow-sm overflow-hidden">
                                     <div className="px-4 py-3 border-b border-slate-100 bg-slate-50 flex items-center justify-between">
                                       <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-500">
                                         Transaction History
@@ -617,15 +692,15 @@ export default function ClientHoldingsView({
                                                   <td className="p-3 pl-4 text-slate-600 font-medium whitespace-nowrap">
                                                     {t.transaction_date
                                                       ? new Date(
-                                                          t.transaction_date,
-                                                        ).toLocaleDateString(
-                                                          "en-GB",
-                                                          {
-                                                            day: "2-digit",
-                                                            month: "short",
-                                                            year: "numeric",
-                                                          },
-                                                        )
+                                                        t.transaction_date,
+                                                      ).toLocaleDateString(
+                                                        "en-GB",
+                                                        {
+                                                          day: "2-digit",
+                                                          month: "short",
+                                                          year: "numeric",
+                                                        },
+                                                      )
                                                       : "N/A"}
                                                   </td>
                                                   <td className="p-3 text-slate-700 font-bold truncate max-w-[200px]">
@@ -687,27 +762,13 @@ export default function ClientHoldingsView({
                   return (
                     <div
                       key={`mobile-${i}`}
-                      className={`bg-white border transition-colors rounded-xl overflow-hidden shadow-sm flex flex-col ${isExpanded ? "border-distributor-300 ring-1 ring-distributor-100" : "border-slate-200"}`}
+                      className={`bg-white border transition-colors rounded-sm overflow-hidden shadow-sm flex flex-col ${isExpanded ? "border-distributor-300 ring-1 ring-distributor-100" : "border-slate-200"}`}
                     >
                       {/* Card Header */}
                       <div className="p-3 sm:p-4 border-b border-slate-100 flex justify-between items-start gap-3">
                         <div className="flex-1 min-w-0">
                           <p className="font-bold text-slate-900 text-sm leading-snug flex flex-wrap items-center gap-1.5">
                             {schemeName}
-                            {fund.sip_status && (
-                              <span
-                                className={`text-[9px] font-bold uppercase rounded px-1.5 py-0.5 whitespace-nowrap ${
-                                  fund.sip_status === "Active" ||
-                                  fund.sip_status === "SIP"
-                                    ? "text-emerald-600 bg-emerald-50"
-                                    : "text-amber-600 bg-amber-50"
-                                }`}
-                              >
-                                {fund.sip_status === "Active"
-                                  ? "SIP"
-                                  : fund.sip_status}
-                              </span>
-                            )}
                           </p>
                           <div className="flex flex-wrap items-center gap-1.5 mt-1.5">
                             <span className="inline-block px-2 py-0.5 bg-slate-100 text-slate-500 rounded text-[10px] font-bold font-mono tracking-wide">
@@ -716,6 +777,19 @@ export default function ClientHoldingsView({
                             <span className="inline-block px-2 py-0.5 bg-distributor-50 text-distributor-700 border border-distributor-100 rounded text-[10px] font-bold tracking-wide uppercase">
                               {category}
                             </span>
+                            {fund.sip_status && (
+                              <span
+                                className={`text-[9px] font-bold uppercase rounded px-1.5 py-0.5 whitespace-nowrap ${fund.sip_status === "Active" ||
+                                  fund.sip_status === "SIP"
+                                  ? "text-emerald-600 bg-emerald-50"
+                                  : "text-amber-600 bg-amber-50"
+                                  }`}
+                              >
+                                {fund.sip_status === "Active"
+                                  ? "SIP"
+                                  : fund.sip_status}
+                              </span>
+                            )}
                           </div>
                         </div>
                         <button
@@ -724,7 +798,7 @@ export default function ClientHoldingsView({
                             setAnalyticsFund(fund);
                           }}
                           aria-label="View Fund Analytics"
-                          className="p-1.5 text-slate-500 bg-white hover:text-distributor-600 hover:bg-distributor-50 rounded-lg transition-colors border border-slate-200 hover:border-distributor-200 shadow-sm shrink-0"
+                          className="p-1.5 text-slate-500 bg-white hover:text-distributor-600 hover:bg-distributor-50 rounded-sm transition-colors border border-slate-200 hover:border-distributor-200 shadow-sm shrink-0"
                         >
                           <BarChart2 className="w-4 h-4" />
                         </button>
@@ -750,18 +824,21 @@ export default function ClientHoldingsView({
                         </div>
                         <div>
                           <p className="text-[10px] font-black uppercase text-slate-400 tracking-wider">
-                            Units / NAV
+                            Units / NAV (Cur/Avg)
                           </p>
                           <p className="text-xs font-bold text-slate-700">
-                            {fund.available_units?.toFixed(3) || "0"}{" "}
-                            <span className="text-[10px] font-medium text-slate-400 block sm:inline">
-                              @ ₹{fund.current_nav || 0}
-                            </span>
+                            {fund.available_units?.toFixed(3) || "0"} U
+                          </p>
+                          <p className="text-[10px] font-bold text-slate-600 mt-0.5">
+                            Cur: ₹{(fund.current_nav ?? 0).toFixed(4)}
+                          </p>
+                          <p className="text-[9px] font-medium text-slate-400">
+                            Avg: ₹{(fund.avg_nav ?? 0).toFixed(4)}
                           </p>
                         </div>
                         <div className="flex flex-col items-end">
                           <p className="text-[10px] font-black uppercase text-slate-400 tracking-wider">
-                            Returns
+                            Returns / Unrealised
                           </p>
                           <div
                             className={`flex items-center gap-0.5 text-xs font-black ${isPositive ? "text-emerald-600" : "text-rose-600"}`}
@@ -778,6 +855,10 @@ export default function ClientHoldingsView({
                           >
                             {formatCurrency(netPnl)}
                           </span>
+                          <div className="flex flex-col items-end text-[9px] font-bold text-slate-400/80 mt-1 leading-tight select-none">
+                            <span>LT: {formatCurrency(fund.unrealised_gains_lt || 0)}</span>
+                            <span>ST: {formatCurrency(fund.unrealised_gains_st || 0)}</span>
+                          </div>
                         </div>
                       </div>
 
@@ -802,7 +883,7 @@ export default function ClientHoldingsView({
                               transactions.map((t: any, tid: number) => (
                                 <div
                                   key={tid}
-                                  className="flex justify-between items-center bg-white p-2.5 sm:p-3 rounded-lg border border-slate-100 shadow-sm"
+                                  className="flex justify-between items-center bg-white p-2.5 sm:p-3 rounded-sm border border-slate-100 shadow-sm"
                                 >
                                   <div className="min-w-0 pr-2">
                                     <p className="text-xs font-bold text-slate-700 truncate">
@@ -811,12 +892,12 @@ export default function ClientHoldingsView({
                                     <p className="text-[10px] text-slate-500 mt-0.5">
                                       {t.transaction_date
                                         ? new Date(
-                                            t.transaction_date,
-                                          ).toLocaleDateString("en-GB", {
-                                            day: "2-digit",
-                                            month: "short",
-                                            year: "numeric",
-                                          })
+                                          t.transaction_date,
+                                        ).toLocaleDateString("en-GB", {
+                                          day: "2-digit",
+                                          month: "short",
+                                          year: "numeric",
+                                        })
                                         : "N/A"}
                                     </p>
                                   </div>
@@ -859,7 +940,7 @@ export default function ClientHoldingsView({
         >
           <div className="absolute inset-0" onClick={handleCloseModal} />
 
-          <div className="bg-white rounded-md shadow-xl border border-slate-200 w-full max-w-sm overflow-visible animate-in zoom-in-95 duration-200 relative z-10 flex flex-col">
+          <div className="bg-white rounded-sm shadow-xl border border-slate-200 w-full max-w-sm overflow-visible animate-in zoom-in-95 duration-200 relative z-10 flex flex-col">
             <div className="flex items-center justify-between p-4 border-b border-slate-100 shrink-0">
               <h3
                 id="cg-modal-title"
@@ -870,90 +951,248 @@ export default function ClientHoldingsView({
               <button
                 onClick={handleCloseModal}
                 disabled={!!exportingFormat}
-                className="p-1.5 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-lg disabled:opacity-40 disabled:cursor-not-allowed"
+                className="p-1.5 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-sm disabled:opacity-40 disabled:cursor-not-allowed"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
-            <div className="p-5 flex flex-col gap-4 overflow-y-auto">
+            <div className="p-5 flex flex-col overflow-y-visible">
               {cgNotif && (
-                <InlineNotif
-                  notif={cgNotif}
-                  onDismiss={() => setCGNotif(null)}
-                />
+                <div className="mb-4">
+                  <InlineNotif
+                    notif={cgNotif}
+                    onDismiss={() => setCGNotif(null)}
+                  />
+                </div>
               )}
 
-              <div className="relative">
-                <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">
-                  Select Financial Year
-                </label>
+              {/* Report Type Segmented Selector - Upgraded with Smooth Sliding Pill */}
+              <div className="relative flex bg-slate-100/80 p-1 rounded-sm mb-5 border border-slate-200/40 select-none z-0">
+                {/* Sliding Indicator */}
+                <div
+                  className="absolute top-1 bottom-1 w-[calc((100%-8px)/3)] bg-white rounded-sm shadow-sm border border-slate-200/40 transition-transform duration-300 ease-in-out -z-10"
+                  style={{
+                    left: "4px",
+                    transform:
+                      cgReportType === "FY"
+                        ? "translateX(0)"
+                        : cgReportType === "CY"
+                        ? "translateX(100%)"
+                        : "translateX(200%)",
+                  }}
+                />
+                {[
+                  { id: "FY", label: "FY" },
+                  { id: "CY", label: "CY" },
+                  { id: "CUSTOM", label: "Custom" },
+                ].map((type) => (
+                  <button
+                    key={type.id}
+                    onClick={() => {
+                      setCgReportType(type.id as any);
+                      setCGNotif(null);
+                      setIsFYSelectorOpen(false); // Close dropdowns on tab shift
+                      setIsCYSelectorOpen(false);
+                    }}
+                    disabled={!!exportingFormat}
+                    className={`relative z-10 flex-1 py-1.5 text-xs font-black rounded-sm transition-colors duration-300 active:scale-95 disabled:opacity-50 ${
+                      cgReportType === type.id
+                        ? "text-distributor-700"
+                        : "text-slate-500 hover:text-slate-800"
+                    }`}
+                  >
+                    {type.label}
+                  </button>
+                ))}
+              </div>
 
-                <button
-                  onClick={() => setIsFYSelectorOpen(!isFYSelectorOpen)}
-                  disabled={!!exportingFormat}
-                  className="w-full flex items-center justify-between p-3 bg-slate-50 border border-slate-200 rounded-xl hover:border-slate-300 transition-colors focus:outline-none focus:ring-2 focus:ring-slate-900/10"
-                >
-                  <span className="text-xs font-bold text-slate-500 uppercase tracking-widest">
-                    Financial Year
-                  </span>
-                  <div className="flex items-center gap-2">
-                    <span className="font-bold text-slate-800 tracking-tight">
-                      {selectedFY}
-                    </span>
-                    <ChevronDown
-                      className={`w-4 h-4 text-slate-500 transition-transform ${isFYSelectorOpen ? "rotate-180" : ""}`}
-                    />
-                  </div>
-                </button>
-
-                {isFYSelectorOpen && (
-                  <div className="absolute top-[110%] left-0 w-full bg-white border border-slate-200 shadow-xl rounded-xl p-3 z-50 animate-in fade-in slide-in-from-top-2">
-                    <div className="flex items-center justify-between mb-3 border-b border-slate-100 pb-2">
-                      <button
-                        onClick={() => setFyPage((p) => Math.max(0, p - 1))}
-                        disabled={fyPage === 0}
-                        className="p-1 text-slate-400 hover:text-slate-900 disabled:opacity-30 disabled:hover:text-slate-400"
-                      >
-                        <ChevronLeft className="w-4 h-4" />
-                      </button>
-                      <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
-                        Page {fyPage + 1} of {maxPages}
+              {/* Dynamic Selection Area - Fixed height prevents CLS and modal resizing */}
+              <div className="relative h-[165px] w-full z-20">
+                
+                {cgReportType === "FY" && (
+                  <div className="relative animate-in fade-in slide-in-from-bottom-2 duration-200">
+                    <button
+                      onClick={() => setIsFYSelectorOpen(!isFYSelectorOpen)}
+                      disabled={!!exportingFormat}
+                      className="w-full flex items-center justify-between p-3 bg-slate-50 border border-slate-200 rounded-sm hover:border-slate-300 transition-all focus:outline-none focus:ring-2 focus:ring-slate-900/10 active:scale-[0.99]"
+                    >
+                      <span className="text-xs font-bold text-slate-500 uppercase tracking-widest">
+                        Financial Year
                       </span>
-                      <button
-                        onClick={() =>
-                          setFyPage((p) => Math.min(maxPages - 1, p + 1))
-                        }
-                        disabled={fyPage === maxPages - 1}
-                        className="p-1 text-slate-400 hover:text-slate-900 disabled:opacity-30 disabled:hover:text-slate-400"
-                      >
-                        <ChevronRight className="w-4 h-4" />
-                      </button>
+                      <div className="flex items-center gap-2">
+                        <span className="font-bold text-slate-800 tracking-tight">
+                          {selectedFY}
+                        </span>
+                        <ChevronDown
+                          className={`w-4 h-4 text-slate-500 transition-transform duration-200 ${
+                            isFYSelectorOpen ? "rotate-180" : ""
+                          }`}
+                        />
+                      </div>
+                    </button>
+
+                    {isFYSelectorOpen && (
+                      <div className="absolute top-[110%] left-0 w-full bg-white border border-slate-200 shadow-xl rounded-sm p-3 z-50 animate-in fade-in slide-in-from-top-2">
+                        <div className="flex items-center justify-between mb-3 border-b border-slate-100 pb-2">
+                          <button
+                            onClick={() => setFyPage((p) => Math.max(0, p - 1))}
+                            disabled={fyPage === 0}
+                            className="p-1 text-slate-400 hover:text-slate-900 disabled:opacity-30 disabled:hover:text-slate-400"
+                          >
+                            <ChevronLeft className="w-4 h-4" />
+                          </button>
+                          <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
+                            Page {fyPage + 1} of {maxPages}
+                          </span>
+                          <button
+                            onClick={() =>
+                              setFyPage((p) => Math.min(maxPages - 1, p + 1))
+                            }
+                            disabled={fyPage === maxPages - 1}
+                            className="p-1 text-slate-400 hover:text-slate-900 disabled:opacity-30 disabled:hover:text-slate-400"
+                          >
+                            <ChevronRight className="w-4 h-4" />
+                          </button>
+                        </div>
+                        <div className="grid grid-cols-3 gap-2">
+                          {paginatedYears.map((fy) => (
+                            <button
+                              key={fy}
+                              onClick={() => {
+                                setSelectedFY(fy);
+                                setIsFYSelectorOpen(false);
+                                setCGNotif(null);
+                              }}
+                              className={`py-2 px-1 text-xs font-bold rounded-sm border transition-all ${
+                                selectedFY === fy
+                                  ? "bg-distributor-50 border-distributor-500 text-distributor-700 shadow-sm"
+                                  : "bg-white border-slate-200 text-slate-600 hover:border-slate-300 hover:bg-slate-50"
+                              }`}
+                            >
+                              {fy}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {cgReportType === "CY" && (
+                  <div className="relative animate-in fade-in slide-in-from-bottom-2 duration-200">
+                    <button
+                      onClick={() => setIsCYSelectorOpen(!isCYSelectorOpen)}
+                      disabled={!!exportingFormat}
+                      className="w-full flex items-center justify-between p-3 bg-slate-50 border border-slate-200 rounded-sm hover:border-slate-300 transition-all focus:outline-none focus:ring-2 focus:ring-slate-900/10 active:scale-[0.99]"
+                    >
+                      <span className="text-xs font-bold text-slate-500 uppercase tracking-widest">
+                        Calendar Year
+                      </span>
+                      <div className="flex items-center gap-2">
+                        <span className="font-bold text-slate-800 tracking-tight">
+                          {selectedCY}
+                        </span>
+                        <ChevronDown
+                          className={`w-4 h-4 text-slate-500 transition-transform duration-200 ${
+                            isCYSelectorOpen ? "rotate-180" : ""
+                          }`}
+                        />
+                      </div>
+                    </button>
+
+                    {isCYSelectorOpen && (
+                      <div className="absolute top-[110%] left-0 w-full bg-white border border-slate-200 shadow-xl rounded-sm p-3 z-50 animate-in fade-in slide-in-from-top-2">
+                        <div className="flex items-center justify-between mb-3 border-b border-slate-100 pb-2">
+                          <button
+                            onClick={() => setCyPage((p) => Math.max(0, p - 1))}
+                            disabled={cyPage === 0}
+                            className="p-1 text-slate-400 hover:text-slate-900 disabled:opacity-30 disabled:hover:text-slate-400"
+                          >
+                            <ChevronLeft className="w-4 h-4" />
+                          </button>
+                          <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
+                            Page {cyPage + 1} of {maxCYPages}
+                          </span>
+                          <button
+                            onClick={() =>
+                              setCyPage((p) => Math.min(maxCYPages - 1, p + 1))
+                            }
+                            disabled={cyPage === maxCYPages - 1}
+                            className="p-1 text-slate-400 hover:text-slate-900 disabled:opacity-30 disabled:hover:text-slate-400"
+                          >
+                            <ChevronRight className="w-4 h-4" />
+                          </button>
+                        </div>
+                        <div className="grid grid-cols-3 gap-2">
+                          {paginatedCYYears.map((cy) => (
+                            <button
+                              key={cy}
+                              onClick={() => {
+                                setSelectedCY(cy);
+                                setIsCYSelectorOpen(false);
+                                setCGNotif(null);
+                              }}
+                              className={`py-2 px-1 text-xs font-bold rounded-sm border transition-all ${
+                                selectedCY === cy
+                                  ? "bg-distributor-50 border-distributor-500 text-distributor-700 shadow-sm"
+                                  : "bg-white border-slate-200 text-slate-600 hover:border-slate-300 hover:bg-slate-50"
+                              }`}
+                            >
+                              {cy}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {cgReportType === "CUSTOM" && (
+                  <div className="flex flex-col gap-3.5 animate-in fade-in slide-in-from-bottom-2 duration-200">
+                    <div className="flex flex-col">
+                      <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5">
+                        Start Date
+                      </label>
+                      <input
+                        type="date"
+                        value={customStartDate}
+                        onChange={(e) => {
+                          setCustomStartDate(e.target.value);
+                          setCGNotif(null);
+                        }}
+                        disabled={!!exportingFormat}
+                        className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-sm text-xs font-black text-slate-800 tracking-tight focus:border-distributor-600 focus:bg-white focus:ring-4 focus:ring-distributor-500/10 focus:outline-none transition-all cursor-pointer hover:bg-slate-100/50"
+                      />
                     </div>
-                    <div className="grid grid-cols-3 gap-2">
-                      {paginatedYears.map((fy) => (
-                        <button
-                          key={fy}
-                          onClick={() => {
-                            setSelectedFY(fy);
-                            setIsFYSelectorOpen(false);
-                            setCGNotif(null);
-                          }}
-                          className={`py-2 px-1 text-xs font-bold rounded-lg border transition-all ${selectedFY === fy ? "bg-distributor-50 border-distributor-500 text-distributor-700 shadow-sm" : "bg-white border-slate-200 text-slate-600 hover:border-slate-300 hover:bg-slate-50"}`}
-                        >
-                          {fy}
-                        </button>
-                      ))}
+                    <div className="flex flex-col">
+                      <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5">
+                        End Date
+                      </label>
+                      <input
+                        type="date"
+                        value={customEndDate}
+                        onChange={(e) => {
+                          setCustomEndDate(e.target.value);
+                          setCGNotif(null);
+                        }}
+                        disabled={!!exportingFormat}
+                        className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-sm text-xs font-black text-slate-800 tracking-tight focus:border-distributor-600 focus:bg-white focus:ring-4 focus:ring-distributor-500/10 focus:outline-none transition-all cursor-pointer hover:bg-slate-100/50"
+                      />
                     </div>
                   </div>
                 )}
+                
               </div>
 
-              <div className="grid grid-cols-2 gap-3 mt-4 shrink-0">
+              {/* Action Buttons */}
+              <div className="grid grid-cols-2 gap-3 mt-1 shrink-0">
                 <button
                   onClick={() => handleExportCG("pdf")}
-                  disabled={!!exportingFormat || isFYSelectorOpen}
-                  className="flex flex-col items-center justify-center gap-2 p-3 rounded-xl border-2 border-slate-100 hover:border-rose-200 hover:bg-rose-50 text-rose-600 disabled:opacity-50 active:scale-95 transition-all"
+                  disabled={
+                    !!exportingFormat || isFYSelectorOpen || isCYSelectorOpen
+                  }
+                  className="flex flex-col items-center justify-center gap-2 p-3 rounded-sm border-2 border-slate-100 hover:border-rose-200 hover:bg-rose-50 text-rose-600 disabled:opacity-50 active:scale-95 transition-all"
                 >
                   {exportingFormat === "pdf" ? (
                     <Loader2 className="w-6 h-6 animate-spin" />
@@ -967,8 +1206,10 @@ export default function ClientHoldingsView({
 
                 <button
                   onClick={() => handleExportCG("excel")}
-                  disabled={!!exportingFormat || isFYSelectorOpen}
-                  className="flex flex-col items-center justify-center gap-2 p-3 rounded-xl border-2 border-slate-100 hover:border-distributor-200 hover:bg-distributor-50 text-distributor-600 disabled:opacity-50 active:scale-95 transition-all"
+                  disabled={
+                    !!exportingFormat || isFYSelectorOpen || isCYSelectorOpen
+                  }
+                  className="flex flex-col items-center justify-center gap-2 p-3 rounded-sm border-2 border-slate-100 hover:border-distributor-200 hover:bg-distributor-50 text-distributor-600 disabled:opacity-50 active:scale-95 transition-all"
                 >
                   {exportingFormat === "excel" ? (
                     <Loader2 className="w-6 h-6 animate-spin" />

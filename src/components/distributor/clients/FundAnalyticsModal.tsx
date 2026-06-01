@@ -148,7 +148,7 @@ export default function FundAnalyticsModal({
 
     return (
       <div className="flex flex-col gap-4">
-        <div className="rounded-xl overflow-hidden shadow-sm">
+        <div className="rounded-md overflow-hidden shadow-sm">
           <div className="bg-slate-50 px-3 py-2 border border-slate-200 border-b-0 rounded-t-xl">
             <h3 className="text-[10px] font-black text-slate-700 uppercase tracking-widest">
               Fund Returns Overview (%)
@@ -218,7 +218,7 @@ export default function FundAnalyticsModal({
     const sortedYears = Object.keys(matrix).sort((a, b) => Number(b) - Number(a));
 
     return (
-      <div className="rounded-xl overflow-hidden shadow-sm">
+      <div className="rounded-md overflow-hidden shadow-sm">
         <div className="bg-slate-50 px-3 py-2 border border-slate-200 border-b-0 rounded-t-xl">
           <h3 className="text-[10px] font-black text-slate-700 uppercase tracking-widest">
             Monthly Returns Matrix (%)
@@ -264,7 +264,7 @@ export default function FundAnalyticsModal({
 
     return (
       <div className="flex flex-col gap-4">
-        <div className="rounded-xl overflow-hidden shadow-sm">
+        <div className="rounded-md overflow-hidden shadow-sm">
           <div className="bg-slate-50 px-3 py-2 border border-slate-200 border-b-0 rounded-t-xl">
             <h3 className="text-[10px] font-black text-slate-700 uppercase tracking-widest">
               Risk Measures
@@ -292,7 +292,7 @@ export default function FundAnalyticsModal({
           </div>
         </div>
 
-        <div className="rounded-xl overflow-hidden shadow-sm">
+        <div className="rounded-md overflow-hidden shadow-sm">
           <div className="bg-slate-50 px-3 py-2 border border-slate-200 border-b-0 rounded-t-xl">
             <h3 className="text-[10px] font-black text-slate-700 uppercase tracking-widest">
               Relative Risk Measures
@@ -336,12 +336,12 @@ export default function FundAnalyticsModal({
     <div className="absolute inset-0 z-[99999] flex items-center justify-center bg-white/80 backdrop-blur-sm p-2 sm:p-4 lg:p-6 w-full h-full overflow-hidden pointer-events-none">
       <div className="absolute inset-0 pointer-events-auto" onClick={onClose} />
       
-      <div className="bg-white rounded-xl shadow-2xl border border-slate-200 flex flex-col w-full max-w-5xl h-full sm:h-[95%] relative pointer-events-auto animate-in zoom-in-95 duration-200 overflow-hidden">
+      <div className="bg-white rounded-md shadow-2xl border border-slate-200 flex flex-col w-full max-w-5xl h-full sm:h-[95%] relative pointer-events-auto animate-in zoom-in-95 duration-200 overflow-hidden">
         
         {/* ─── LOADING & ERROR STATES ─── */}
         {isLoading ? (
           <div className="flex flex-col items-center justify-center h-full w-full relative">
-            <button onClick={onClose} className="absolute top-4 right-4 p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-xl transition-colors">
+            <button onClick={onClose} className="absolute top-4 right-4 p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-md transition-colors">
               <X className="w-5 h-5" />
             </button>
             <Loader2 className="w-8 h-8 sm:w-10 sm:h-10 animate-spin text-distributor-500 mb-3" />
@@ -349,7 +349,7 @@ export default function FundAnalyticsModal({
           </div>
         ) : error ? (
           <div className="flex flex-col items-center justify-center h-full w-full relative py-8">
-            <button onClick={onClose} className="absolute top-4 right-4 p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-xl transition-colors">
+            <button onClick={onClose} className="absolute top-4 right-4 p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-md transition-colors">
               <X className="w-5 h-5" />
             </button>
             <ShieldAlert className="w-10 h-10 text-rose-300 mb-3" />
@@ -392,7 +392,7 @@ export default function FundAnalyticsModal({
 
               </div>
 
-              <button onClick={onClose} className="p-1 sm:p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors shrink-0 -mt-1 -mr-1">
+              <button onClick={onClose} className="p-1 sm:p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-md transition-colors shrink-0 -mt-1 -mr-1">
                 <X className="w-5 h-5" />
               </button>
             </div>

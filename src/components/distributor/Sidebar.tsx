@@ -360,7 +360,7 @@ export default function Sidebar({ isCollapsed, setIsCollapsed }: SidebarProps) {
           <Link
             href="/distributor/settings"
             title="Settings"
-            className="p-2.5 text-slate-400 hover:text-distributor-600 hover:bg-distributor-50 rounded-lg transition-colors group shrink-0"
+            className="p-2.5 text-slate-400 hover:text-distributor-600 hover:bg-distributor-50 rounded-md transition-colors group shrink-0"
           >
             <Settings className="w-5 h-5 group-hover:rotate-45 transition-transform duration-500" />
           </Link>
@@ -368,7 +368,7 @@ export default function Sidebar({ isCollapsed, setIsCollapsed }: SidebarProps) {
           {/* Collapse Icon */}
           <button
             onClick={() => setIsCollapsed(!isCollapsed)}
-            className="hidden lg:flex p-2.5 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-lg transition-colors shrink-0"
+            className="hidden lg:flex p-2.5 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-md transition-colors shrink-0"
             title={isCollapsed ? "Expand Sidebar" : "Collapse Sidebar"}
           >
             {isCollapsed ? (
@@ -386,7 +386,7 @@ export default function Sidebar({ isCollapsed, setIsCollapsed }: SidebarProps) {
               <Link
                 href="/distributor-portal"
                 title="Sign Out"
-                className="p-2.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors flex items-center justify-center"
+                className="p-2.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-md transition-colors flex items-center justify-center"
               >
                 <svg
                   className="w-5 h-5"

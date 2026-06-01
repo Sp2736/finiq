@@ -46,7 +46,7 @@ export default function FundHoldingDetail({
 
   if (isLoading) {
     return (
-      <div className="flex flex-col items-center justify-center py-12 border border-slate-200 rounded-xl bg-white shadow-sm w-full h-[250px]">
+      <div className="flex flex-col items-center justify-center py-12 border border-slate-200 rounded-md bg-white shadow-sm w-full h-[250px]">
         <Loader2 className="w-6 h-6 animate-spin text-distributor-500 mb-2" />
         <p className="text-slate-500 font-bold text-[10px] uppercase tracking-widest">
           Loading Holdings...
@@ -57,7 +57,7 @@ export default function FundHoldingDetail({
 
   if (error) {
     return (
-      <div className="flex flex-col items-center justify-center py-12 border border-slate-200 rounded-xl bg-white shadow-sm w-full h-[250px]">
+      <div className="flex flex-col items-center justify-center py-12 border border-slate-200 rounded-md bg-white shadow-sm w-full h-[250px]">
         <ShieldAlert className="w-8 h-8 text-rose-300 mb-2" />
         <p className="text-rose-600 font-bold text-xs">{error}</p>
       </div>
@@ -77,7 +77,7 @@ export default function FundHoldingDetail({
   };
 
   return (
-    <div className="border border-slate-200 rounded-xl overflow-hidden shadow-sm bg-white flex flex-col mt-5">
+    <div className="border border-slate-200 rounded-md overflow-hidden shadow-sm bg-white flex flex-col mt-5">
       <div className="bg-slate-50 px-4 py-3 border-b border-slate-200 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Layers className="w-4 h-4 text-distributor-600" />

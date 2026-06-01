@@ -157,7 +157,7 @@ export default function BrokerageDashboard() {
           </h1>
         </div>
         <div className="hidden md:flex gap-3">
-          <button className="flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 text-slate-600 font-bold text-xs rounded-xl hover:border-distributor-600 hover:text-distributor-600 transition-all shadow-sm">
+          <button className="flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 text-slate-600 font-bold text-xs rounded-md hover:border-distributor-600 hover:text-distributor-600 transition-all shadow-sm">
             <Download className="w-4 h-4" />
             <span>Export</span>
           </button>
@@ -165,10 +165,10 @@ export default function BrokerageDashboard() {
       </div>
 
       {/* Filter Bar - Compressed Padding & Layout */}
-      <div className="shrink-0 bg-white/80 backdrop-blur-xl border border-slate-200 rounded-xl md:rounded-md p-2 md:p-3 mb-3 lg:mb-6 shadow-sm flex flex-col md:flex-row items-stretch md:items-center gap-2">
+      <div className="shrink-0 bg-white/80 backdrop-blur-xl border border-slate-200 rounded-md md:rounded-md p-2 md:p-3 mb-3 lg:mb-6 shadow-sm flex flex-col md:flex-row items-stretch md:items-center gap-2">
         
         <div className="flex items-center justify-between gap-2">
-          <div className="flex items-center bg-slate-100 p-1 rounded-lg overflow-x-auto hide-scrollbar flex-1">
+          <div className="flex items-center bg-slate-100 p-1 rounded-md overflow-x-auto hide-scrollbar flex-1">
             {['AMC', 'Investor'].map((lvl) => (
               <button
                 key={lvl}
@@ -182,7 +182,7 @@ export default function BrokerageDashboard() {
           
           <div className="relative md:hidden w-32">
             <Calendar className="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400" />
-            <select className="w-full pl-8 pr-6 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-bold text-slate-700 focus:outline-none focus:border-distributor-500 appearance-none">
+            <select className="w-full pl-8 pr-6 py-1.5 bg-white border border-slate-200 rounded-md text-xs font-bold text-slate-700 focus:outline-none focus:border-distributor-500 appearance-none">
               <option>Feb-2026</option>
               <option>Jan-2026</option>
             </select>
@@ -193,7 +193,7 @@ export default function BrokerageDashboard() {
         
         <div className="relative hidden md:block md:flex-none">
           <Calendar className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-          <select className="w-full pl-9 pr-8 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-bold text-slate-700 focus:outline-none focus:border-distributor-500 appearance-none">
+          <select className="w-full pl-9 pr-8 py-1.5 bg-white border border-slate-200 rounded-md text-xs font-bold text-slate-700 focus:outline-none focus:border-distributor-500 appearance-none">
             <option>Feb-2026</option>
             <option>Jan-2026</option>
           </select>
@@ -209,12 +209,12 @@ export default function BrokerageDashboard() {
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleSearchTrigger()}
-              className="w-full pl-8 pr-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs font-medium focus:outline-none focus:border-distributor-600 transition-all"
+              className="w-full pl-8 pr-3 py-1.5 bg-slate-50 border border-slate-200 rounded-md text-xs font-medium focus:outline-none focus:border-distributor-600 transition-all"
             />
           </div>
           <button 
             onClick={handleSearchTrigger}
-            className="px-3 py-1.5 bg-slate-900 text-white rounded-lg text-[11px] font-bold hover:bg-slate-800 transition-all shadow-sm"
+            className="px-3 py-1.5 bg-slate-900 text-white rounded-md text-[11px] font-bold hover:bg-slate-800 transition-all shadow-sm"
           >
             Search
           </button>
@@ -224,7 +224,7 @@ export default function BrokerageDashboard() {
       {/* KPI Section - Compact Grid, Less Padding */}
       <div className="shrink-0 grid grid-cols-2 md:grid-cols-4 gap-2 mb-3 lg:mb-6">
         
-        <div className="bg-white p-2.5 md:p-4 rounded-xl border border-slate-200 shadow-sm relative overflow-hidden group hover:bg-distributor-600 transition-all cursor-default">
+        <div className="bg-white p-2.5 md:p-4 rounded-md border border-slate-200 shadow-sm relative overflow-hidden group hover:bg-distributor-600 transition-all cursor-default">
           <div className="group-hover:opacity-0 transition-opacity">
             <p className="text-[9px] md:text-[10px] font-black text-slate-500 uppercase tracking-widest mb-0.5">Gross Rec.</p>
             <h3 className="text-base md:text-xl font-black text-slate-900">{formatCompactNumber(totals.gross)}</h3>
@@ -234,7 +234,7 @@ export default function BrokerageDashboard() {
           </div>
         </div>
 
-        <div className="bg-white p-2.5 md:p-4 rounded-xl border border-slate-200 shadow-sm relative overflow-hidden group hover:bg-distributor-600 transition-all cursor-default">
+        <div className="bg-white p-2.5 md:p-4 rounded-md border border-slate-200 shadow-sm relative overflow-hidden group hover:bg-distributor-600 transition-all cursor-default">
           <div className="group-hover:opacity-0 transition-opacity">
             <p className="text-[9px] md:text-[10px] font-black text-slate-500 uppercase tracking-widest mb-0.5">Paid Brokerage</p>
             <h3 className="text-base md:text-xl font-black text-distributor-600">{formatCompactNumber(totals.paid)}</h3>
@@ -244,7 +244,7 @@ export default function BrokerageDashboard() {
           </div>
         </div>
 
-        <div className="bg-white p-2.5 md:p-4 rounded-xl border border-slate-200 shadow-sm relative overflow-hidden group hover:bg-distributor-600 transition-all cursor-default">
+        <div className="bg-white p-2.5 md:p-4 rounded-md border border-slate-200 shadow-sm relative overflow-hidden group hover:bg-distributor-600 transition-all cursor-default">
           <div className="group-hover:opacity-0 transition-opacity">
             <p className="text-[9px] md:text-[10px] font-black text-slate-500 uppercase tracking-widest mb-0.5">Paid (Sub)</p>
             <h3 className="text-base md:text-xl font-black text-teal-600">{formatCompactNumber(totals.paidSub)}</h3>
@@ -254,7 +254,7 @@ export default function BrokerageDashboard() {
           </div>
         </div>
 
-        <div className="bg-slate-900 p-2.5 md:p-4 rounded-xl border border-slate-900 shadow-sm relative overflow-hidden group hover:bg-distributor-600 transition-all cursor-default">
+        <div className="bg-slate-900 p-2.5 md:p-4 rounded-md border border-slate-900 shadow-sm relative overflow-hidden group hover:bg-distributor-600 transition-all cursor-default">
           <div className="group-hover:opacity-0 transition-opacity relative z-10">
             <p className="text-[9px] md:text-[10px] font-black text-slate-400 uppercase tracking-widest mb-0.5">Net Rec.</p>
             <h3 className="text-base md:text-xl font-black text-white">{formatCompactNumber(grandNetReceivable)}</h3>

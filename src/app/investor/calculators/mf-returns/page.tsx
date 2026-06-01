@@ -113,7 +113,7 @@ const SyncedSlider: React.FC<SyncedSliderProps> = ({
         <label className="text-xs font-black uppercase text-slate-500">
           {label}
         </label>
-        <div className="flex items-center bg-distributor-50 px-3 py-1.5 rounded-lg border border-distributor-100 focus-within:border-distributor-500 transition-colors">
+        <div className="flex items-center bg-distributor-50 px-3 py-1.5 rounded-md border border-distributor-100 focus-within:border-distributor-500 transition-colors">
           {unit === "₹" && (
             <span className="text-sm font-black text-distributor-700 mr-1">
               ₹
@@ -141,7 +141,7 @@ const SyncedSlider: React.FC<SyncedSliderProps> = ({
         step={step}
         value={value}
         onChange={handleSliderChange}
-        className="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-distributor-600"
+        className="w-full h-1.5 bg-slate-200 rounded-md appearance-none cursor-pointer accent-distributor-600"
       />
     </div>
   );
@@ -240,7 +240,7 @@ export default function MFReturnsCalculator() {
     if (active && payload && payload.length) {
       const data = payload[0].payload;
       return (
-        <div className="bg-white p-3 rounded-lg border border-slate-200 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.1)] min-w-[180px] text-xs z-50">
+        <div className="bg-white p-3 rounded-md border border-slate-200 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.1)] min-w-[180px] text-xs z-50">
           <p className="font-bold text-slate-500 mb-2 border-b border-slate-100 pb-2">
             Duration: {data.duration} Years
           </p>

@@ -188,7 +188,7 @@ export default function ActiveSipsDashboard() {
               placeholder="Search investors by name..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-10 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold text-slate-700 focus:bg-white focus:ring-2 focus:ring-distributor-500/20 focus:border-distributor-500 transition-all outline-none"
+              className="w-full pl-10 pr-10 py-2.5 bg-slate-50 border border-slate-200 rounded-md text-sm font-semibold text-slate-700 focus:bg-white focus:ring-2 focus:ring-distributor-500/20 focus:border-distributor-500 transition-all outline-none"
             />
             {isSearching && (
               <div className="absolute right-3.5 top-1/2 -translate-y-1/2 w-4 h-4 border-2 border-slate-300 border-t-distributor-600 rounded-full animate-spin" />
@@ -294,7 +294,7 @@ export default function ActiveSipsDashboard() {
                 </div>
 
                 <div className="grid grid-cols-2 gap-3">
-                  <div className="bg-slate-50 rounded-xl p-3 border border-slate-100">
+                  <div className="bg-slate-50 rounded-md p-3 border border-slate-100">
                     <p className="text-[10px] font-black uppercase tracking-wider text-slate-400 mb-1">
                       Active SIPs
                     </p>
@@ -302,7 +302,7 @@ export default function ActiveSipsDashboard() {
                       {inv.total_sips}
                     </p>
                   </div>
-                  <div className="bg-distributor-50/50 rounded-xl p-3 border border-distributor-100">
+                  <div className="bg-distributor-50/50 rounded-md p-3 border border-distributor-100">
                     <p className="text-[10px] font-black uppercase tracking-wider text-distributor-600/70 mb-1">
                       Total Value
                     </p>

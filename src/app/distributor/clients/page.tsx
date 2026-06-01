@@ -168,7 +168,7 @@ export default function InvestorsPage() {
                 value={searchInput}
                 onChange={(e) => setSearchInput(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && handleSearchTrigger()}
-                className="w-full pl-9 pr-4 py-2 bg-white border border-slate-200 rounded-xl text-sm focus:border-distributor-600 transition-all shadow-sm"
+                className="w-full pl-9 pr-4 py-2 bg-white border border-slate-200 rounded-md text-sm focus:border-distributor-600 transition-all shadow-sm"
               />
             </div>
           </div>
@@ -176,7 +176,7 @@ export default function InvestorsPage() {
           <button 
             onClick={handleExportExcel}
             disabled={isExporting || isLoading}
-            className="flex items-center gap-2 px-4 py-2 bg-distributor-700 text-white rounded-xl text-sm font-bold shadow-md hover:bg-distributor-800 transition-all whitespace-nowrap active:scale-95 disabled:opacity-70 disabled:active:scale-100"
+            className="flex items-center gap-2 px-4 py-2 bg-distributor-700 text-white rounded-md text-sm font-bold shadow-md hover:bg-distributor-800 transition-all whitespace-nowrap active:scale-95 disabled:opacity-70 disabled:active:scale-100"
           >
             {isExporting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
             <span className="hidden sm:inline">{isExporting ? 'Generating...' : 'Generate Excel'}</span>
@@ -209,7 +209,7 @@ export default function InvestorsPage() {
             <button 
               disabled={pagination.page === 1 || isLoading}
               onClick={() => fetchClients(pagination.page - 1, searchTerm)}
-              className="p-2 border border-slate-200 rounded-lg hover:bg-white disabled:opacity-50 transition-all"
+              className="p-2 border border-slate-200 rounded-md hover:bg-white disabled:opacity-50 transition-all"
             >
               <ChevronLeft className="w-4 h-4 text-slate-600" />
             </button>
@@ -217,7 +217,7 @@ export default function InvestorsPage() {
             <button 
               disabled={pagination.page === pagination.totalPages || isLoading}
               onClick={() => fetchClients(pagination.page + 1, searchTerm)}
-              className="p-2 border border-slate-200 rounded-lg hover:bg-white disabled:opacity-50 transition-all"
+              className="p-2 border border-slate-200 rounded-md hover:bg-white disabled:opacity-50 transition-all"
             >
               <ChevronRight className="w-4 h-4 text-slate-600" />
             </button>

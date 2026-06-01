@@ -149,7 +149,7 @@ export default function FundPortfolioTab({ amfiCode }: FundPortfolioTabProps) {
 
       {/* ─── SECTOR ALLOCATION SVG ─── */}
       <div
-        className={`border border-slate-200 rounded-xl overflow-hidden shadow-sm flex flex-col ${isCluttered ? "" : "lg:flex-row"} bg-white`}
+        className={`border border-slate-200 rounded-md overflow-hidden shadow-sm flex flex-col ${isCluttered ? "" : "lg:flex-row"} bg-white`}
       >
         <div
           className={`p-4 sm:p-6 relative flex flex-col ${isCluttered ? "border-b border-slate-100 w-full" : "flex-1 border-b lg:border-b-0 lg:border-r border-slate-100 min-w-0"}`}
@@ -252,7 +252,7 @@ export default function FundPortfolioTab({ amfiCode }: FundPortfolioTabProps) {
           <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3 shrink-0">
             Legend
           </h4>
-          <div className="overflow-x-auto overflow-y-auto table-scrollbar rounded-lg border border-slate-200 bg-white">
+          <div className="overflow-x-auto overflow-y-auto table-scrollbar rounded-md border border-slate-200 bg-white">
             <table className="w-full text-left text-xs border-collapse">
               <thead className="bg-slate-100 text-[10px] text-slate-500 uppercase tracking-wider sticky top-0 z-10">
                 <tr>

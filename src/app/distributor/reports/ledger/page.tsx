@@ -53,7 +53,7 @@ const CustomSelect = ({
         type="button"
         onClick={() => setIsOpen(!isOpen)}
         disabled={disabled || isLoading}
-        className={`w-full p-3 flex justify-between items-center bg-white border border-slate-200 rounded-xl text-sm font-semibold outline-none transition-all shadow-sm ${
+        className={`w-full p-3 flex justify-between items-center bg-white border border-slate-200 rounded-md text-sm font-semibold outline-none transition-all shadow-sm ${
           disabled || isLoading
             ? "opacity-60 bg-slate-50 cursor-not-allowed text-slate-500"
             : "text-slate-700 hover:border-slate-300 focus:ring-4 focus:ring-distributor-500/10 focus:border-distributor-500"
@@ -79,7 +79,7 @@ const CustomSelect = ({
             className="fixed inset-0 z-40"
             onClick={() => setIsOpen(false)}
           />
-          <div className="absolute z-50 w-full mt-2 bg-white border border-slate-200 rounded-xl shadow-xl overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
+          <div className="absolute z-50 w-full mt-2 bg-white border border-slate-200 rounded-md shadow-xl overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
             <ul className="max-h-60 overflow-y-auto p-1.5 scrollbar-thin scrollbar-thumb-slate-200 scrollbar-track-transparent">
               {options.length === 0 ? (
                 <li className="p-3 text-sm text-slate-500 text-center font-medium">
@@ -93,7 +93,7 @@ const CustomSelect = ({
                       onChange(opt.value);
                       setIsOpen(false);
                     }}
-                    className={`p-3 text-sm cursor-pointer rounded-lg mx-0.5 my-0.5 transition-colors flex items-center gap-2 ${
+                    className={`p-3 text-sm cursor-pointer rounded-md mx-0.5 my-0.5 transition-colors flex items-center gap-2 ${
                       value === opt.value
                         ? "bg-distributor-50 text-distributor-700 font-bold"
                         : "text-slate-700 hover:bg-slate-50 font-medium"
@@ -364,7 +364,7 @@ export default function BrokerLedgerPage() {
         </div>
         <button
           onClick={() => setShowAddBank(true)}
-          className="group w-full sm:w-auto flex justify-center items-center gap-2 bg-white text-distributor-700 border border-distributor-200 px-5 py-2.5 rounded-lg text-sm font-bold shadow-sm hover:bg-distributor-50 hover:-translate-y-0.5 hover:shadow transition-all duration-200"
+          className="group w-full sm:w-auto flex justify-center items-center gap-2 bg-white text-distributor-700 border border-distributor-200 px-5 py-2.5 rounded-md text-sm font-bold shadow-sm hover:bg-distributor-50 hover:-translate-y-0.5 hover:shadow transition-all duration-200"
         >
           <Plus className="w-4 h-4 shrink-0 group-hover:rotate-90 transition-transform duration-300" />
           Add Bank Details
@@ -454,7 +454,7 @@ export default function BrokerLedgerPage() {
                   value={amount}
                   onChange={(e) => setAmount(e.target.value)}
                   placeholder="0.00"
-                  className="w-full p-3 bg-white border border-slate-200 rounded-xl text-sm font-bold text-slate-900 focus:ring-4 focus:ring-distributor-500/10 focus:border-distributor-500 outline-none transition-all shadow-sm"
+                  className="w-full p-3 bg-white border border-slate-200 rounded-md text-sm font-bold text-slate-900 focus:ring-4 focus:ring-distributor-500/10 focus:border-distributor-500 outline-none transition-all shadow-sm"
                 />
               </div>
             </div>
@@ -491,7 +491,7 @@ export default function BrokerLedgerPage() {
                   value={referenceId}
                   onChange={(e) => setReferenceId(e.target.value)}
                   placeholder={`Enter ${getDynamicRefLabel().toLowerCase()}...`}
-                  className="w-full p-3 bg-white border border-slate-200 rounded-xl text-sm font-semibold text-slate-700 focus:ring-4 focus:ring-distributor-500/10 focus:border-distributor-500 outline-none transition-all shadow-sm"
+                  className="w-full p-3 bg-white border border-slate-200 rounded-md text-sm font-semibold text-slate-700 focus:ring-4 focus:ring-distributor-500/10 focus:border-distributor-500 outline-none transition-all shadow-sm"
                 />
               </div>
             </div>
@@ -508,7 +508,7 @@ export default function BrokerLedgerPage() {
               setReferenceId("");
               setDestAccounts([]);
             }}
-            className="w-full sm:w-auto px-6 py-2.5 text-sm font-bold text-slate-500 hover:bg-slate-50 rounded-lg transition-colors border border-slate-200 sm:border-none"
+            className="w-full sm:w-auto px-6 py-2.5 text-sm font-bold text-slate-500 hover:bg-slate-50 rounded-md transition-colors border border-slate-200 sm:border-none"
           >
             Clear Fields
           </button>
@@ -517,7 +517,7 @@ export default function BrokerLedgerPage() {
             disabled={
               !sourceAcc || !receiver || !destAcc || !amount || !referenceId
             }
-            className="w-full sm:w-auto px-8 py-2.5 bg-distributor-600 text-white rounded-lg text-sm font-bold shadow-sm hover:bg-distributor-700 disabled:opacity-50 transition-all"
+            className="w-full sm:w-auto px-8 py-2.5 bg-distributor-600 text-white rounded-md text-sm font-bold shadow-sm hover:bg-distributor-700 disabled:opacity-50 transition-all"
           >
             Review & Confirm
           </button>
@@ -551,7 +551,7 @@ export default function BrokerLedgerPage() {
             </div>
 
             <div className="p-5 sm:p-6 md:p-8 overflow-y-auto scrollbar-thin scrollbar-thumb-slate-200 bg-slate-50/50 flex-1 space-y-6">
-              <div className="space-y-2 group bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+              <div className="space-y-2 group bg-white p-5 rounded-md border border-slate-200 shadow-sm">
                 <div className="flex items-center gap-2 mb-3">
                   <User className="w-4 h-4 text-distributor-600" />
                   <label className="text-[11px] font-black uppercase text-slate-700">
@@ -597,7 +597,7 @@ export default function BrokerLedgerPage() {
                   }
                   placeholder="Bank Name"
                   disabled={isSubmittingBank}
-                  className="w-full p-3 bg-white border border-slate-200 rounded-xl text-sm font-semibold focus:border-distributor-500 outline-none transition-all shadow-sm"
+                  className="w-full p-3 bg-white border border-slate-200 rounded-md text-sm font-semibold focus:border-distributor-500 outline-none transition-all shadow-sm"
                 />
                 <input
                   type="text"
@@ -607,7 +607,7 @@ export default function BrokerLedgerPage() {
                   }
                   placeholder="Account Number"
                   disabled={isSubmittingBank}
-                  className="w-full p-3 bg-white border border-slate-200 rounded-xl text-sm font-semibold focus:border-distributor-500 outline-none transition-all shadow-sm"
+                  className="w-full p-3 bg-white border border-slate-200 rounded-md text-sm font-semibold focus:border-distributor-500 outline-none transition-all shadow-sm"
                 />
                 <input
                   type="text"
@@ -620,7 +620,7 @@ export default function BrokerLedgerPage() {
                   }
                   placeholder="Account Holder Name"
                   disabled={isSubmittingBank}
-                  className="w-full p-3 bg-white border border-slate-200 rounded-xl text-sm font-semibold focus:border-distributor-500 outline-none transition-all shadow-sm"
+                  className="w-full p-3 bg-white border border-slate-200 rounded-md text-sm font-semibold focus:border-distributor-500 outline-none transition-all shadow-sm"
                 />
                 <input
                   type="text"
@@ -633,7 +633,7 @@ export default function BrokerLedgerPage() {
                   }
                   placeholder="IFSC Code"
                   disabled={isSubmittingBank}
-                  className="w-full p-3 bg-white border border-slate-200 rounded-xl text-sm font-semibold uppercase focus:border-distributor-500 outline-none transition-all shadow-sm"
+                  className="w-full p-3 bg-white border border-slate-200 rounded-md text-sm font-semibold uppercase focus:border-distributor-500 outline-none transition-all shadow-sm"
                 />
                 <input
                   type="text"
@@ -646,7 +646,7 @@ export default function BrokerLedgerPage() {
                   }
                   placeholder="UPI ID (Optional)"
                   disabled={isSubmittingBank}
-                  className="w-full p-3 bg-white border border-slate-200 rounded-xl text-sm font-semibold sm:col-span-2 focus:border-distributor-500 outline-none transition-all shadow-sm"
+                  className="w-full p-3 bg-white border border-slate-200 rounded-md text-sm font-semibold sm:col-span-2 focus:border-distributor-500 outline-none transition-all shadow-sm"
                 />
               </div>
 
@@ -655,7 +655,7 @@ export default function BrokerLedgerPage() {
                   if (!isSubmittingBank)
                     setNewBank({ ...newBank, isPrimary: !newBank.isPrimary });
                 }}
-                className={`flex items-center justify-between p-4 rounded-xl border cursor-pointer transition-all ${newBank.isPrimary ? "bg-distributor-50 border-distributor-200" : "bg-white border-slate-200 hover:bg-slate-50"}`}
+                className={`flex items-center justify-between p-4 rounded-md border cursor-pointer transition-all ${newBank.isPrimary ? "bg-distributor-50 border-distributor-200" : "bg-white border-slate-200 hover:bg-slate-50"}`}
               >
                 <div className="flex items-center gap-3">
                   <div
@@ -688,7 +688,7 @@ export default function BrokerLedgerPage() {
               <button
                 onClick={handleCloseAddBank}
                 disabled={isSubmittingBank}
-                className="w-full sm:w-auto px-6 py-2.5 rounded-lg text-sm font-bold text-slate-600 bg-white border border-slate-200 hover:bg-slate-50"
+                className="w-full sm:w-auto px-6 py-2.5 rounded-md text-sm font-bold text-slate-600 bg-white border border-slate-200 hover:bg-slate-50"
               >
                 Cancel
               </button>
@@ -702,7 +702,7 @@ export default function BrokerLedgerPage() {
                   !newBank.ifscCode ||
                   isSubmittingBank
                 }
-                className="w-full sm:w-auto flex items-center justify-center gap-2 px-8 py-2.5 bg-distributor-600 text-white rounded-lg text-sm font-bold shadow-sm hover:bg-distributor-700 disabled:opacity-50 transition-all"
+                className="w-full sm:w-auto flex items-center justify-center gap-2 px-8 py-2.5 bg-distributor-600 text-white rounded-md text-sm font-bold shadow-sm hover:bg-distributor-700 disabled:opacity-50 transition-all"
               >
                 {isSubmittingBank ? (
                   <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin shrink-0" />
@@ -763,7 +763,7 @@ export default function BrokerLedgerPage() {
               </div>
 
               <div className="flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-8 max-w-3xl mx-auto">
-                <div className="flex-1 bg-white border border-slate-200 rounded-xl p-5 w-full text-center shadow-sm">
+                <div className="flex-1 bg-white border border-slate-200 rounded-md p-5 w-full text-center shadow-sm">
                   <div className="w-10 h-10 bg-slate-50 text-slate-500 border border-slate-100 rounded-full flex items-center justify-center mx-auto mb-3">
                     <Building2 className="w-4 h-4" />
                   </div>
@@ -782,7 +782,7 @@ export default function BrokerLedgerPage() {
                   <ArrowRight className="w-8 h-8" />
                 </div>
 
-                <div className="flex-1 bg-distributor-50/50 border border-distributor-200 rounded-xl p-5 w-full text-center shadow-sm">
+                <div className="flex-1 bg-distributor-50/50 border border-distributor-200 rounded-md p-5 w-full text-center shadow-sm">
                   <div className="w-10 h-10 bg-white text-distributor-600 border border-distributor-100 rounded-full flex items-center justify-center mx-auto mb-3">
                     <CreditCard className="w-4 h-4" />
                   </div>
@@ -803,14 +803,14 @@ export default function BrokerLedgerPage() {
               <button
                 onClick={handleCloseConfirm}
                 disabled={isSubmittingTransfer}
-                className="w-full sm:w-auto px-6 py-2.5 rounded-lg text-sm font-bold text-slate-600 bg-white border border-slate-200 hover:bg-slate-50 disabled:opacity-50"
+                className="w-full sm:w-auto px-6 py-2.5 rounded-md text-sm font-bold text-slate-600 bg-white border border-slate-200 hover:bg-slate-50 disabled:opacity-50"
               >
                 Go Back
               </button>
               <button
                 onClick={handleSubmitLedger}
                 disabled={isSubmittingTransfer}
-                className="w-full sm:w-auto flex items-center justify-center gap-2 px-8 py-2.5 bg-distributor-600 text-white rounded-lg text-sm font-bold shadow-sm hover:bg-distributor-700 disabled:opacity-50 transition-all"
+                className="w-full sm:w-auto flex items-center justify-center gap-2 px-8 py-2.5 bg-distributor-600 text-white rounded-md text-sm font-bold shadow-sm hover:bg-distributor-700 disabled:opacity-50 transition-all"
               >
                 {isSubmittingTransfer ? (
                   <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin shrink-0" />

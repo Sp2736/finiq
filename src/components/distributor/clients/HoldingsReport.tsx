@@ -67,7 +67,7 @@ export default function HoldingsReport({ data, onExportPdf, isExporting, onClose
       {/* ─── INTEGRATED HEADER (Ultra Compact) ─── */}
       <div className="px-4 py-3 border-b border-slate-200 shrink-0 flex justify-between items-center bg-white">
         <div className="flex items-center gap-3">
-          <div className="p-2 bg-investor-50 rounded-lg hidden sm:block">
+          <div className="p-2 bg-investor-50 rounded-md hidden sm:block">
             <PieChart className="w-5 h-5 text-investor-600" />
           </div>
           <div>
@@ -87,7 +87,7 @@ export default function HoldingsReport({ data, onExportPdf, isExporting, onClose
             <button
               onClick={onExportPdf}
               disabled={isExporting}
-              className="flex items-center gap-1.5 px-3 py-1.5 bg-distributor-600 text-white rounded-lg text-xs font-bold shadow-sm hover:bg-distributor-700 transition-all active:scale-95 disabled:opacity-70 disabled:active:scale-100"
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-distributor-600 text-white rounded-md text-xs font-bold shadow-sm hover:bg-distributor-700 transition-all active:scale-95 disabled:opacity-70 disabled:active:scale-100"
             >
               {isExporting ? <div className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <Download className="w-3.5 h-3.5" />}
               <span className="hidden sm:inline">{isExporting ? "Generating..." : "Download PDF"}</span>
@@ -97,7 +97,7 @@ export default function HoldingsReport({ data, onExportPdf, isExporting, onClose
           {onClose && (
             <button 
               onClick={onClose} 
-              className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors border border-transparent hover:border-rose-100"
+              className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-md transition-colors border border-transparent hover:border-rose-100"
             >
               <X className="w-5 h-5" />
             </button>

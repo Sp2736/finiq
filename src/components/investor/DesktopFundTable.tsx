@@ -18,7 +18,7 @@ export default function DesktopFundTable({ funds, onOpenAnalytics }: { funds: Un
   };
 
   return (
-    <div className="bg-white rounded-xl border border-slate-200 shadow-[0_8px_30px_rgb(0,0,0,0.04)] relative h-full flex flex-col overflow-hidden">
+    <div className="bg-white rounded-md border border-slate-200 shadow-[0_8px_30px_rgb(0,0,0,0.04)] relative h-full flex flex-col overflow-hidden">
       <div className="flex-1 overflow-auto table-scrollbar">
         <table className="w-full text-left border-collapse min-w-[1400px]">
           <thead className="sticky top-0 z-30 shadow-sm ring-1 ring-slate-200/50">
@@ -102,7 +102,7 @@ export default function DesktopFundTable({ funds, onOpenAnalytics }: { funds: Un
                             e.stopPropagation(); 
                             onOpenAnalytics?.(fund); 
                           }} 
-                          className="inline-flex items-center justify-center gap-1.5 text-[10px] font-bold text-investor-700 hover:text-white hover:bg-investor-600 bg-investor-50 border border-investor-200/60 px-2.5 py-1.5 rounded-lg transition-all uppercase tracking-widest shadow-sm active:scale-95"
+                          className="inline-flex items-center justify-center gap-1.5 text-[10px] font-bold text-investor-700 hover:text-white hover:bg-investor-600 bg-investor-50 border border-investor-200/60 px-2.5 py-1.5 rounded-md transition-all uppercase tracking-widest shadow-sm active:scale-95"
                         >
                           <BarChart2 className="w-3.5 h-3.5" /> Analytics
                         </button>

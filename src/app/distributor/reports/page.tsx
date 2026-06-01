@@ -29,7 +29,7 @@ export default function DistributorReportsPage() {
               <label className="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">Report Type</label>
               <div className="relative">
                 <Filter className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-                <select className="w-full pl-9 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium focus:outline-none focus:ring-2 focus:ring-distributor-600/20 focus:border-distributor-600 appearance-none">
+                <select className="w-full pl-9 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-md text-sm font-medium focus:outline-none focus:ring-2 focus:ring-distributor-600/20 focus:border-distributor-600 appearance-none">
                   <option>All Clients</option>
                   <option>Top 10 Contributors</option>
                   <option>Inactive Clients</option>
@@ -40,7 +40,7 @@ export default function DistributorReportsPage() {
               <label className="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">Date Range</label>
               <div className="relative">
                 <Calendar className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-                <select className="w-full pl-9 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium focus:outline-none focus:ring-2 focus:ring-distributor-600/20 focus:border-distributor-600 appearance-none">
+                <select className="w-full pl-9 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-md text-sm font-medium focus:outline-none focus:ring-2 focus:ring-distributor-600/20 focus:border-distributor-600 appearance-none">
                   <option>Financial Year 2025-26</option>
                   <option>Last 30 Days</option>
                   <option>Custom Range</option>
@@ -48,7 +48,7 @@ export default function DistributorReportsPage() {
               </div>
             </div>
             <div className="w-full md:w-1/3">
-              <button className="w-full flex items-center justify-center gap-2 px-5 py-3 bg-slate-900 text-white rounded-xl font-medium text-sm hover:bg-slate-800 transition-all shadow-lg shadow-slate-900/20">
+              <button className="w-full flex items-center justify-center gap-2 px-5 py-3 bg-slate-900 text-white rounded-md font-medium text-sm hover:bg-slate-800 transition-all shadow-lg shadow-slate-900/20">
                 <Download className="w-4 h-4" />
                 <span>Export Master Data</span>
               </button>
@@ -64,7 +64,7 @@ export default function DistributorReportsPage() {
               </div>
               <h3 className="text-xl font-black text-slate-900 tracking-tight mb-2 shrink-0">{report.title}</h3>
               <p className="text-sm text-slate-500 font-medium mb-8 flex-1">{report.description}</p>
-              <button className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-slate-50 border border-slate-200 text-slate-700 rounded-xl font-medium text-sm hover:bg-distributor-50 hover:text-distributor-700 hover:border-distributor-200 transition-all shrink-0">
+              <button className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-slate-50 border border-slate-200 text-slate-700 rounded-md font-medium text-sm hover:bg-distributor-50 hover:text-distributor-700 hover:border-distributor-200 transition-all shrink-0">
                 <Download className="w-4 h-4" />
                 <span>Generate PDF</span>
               </button>

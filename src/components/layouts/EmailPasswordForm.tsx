@@ -28,7 +28,7 @@ export default function EmailPasswordForm({ onSubmit, isLoading }: EmailPassword
   return (
     <form onSubmit={handleSubmit} className="space-y-5 relative z-10 w-full">
       {error && (
-        <div className="p-3 text-sm font-medium text-rose-600 bg-rose-50 border border-rose-100 rounded-lg">
+        <div className="p-3 text-sm font-medium text-rose-600 bg-rose-50 border border-rose-100 rounded-md">
           {error}
         </div>
       )}
@@ -42,7 +42,7 @@ export default function EmailPasswordForm({ onSubmit, isLoading }: EmailPassword
           required
           value={identifier}
           onChange={(e) => setIdentifier(e.target.value)}
-          className="w-full px-4 py-3.5 rounded-xl bg-slate-50/80 border border-slate-200 focus:bg-white focus:border-investor-500 focus:ring-4 focus:ring-investor-500/15 transition-all outline-none text-slate-800 font-medium placeholder:text-slate-400"
+          className="w-full px-4 py-3.5 rounded-md bg-slate-50/80 border border-slate-200 focus:bg-white focus:border-investor-500 focus:ring-4 focus:ring-investor-500/15 transition-all outline-none text-slate-800 font-medium placeholder:text-slate-400"
           placeholder="Enter your identifier"
         />
       </div>
@@ -56,7 +56,7 @@ export default function EmailPasswordForm({ onSubmit, isLoading }: EmailPassword
           required
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          className="w-full px-4 py-3.5 rounded-xl bg-slate-50/80 border border-slate-200 focus:bg-white focus:border-investor-500 focus:ring-4 focus:ring-investor-500/15 transition-all outline-none text-slate-800 font-medium placeholder:text-slate-400"
+          className="w-full px-4 py-3.5 rounded-md bg-slate-50/80 border border-slate-200 focus:bg-white focus:border-investor-500 focus:ring-4 focus:ring-investor-500/15 transition-all outline-none text-slate-800 font-medium placeholder:text-slate-400"
           placeholder="••••••••"
         />
       </div>
@@ -70,7 +70,7 @@ export default function EmailPasswordForm({ onSubmit, isLoading }: EmailPassword
       <button
         type="submit"
         disabled={isLoading}
-        className="w-full py-3.5 px-4 bg-investor-600 hover:bg-investor-700 text-white font-bold rounded-xl shadow-lg shadow-investor-600/25 transition-all duration-300 disabled:opacity-70 disabled:cursor-not-allowed mt-2 flex justify-center items-center gap-2 active:scale-[0.98]"
+        className="w-full py-3.5 px-4 bg-investor-600 hover:bg-investor-700 text-white font-bold rounded-md shadow-lg shadow-investor-600/25 transition-all duration-300 disabled:opacity-70 disabled:cursor-not-allowed mt-2 flex justify-center items-center gap-2 active:scale-[0.98]"
       >
         {isLoading ? (
           <>

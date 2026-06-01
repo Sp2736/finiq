@@ -29,7 +29,7 @@ const CalculatorsModules = () => {
     <div className="relative" ref={menuRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 rounded-xl text-slate-700 font-bold text-sm shadow-sm hover:border-distributor-300 transition-all active:scale-95"
+        className="flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 rounded-md text-slate-700 font-bold text-sm shadow-sm hover:border-distributor-300 transition-all active:scale-95"
       >
         <Calculator className="w-4 h-4 text-distributor-600" />
         <span>Calculators</span>
@@ -37,7 +37,7 @@ const CalculatorsModules = () => {
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 top-full mt-2 w-56 bg-white border border-slate-200 rounded-xl shadow-[0_12px_40px_-10px_rgba(0,0,0,0.15)] overflow-hidden z-50 animate-in fade-in slide-in-from-top-2 duration-200">
+        <div className="absolute right-0 top-full mt-2 w-56 bg-white border border-slate-200 rounded-md shadow-[0_12px_40px_-10px_rgba(0,0,0,0.15)] overflow-hidden z-50 animate-in fade-in slide-in-from-top-2 duration-200">
           <ul className="py-1">
             {CALCULATOR_OPTIONS.map((opt) => (
               <li key={opt.path}>
