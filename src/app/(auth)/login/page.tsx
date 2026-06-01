@@ -41,7 +41,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 font-sans selection:bg-investor-500/20 selection:text-investor-700 relative flex items-center justify-center overflow-x-hidden">
+    <div className="min-h-screen bg-slate-50 font-sans selection:bg-distributor-500/20 selection:text-investor-700 relative flex items-center justify-center overflow-x-hidden">
 
       <div className="absolute inset-0 z-0 bg-gradient-to-br from-slate-100 via-white to-slate-200" />
       <div className="absolute inset-0 z-0 opacity-[0.35] bg-[radial-gradient(#94a3b8_1px,transparent_1px)] [background-size:24px_24px] sm:[background-size:32px_32px] pointer-events-none" />
@@ -56,8 +56,8 @@ export default function LoginPage() {
         <InvestorFluidBackground />
       </div>
 
-      <div className="absolute -top-40 -left-40 w-[400px] sm:w-[600px] h-[400px] sm:h-[600px] bg-investor-500/20 rounded-full blur-[80px] sm:blur-[100px] pointer-events-none z-0" />
-      <div className="absolute bottom-0 right-0 w-[500px] sm:w-[800px] h-[500px] sm:h-[800px] bg-investor-600/15 rounded-full blur-[100px] sm:blur-[120px] pointer-events-none z-0" />
+      <div className="absolute -top-40 -left-40 w-[400px] sm:w-[600px] h-[400px] sm:h-[600px] bg-distributor-500/20 rounded-full blur-[80px] sm:blur-[100px] pointer-events-none z-0" />
+      <div className="absolute bottom-0 right-0 w-[500px] sm:w-[800px] h-[500px] sm:h-[800px] bg-distributor-600/15 rounded-full blur-[100px] sm:blur-[120px] pointer-events-none z-0" />
 
       <div className="relative z-10 w-full max-w-[1600px] mx-auto px-6 sm:px-12 lg:px-20 py-10 lg:py-16 flex flex-col lg:flex-row items-center justify-between gap-10 md:gap-12 lg:gap-20">
 
@@ -158,8 +158,8 @@ export default function LoginPage() {
           >
             {/* Subtle Inner Glow Effects */}
             <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-investor-500/50 to-transparent opacity-80" />
-            <div className="absolute -top-20 -right-20 w-40 h-40 bg-investor-400/20 blur-3xl rounded-full pointer-events-none" />
-            <div className="absolute -bottom-20 -left-20 w-40 h-40 bg-investor-600/10 blur-3xl rounded-full pointer-events-none" />
+            <div className="absolute -top-20 -right-20 w-40 h-40 bg-distributor-400/20 blur-3xl rounded-full pointer-events-none" />
+            <div className="absolute -bottom-20 -left-20 w-40 h-40 bg-distributor-600/10 blur-3xl rounded-full pointer-events-none" />
 
             <div style={{ animation: "fadeIn 0.4s ease-out forwards" }} className="relative z-10">
               <div className="mb-8 sm:mb-10 text-center lg:text-left">

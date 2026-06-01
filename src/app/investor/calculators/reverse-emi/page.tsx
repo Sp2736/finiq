@@ -1,5 +1,6 @@
 "use client";
 
+import CalculatorNavDropdown from "@/components/investor/CalculatorNavDropdown";
 import GoBackButton from "@/components/investor/GoBackButton";
 import React, { useState, useMemo, useEffect } from "react";
 import {
@@ -342,7 +343,8 @@ export default function ReverseEMICalculator() {
             Calculate loan repayment and formulate a SIP offset strategy.
           </p>
         </div>
-        <div className="flex justify-end">
+        <div className="flex items-center gap-3 justify-end">
+          <CalculatorNavDropdown />
           <GoBackButton fallbackRoute="/investor" />
         </div>
       </div>

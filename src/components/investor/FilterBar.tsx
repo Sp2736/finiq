@@ -9,6 +9,7 @@ interface FilterBarProps {
   setActiveFilterValue: (val: string) => void;
   filterOptions: string[];
   avgHoldingDays: number;
+  role?: 'investor' | 'distributor';
 }
 
 export default function FilterBar({ 
@@ -17,8 +18,18 @@ export default function FilterBar({
   activeFilterValue, 
   setActiveFilterValue, 
   filterOptions, 
-  avgHoldingDays 
+  avgHoldingDays,
+  role = 'investor'
 }: FilterBarProps) {
+  
+  const activeClass = role === 'investor' 
+    ? 'bg-distributor-700 text-white shadow-md' 
+    : 'bg-distributor-800 text-white shadow-md';
+    
+  const inactiveClass = role === 'investor'
+    ? 'text-slate-600 hover:bg-slate-100/80 hover:text-investor-900'
+    : 'text-slate-600 hover:bg-slate-100/80 hover:text-distributor-900';
+
   return (
     <div className="flex justify-between items-center gap-4 bg-white/60 backdrop-blur-md p-2 rounded-md border border-slate-200/60 shadow-sm">
       <div className="flex items-center gap-1.5 p-1">
@@ -28,8 +39,8 @@ export default function FilterBar({
             onClick={() => { setActiveFilterType(filter); setActiveFilterValue("All"); }}
             className={`px-4 py-2 rounded-md text-xs font-bold transition-all duration-200 ${
               activeFilterType === filter 
-                ? 'bg-distributor-800 text-white shadow-md' 
-                : 'text-slate-600 hover:bg-slate-100/80 hover:text-distributor-900'
+                ? activeClass 
+                : inactiveClass
             }`}
           >
             {filter}

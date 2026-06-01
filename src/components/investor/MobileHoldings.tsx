@@ -3,7 +3,6 @@
 import React from 'react';
 import { ClientPortfolio, UnifiedFund } from '@/types/investor';
 import { formatCurrencyNoDecimals, getStatusColor } from '@/lib/utils';
-import LogoutButton from './LogoutButton';
 
 interface MobileHoldingsProps {
   client: ClientPortfolio;
@@ -41,16 +40,15 @@ export default function MobileHoldings({
         <div className="flex justify-between items-start mb-6">
           <div>
             <h1 className="text-2xl md:text-3xl font-black tracking-tight text-slate-900 mb-1">
-              Portfolio <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-indigo-600 to-primary/80">Overview</span>
+              Portfolio <span className="text-investor-600">Overview</span>
             </h1>
             <div className="flex items-center gap-2">
-              <span className="flex items-center justify-center w-5 h-5 rounded-full bg-indigo-100 text-indigo-700 font-bold text-[9px]">
+              <span className="flex items-center justify-center w-5 h-5 rounded-full bg-distributor-100 text-investor-700 font-bold text-[9px]">
                 {getInitials(client.clientName)}
               </span>
-              <h2 className="text-xs md:text-sm font-bold text-indigo-700 tracking-wide uppercase truncate max-w-[200px]">{client.clientName}</h2>
+              <h2 className="text-xs md:text-sm font-bold text-investor-700 tracking-wide uppercase truncate max-w-[200px]">{client.clientName}</h2>
             </div>
           </div>
-          <LogoutButton />
         </div>
 
         {/* Center-aligned KPIs */}
@@ -80,7 +78,7 @@ export default function MobileHoldings({
           </div>
           <div className="flex flex-col items-center">
             <p className="text-[10px] md:text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">XIRR</p>
-            <p className="text-sm md:text-base font-bold text-indigo-600">{client.xirr ?? 0}%</p>
+            <p className="text-sm md:text-base font-bold text-investor-600">{client.xirr ?? 0}%</p>
           </div>
         </div>
       </div>
@@ -99,7 +97,7 @@ export default function MobileHoldings({
               onClick={() => { setActiveFilterType(filter); setActiveFilterValue("All"); }}
               className={`flex-shrink-0 px-4 md:px-5 py-2 rounded-full text-xs md:text-sm font-bold transition-all duration-200 border ${
                 activeFilterType === filter 
-                  ? 'bg-slate-900 text-white border-slate-900 shadow-md' 
+                  ? 'bg-distributor-700 text-white border-investor-600 shadow-md' 
                   : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'
               }`}
             >
@@ -113,7 +111,7 @@ export default function MobileHoldings({
             <select 
               value={activeFilterValue} 
               onChange={(e) => setActiveFilterValue(e.target.value)}
-              className="w-full md:w-auto md:min-w-[300px] bg-white border border-slate-200 text-slate-800 text-sm rounded-md focus:ring-indigo-500 focus:border-indigo-500 block p-3 font-bold shadow-sm appearance-none"
+              className="w-full md:w-auto md:min-w-[300px] bg-white border border-slate-200 text-slate-800 text-sm rounded-md focus:ring-investor-500 focus:border-investor-500 block p-3 font-bold shadow-sm appearance-none"
               style={{ backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e")`, backgroundPosition: `right 0.5rem center`, backgroundRepeat: `no-repeat`, backgroundSize: `1.5em 1.5em`, paddingRight: `2.5rem` }}
             >
               <option value="All">All {activeFilterType.replace('By ', '')}s</option>
@@ -155,7 +153,7 @@ export default function MobileHoldings({
                 </div>
                 <div className="text-right">
                   <p className="text-[10px] md:text-[11px] text-slate-400 font-bold uppercase mb-0.5">XIRR</p>
-                  <p className="text-xs md:text-sm font-bold text-indigo-600">{fund.xirr ?? 0}%</p>
+                  <p className="text-xs md:text-sm font-bold text-investor-600">{fund.xirr ?? 0}%</p>
                 </div>
               </div>
 

@@ -8,20 +8,14 @@ interface GlobalStatsRibbonProps {
   useCompactValues?: boolean;
 }
 
-export default function GlobalStatsRibbon({ client, useCompactValues = false }: GlobalStatsRibbonProps) {
-  // Helper to dynamically format based on the user role / prop
+export default function GlobalStatsRibbon({ client, useCompactValues = true }: GlobalStatsRibbonProps) {
+  // Helper to format values compactly (K, L, Cr) universally across the ribbon
   const getFormattedValue = (val: number) => {
     if (val === undefined || val === null) return "₹0";
 
-    // If true (Distributor View) -> Use Cr/L/K
-    if (useCompactValues) {
-      return val < 0
-        ? `-${formatCompactNumber(Math.abs(val))}`
-        : formatCompactNumber(val);
-    }
-
-    // If false (Investor Dashboard) -> Use Exact Values
-    return formatCurrency(val);
+    return val < 0
+      ? `-${formatCompactNumber(Math.abs(val))}`
+      : formatCompactNumber(val);
   };
 
   return (

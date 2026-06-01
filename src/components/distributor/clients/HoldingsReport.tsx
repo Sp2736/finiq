@@ -67,7 +67,7 @@ export default function HoldingsReport({ data, onExportPdf, isExporting, onClose
       {/* ─── INTEGRATED HEADER (Ultra Compact) ─── */}
       <div className="px-4 py-3 border-b border-slate-200 shrink-0 flex justify-between items-center bg-white">
         <div className="flex items-center gap-3">
-          <div className="p-2 bg-investor-50 rounded-md hidden sm:block">
+          <div className="p-2 bg-distributor-50 rounded-md hidden sm:block">
             <PieChart className="w-5 h-5 text-investor-600" />
           </div>
           <div>
@@ -153,7 +153,7 @@ export default function HoldingsReport({ data, onExportPdf, isExporting, onClose
             {data.funds.map((fund, idx) => {
               const fundUnrealised = fund.unrealised_gains_st + fund.unrealised_gains_lt;
               return (
-                <tr key={idx} className="hover:bg-investor-50/30 transition-colors">
+                <tr key={idx} className="hover:bg-distributor-50/30 transition-colors">
                   <td className="px-3 py-2">
                     <span className="font-bold text-slate-900 block mb-0.5 leading-tight">{fund.fund_name}</span>
                     <div className="flex items-center gap-1.5">

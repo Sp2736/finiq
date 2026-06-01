@@ -70,7 +70,7 @@ export default function EmailPasswordForm({ onSubmit, isLoading }: EmailPassword
       <button
         type="submit"
         disabled={isLoading}
-        className="w-full py-3.5 px-4 bg-investor-600 hover:bg-investor-700 text-white font-bold rounded-md shadow-lg shadow-investor-600/25 transition-all duration-300 disabled:opacity-70 disabled:cursor-not-allowed mt-2 flex justify-center items-center gap-2 active:scale-[0.98]"
+        className="w-full py-3.5 px-4 bg-distributor-600 hover:bg-distributor-700 text-white font-bold rounded-md shadow-lg shadow-investor-600/25 transition-all duration-300 disabled:opacity-70 disabled:cursor-not-allowed mt-2 flex justify-center items-center gap-2 active:scale-[0.98]"
       >
         {isLoading ? (
           <>

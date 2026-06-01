@@ -18,16 +18,36 @@ export default function InvestorsPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [maxLimit, setMaxLimit] = useState<number | undefined>(undefined);
 
-  const [activeClientId, setActiveClientId] = useState<string | null>(null);
+  const [activeClientId, setActiveClientIdState] = useState<string | null>(null);
+  
+  // NEW: State to prevent the flash of the listings page
+  const [isCheckingStorage, setIsCheckingStorage] = useState(true);
 
-  // ─── TO CATCH THE REDIRECT ───
+  // ─── TO CATCH REDIRECTS AND PERSIST ACROSS RELOADS ───
   useEffect(() => {
-    const storedClientId = sessionStorage.getItem('viewClientId');
-    if (storedClientId) {
-      setActiveClientId(storedClientId);
+    const redirectId = sessionStorage.getItem('viewClientId');
+    const currentId = sessionStorage.getItem('activeClientId');
+
+    if (redirectId) {
+      setActiveClientIdState(redirectId);
+      sessionStorage.setItem('activeClientId', redirectId);
       sessionStorage.removeItem('viewClientId'); 
+    } else if (currentId) {
+      setActiveClientIdState(currentId);
     }
+    
+    // Check complete, safe to render the correct UI
+    setIsCheckingStorage(false);
   }, []);
+
+  const setActiveClientId = (id: string | null) => {
+    setActiveClientIdState(id);
+    if (id) {
+      sessionStorage.setItem('activeClientId', id);
+    } else {
+      sessionStorage.removeItem('activeClientId');
+    }
+  };
 
   // ─── 1. DEBOUNCING LOGIC ───
   useEffect(() => {
@@ -61,8 +81,10 @@ export default function InvestorsPage() {
   };
 
   useEffect(() => {
-    fetchClients(1, searchTerm);
-  }, [searchTerm]);
+    if (!isCheckingStorage && !activeClientId) {
+      fetchClients(1, searchTerm);
+    }
+  }, [searchTerm, isCheckingStorage, activeClientId]);
 
   const handleSearchTrigger = () => {
     setSearchTerm(searchInput.trim());
@@ -73,17 +95,14 @@ export default function InvestorsPage() {
     setIsExporting(true);
     try {
       const limitToFetch = maxLimit ? maxLimit : 5000;
-      // Pass the searchTerm so the export matches what the user sees!
       const res = await distributorService.downloadInvestorList(1, limitToFetch, limitToFetch, searchTerm);
       
       if (res.success && res.data && res.data.data) {
         const allClientsToExport = res.data.data;
         
-        // Initialize Workbook and Worksheet
         const wb = new ExcelJS.Workbook();
         const ws = wb.addWorksheet('Investors Report');
 
-        // Define columns
         ws.columns = [
           { header: 'Name', key: 'name', width: 30 },
           { header: 'PAN', key: 'pan', width: 15 },
@@ -93,17 +112,15 @@ export default function InvestorsPage() {
           { header: 'Total AUM (₹)', key: 'total_aum', width: 20 },
         ];
 
-        // Style the header row
         const headerRow = ws.getRow(1);
         headerRow.font = { bold: true, color: { argb: 'FFFFFFFF' }, size: 11 };
         headerRow.fill = {
           type: 'pattern',
           pattern: 'solid',
-          fgColor: { argb: 'FF0F2850' } // Navy blue theme
+          fgColor: { argb: 'FF0F2850' }
         };
         headerRow.alignment = { vertical: 'middle', horizontal: 'center' };
 
-        // Add rows
         allClientsToExport.forEach((c: any) => {
           const row = ws.addRow({
             name: c.name || '',
@@ -114,11 +131,9 @@ export default function InvestorsPage() {
             total_aum: c.total_aum || 0
           });
           
-          // Format AUM column as currency/number
           row.getCell('total_aum').numFmt = '#,##0.00';
         });
 
-        // Generate and trigger download
         const buffer = await wb.xlsx.writeBuffer();
         const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
         const url = URL.createObjectURL(blob);
@@ -130,7 +145,6 @@ export default function InvestorsPage() {
         link.click();
         document.body.removeChild(link);
         
-        // Clean up
         window.URL.revokeObjectURL(url);
       }
     } catch (error) {
@@ -140,6 +154,16 @@ export default function InvestorsPage() {
     }
   };
 
+  // ─── GATEKEEPER: Prevent flash while checking storage ───
+  if (isCheckingStorage) {
+    return (
+      <div className="flex-1 flex items-center justify-center h-full">
+        <Loader2 className="w-8 h-8 text-distributor-600 animate-spin" />
+      </div>
+    );
+  }
+
+  // Intercept the render and show holdings instead if active
   if (activeClientId) {
     return <ClientHoldingsView clientId={activeClientId} onBack={() => setActiveClientId(null)} />;
   }

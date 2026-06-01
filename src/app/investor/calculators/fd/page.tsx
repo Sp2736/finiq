@@ -13,6 +13,7 @@ import {
 } from "recharts";
 import { CalculatorSelect } from "../CalculatorSelect";
 import GoBackButton from "@/components/investor/GoBackButton";
+import CalculatorNavDropdown from "@/components/investor/CalculatorNavDropdown";
 
 // ─── UTILITY ───
 const formatCurrency = (val: number): string => {
@@ -300,7 +301,8 @@ export default function FDCalculator() {
             Calculate secure returns with accurate compounding rules.
           </p>
         </div>
-        <div className="flex justify-end">
+        <div className="flex items-center gap-3 justify-end">
+          <CalculatorNavDropdown />
           <GoBackButton fallbackRoute="/investor" />
         </div>
       </div>

@@ -7,26 +7,20 @@ interface GoBackButtonProps {
 }
 
 export default function GoBackButton({
-  fallbackRoute = "/",
+  fallbackRoute = "/investor",
 }: GoBackButtonProps) {
 
   const router = useRouter();
 
   const handleGoBack = () => {
-
-    // If browser history exists
-    if (window.history.length > 1) {
-      router.back();
-    } else {
-      // Fallback route
-      router.push(fallbackRoute);
-    }
+    // Always route directly back to the dashboard/fallback instead of using browser history
+    router.push(fallbackRoute);
   };
 
   return (
     <button
       onClick={handleGoBack}
-      className="flex items-center gap-2 px-4 py-2.5 rounded-md bg-white/60 hover:bg-blue-50 border border-slate-200 hover:border-blue-200 text-slate-600 hover:text-blue-700 transition-all duration-300 backdrop-blur-md shadow-sm group"
+      className="flex items-center gap-2 px-4 py-2.5 rounded-md bg-white/60 hover:bg-distributor-50 border border-slate-200 hover:border-investor-200 text-slate-600 hover:text-investor-700 transition-all duration-300 backdrop-blur-md shadow-sm group"
     >
       <svg
         className="w-4 h-4 transition-transform group-hover:-translate-x-0.5"
