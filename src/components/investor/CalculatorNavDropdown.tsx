@@ -26,7 +26,7 @@ export default function CalculatorNavDropdown() {
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full flex items-center justify-between bg-white/60 backdrop-blur-md px-4 py-2.5 rounded-md border border-slate-200 transition-all shadow-sm text-sm font-bold text-slate-700 hover:border-investor-300 hover:bg-distributor-50 hover:text-investor-700 focus:outline-none focus:ring-2 focus:ring-investor-500/20"
+        className="w-full flex items-center justify-between bg-white/60 backdrop-blur-md px-4 py-2.5 rounded-md border border-slate-200 transition-all shadow-sm text-sm font-bold text-slate-700 hover:border-investor-300 hover:bg-investor-50 hover:text-investor-700 focus:outline-none focus:ring-2 focus:ring-investor-500/20"
       >
         <span className="truncate">{selectedOption.name}</span>
         <ChevronDown
@@ -56,7 +56,7 @@ export default function CalculatorNavDropdown() {
                   }}
                   className={`p-3 text-sm cursor-pointer rounded-md mx-0.5 my-0.5 transition-colors duration-150 ${
                     pathname === calc.path
-                      ? "bg-distributor-50 text-investor-700 font-black border-l-2 border-investor-500"
+                      ? "bg-investor-50 text-investor-700 font-black border-l-2 border-investor-500"
                       : "text-slate-600 font-semibold hover:bg-slate-50 hover:text-slate-900 border-l-2 border-transparent"
                   }`}
                 >

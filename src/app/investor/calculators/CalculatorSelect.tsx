@@ -17,7 +17,7 @@ export const CalculatorSelect = ({ value, onChange, options }: CalculatorSelectP
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full flex items-center justify-between bg-distributor-50 px-4 py-3 rounded-md border border-distributor-100 transition-all shadow-sm text-sm font-black text-distributor-700 hover:border-distributor-300 focus:outline-none focus:ring-4 focus:ring-distributor-500/10"
+        className="w-full flex items-center justify-between bg-investor-50 px-4 py-3 rounded-md border border-distributor-100 transition-all shadow-sm text-sm font-black text-distributor-700 hover:border-distributor-300 focus:outline-none focus:ring-4 focus:ring-distributor-500/10"
       >
         <span className="truncate">{selectedOption.label}</span>
         <ChevronDown
@@ -44,7 +44,7 @@ export const CalculatorSelect = ({ value, onChange, options }: CalculatorSelectP
                   }}
                   className={`p-3 text-sm cursor-pointer rounded-md mx-0.5 my-0.5 transition-colors duration-150 ${
                     value === opt.value
-                      ? "bg-distributor-50 text-distributor-700 font-black border-l-2 border-distributor-500"
+                      ? "bg-investor-50 text-distributor-700 font-black border-l-2 border-distributor-500"
                       : "text-slate-600 font-semibold hover:bg-slate-50 hover:text-slate-900 border-l-2 border-transparent"
                   }`}
                 >

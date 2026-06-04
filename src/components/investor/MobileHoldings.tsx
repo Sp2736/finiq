@@ -43,7 +43,7 @@ export default function MobileHoldings({
               Portfolio <span className="text-investor-600">Overview</span>
             </h1>
             <div className="flex items-center gap-2">
-              <span className="flex items-center justify-center w-5 h-5 rounded-full bg-distributor-100 text-investor-700 font-bold text-[9px]">
+              <span className="flex items-center justify-center w-5 h-5 rounded-full bg-investor-100 text-investor-700 font-bold text-[9px]">
                 {getInitials(client.clientName)}
               </span>
               <h2 className="text-xs md:text-sm font-bold text-investor-700 tracking-wide uppercase truncate max-w-[200px]">{client.clientName}</h2>
@@ -97,7 +97,7 @@ export default function MobileHoldings({
               onClick={() => { setActiveFilterType(filter); setActiveFilterValue("All"); }}
               className={`flex-shrink-0 px-4 md:px-5 py-2 rounded-full text-xs md:text-sm font-bold transition-all duration-200 border ${
                 activeFilterType === filter 
-                  ? 'bg-distributor-700 text-white border-investor-600 shadow-md' 
+                  ? 'bg-investor-700 text-white border-investor-600 shadow-md' 
                   : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'
               }`}
             >

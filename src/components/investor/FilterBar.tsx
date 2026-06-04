@@ -23,8 +23,8 @@ export default function FilterBar({
 }: FilterBarProps) {
   
   const activeClass = role === 'investor' 
-    ? 'bg-distributor-700 text-white shadow-md' 
-    : 'bg-distributor-800 text-white shadow-md';
+    ? 'bg-investor-600 text-white shadow-md' 
+    : 'bg-investor-600 text-white shadow-md';
     
   const inactiveClass = role === 'investor'
     ? 'text-slate-600 hover:bg-slate-100/80 hover:text-investor-900'

@@ -115,7 +115,7 @@ const SyncedSlider: React.FC<SyncedSliderProps> = ({
         <label className="text-xs font-black uppercase text-slate-500">
           {label}
         </label>
-        <div className="flex items-center bg-distributor-50 px-3 py-1.5 rounded-md border border-distributor-100 focus-within:border-distributor-500 transition-colors">
+        <div className="flex items-center bg-investor-50 px-3 py-1.5 rounded-md border border-distributor-100 focus-within:border-distributor-500 transition-colors">
           {unit === "₹" && (
             <span className="text-sm font-black text-distributor-700 mr-1">
               ₹
@@ -412,7 +412,7 @@ export default function GoalCalculator() {
             label: mode === "SIP" ? "Required SIP / Mo" : "Required Lumpsum",
             val: results.required,
             color:
-              "text-distributor-700 bg-distributor-50 -m-5 p-5 h-[calc(100%+40px)] rounded-md flex flex-col justify-center border border-distributor-100",
+              "text-distributor-700 bg-investor-50 -m-5 p-5 h-[calc(100%+40px)] rounded-md flex flex-col justify-center border border-distributor-100",
           },
         ].map((card, i) => (
           <div

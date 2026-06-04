@@ -59,7 +59,7 @@ export default function DesktopFundTable({ funds, onOpenAnalytics }: { funds: Un
                 return (
                   <React.Fragment key={fund.folioNo}>
                     <tr 
-                      className={`group border-b border-slate-100 cursor-pointer transition-colors duration-200 ${isFundExpanded ? 'bg-distributor-50/30' : 'hover:bg-slate-50/80'}`}
+                      className={`group border-b border-slate-100 cursor-pointer transition-colors duration-200 ${isFundExpanded ? 'bg-investor-50/30' : 'hover:bg-slate-50/80'}`}
                       onClick={() => toggleFund(fund.folioNo)}
                     >
                       <td className={`px-3 py-4 text-center sticky left-0 z-10 border-r border-slate-100 transition-colors ${isFundExpanded ? 'bg-[#f8f9fc]' : 'bg-white group-hover:bg-[#f8fafc]'}`}>
@@ -102,7 +102,7 @@ export default function DesktopFundTable({ funds, onOpenAnalytics }: { funds: Un
                             e.stopPropagation(); 
                             onOpenAnalytics?.(fund); 
                           }} 
-                          className="inline-flex items-center justify-center gap-1.5 text-[10px] font-bold text-investor-700 hover:text-white hover:bg-distributor-600 bg-distributor-50 border border-investor-200/60 px-2.5 py-1.5 rounded-md transition-all uppercase tracking-widest shadow-sm active:scale-95"
+                          className="inline-flex items-center justify-center gap-1.5 text-[10px] font-bold text-investor-700 hover:text-white hover:bg-investor-600 bg-investor-50 border border-investor-200/60 px-2.5 py-1.5 rounded-md transition-all uppercase tracking-widest shadow-sm active:scale-95"
                         >
                           <BarChart2 className="w-3.5 h-3.5" /> Analytics
                         </button>
