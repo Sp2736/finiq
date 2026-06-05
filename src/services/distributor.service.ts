@@ -160,6 +160,7 @@ export interface SystematicReportItem {
   target_scheme: string | null;
   systematic_type: string;
   source: string;
+  termination_date: string | null;
 }
 
 const analyticsApiCache = new Map<string, Promise<any>>();

@@ -1,76 +1,111 @@
 // src/lib/apiClient.ts
 
-const getAuthToken = () => {
+const getCookieValue = (name: string) => {
   if (typeof document === "undefined") return null;
-
-  // Decide which token to use based on the current path
-  const path = window.location.pathname;
-  const tokenName = path.startsWith("/investor")
-    ? "investor-auth-token"
-    : "staff-auth-token";
-
-  const match = document.cookie.match(
-    new RegExp("(^| )" + tokenName + "=([^;]+)"),
-  );
+  const match = document.cookie.match(new RegExp("(^| )" + name + "=([^;]+)"));
   if (match) return decodeURIComponent(match[2]);
   return null;
 };
+
+const getPortalContext = () => {
+  if (typeof window === "undefined") return "staff";
+  return window.location.pathname.startsWith("/investor") ? "investor" : "staff";
+};
+
+// Global variables to prevent infinite refresh loops when multiple API calls fail simultaneously
+let isRefreshing = false;
+let refreshPromise: Promise<string | null> | null = null;
 
 async function fetchWithConfig<T>(
   endpoint: string,
   options: RequestInit = {},
 ): Promise<T> {
-  const token = getAuthToken();
-  const headers = new Headers(options.headers || {});
+  const portal = getPortalContext();
+  let token = getCookieValue(`${portal}-auth-token`);
+  
+  const getHeaders = (activeToken: string | null) => {
+    const headers = new Headers(options.headers || {});
+    if (!headers.has("Content-Type")) headers.set("Content-Type", "application/json");
+    if (activeToken) headers.set("Authorization", `Bearer ${activeToken}`);
+    return headers;
+  };
 
-  if (!headers.has("Content-Type")) {
-    headers.set("Content-Type", "application/json");
-  }
-
-  // Rectification: Explicitly set the Bearer token
-  if (token) {
-    headers.set("Authorization", `Bearer ${token}`);
-  }
-
-  // Force relative path to trigger next.config.ts rewrites
   const baseUrl = "/api";
-
-  // Ensure we don't end up with //investors
   const cleanEndpoint = endpoint.startsWith("/") ? endpoint : `/${endpoint}`;
 
   try {
-    const response = await fetch(`${baseUrl}${cleanEndpoint}`, {
+    let response = await fetch(`${baseUrl}${cleanEndpoint}`, {
       ...options,
-      headers,
+      headers: getHeaders(token),
       credentials: "same-origin",
     });
 
-    if (!response.ok) {
-      // INSTANT REDIRECT ON EXPIRED TOKEN (401)
-      if (response.status === 401) {
-        console.warn(
-          "Unauthorized: The token expired or is invalid. Redirecting to login...",
-        );
-        if (typeof window !== "undefined") {
-          // ─── THE FIX: DESTROY DEAD COOKIES BEFORE REDIRECTING ───
-          document.cookie =
-            "staff-auth-token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-          document.cookie =
-            "investor-auth-token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+    // ─── REFRESH TOKEN INTERCEPTOR ───
+    if (response.status === 401 && !endpoint.includes('/auth/refresh')) {
+      const refreshToken = getCookieValue(`${portal}-refresh-token`);
+      const userId = getCookieValue(`${portal}-user-id`);
 
-          // Clear storages just in case you use them for other user data caching
-          localStorage.clear();
-          sessionStorage.clear();
+      if (refreshToken && userId) {
+        if (!isRefreshing) {
+          isRefreshing = true;
+          
+          // Execute refresh token request
+          refreshPromise = fetch(`${baseUrl}/auth/refresh`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ user_id: userId, refresh_token: refreshToken })
+          })
+          .then(res => res.json())
+          .then(data => {
+            if (data.success && data.data.access_token) {
+               const newAccess = data.data.access_token;
+               const newRefresh = data.data.refresh_token || refreshToken;
+               
+               // Silently update cookies for another 30 days
+               const expires = new Date();
+               expires.setTime(expires.getTime() + 30 * 24 * 60 * 60 * 1000);
+               document.cookie = `${portal}-auth-token=${newAccess}; path=/; expires=${expires.toUTCString()}; max-age=2592000; SameSite=Lax`;
+               document.cookie = `${portal}-refresh-token=${newRefresh}; path=/; expires=${expires.toUTCString()}; max-age=2592000; SameSite=Lax`;
+               
+               return newAccess;
+            }
+            throw new Error("Refresh token invalid");
+          })
+          .catch(() => null)
+          .finally(() => {
+            isRefreshing = false;
+          });
+        }
 
-          // Redirect distributor to their portal, investor to theirs
-          window.location.href = window.location.pathname.startsWith(
-            "/distributor",
-          )
-            ? "/distributor-portal"
-            : "/login"; // for the investors
+        const newAccessToken = await refreshPromise;
+
+        // If refresh was successful, retry original request
+        if (newAccessToken) {
+           response = await fetch(`${baseUrl}${cleanEndpoint}`, {
+             ...options,
+             headers: getHeaders(newAccessToken),
+             credentials: "same-origin",
+           });
         }
       }
 
+      // ─── FINAL LOGOUT IF REFRESH FAILS OR DOESN'T EXIST ───
+      if (response.status === 401) {
+        console.warn("Unauthorized: The token expired or is invalid. Redirecting to login...");
+        if (typeof window !== "undefined") {
+          document.cookie = `${portal}-auth-token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+          document.cookie = `${portal}-refresh-token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+          document.cookie = `${portal}-user-id=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+
+          localStorage.clear();
+          sessionStorage.clear();
+
+          window.location.href = portal === "staff" ? "/distributor-portal" : "/login";
+        }
+      }
+    }
+
+    if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
       throw new Error(errorData.message || `API Error: ${response.status}`);
     }
@@ -91,7 +126,6 @@ export const apiClient = {
       method: "POST",
       body: JSON.stringify(data),
     }),
-  // ADDED PUT METHOD
   put: <T>(endpoint: string, data: any, options?: RequestInit) =>
     fetchWithConfig<T>(endpoint, {
       ...options,

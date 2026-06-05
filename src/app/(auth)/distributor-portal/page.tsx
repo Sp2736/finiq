@@ -45,16 +45,20 @@ export default function DistributorLoginPage() {
       const fullPhone = `${phoneInfo.countryCode}${phoneInfo.number.replace(/\D/g, '')}`;
       const response = await authService.verifyOtp(fullPhone, otp);
       if (response.success) {
-        // console.log(response.success);
-        setAuthCookies(response.data.access_token, response.data.refresh_token);
+        // Updated to pass 'staff' and the user's ID
+        setAuthCookies(
+          response.data.access_token, 
+          response.data.refresh_token, 
+          'staff', 
+          response.data.user.id
+        );
         router.push("/distributor");
-        
       }
     } catch (err: any) {
       console.error("Verify Error:", err);
       const msg = err.message || "Invalid OTP. Please try again.";
       setError(msg);
-      throw new Error(msg); // Re-throw for the form component to handle
+      throw new Error(msg);
     } finally {
       setIsLoading(false);
     }
