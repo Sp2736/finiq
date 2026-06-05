@@ -145,6 +145,23 @@ export interface SipDetail {
   remarks?: string;
 }
 
+export interface SystematicReportPayload {
+  types: string[];
+}
+
+export interface SystematicReportItem {
+  trxn_no: string;
+  folio_number: string;
+  scheme_name: string;
+  investor_name: string;
+  amount: number;
+  start_date: string;
+  end_date: string;
+  target_scheme: string | null;
+  systematic_type: string;
+  source: string;
+}
+
 const analyticsApiCache = new Map<string, Promise<any>>();
 
 const cachedApiGet = (url: string) => {
@@ -222,7 +239,9 @@ export const distributorService = {
     return apiClient.post<ApiResponse<any>>("/investors/capital-gains", data);
   },
 
-  getTransactionReport: async (investorId: string): Promise<ApiResponse<any>> => {
+  getTransactionReport: async (
+    investorId: string,
+  ): Promise<ApiResponse<any>> => {
     return apiClient.post<ApiResponse<any>>("/investors/transaction-report", {
       investor_id: investorId,
     });
@@ -314,13 +333,15 @@ export const distributorService = {
 
   getBrokerLedgerSummary: async (): Promise<ApiResponse<any>> => {
     return apiClient.get<ApiResponse<any>>(
-      "/brokerage-distribution/ledger/summary"
+      "/brokerage-distribution/ledger/summary",
     );
   },
 
-  getBrokerTransactionHistory: async (subBrokerId: string): Promise<ApiResponse<any>> => {
+  getBrokerTransactionHistory: async (
+    subBrokerId: string,
+  ): Promise<ApiResponse<any>> => {
     return apiClient.get<ApiResponse<any>>(
-      `/brokerage-distribution/ledger/transactions/${subBrokerId}`
+      `/brokerage-distribution/ledger/transactions/${subBrokerId}`,
     );
   },
 
@@ -350,6 +371,15 @@ export const distributorService = {
   ): Promise<ApiResponse<SipDetail>> => {
     return apiClient.get<ApiResponse<SipDetail>>(
       `/sips/detail/${source}/${id}`,
+    );
+  },
+
+  getSystematicReport: async (
+    data: SystematicReportPayload,
+  ): Promise<ApiResponse<SystematicReportItem[]>> => {
+    return apiClient.post<ApiResponse<SystematicReportItem[]>>(
+      "/sips/systematic-report",
+      data,
     );
   },
 };

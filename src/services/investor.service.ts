@@ -1,5 +1,6 @@
 // src/services/investor.service.ts
 import { apiClient } from '@/lib/apiClient';
+import { ApiResponse } from '@/services/distributor.service';
 
 export const investorService = {
   getPortfolio: async () => {

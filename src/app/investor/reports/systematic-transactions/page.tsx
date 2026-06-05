@@ -38,7 +38,12 @@ export default function InvestorSystematicTransactions() {
     <div className="flex min-h-screen w-full bg-slate-50">
       
       {/* ─── INVESTOR SIDEBAR ─── */}
-      <InvestorSidebar />
+      <InvestorSidebar 
+        onExportHoldings={() => {}} 
+        onOpenCapitalGains={() => {}} 
+        isExporting={false} 
+        isPortfolioLoaded={true} 
+      />
 
       {/* ─── PAGE CONTENT ─── */}
       <div className="relative flex-1 h-screen overflow-y-auto flex flex-col p-4 sm:p-6 lg:p-8 animate-in fade-in slide-in-from-bottom-2 duration-500 ease-out gap-6 lg:gap-8">
