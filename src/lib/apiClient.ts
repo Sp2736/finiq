@@ -9,7 +9,9 @@ const getCookieValue = (name: string) => {
 
 const getPortalContext = () => {
   if (typeof window === "undefined") return "staff";
-  return window.location.pathname.startsWith("/investor") ? "investor" : "staff";
+  return window.location.pathname.startsWith("/investor")
+    ? "investor"
+    : "staff";
 };
 
 // Global variables to prevent infinite refresh loops when multiple API calls fail simultaneously
@@ -22,10 +24,11 @@ async function fetchWithConfig<T>(
 ): Promise<T> {
   const portal = getPortalContext();
   let token = getCookieValue(`${portal}-auth-token`);
-  
+
   const getHeaders = (activeToken: string | null) => {
     const headers = new Headers(options.headers || {});
-    if (!headers.has("Content-Type")) headers.set("Content-Type", "application/json");
+    if (!headers.has("Content-Type"))
+      headers.set("Content-Type", "application/json");
     if (activeToken) headers.set("Authorization", `Bearer ${activeToken}`);
     return headers;
   };
@@ -41,57 +44,62 @@ async function fetchWithConfig<T>(
     });
 
     // ─── REFRESH TOKEN INTERCEPTOR ───
-    if (response.status === 401 && !endpoint.includes('/auth/refresh')) {
+    if (response.status === 401 && !endpoint.includes("/auth/refresh")) {
       const refreshToken = getCookieValue(`${portal}-refresh-token`);
       const userId = getCookieValue(`${portal}-user-id`);
 
       if (refreshToken && userId) {
         if (!isRefreshing) {
           isRefreshing = true;
-          
+
           // Execute refresh token request
           refreshPromise = fetch(`${baseUrl}/auth/refresh`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ user_id: userId, refresh_token: refreshToken })
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              user_id: userId,
+              refresh_token: refreshToken,
+            }),
           })
-          .then(res => res.json())
-          .then(data => {
-            if (data.success && data.data.access_token) {
-               const newAccess = data.data.access_token;
-               const newRefresh = data.data.refresh_token || refreshToken;
-               
-               // Silently update cookies for another 30 days
-               const expires = new Date();
-               expires.setTime(expires.getTime() + 30 * 24 * 60 * 60 * 1000);
-               document.cookie = `${portal}-auth-token=${newAccess}; path=/; expires=${expires.toUTCString()}; max-age=2592000; SameSite=Lax`;
-               document.cookie = `${portal}-refresh-token=${newRefresh}; path=/; expires=${expires.toUTCString()}; max-age=2592000; SameSite=Lax`;
-               
-               return newAccess;
-            }
-            throw new Error("Refresh token invalid");
-          })
-          .catch(() => null)
-          .finally(() => {
-            isRefreshing = false;
-          });
+            .then((res) => res.json())
+            .then((data) => {
+              if (data.success && data.data.access_token) {
+                const newAccess = data.data.access_token;
+                const newRefresh = data.data.refresh_token || refreshToken;
+
+                // Silently update cookies for another 30 days
+                const expires = new Date();
+                expires.setTime(expires.getTime() + 30 * 24 * 60 * 60 * 1000);
+                document.cookie = `${portal}-auth-token=${newAccess}; path=/; expires=${expires.toUTCString()}; max-age=2592000; SameSite=Lax`;
+                document.cookie = `${portal}-refresh-token=${newRefresh}; path=/; expires=${expires.toUTCString()}; max-age=2592000; SameSite=Lax`;
+
+                return newAccess;
+              }
+              throw new Error("Refresh token invalid");
+            })
+            .catch(() => null)
+            .finally(() => {
+              isRefreshing = false;
+            });
         }
 
         const newAccessToken = await refreshPromise;
 
         // If refresh was successful, retry original request
         if (newAccessToken) {
-           response = await fetch(`${baseUrl}${cleanEndpoint}`, {
-             ...options,
-             headers: getHeaders(newAccessToken),
-             credentials: "same-origin",
-           });
+          response = await fetch(`${baseUrl}${cleanEndpoint}`, {
+            ...options,
+            headers: getHeaders(newAccessToken),
+            credentials: "same-origin",
+          });
         }
       }
 
       // ─── FINAL LOGOUT IF REFRESH FAILS OR DOESN'T EXIST ───
       if (response.status === 401) {
-        console.warn("Unauthorized: The token expired or is invalid. Redirecting to login...");
+        console.warn(
+          "Unauthorized: The token expired or is invalid. Redirecting to login...",
+        );
         if (typeof window !== "undefined") {
           document.cookie = `${portal}-auth-token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
           document.cookie = `${portal}-refresh-token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
@@ -100,7 +108,8 @@ async function fetchWithConfig<T>(
           localStorage.clear();
           sessionStorage.clear();
 
-          window.location.href = portal === "staff" ? "/distributor-portal" : "/login";
+          window.location.href =
+            portal === "staff" ? "/distributor-portal" : "/login";
         }
       }
     }

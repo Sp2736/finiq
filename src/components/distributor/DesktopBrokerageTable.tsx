@@ -154,9 +154,9 @@ export default function DesktopBrokerageTable({ data, totals }: { data: any[], t
               })
             )}
           </tbody>
-          <tfoot className="sticky bottom-0 z-40 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)] text-xs bg-slate-900 text-white">
+          <tfoot className="sticky bottom-0 z-40 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)] text-xs bg-distributor-900 text-white">
             <tr>
-              <td colSpan={2} className="px-3 py-3 text-[10px] font-black uppercase tracking-widest text-right sticky left-0 bg-slate-900 z-50">Grand Totals</td>
+              <td colSpan={2} className="px-3 py-3 text-[10px] font-black uppercase tracking-widest text-right sticky left-0 bg-distributor-900 z-50">Grand Totals</td>
               <td className="px-3 py-3 text-right font-black tabular-nums">{formatCurrency(totals.gross)}</td>
               <td className="px-3 py-3 text-right font-black text-slate-300 tabular-nums">{formatCurrency(totals.paid)}</td>
               <td className="px-3 py-3 text-right font-black text-slate-300 tabular-nums">{formatCurrency(totals.paidSub)}</td>

@@ -29,14 +29,16 @@ const fmt = (num: any): string => {
   return isNaN(val) ? '0.00' : val.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 };
 
-// Name format enforcement 
+// Name format enforcement (User specified Title Case constraint applied)
 export const toTitleCase = (str: string) => 
   str.replace(/\w\S*/g, (txt) => txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase());
 
 export const generateSystematicPDF = (
   data: SystematicReportItem[], 
   type: string, 
-  investorName: string
+  investorName: string,
+  groupedData?: { groupName: string, count: number, totalAmount: number }[] | null,
+  groupBy?: string
 ) => {
   const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
   const PW    = doc.internal.pageSize.getWidth();   
@@ -48,7 +50,6 @@ export const generateSystematicPDF = (
   const drawHeader = () => {
     const HEADER_H = 22;
 
-    // Conditionally render the logo on the top-left if the string is populated
     if (DISTRIBUTOR_INFO.logoBase64 && DISTRIBUTOR_INFO.logoBase64.trim() !== "") {
       doc.addImage(DISTRIBUTOR_INFO.logoBase64, 'PNG', ML, 6, 32, 12);
     }
@@ -83,58 +84,98 @@ export const generateSystematicPDF = (
 
   drawHeader();
 
-  const rows = data.map((item) => [
-    item.trxn_no,
-    item.folio_number,
-    toTitleCase(item.investor_name),
-    item.scheme_name,
-    fmt(item.amount),
-    fmtDate(item.start_date),
-    fmtDate(item.end_date),
-    item.source
-  ]);
+  // PDF Table Selection depends heavily on whether grouping logic is applied
+  if (groupedData && groupBy && groupBy !== "None") {
+    const rows = groupedData.map(item => [
+      item.groupName,
+      item.count.toString(),
+      fmt(item.totalAmount)
+    ]);
 
-  autoTable(doc, {
-    startY: Y,
-    margin: { left: ML, right: MR },
-    head: [[
-      'Trxn No.', 'Folio Number', 'Investor Name', 'Scheme Name', 'Amount (Rs.)', 'Start Date', 'End Date', 'Source'
-    ]],
-    body: rows,
-    theme: 'grid',
-    styles: {
-      fontSize: 7.5,
-      cellPadding: { top: 2.5, bottom: 2.5, left: 3, right: 3 },
-      lineColor: C.border,
-      lineWidth: 0.15,
-      textColor: C.textPrimary,
-      font: 'helvetica',
-      overflow: 'linebreak'
-    },
-    headStyles: {
-      textColor: C.white,
-      halign: 'left',
-      valign: 'middle',
-      fontStyle: 'bold',
-      fillColor: C.navyMid,  
-      minCellHeight: 8,
-    },
-    alternateRowStyles: { fillColor: C.rowAlt },
-    columnStyles: {
-      0: { cellWidth: 22 }, 
-      1: { cellWidth: 28 }, 
-      2: { cellWidth: 42 }, 
-      3: { cellWidth: 80 }, 
-      4: { cellWidth: 26, halign: 'right', fontStyle: 'bold' }, 
-      5: { cellWidth: 22 }, 
-      6: { cellWidth: 22 }, 
-      7: { cellWidth: 18 }, 
-    },
-  });
+    autoTable(doc, {
+      startY: Y,
+      margin: { left: ML, right: MR },
+      head: [[groupBy, 'No. of Mandates', 'Total Amount (Rs.)']],
+      body: rows,
+      theme: 'grid',
+      styles: {
+        fontSize: 7.5,
+        cellPadding: { top: 2.5, bottom: 2.5, left: 3, right: 3 },
+        lineColor: C.border,
+        lineWidth: 0.15,
+        textColor: C.textPrimary,
+        font: 'helvetica',
+        overflow: 'linebreak'
+      },
+      headStyles: {
+        textColor: C.white,
+        halign: 'left',
+        valign: 'middle',
+        fontStyle: 'bold',
+        fillColor: C.navyMid,  
+        minCellHeight: 8,
+      },
+      alternateRowStyles: { fillColor: C.rowAlt },
+      columnStyles: {
+        0: { cellWidth: 160 }, 
+        1: { cellWidth: 40, halign: 'right' }, 
+        2: { cellWidth: 70, halign: 'right', fontStyle: 'bold' }, 
+      },
+    });
+  } else {
+    // Normal List without Grouping
+    const rows = data.map((item) => [
+      item.trxn_no,
+      item.folio_number,
+      toTitleCase(item.investor_name),
+      item.scheme_name,
+      fmt(item.amount),
+      fmtDate(item.start_date),
+      fmtDate(item.end_date),
+      item.source
+    ]);
+
+    autoTable(doc, {
+      startY: Y,
+      margin: { left: ML, right: MR },
+      head: [[
+        'Trxn No.', 'Folio Number', 'Investor Name', 'Scheme Name', 'Amount (Rs.)', 'Start Date', 'End Date', 'Source'
+      ]],
+      body: rows,
+      theme: 'grid',
+      styles: {
+        fontSize: 7.5,
+        cellPadding: { top: 2.5, bottom: 2.5, left: 3, right: 3 },
+        lineColor: C.border,
+        lineWidth: 0.15,
+        textColor: C.textPrimary,
+        font: 'helvetica',
+        overflow: 'linebreak'
+      },
+      headStyles: {
+        textColor: C.white,
+        halign: 'left',
+        valign: 'middle',
+        fontStyle: 'bold',
+        fillColor: C.navyMid,  
+        minCellHeight: 8,
+      },
+      alternateRowStyles: { fillColor: C.rowAlt },
+      columnStyles: {
+        0: { cellWidth: 22 }, 
+        1: { cellWidth: 28 }, 
+        2: { cellWidth: 42 }, 
+        3: { cellWidth: 80 }, 
+        4: { cellWidth: 26, halign: 'right', fontStyle: 'bold' }, 
+        5: { cellWidth: 22 }, 
+        6: { cellWidth: 22 }, 
+        7: { cellWidth: 18 }, 
+      },
+    });
+  }
 
   drawFooters();
   
-  // Format the file name securely with type checking
   const validInvestorName = typeof investorName === 'string' ? investorName : 'All_Investors';
   const safeInvestorName = validInvestorName.replace(/[^a-zA-Z0-9\s_-]/g, '').trim().replace(/\s+/g, '_');
   const dateStr = new Date().toISOString().split('T')[0];

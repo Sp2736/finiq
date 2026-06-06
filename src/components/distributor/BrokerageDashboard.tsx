@@ -214,7 +214,7 @@ export default function BrokerageDashboard() {
           </div>
           <button 
             onClick={handleSearchTrigger}
-            className="px-3 py-1.5 bg-slate-900 text-white rounded-md text-[11px] font-bold hover:bg-slate-800 transition-all shadow-sm"
+            className="px-3 py-1.5 bg-distributor-700 text-white rounded-md text-[11px] font-bold hover:bg-distributor-800 transition-all shadow-sm"
           >
             Search
           </button>
@@ -254,7 +254,7 @@ export default function BrokerageDashboard() {
           </div>
         </div>
 
-        <div className="bg-slate-900 p-2.5 md:p-4 rounded-md border border-slate-900 shadow-sm relative overflow-hidden group hover:bg-distributor-600 transition-all cursor-default">
+        <div className="bg-distributor-900 p-2.5 md:p-4 rounded-md border border-slate-900 shadow-sm relative overflow-hidden group hover:bg-distributor-600 transition-all cursor-default">
           <div className="group-hover:opacity-0 transition-opacity relative z-10">
             <p className="text-[9px] md:text-[10px] font-black text-slate-400 uppercase tracking-widest mb-0.5">Net Rec.</p>
             <h3 className="text-base md:text-xl font-black text-white">{formatCompactNumber(grandNetReceivable)}</h3>
