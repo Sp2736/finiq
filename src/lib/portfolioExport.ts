@@ -242,7 +242,7 @@ export const generatePortfolioValuationPDF = (
       lineWidth: 0.1,
     },
     headStyles: {
-      fillColor: [79, 70, 229], // Finiq Deep Indigo (distributor-600)
+      fillColor: [125,125,125],
       textColor: [255, 255, 255],
       fontStyle: "bold",
       halign: "right",
@@ -339,7 +339,7 @@ export const generatePortfolioValuationPDF = (
       textColor: [15, 23, 42],
     },
     headStyles: {
-      fillColor: [79, 70, 229], // Finiq Deep Indigo
+      fillColor: [125,125,125],
       textColor: [255, 255, 255],
       fontStyle: "bold",
       lineWidth: 0,
@@ -393,7 +393,8 @@ export const generatePortfolioValuationPDF = (
 
   // Sleek Finiq Chart Palette
 
-  const eqColor = [79, 70, 229]; // Indigo
+  // const eqColor = [79, 70, 229]; // Indigo
+  const eqColor = [0,0,128]; // Navy Blue
   const hyColor = [16, 185, 129]; // Emerald Green
   const dbColor = [245, 158, 11]; // Amber
 
@@ -401,7 +402,6 @@ export const generatePortfolioValuationPDF = (
   // const hyColor = [6, 182, 212]; // Cyan
   // const dbColor = [217, 119, 6]; // Amber
 
-  // const eqColor = [15, 23, 42]; // Deep Navy
   // const hyColor = [37, 99, 235]; // Financial Blue
   // const dbColor = [245, 158, 11]; // Market Amber
 

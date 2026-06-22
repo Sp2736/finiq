@@ -173,7 +173,7 @@ export default function DistributorSettingsPage() {
       <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4 mb-8">
         <div>
           <h1 className="text-3xl font-black tracking-tight text-slate-900">
-            Account <span className="text-transparent bg-clip-text bg-gradient-to-r from-distributor-600 via-teal-600 to-distributor-800">Settings</span>
+            Account <span className="bg-clip-text bg-gradient-to-r text-distributor-600">Settings</span>
           </h1>
           <p className="text-slate-500 font-medium mt-1 text-sm">Manage your preferences and platform security.</p>
         </div>
