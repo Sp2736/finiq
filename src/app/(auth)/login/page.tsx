@@ -18,23 +18,35 @@ export default function LoginPage() {
     setIsLoading(true);
     try {
       const response = await authService.loginInvestor(identifier, password);
-      
-      // Navigate to the exact location of the token in your JSON
-      const actualToken = response.data?.access_token; 
-      
-      if (actualToken) {
-         setAuthCookies(actualToken, undefined, 'investor');
-      } else {
-         // If we still can't find it, throw an error instead of using a dummy session
-         throw new Error("API connected, but access_token was missing in the data object.");
+
+      // Access via response.data.investor
+      if (response.data?.investor?.logo_base64) {
+        localStorage.setItem(
+          "company_logo_base64",
+          response.data.investor.logo_base64,
+        );
       }
-      
+
+      // Navigate to the exact location of the token in your JSON
+      const actualToken = response.data?.access_token;
+
+      if (actualToken) {
+        setAuthCookies(actualToken, undefined, "investor");
+      } else {
+        // If we still can't find it, throw an error instead of using a dummy session
+        throw new Error(
+          "API connected, but access_token was missing in the data object.",
+        );
+      }
+
       // Redirect seamlessly to the dashboard
-      router.push('/investor');
-      
+      router.push("/investor");
     } catch (error: any) {
       console.error("Login failed:", error);
-      alert(error.message || "Invalid credentials. Please check your identifier and password.");
+      alert(
+        error.message ||
+          "Invalid credentials. Please check your identifier and password.",
+      );
     } finally {
       setIsLoading(false);
     }
@@ -42,7 +54,6 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen bg-slate-50 font-sans selection:bg-distributor-500/20 selection:text-investor-700 relative flex items-center justify-center overflow-x-hidden">
-
       <div className="absolute inset-0 z-0 bg-gradient-to-br from-slate-100 via-white to-slate-200" />
       <div className="absolute inset-0 z-0 opacity-[0.35] bg-[radial-gradient(#94a3b8_1px,transparent_1px)] [background-size:24px_24px] sm:[background-size:32px_32px] pointer-events-none" />
 
@@ -50,7 +61,8 @@ export default function LoginPage() {
         className="absolute top-0 left-0 w-full lg:w-[65%] h-full opacity-[0.85] pointer-events-none z-0"
         style={{
           maskImage: "linear-gradient(to right, black 40%, transparent 100%)",
-          WebkitMaskImage: "linear-gradient(to right, black 40%, transparent 100%)",
+          WebkitMaskImage:
+            "linear-gradient(to right, black 40%, transparent 100%)",
         }}
       >
         <InvestorFluidBackground />
@@ -60,7 +72,6 @@ export default function LoginPage() {
       <div className="absolute bottom-0 right-0 w-[500px] sm:w-[800px] h-[500px] sm:h-[800px] bg-distributor-600/15 rounded-full blur-[100px] sm:blur-[120px] pointer-events-none z-0" />
 
       <div className="relative z-10 w-full max-w-[1600px] mx-auto px-6 sm:px-12 lg:px-20 py-10 lg:py-16 flex flex-col lg:flex-row items-center justify-between gap-10 md:gap-12 lg:gap-20">
-
         {/* ─── LEFT COLUMN: GRAPHICS & TEXT ─── */}
         <div className="w-full lg:w-3/5 flex flex-col justify-center items-center md:items-start">
           <div className="inline-flex items-center justify-center lg:justify-start gap-3 mb-6 lg:mb-8">
@@ -72,11 +83,19 @@ export default function LoginPage() {
                 viewBox="0 0 24 24"
                 stroke="currentColor"
               >
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2.5}
+                  d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"
+                />
               </svg>
             </div>
             <div className="text-3xl sm:text-4xl lg:text-3xl font-black tracking-tight text-slate-900">
-              FinIQ <span className="text-investor-600 font-light">| {portalName}</span>
+              FinIQ{" "}
+              <span className="text-investor-600 font-light">
+                | {portalName}
+              </span>
             </div>
           </div>
 
@@ -89,15 +108,29 @@ export default function LoginPage() {
             </h1>
 
             <p className="text-base sm:text-lg lg:text-xl text-slate-600 font-medium max-w-xl leading-relaxed mb-8 sm:mb-12">
-              The exclusive platform built for our investors to manage,
-              analyze, and scale portfolios with absolute precision.
+              The exclusive platform built for our investors to manage, analyze,
+              and scale portfolios with absolute precision.
             </p>
 
             <div className="relative w-full max-w-lg h-48 sm:h-64 perspective-1000">
               <div className="absolute top-6 sm:top-10 left-6 sm:left-10 w-full h-40 sm:h-48 bg-white/80 border-2 border-white rounded-3xl transform rotate-x-12 -rotate-y-12 rotate-z-6 shadow-2xl backdrop-blur-md p-6 overflow-hidden">
-                <svg className="w-full h-full opacity-60 text-investor-500" viewBox="0 0 100 100" preserveAspectRatio="none">
-                  <pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse">
-                    <path d="M 10 0 L 0 0 0 10" fill="none" stroke="currentColor" strokeWidth="1" />
+                <svg
+                  className="w-full h-full opacity-60 text-investor-500"
+                  viewBox="0 0 100 100"
+                  preserveAspectRatio="none"
+                >
+                  <pattern
+                    id="grid"
+                    width="10"
+                    height="10"
+                    patternUnits="userSpaceOnUse"
+                  >
+                    <path
+                      d="M 10 0 L 0 0 0 10"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="1"
+                    />
                   </pattern>
                   <rect width="100" height="100" fill="url(#grid)" />
                 </svg>
@@ -113,7 +146,11 @@ export default function LoginPage() {
                   </div>
                 </div>
                 <div className="w-[120%] -ml-[10%] h-16 sm:h-20 relative z-10">
-                  <svg viewBox="0 0 200 50" className="w-full h-full overflow-visible" preserveAspectRatio="none">
+                  <svg
+                    viewBox="0 0 200 50"
+                    className="w-full h-full overflow-visible"
+                    preserveAspectRatio="none"
+                  >
                     <path
                       d="M0,25 C30,10 50,40 80,25 C110,10 140,45 170,25 C190,15 200,25 200,25"
                       fill="none"
@@ -123,10 +160,28 @@ export default function LoginPage() {
                       className="drop-shadow-[0_8px_8px_rgba(79,70,229,0.4)] transition-all duration-1000 group-hover:stroke-investor-500"
                     />
                     <defs>
-                      <linearGradient id="wave-grad" x1="0" y1="0" x2="1" y2="0">
-                        <stop offset="0%" stopColor="#6366f1" stopOpacity="0.5" />
-                        <stop offset="50%" stopColor="#6366f1" stopOpacity="1" />
-                        <stop offset="100%" stopColor="#6366f1" stopOpacity="0.5" />
+                      <linearGradient
+                        id="wave-grad"
+                        x1="0"
+                        y1="0"
+                        x2="1"
+                        y2="0"
+                      >
+                        <stop
+                          offset="0%"
+                          stopColor="#6366f1"
+                          stopOpacity="0.5"
+                        />
+                        <stop
+                          offset="50%"
+                          stopColor="#6366f1"
+                          stopOpacity="1"
+                        />
+                        <stop
+                          offset="100%"
+                          stopColor="#6366f1"
+                          stopOpacity="0.5"
+                        />
                       </linearGradient>
                     </defs>
                   </svg>
@@ -136,13 +191,27 @@ export default function LoginPage() {
               <div className="absolute -top-4 sm:-top-6 right-0 sm:right-8 bg-white border-2 border-white rounded-md shadow-xl shadow-slate-300/60 p-3 sm:p-4 transform rotate-x-12 -rotate-y-12 rotate-z-6 animate-[float_6s_ease-in-out_infinite]">
                 <div className="flex items-center gap-2 sm:gap-3">
                   <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-emerald-50 flex items-center justify-center border border-emerald-200">
-                    <svg className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                    <svg
+                      className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-600"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2.5}
+                        d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
+                      />
                     </svg>
                   </div>
                   <div>
-                    <p className="text-[9px] sm:text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">Access</p>
-                    <p className="text-xs sm:text-sm font-extrabold text-slate-900">Investor Portal</p>
+                    <p className="text-[9px] sm:text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">
+                      Access
+                    </p>
+                    <p className="text-xs sm:text-sm font-extrabold text-slate-900">
+                      Investor Portal
+                    </p>
                   </div>
                 </div>
               </div>
@@ -154,14 +223,20 @@ export default function LoginPage() {
         <div className="w-full lg:w-2/5 flex justify-center lg:justify-end relative z-20">
           <div
             className="w-full max-w-[440px] md:max-w-[500px] lg:max-w-[440px] bg-white/70 backdrop-blur-2xl border border-white/60 shadow-[0_8px_40px_rgb(0,0,0,0.08)] rounded-[2.5rem] p-6 sm:p-10 lg:p-12 relative overflow-hidden"
-            style={{ animation: "slideFadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards" }}
+            style={{
+              animation:
+                "slideFadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards",
+            }}
           >
             {/* Subtle Inner Glow Effects */}
             <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-investor-500/50 to-transparent opacity-80" />
             <div className="absolute -top-20 -right-20 w-40 h-40 bg-distributor-400/20 blur-3xl rounded-full pointer-events-none" />
             <div className="absolute -bottom-20 -left-20 w-40 h-40 bg-distributor-600/10 blur-3xl rounded-full pointer-events-none" />
 
-            <div style={{ animation: "fadeIn 0.4s ease-out forwards" }} className="relative z-10">
+            <div
+              style={{ animation: "fadeIn 0.4s ease-out forwards" }}
+              className="relative z-10"
+            >
               <div className="mb-8 sm:mb-10 text-center lg:text-left">
                 <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-slate-900 mb-2">
                   Welcome back
@@ -174,7 +249,9 @@ export default function LoginPage() {
               <EmailPasswordForm onSubmit={handleLogin} isLoading={isLoading} />
 
               <div className="mt-8 sm:mt-10 text-center">
-                <span className="text-slate-600 font-medium text-sm">Don&apos;t have an account? </span>
+                <span className="text-slate-600 font-medium text-sm">
+                  Don&apos;t have an account?{" "}
+                </span>
                 <Link
                   href="#"
                   className="font-bold text-investor-600 hover:text-investor-700 transition-colors duration-200 text-sm border-b-2 border-investor-600/20 hover:border-investor-600/60 pb-0.5"
@@ -187,7 +264,9 @@ export default function LoginPage() {
         </div>
       </div>
 
-      <style dangerouslySetInnerHTML={{ __html: `
+      <style
+        dangerouslySetInnerHTML={{
+          __html: `
         @keyframes slideFadeUp {
           from { opacity: 0; transform: translateY(20px); }
           to   { opacity: 1; transform: translateY(0); }
@@ -206,7 +285,9 @@ export default function LoginPage() {
           50%       { transform: translateY(-10px) rotateX(12deg) rotateY(-12deg) rotateZ(6deg); }
         }
         .perspective-1000 { perspective: 1000px; }
-      `}} />
+      `,
+        }}
+      />
     </div>
   );
 }
@@ -232,13 +313,13 @@ export default function LoginPage() {
 //     try {
 //       const response = await authService.loginWithEmail(email, password);
 //       console.log("Authentication successful:", response.user);
-      
+
 //       // 1. Set the cookie so the middleware authenticates the user
 //       setAuthCookie(response.token);
-      
+
 //       // 2. Redirect seamlessly to the dashboard
 //       router.push('/investor');
-      
+
 //     } catch (error) {
 //       console.error("Login failed:", error);
 //       // We keep the error alert for testing feedback if credentials fail

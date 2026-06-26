@@ -15,6 +15,7 @@ export interface UserRole {
   company_name: string | null;
   first_name: string | null;
   last_name: string | null;
+  company_logo?: string | null;
 }
 
 export interface VerifyOtpData {
@@ -24,6 +25,7 @@ export interface VerifyOtpData {
     id: string;
     phone_number: string;
     roles: UserRole[];
+    company_logo?: string | null;
   };
 }
 
@@ -42,6 +44,7 @@ export interface LoginResponse {
       name: string;
       mobile: string;
       email: string;
+      logo_base64: string | null;
     };
   };
 }

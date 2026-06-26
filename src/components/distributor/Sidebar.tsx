@@ -41,6 +41,33 @@ export default function Sidebar({ isCollapsed, setIsCollapsed }: SidebarProps) {
   const [isReportsOpen, setIsReportsOpen] = useState(false);
   const [isCalculatorsOpen, setIsCalculatorsOpen] = useState(false);
 
+  // Dynamic Logo State
+  const [companyLogo, setCompanyLogo] = useState<string | null>(null);
+
+  // Extract and format logo from local storage
+  useEffect(() => {
+    try {
+      let storedLogo = localStorage.getItem("company_logo_base64");
+
+      if (
+        storedLogo &&
+        storedLogo !== "null" &&
+        storedLogo !== "undefined" &&
+        storedLogo.length > 20
+      ) {
+        // Append prefix if missing for proper rendering
+        if (!storedLogo.startsWith("data:image")) {
+          storedLogo = `data:image/png;base64,${storedLogo}`;
+        }
+        setCompanyLogo(storedLogo);
+      } else {
+        console.warn("Sidebar: No valid logo found in local storage.");
+      }
+    } catch (err) {
+      console.error("Sidebar: Error retrieving logo.", err);
+    }
+  }, []);
+
   // Auto-expand menus if we are inside their respective routes
   useEffect(() => {
     if (pathname.startsWith("/distributor/reports")) {
@@ -95,46 +122,43 @@ export default function Sidebar({ isCollapsed, setIsCollapsed }: SidebarProps) {
         ${isMobileOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"} 
         ${isCollapsed ? "w-24" : "w-72"}`}
       >
-        {/* Brand Header */}
+        {/* ─── BRAND HEADER ─── */}
         <div
-          className={`p-8 pb-10 flex items-center ${isCollapsed ? "justify-center px-4" : "justify-between"}`}
+          className={`relative p-8 pb-10 flex items-center ${isCollapsed ? "justify-center px-4" : "justify-center w-full"}`}
         >
           <Link
-            href="/distributor"
-            className="flex items-center gap-3 group overflow-hidden"
+            href={
+              pathname.startsWith("/investor") ? "/investor" : "/distributor"
+            }
+            className="flex items-center group overflow-hidden w-full justify-center"
           >
-            <div className="w-10 h-10 shrink-0 bg-gradient-to-br from-distributor-600 to-distributor-800 rounded-md flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-              <svg
-                className="w-6 h-6 text-white"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2.5}
-                  d="M13 10V3L4 14h7v7l9-11h-7z"
+            <div
+              className={`shrink-0 transition-all duration-300 flex items-center justify-center ${isCollapsed ? "w-10 h-10" : "w-32 h-16"}`}
+            >
+              {companyLogo ? (
+                <img
+                  src={companyLogo}
+                  alt="Company Logo"
+                  className="max-w-full max-h-full object-contain group-hover:scale-105 transition-transform duration-300"
                 />
-              </svg>
+              ) : (
+                <div className="w-full h-full bg-theme-btnPrimaryBg rounded-md flex items-center justify-center shadow-sm group-hover:scale-105 transition-transform duration-300">
+                  <span className="text-theme-btnPrimaryText font-bold text-[10px]">
+                    LOGO
+                  </span>
+                </div>
+              )}
             </div>
-            {!isCollapsed && (
-              <div className="animate-[fadeIn_0.2s_ease-in] whitespace-nowrap">
-                <span className="text-xl font-black tracking-tight text-slate-900 block leading-none">
-                  FinIQ
-                </span>
-                <span className="text-[10px] font-bold text-distributor-600 uppercase tracking-widest mt-1 block">
-                  Distributor
-                </span>
-              </div>
-            )}
           </Link>
-          <button
-            onClick={() => setIsMobileOpen(false)}
-            className="lg:hidden text-slate-400"
-          >
-            <X className="w-5 h-5" />
-          </button>
+
+          {!isCollapsed && (
+            <button
+              onClick={() => setIsMobileOpen(false)}
+              className="lg:hidden absolute top-8 right-4 text-theme-textMuted"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          )}
         </div>
 
         {/* Navigation Area */}
