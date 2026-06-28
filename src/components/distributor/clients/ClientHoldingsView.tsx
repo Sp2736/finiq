@@ -62,9 +62,9 @@ const InlineNotif = ({
   onDismiss: () => void;
 }) => {
   const styles: Record<NotifType, string> = {
-    error: "bg-rose-50 border-rose-200 text-rose-700",
-    info: "bg-distributor-50 border-distributor-200 text-distributor-700",
-    warning: "bg-amber-50 border-amber-200 text-amber-700",
+    error: "bg-[var(--fin-badge-danger-bg)] border-[var(--fin-badge-danger-border)] text-[var(--fin-badge-danger-text)]",
+    info: "bg-[var(--fin-brand-50)] border-[var(--fin-brand-200)] text-[var(--fin-brand-700)]",
+    warning: "bg-[var(--fin-badge-warning-bg)] border-[var(--fin-badge-warning-border)] text-[var(--fin-badge-warning-text)]",
   };
   const icons: Record<NotifType, React.ReactNode> = {
     error: <AlertTriangle className="w-4 h-4 shrink-0" />,
@@ -482,23 +482,23 @@ export default function ClientHoldingsView({
         <div className="w-full md:w-auto">
           <button
             onClick={onBack}
-            className="flex items-center gap-1 text-sm font-bold text-slate-400 hover:text-slate-600 mb-3 w-fit transition-colors"
+            className="flex items-center gap-1 text-sm font-bold text-[var(--fin-aux-text)] hover:text-[var(--fin-body-text)] mb-3 w-fit transition-colors"
           >
             <ChevronLeft className="w-4 h-4" /> Back to Investors List
           </button>
-          <h1 className="text-2xl lg:text-3xl font-black tracking-tight text-slate-900 mb-1 leading-tight">
+          <h1 className="text-2xl lg:text-3xl font-black tracking-tight text-[var(--fin-heading-primary)] mb-1 leading-tight">
             {portfolioData?.investor_name ? (
               <>
                 {toTitleCase(portfolioData.investor_name)}&apos;s{" "}
-                <span className="text-distributor-600">Portfolio</span>
+                <span className="text-[var(--fin-brand-600)]">Portfolio</span>
               </>
             ) : (
               <>
-                Client <span className="text-distributor-600">Portfolio</span>
+                Client <span className="text-[var(--fin-brand-600)]">Portfolio</span>
               </>
             )}
           </h1>
-          <p className="text-slate-500 font-medium text-xs lg:text-sm truncate">
+          <p className="text-[var(--fin-muted-text)] font-medium text-xs lg:text-sm truncate">
             View detailed mutual fund holdings and transaction history.
           </p>
         </div>
@@ -507,7 +507,7 @@ export default function ClientHoldingsView({
           <button
             onClick={handleTransactionExport} 
             disabled={isExportingTxn}
-            className="flex flex-1 md:flex-none items-center justify-center gap-2 px-5 py-2.5 bg-white border border-slate-200 text-slate-700 rounded-sm text-sm font-bold shadow-sm hover:border-distributor-300 hover:bg-distributor-50 hover:text-distributor-700 transition-all active:scale-95 disabled:opacity-50"
+            className="flex flex-1 md:flex-none items-center justify-center gap-2 px-5 py-2.5 bg-[var(--fin-table-bg)] border border-[var(--fin-border)] text-[var(--fin-table-row-text)] rounded-sm text-sm font-bold shadow-sm hover:border-[var(--fin-brand-300)] hover:bg-[var(--fin-brand-50)] hover:text-[var(--fin-brand-700)] transition-all active:scale-95 disabled:opacity-50"
           >
             {isExportingTxn ? (
               <Loader2 className="w-4 h-4 animate-spin" />
@@ -530,7 +530,7 @@ export default function ClientHoldingsView({
               }, 500);
             }}
             disabled={!portfolioData || isExportingPdf}
-            className="flex flex-1 md:flex-none items-center justify-center gap-2 px-5 py-2.5 bg-white border border-slate-200 text-slate-700 rounded-sm text-sm font-bold shadow-sm hover:border-distributor-300 hover:bg-distributor-50 hover:text-distributor-700 transition-all active:scale-95 disabled:opacity-50"
+            className="flex flex-1 md:flex-none items-center justify-center gap-2 px-5 py-2.5 bg-[var(--fin-table-bg)] border border-[var(--fin-border)] text-[var(--fin-table-row-text)] rounded-sm text-sm font-bold shadow-sm hover:border-[var(--fin-brand-300)] hover:bg-[var(--fin-brand-50)] hover:text-[var(--fin-brand-700)] transition-all active:scale-95 disabled:opacity-50"
           >
             {isExportingPdf ? (
               <Loader2 className="w-4 h-4 animate-spin" />
@@ -543,7 +543,7 @@ export default function ClientHoldingsView({
           <button
             onClick={() => setIsCGModalOpen(true)}
             aria-label="Open Capital Gains report export"
-            className="flex flex-1 md:flex-none items-center justify-center gap-2 px-5 py-2.5 bg-distributor-600 text-white rounded-sm text-sm font-bold shadow-md hover:bg-distributor-800 transition-all active:scale-95"
+            className="flex flex-1 md:flex-none items-center justify-center gap-2 px-5 py-2.5 bg-[var(--fin-brand-600)] text-[var(--fin-btn-primary-text)] rounded-sm text-sm font-bold shadow-md hover:bg-[var(--fin-brand-800)] transition-all active:scale-95"
           >
             <Calculator className="w-4 h-4" /> Capital Gains
           </button>
@@ -573,34 +573,34 @@ export default function ClientHoldingsView({
       )}
 
       {/* ─── DATA CONTAINER ─── */}
-      <div className="flex-1 min-h-0 bg-white rounded-sm border border-slate-200 flex flex-col relative overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-500 delay-200 fill-both"
+      <div className="flex-1 min-h-0 bg-[var(--fin-table-bg)] rounded-sm border border-[var(--fin-border)] flex flex-col relative overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-500 delay-200 fill-both"
            style={{ boxShadow: '0 4px 15px var(--fin-kpi-shadow)' }}>
         {isLoading ? (
-          <div className="absolute inset-0 bg-white/60 backdrop-blur-[1px] z-50 flex flex-col items-center justify-center gap-4">
-            <Loader2 className="w-8 h-8 animate-spin text-distributor-600" />
-            <p className="text-sm font-bold text-slate-500">
+          <div className="absolute inset-0 bg-[var(--fin-table-bg)]/60 backdrop-blur-[1px] z-50 flex flex-col items-center justify-center gap-4">
+            <Loader2 className="w-8 h-8 animate-spin text-[var(--fin-brand-600)]" />
+            <p className="text-sm font-bold text-[var(--fin-muted-text)]">
               Loading portfolio securely...
             </p>
           </div>
         ) : error ? (
           <div className="flex-1 flex flex-col items-center justify-center p-8 text-center">
-            <div className="w-12 h-12 bg-rose-50 rounded-sm flex items-center justify-center mb-3">
-              <PieChart className="w-6 h-6 text-rose-300" />
+            <div className="w-12 h-12 bg-[var(--fin-badge-danger-bg)] rounded-sm flex items-center justify-center mb-3">
+              <PieChart className="w-6 h-6 text-[var(--fin-badge-danger-text)]" />
             </div>
-            <p className="text-rose-600 font-bold mb-1">
+            <p className="text-[var(--fin-badge-danger-text)] font-bold mb-1">
               Error Loading Portfolio
             </p>
-            <p className="text-sm text-slate-500 max-w-sm">{error}</p>
+            <p className="text-sm text-[var(--fin-muted-text)] max-w-sm">{error}</p>
           </div>
         ) : filteredFunds.length === 0 ? (
           <div className="flex-1 flex flex-col items-center justify-center p-8 text-center">
-            <div className="w-12 h-12 bg-slate-50 rounded-sm flex items-center justify-center mb-3">
-              <PieChart className="w-6 h-6 text-slate-300" />
+            <div className="w-12 h-12 bg-[var(--fin-page-bg)] rounded-sm flex items-center justify-center mb-3">
+              <PieChart className="w-6 h-6 text-[var(--fin-aux-text)]" />
             </div>
-            <p className="text-base font-bold text-slate-600">
+            <p className="text-base font-bold text-[var(--fin-body-text)]">
               No Holdings Found
             </p>
-            <p className="text-xs font-medium text-slate-400 max-w-sm mt-1">
+            <p className="text-xs font-medium text-[var(--fin-aux-text)] max-w-sm mt-1">
               {funds.length > 0
                 ? "No funds match the selected filters."
                 : "This investor does not currently have any active mutual fund holdings."}
@@ -611,30 +611,30 @@ export default function ClientHoldingsView({
             {/* ─── DESKTOP VIEW (Table) ─── */}
             <div className="hidden lg:flex flex-col flex-1 overflow-auto table-scrollbar">
               <table className="w-full text-left text-sm min-w-[900px] border-separate border-spacing-0">
-                <thead className="bg-slate-50/90 backdrop-blur-sm border-b border-slate-100 text-[10px] uppercase tracking-widest text-slate-500 font-black sticky top-0 z-20 shadow-sm ring-1 ring-slate-200/50">
+                <thead className="bg-[var(--fin-page-bg)]/90 backdrop-blur-sm border-b border-[var(--fin-border-subtle)] text-[10px] uppercase tracking-widest text-[var(--fin-muted-text)] font-black sticky top-0 z-20 shadow-sm ring-1 ring-[var(--fin-input-ring-focus)]/50">
                   <tr>
-                    <th className="p-3 w-10 border-b border-slate-200" />
-                    <th className="py-4 border-b border-slate-200">
+                    <th className="p-3 w-10 border-b border-[var(--fin-border)]" />
+                    <th className="py-4 border-b border-[var(--fin-border)]">
                       Scheme Name &amp; Folio
                     </th>
-                    <th className="p-4 text-right border-b border-slate-200">
+                    <th className="p-4 text-right border-b border-[var(--fin-border)]">
                       Units &amp; NAV
                     </th>
-                    <th className="p-4 text-right border-b border-slate-200">
+                    <th className="p-4 text-right border-b border-[var(--fin-border)]">
                       Invested Value
                     </th>
-                    <th className="p-4 text-right border-b border-slate-200">
+                    <th className="p-4 text-right border-b border-[var(--fin-border)]">
                       Current Value
                     </th>
-                    <th className="p-4 text-right border-b border-slate-200">
+                    <th className="p-4 text-right border-b border-[var(--fin-border)]">
                       Unrealised Gains
                     </th>
-                    <th className="p-4 text-right pr-6 border-b border-slate-200">
+                    <th className="p-4 text-right pr-6 border-b border-[var(--fin-border)]">
                       Returns (XIRR)
                     </th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100">
+                <tbody className="divide-y divide-[var(--fin-table-row-border)]">
                   {filteredFunds.map((fund: any, i: number) => {
                     const isExpanded = expandedRow === i;
                     const schemeName = fund.fund_name || "N/A";
@@ -652,14 +652,14 @@ export default function ClientHoldingsView({
                       <React.Fragment key={`desktop-${i}`}>
                         <tr
                           onClick={() => setExpandedRow(isExpanded ? null : i)}
-                          className={`cursor-pointer transition-colors duration-200 group border-b border-slate-100 ${
+                          className={`cursor-pointer transition-colors duration-200 group border-b border-[var(--fin-border-subtle)] ${
                             isExpanded
-                              ? "bg-distributor-50/30"
-                              : "hover:bg-slate-50/80"
+                              ? "bg-[var(--fin-brand-50)]/30"
+                              : "hover:bg-[var(--fin-page-bg)]/80"
                           }`}
                         >
                           <td
-                            className={`p-3 text-center border-b border-slate-100 transition-colors ${isExpanded ? "bg-distributor-50" : "bg-white group-hover:bg-slate-50"}`}
+                            className={`p-3 text-center border-b border-[var(--fin-border-subtle)] transition-colors ${isExpanded ? "bg-[var(--fin-brand-50)]" : "bg-[var(--fin-table-bg)] group-hover:bg-[var(--fin-page-bg)]"}`}
                           >
                             <button
                               aria-label={
@@ -667,24 +667,24 @@ export default function ClientHoldingsView({
                                   ? "Collapse transactions"
                                   : "Expand transactions"
                               }
-                              className="text-slate-400 hover:text-distributor-600 outline-none p-1 rounded-sm group-hover:bg-distributor-100/50 transition-colors"
+                              className="text-[var(--fin-aux-text)] hover:text-[var(--fin-brand-600)] outline-none p-1 rounded-sm group-hover:bg-[var(--fin-brand-100)]/50 transition-colors"
                             >
                               <ChevronRight
-                                className={`w-4 h-4 transition-transform duration-300 ${isExpanded ? "rotate-90 text-distributor-600" : "rotate-0"}`}
+                                className={`w-4 h-4 transition-transform duration-300 ${isExpanded ? "rotate-90 text-[var(--fin-brand-600)]" : "rotate-0"}`}
                               />
                             </button>
                           </td>
-                          <td className="py-4 border-b border-slate-100 pr-4">
+                          <td className="py-4 border-b border-[var(--fin-border-subtle)] pr-4">
                             <div className="flex items-start justify-between gap-3 pr-2">
                               <div>
-                                <p className="font-bold text-slate-900 group-hover:text-distributor-700 mb-0.5 text-xs max-w-[280px] leading-tight flex flex-wrap items-center gap-1.5">
+                                <p className="font-bold text-[var(--fin-heading-primary)] group-hover:text-[var(--fin-brand-700)] mb-0.5 text-xs max-w-[280px] leading-tight flex flex-wrap items-center gap-1.5">
                                   {schemeName}
                                 </p>
                                 <div className="flex flex-wrap items-center gap-1.5 mt-1">
-                                  <span className="inline-block px-2 py-0.5 bg-slate-100 text-slate-500 rounded text-[10px] font-bold font-mono tracking-wide">
+                                  <span className="inline-block px-2 py-0.5 bg-[var(--fin-skeleton-base)] text-[var(--fin-muted-text)] rounded text-[10px] font-bold font-mono tracking-wide">
                                     Folio: {folio}
                                   </span>
-                                  <span className="inline-block px-2 py-0.5 bg-distributor-50 text-distributor-700 border border-distributor-100 rounded text-[10px] font-bold tracking-wide uppercase">
+                                  <span className="inline-block px-2 py-0.5 bg-[var(--fin-brand-50)] text-[var(--fin-brand-700)] border border-[var(--fin-brand-100)] rounded text-[10px] font-bold tracking-wide uppercase">
                                     {category}
                                   </span>
                                   {fund.sip_status && (
@@ -692,8 +692,8 @@ export default function ClientHoldingsView({
                                       className={`text-[9px] font-bold uppercase rounded px-1.5 py-0.5 whitespace-nowrap ${
                                         fund.sip_status === "Active" ||
                                         fund.sip_status === "SIP"
-                                          ? "text-emerald-600 bg-emerald-50"
-                                          : "text-amber-600 bg-amber-50"
+                                          ? "text-[var(--fin-badge-success-text)] bg-[var(--fin-badge-success-bg)]"
+                                          : "text-[var(--fin-badge-warning-text)] bg-[var(--fin-badge-warning-bg)]"
                                       }`}
                                     >
                                       {fund.sip_status === "Active"
@@ -711,41 +711,41 @@ export default function ClientHoldingsView({
                                   setAnalyticsFund(fund);
                                 }}
                                 title="View Fund Analytics"
-                                className="p-1.5 text-slate-500 bg-white hover:text-distributor-600 hover:bg-distributor-50 rounded-sm transition-colors border border-slate-200 hover:border-distributor-200 shadow-sm cursor-pointer shrink-0"
+                                className="p-1.5 text-[var(--fin-muted-text)] bg-[var(--fin-table-bg)] hover:text-[var(--fin-brand-600)] hover:bg-[var(--fin-brand-50)] rounded-sm transition-colors border border-[var(--fin-border)] hover:border-[var(--fin-brand-200)] shadow-sm cursor-pointer shrink-0"
                               >
                                 <BarChart2 className="w-4 h-4" />
                               </button>
                             </div>
                           </td>
-                          <td className="p-4 text-right border-b border-slate-100">
-                            <p className="font-bold text-slate-700 tabular-nums text-xs mb-0.5">
+                          <td className="p-4 text-right border-b border-[var(--fin-border-subtle)]">
+                            <p className="font-bold text-[var(--fin-table-row-text)] tabular-nums text-xs mb-0.5">
                               {fund.available_units?.toFixed(3) || "0"} U
                             </p>
-                            <p className="text-[10px] font-bold text-slate-600 tabular-nums leading-tight">
+                            <p className="text-[10px] font-bold text-[var(--fin-body-text)] tabular-nums leading-tight">
                               Cur: ₹{(fund.current_nav ?? 0).toFixed(4)}
                             </p>
-                            <p className="text-[9px] font-medium text-slate-400 tabular-nums leading-tight">
+                            <p className="text-[9px] font-medium text-[var(--fin-aux-text)] tabular-nums leading-tight">
                               Avg: ₹{(fund.avg_nav ?? 0).toFixed(4)}
                             </p>
                           </td>
-                          <td className="p-4 text-right border-b border-slate-100">
-                            <p className="font-medium text-slate-600 tabular-nums text-sm">
+                          <td className="p-4 text-right border-b border-[var(--fin-border-subtle)]">
+                            <p className="font-medium text-[var(--fin-body-text)] tabular-nums text-sm">
                               {formatCurrency(invested)}
                             </p>
                           </td>
-                          <td className="p-4 text-right border-b border-slate-100">
-                            <p className="font-black text-slate-900 tabular-nums text-sm">
+                          <td className="p-4 text-right border-b border-[var(--fin-border-subtle)]">
+                            <p className="font-black text-[var(--fin-heading-primary)] tabular-nums text-sm">
                               {formatCurrency(current)}
                             </p>
                           </td>
-                          <td className="p-4 text-right border-b border-slate-100">
+                          <td className="p-4 text-right border-b border-[var(--fin-border-subtle)]">
                             <div className="flex flex-col items-end">
                               <span
-                                className={`text-[10px] font-bold tabular-nums ${isPositive ? "text-emerald-500" : "text-rose-500"}`}
+                                className={`text-[10px] font-bold tabular-nums ${isPositive ? "text-[var(--fin-badge-success-text)]" : "text-[var(--fin-badge-danger-text)]"}`}
                               >
                                 {formatCurrency(netPnl)}
                               </span>
-                              <div className="flex flex-col items-end text-[9px] font-bold text-slate-400/80 mt-1 leading-tight select-none">
+                              <div className="flex flex-col items-end text-[9px] font-bold text-[var(--fin-aux-text)]/80 mt-1 leading-tight select-none">
                                 <span>
                                   LT:{" "}
                                   {formatCurrency(
@@ -761,10 +761,10 @@ export default function ClientHoldingsView({
                               </div>
                             </div>
                           </td>
-                          <td className="p-4 text-right border-b border-slate-100 pr-6">
+                          <td className="p-4 text-right border-b border-[var(--fin-border-subtle)] pr-6">
                             <div className="flex flex-col items-end">
                               <div
-                                className={`flex items-center gap-0.5 text-xs font-black ${isPositive ? "text-emerald-600" : "text-rose-600"}`}
+                                className={`flex items-center gap-0.5 text-xs font-black ${isPositive ? "text-[var(--fin-badge-success-text)]" : "text-[var(--fin-badge-danger-text)]"}`}
                               >
                                 {isPositive ? (
                                   <ArrowUpRight className="w-3.5 h-3.5" />
@@ -777,29 +777,29 @@ export default function ClientHoldingsView({
                           </td>
                         </tr>
 
-                        <tr className="bg-slate-50/40">
+                        <tr className="bg-[var(--fin-page-bg)]/40">
                           <td
                             colSpan={7}
-                            className="p-0 border-b border-slate-200/60"
+                            className="p-0 border-b border-[var(--fin-border)]/60"
                           >
                             <div
                               className={`grid transition-all duration-300 ease-in-out ${isExpanded ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"}`}
                             >
                               <div className="overflow-hidden">
                                 <div className="p-4 pl-14 pr-6">
-                                  <div className="bg-white rounded-sm border border-slate-200 overflow-hidden" style={{ boxShadow: '0 4px 15px var(--fin-kpi-shadow)' }}>
-                                    <div className="px-4 py-3 border-b border-slate-100 bg-slate-50 flex items-center justify-between">
-                                      <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-500">
+                                  <div className="bg-[var(--fin-table-bg)] rounded-sm border border-[var(--fin-border)] overflow-hidden" style={{ boxShadow: '0 4px 15px var(--fin-kpi-shadow)' }}>
+                                    <div className="px-4 py-3 border-b border-[var(--fin-border-subtle)] bg-[var(--fin-page-bg)] flex items-center justify-between">
+                                      <h4 className="text-[10px] font-black uppercase tracking-widest text-[var(--fin-muted-text)]">
                                         Transaction History
                                       </h4>
-                                      <p className="text-[10px] font-bold text-slate-400">
+                                      <p className="text-[10px] font-bold text-[var(--fin-aux-text)]">
                                         {transactions.length} entries
                                       </p>
                                     </div>
                                     {transactions.length > 0 ? (
                                       <div className="overflow-x-auto">
                                         <table className="w-full text-left text-xs">
-                                          <thead className="bg-white border-b border-slate-100 text-[9px] uppercase tracking-widest text-slate-400 font-bold">
+                                          <thead className="bg-[var(--fin-table-bg)] border-b border-[var(--fin-border-subtle)] text-[9px] uppercase tracking-widest text-[var(--fin-aux-text)] font-bold">
                                             <tr>
                                               <th className="p-3 pl-4">Date</th>
                                               <th className="p-3">Type</th>
@@ -814,14 +814,14 @@ export default function ClientHoldingsView({
                                               </th>
                                             </tr>
                                           </thead>
-                                          <tbody className="divide-y divide-slate-50">
+                                          <tbody className="divide-y divide-[var(--fin-table-row-border)]">
                                             {transactions.map(
                                               (t: any, tid: number) => (
                                                 <tr
                                                   key={tid}
-                                                  className="hover:bg-slate-50/50 transition-colors"
+                                                  className="hover:bg-[var(--fin-page-bg)]/50 transition-colors"
                                                 >
-                                                  <td className="p-3 pl-4 text-slate-600 font-medium whitespace-nowrap">
+                                                  <td className="p-3 pl-4 text-[var(--fin-body-text)] font-medium whitespace-nowrap">
                                                     {t.transaction_date
                                                       ? new Date(
                                                           t.transaction_date,
@@ -835,19 +835,19 @@ export default function ClientHoldingsView({
                                                         )
                                                       : "N/A"}
                                                   </td>
-                                                  <td className="p-3 text-slate-700 font-bold truncate max-w-[200px]">
+                                                  <td className="p-3 text-[var(--fin-table-row-text)] font-bold truncate max-w-[200px]">
                                                     {t.transaction_type ||
                                                       "Unknown"}
                                                   </td>
-                                                  <td className="p-3 text-right font-black text-slate-900 tabular-nums">
+                                                  <td className="p-3 text-right font-black text-[var(--fin-heading-primary)] tabular-nums">
                                                     {formatCurrency(
                                                       t.amount || 0,
                                                     )}
                                                   </td>
-                                                  <td className="p-3 text-right text-slate-500 font-medium tabular-nums">
+                                                  <td className="p-3 text-right text-[var(--fin-muted-text)] font-medium tabular-nums">
                                                     ₹{t.nav || 0}
                                                   </td>
-                                                  <td className="p-3 text-right text-distributor-600 font-bold tabular-nums pr-4">
+                                                  <td className="p-3 text-right text-[var(--fin-brand-600)] font-bold tabular-nums pr-4">
                                                     +
                                                     {t.units?.toFixed(3) || "0"}
                                                   </td>
@@ -858,7 +858,7 @@ export default function ClientHoldingsView({
                                         </table>
                                       </div>
                                     ) : (
-                                      <div className="p-6 text-center text-slate-400 text-xs font-medium">
+                                      <div className="p-6 text-center text-[var(--fin-aux-text)] text-xs font-medium">
                                         No transactions recorded for this fund.
                                       </div>
                                     )}
@@ -876,7 +876,7 @@ export default function ClientHoldingsView({
             </div>
 
             {/* ─── MOBILE / TABLET VIEW (Responsive Grid Cards) ─── */}
-            <div className="lg:hidden flex flex-col flex-1 overflow-auto bg-slate-50/30 p-3 sm:p-4 scrollbar-thin">
+            <div className="lg:hidden flex flex-col flex-1 overflow-auto bg-[var(--fin-page-bg)]/30 p-3 sm:p-4 scrollbar-thin">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4 auto-rows-max">
                 {filteredFunds.map((fund: any, i: number) => {
                   const isExpanded = expandedRow === i;
@@ -894,20 +894,20 @@ export default function ClientHoldingsView({
                   return (
                     <div
                       key={`mobile-${i}`}
-                      className={`bg-white border transition-colors rounded-sm overflow-hidden flex flex-col ${isExpanded ? "border-distributor-300 ring-1 ring-distributor-100" : "border-slate-200"}`}
+                      className={`bg-[var(--fin-table-bg)] border transition-colors rounded-sm overflow-hidden flex flex-col ${isExpanded ? "border-[var(--fin-brand-300)] ring-1 ring-[var(--fin-brand-100)]" : "border-[var(--fin-border)]"}`}
                       style={{ boxShadow: '0 4px 15px var(--fin-kpi-shadow)' }}
                     >
                       {/* Card Header */}
-                      <div className="p-3 sm:p-4 border-b border-slate-100 flex justify-between items-start gap-3">
+                      <div className="p-3 sm:p-4 border-b border-[var(--fin-border-subtle)] flex justify-between items-start gap-3">
                         <div className="flex-1 min-w-0">
-                          <p className="font-bold text-slate-900 text-sm leading-snug flex flex-wrap items-center gap-1.5">
+                          <p className="font-bold text-[var(--fin-heading-primary)] text-sm leading-snug flex flex-wrap items-center gap-1.5">
                             {schemeName}
                           </p>
                           <div className="flex flex-wrap items-center gap-1.5 mt-1.5">
-                            <span className="inline-block px-2 py-0.5 bg-slate-100 text-slate-500 rounded text-[10px] font-bold font-mono tracking-wide">
+                            <span className="inline-block px-2 py-0.5 bg-[var(--fin-skeleton-base)] text-[var(--fin-muted-text)] rounded text-[10px] font-bold font-mono tracking-wide">
                               Folio: {folio}
                             </span>
-                            <span className="inline-block px-2 py-0.5 bg-distributor-50 text-distributor-700 border border-distributor-100 rounded text-[10px] font-bold tracking-wide uppercase">
+                            <span className="inline-block px-2 py-0.5 bg-[var(--fin-brand-50)] text-[var(--fin-brand-700)] border border-[var(--fin-brand-100)] rounded text-[10px] font-bold tracking-wide uppercase">
                               {category}
                             </span>
                             {fund.sip_status && (
@@ -915,8 +915,8 @@ export default function ClientHoldingsView({
                                 className={`text-[9px] font-bold uppercase rounded px-1.5 py-0.5 whitespace-nowrap ${
                                   fund.sip_status === "Active" ||
                                   fund.sip_status === "SIP"
-                                    ? "text-emerald-600 bg-emerald-50"
-                                    : "text-amber-600 bg-amber-50"
+                                    ? "text-[var(--fin-badge-success-text)] bg-[var(--fin-badge-success-bg)]"
+                                    : "text-[var(--fin-badge-warning-text)] bg-[var(--fin-badge-warning-bg)]"
                                 }`}
                               >
                                 {fund.sip_status === "Active"
@@ -932,50 +932,50 @@ export default function ClientHoldingsView({
                             setAnalyticsFund(fund);
                           }}
                           aria-label="View Fund Analytics"
-                          className="p-1.5 text-slate-500 bg-white hover:text-distributor-600 hover:bg-distributor-50 rounded-sm transition-colors border border-slate-200 hover:border-distributor-200 shadow-sm shrink-0"
+                          className="p-1.5 text-[var(--fin-muted-text)] bg-[var(--fin-table-bg)] hover:text-[var(--fin-brand-600)] hover:bg-[var(--fin-brand-50)] rounded-sm transition-colors border border-[var(--fin-border)] hover:border-[var(--fin-brand-200)] shadow-sm shrink-0"
                         >
                           <BarChart2 className="w-4 h-4" />
                         </button>
                       </div>
 
                       {/* Card Stats Grid */}
-                      <div className="p-3 sm:p-4 grid grid-cols-2 gap-y-4 gap-x-3 bg-slate-50/50">
+                      <div className="p-3 sm:p-4 grid grid-cols-2 gap-y-4 gap-x-3 bg-[var(--fin-page-bg)]/50">
                         <div>
-                          <p className="text-[10px] font-black uppercase text-slate-400 tracking-wider">
+                          <p className="text-[10px] font-black uppercase text-[var(--fin-aux-text)] tracking-wider">
                             Invested
                           </p>
-                          <p className="text-sm font-bold text-slate-600">
+                          <p className="text-sm font-bold text-[var(--fin-body-text)]">
                             {formatCurrency(invested)}
                           </p>
                         </div>
                         <div className="text-right">
-                          <p className="text-[10px] font-black uppercase text-slate-400 tracking-wider">
+                          <p className="text-[10px] font-black uppercase text-[var(--fin-aux-text)] tracking-wider">
                             Current
                           </p>
-                          <p className="text-sm font-black text-slate-900">
+                          <p className="text-sm font-black text-[var(--fin-heading-primary)]">
                             {formatCurrency(current)}
                           </p>
                         </div>
                         <div>
-                          <p className="text-[10px] font-black uppercase text-slate-400 tracking-wider">
+                          <p className="text-[10px] font-black uppercase text-[var(--fin-aux-text)] tracking-wider">
                             Units / NAV (Cur/Avg)
                           </p>
-                          <p className="text-xs font-bold text-slate-700">
+                          <p className="text-xs font-bold text-[var(--fin-table-row-text)]">
                             {fund.available_units?.toFixed(3) || "0"} U
                           </p>
-                          <p className="text-[10px] font-bold text-slate-600 mt-0.5">
+                          <p className="text-[10px] font-bold text-[var(--fin-body-text)] mt-0.5">
                             Cur: ₹{(fund.current_nav ?? 0).toFixed(4)}
                           </p>
-                          <p className="text-[9px] font-medium text-slate-400">
+                          <p className="text-[9px] font-medium text-[var(--fin-aux-text)]">
                             Avg: ₹{(fund.avg_nav ?? 0).toFixed(4)}
                           </p>
                         </div>
                         <div className="flex flex-col items-end">
-                          <p className="text-[10px] font-black uppercase text-slate-400 tracking-wider">
+                          <p className="text-[10px] font-black uppercase text-[var(--fin-aux-text)] tracking-wider">
                             Returns / Unrealised
                           </p>
                           <div
-                            className={`flex items-center gap-0.5 text-xs font-black ${isPositive ? "text-emerald-600" : "text-rose-600"}`}
+                            className={`flex items-center gap-0.5 text-xs font-black ${isPositive ? "text-[var(--fin-badge-success-text)]" : "text-[var(--fin-badge-danger-text)]"}`}
                           >
                             {isPositive ? (
                               <ArrowUpRight className="w-3.5 h-3.5" />
@@ -985,11 +985,11 @@ export default function ClientHoldingsView({
                             {xirr}%
                           </div>
                           <span
-                            className={`text-[10px] font-bold mt-0.5 tabular-nums ${isPositive ? "text-emerald-500" : "text-rose-500"}`}
+                            className={`text-[10px] font-bold mt-0.5 tabular-nums ${isPositive ? "text-[var(--fin-badge-success-text)]" : "text-[var(--fin-badge-danger-text)]"}`}
                           >
                             {formatCurrency(netPnl)}
                           </span>
-                          <div className="flex flex-col items-end text-[9px] font-bold text-slate-400/80 mt-1 leading-tight select-none">
+                          <div className="flex flex-col items-end text-[9px] font-bold text-[var(--fin-aux-text)]/80 mt-1 leading-tight select-none">
                             <span>
                               LT:{" "}
                               {formatCurrency(fund.unrealised_gains_lt || 0)}
@@ -1005,7 +1005,7 @@ export default function ClientHoldingsView({
                       {/* Expand/Collapse Trigger */}
                       <button
                         onClick={() => setExpandedRow(isExpanded ? null : i)}
-                        className="w-full p-2.5 bg-white border-t border-slate-100 text-xs font-bold text-slate-500 hover:text-distributor-600 flex justify-center items-center gap-1 transition-colors mt-auto"
+                        className="w-full p-2.5 bg-[var(--fin-table-bg)] border-t border-[var(--fin-border-subtle)] text-xs font-bold text-[var(--fin-muted-text)] hover:text-[var(--fin-brand-600)] flex justify-center items-center gap-1 transition-colors mt-auto"
                       >
                         {isExpanded ? "Hide Transactions" : "View Transactions"}
                         <ChevronDown
@@ -1018,18 +1018,18 @@ export default function ClientHoldingsView({
                         className={`grid transition-all duration-300 ease-in-out ${isExpanded ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"}`}
                       >
                         <div className="overflow-hidden">
-                          <div className="bg-slate-50 border-t border-slate-100 p-2 sm:p-3 flex flex-col gap-2 max-h-64 overflow-y-auto scrollbar-thin">
+                          <div className="bg-[var(--fin-page-bg)] border-t border-[var(--fin-border-subtle)] p-2 sm:p-3 flex flex-col gap-2 max-h-64 overflow-y-auto scrollbar-thin">
                             {transactions.length > 0 ? (
                               transactions.map((t: any, tid: number) => (
                                 <div
                                   key={tid}
-                                  className="flex justify-between items-center bg-white p-2.5 sm:p-3 rounded-sm border border-slate-100 shadow-sm"
+                                  className="flex justify-between items-center bg-[var(--fin-table-bg)] p-2.5 sm:p-3 rounded-sm border border-[var(--fin-border-subtle)] shadow-sm"
                                 >
                                   <div className="min-w-0 pr-2">
-                                    <p className="text-xs font-bold text-slate-700 truncate">
+                                    <p className="text-xs font-bold text-[var(--fin-table-row-text)] truncate">
                                       {t.transaction_type || "Unknown"}
                                     </p>
-                                    <p className="text-[10px] text-slate-500 mt-0.5">
+                                    <p className="text-[10px] text-[var(--fin-muted-text)] mt-0.5">
                                       {t.transaction_date
                                         ? new Date(
                                             t.transaction_date,
@@ -1042,12 +1042,12 @@ export default function ClientHoldingsView({
                                     </p>
                                   </div>
                                   <div className="text-right shrink-0">
-                                    <p className="text-xs font-black text-slate-900 tabular-nums">
+                                    <p className="text-xs font-black text-[var(--fin-heading-primary)] tabular-nums">
                                       {formatCurrency(t.amount || 0)}
                                     </p>
-                                    <p className="text-[10px] text-distributor-600 font-bold tabular-nums">
+                                    <p className="text-[10px] text-[var(--fin-brand-600)] font-bold tabular-nums">
                                       +{t.units?.toFixed(3) || "0"}{" "}
-                                      <span className="text-slate-400 font-normal">
+                                      <span className="text-[var(--fin-aux-text)] font-normal">
                                         @ ₹{t.nav || 0}
                                       </span>
                                     </p>
@@ -1055,7 +1055,7 @@ export default function ClientHoldingsView({
                                 </div>
                               ))
                             ) : (
-                              <p className="text-xs text-center text-slate-400 py-4 font-medium">
+                              <p className="text-xs text-center text-[var(--fin-aux-text)] py-4 font-medium">
                                 No transactions recorded.
                               </p>
                             )}
@@ -1074,24 +1074,24 @@ export default function ClientHoldingsView({
       {/* ─── CAPITAL GAINS MODAL ─── */}
       {isCGModalOpen && (
         <div
-          className="absolute inset-0 z-[100] flex items-center justify-center p-4 bg-white/80 backdrop-blur-sm animate-in fade-in duration-200"
+          className="absolute inset-0 z-[100] flex items-center justify-center p-4 bg-[var(--fin-table-bg)]/80 backdrop-blur-sm animate-in fade-in duration-200"
           role="dialog"
           aria-modal="true"
         >
           <div className="absolute inset-0" onClick={handleCloseModal} />
 
-          <div className="bg-white rounded-sm shadow-xl border border-slate-200 w-full max-w-sm overflow-visible animate-in zoom-in-95 duration-200 relative z-10 flex flex-col">
-            <div className="flex items-center justify-between p-4 border-b border-slate-100 shrink-0">
+          <div className="bg-[var(--fin-table-bg)] rounded-sm shadow-xl border border-[var(--fin-border)] w-full max-w-sm overflow-visible animate-in zoom-in-95 duration-200 relative z-10 flex flex-col">
+            <div className="flex items-center justify-between p-4 border-b border-[var(--fin-border-subtle)] shrink-0">
               <h3
                 id="cg-modal-title"
-                className="font-black text-slate-900 text-lg"
+                className="font-black text-[var(--fin-heading-primary)] text-lg"
               >
                 Capital Gains Report
               </h3>
               <button
                 onClick={handleCloseModal}
                 disabled={!!exportingFormat}
-                className="p-1.5 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-sm disabled:opacity-40 disabled:cursor-not-allowed"
+                className="p-1.5 text-[var(--fin-aux-text)] hover:text-[var(--fin-table-row-text)] hover:bg-[var(--fin-skeleton-base)] rounded-sm disabled:opacity-40 disabled:cursor-not-allowed"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -1106,7 +1106,7 @@ export default function ClientHoldingsView({
               )}
 
               {/* Report Type Segmented Selector */}
-              <div className="flex bg-slate-100/80 p-1 rounded-sm mb-4 border border-slate-200/40 select-none">
+              <div className="flex bg-[var(--fin-skeleton-base)]/80 p-1 rounded-sm mb-4 border border-[var(--fin-border)]/40 select-none">
                 {[
                   { id: "FY", label: "FY" },
                   { id: "CY", label: "CY" },
@@ -1121,8 +1121,8 @@ export default function ClientHoldingsView({
                     disabled={!!exportingFormat}
                     className={`flex-1 py-1.5 text-xs font-black rounded-sm transition-all active:scale-95 disabled:opacity-50 ${
                       cgReportType === type.id
-                        ? "bg-white text-distributor-700 shadow-sm border border-slate-200/20"
-                        : "text-slate-500 hover:text-slate-800"
+                        ? "bg-[var(--fin-table-bg)] text-[var(--fin-brand-700)] shadow-sm border border-[var(--fin-border)]/20"
+                        : "text-[var(--fin-muted-text)] hover:text-[var(--fin-heading-tertiary)]"
                     }`}
                   >
                     {type.label}
@@ -1135,32 +1135,32 @@ export default function ClientHoldingsView({
                   <button
                     onClick={() => setIsFYSelectorOpen(!isFYSelectorOpen)}
                     disabled={!!exportingFormat}
-                    className="w-full flex items-center justify-between p-3 bg-slate-50 border border-slate-200 rounded-sm hover:border-slate-300 transition-all focus:outline-none focus:ring-2 focus:ring-slate-900/10 active:scale-[0.99]"
+                    className="w-full flex items-center justify-between p-3 bg-[var(--fin-page-bg)] border border-[var(--fin-border)] rounded-sm hover:border-[var(--fin-border)] transition-all focus:outline-none focus:ring-2 focus:ring-[var(--fin-table-shadow)] active:scale-[0.99]"
                   >
-                    <span className="text-xs font-bold text-slate-500 uppercase tracking-widest">
+                    <span className="text-xs font-bold text-[var(--fin-muted-text)] uppercase tracking-widest">
                       Financial Year
                     </span>
                     <div className="flex items-center gap-2">
-                      <span className="font-bold text-slate-800 tracking-tight">
+                      <span className="font-bold text-[var(--fin-heading-tertiary)] tracking-tight">
                         {selectedFY}
                       </span>
                       <ChevronDown
-                        className={`w-4 h-4 text-slate-500 transition-transform duration-200 ${isFYSelectorOpen ? "rotate-180" : ""}`}
+                        className={`w-4 h-4 text-[var(--fin-muted-text)] transition-transform duration-200 ${isFYSelectorOpen ? "rotate-180" : ""}`}
                       />
                     </div>
                   </button>
 
                   {isFYSelectorOpen && (
-                    <div className="absolute top-[110%] left-0 w-full bg-white border border-slate-200 shadow-xl rounded-sm p-3 z-50 animate-in fade-in slide-in-from-top-2">
-                      <div className="flex items-center justify-between mb-3 border-b border-slate-100 pb-2">
+                    <div className="absolute top-[110%] left-0 w-full bg-[var(--fin-table-bg)] border border-[var(--fin-border)] shadow-xl rounded-sm p-3 z-50 animate-in fade-in slide-in-from-top-2">
+                      <div className="flex items-center justify-between mb-3 border-b border-[var(--fin-border-subtle)] pb-2">
                         <button
                           onClick={() => setFyPage((p) => Math.max(0, p - 1))}
                           disabled={fyPage === 0}
-                          className="p-1 text-slate-400 hover:text-slate-900 disabled:opacity-30 disabled:hover:text-slate-400"
+                          className="p-1 text-[var(--fin-aux-text)] hover:text-[var(--fin-heading-primary)] disabled:opacity-30 disabled:hover:text-[var(--fin-aux-text)]"
                         >
                           <ChevronLeft className="w-4 h-4" />
                         </button>
-                        <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
+                        <span className="text-[10px] font-bold text-[var(--fin-muted-text)] uppercase tracking-widest">
                           Page {fyPage + 1} of {maxPages}
                         </span>
                         <button
@@ -1168,7 +1168,7 @@ export default function ClientHoldingsView({
                             setFyPage((p) => Math.min(maxPages - 1, p + 1))
                           }
                           disabled={fyPage === maxPages - 1}
-                          className="p-1 text-slate-400 hover:text-slate-900 disabled:opacity-30 disabled:hover:text-slate-400"
+                          className="p-1 text-[var(--fin-aux-text)] hover:text-[var(--fin-heading-primary)] disabled:opacity-30 disabled:hover:text-[var(--fin-aux-text)]"
                         >
                           <ChevronRight className="w-4 h-4" />
                         </button>
@@ -1182,7 +1182,7 @@ export default function ClientHoldingsView({
                               setIsFYSelectorOpen(false);
                               setCGNotif(null);
                             }}
-                            className={`py-2 px-1 text-xs font-bold rounded-sm border transition-all ${selectedFY === fy ? "bg-distributor-50 border-distributor-500 text-distributor-700 shadow-sm" : "bg-white border-slate-200 text-slate-600 hover:border-slate-300 hover:bg-slate-50"}`}
+                            className={`py-2 px-1 text-xs font-bold rounded-sm border transition-all ${selectedFY === fy ? "bg-[var(--fin-brand-50)] border-[var(--fin-brand-500)] text-[var(--fin-brand-700)] shadow-sm" : "bg-[var(--fin-table-bg)] border-[var(--fin-border)] text-[var(--fin-body-text)] hover:border-[var(--fin-border)] hover:bg-[var(--fin-page-bg)]"}`}
                           >
                             {fy}
                           </button>
@@ -1198,32 +1198,32 @@ export default function ClientHoldingsView({
                   <button
                     onClick={() => setIsCYSelectorOpen(!isCYSelectorOpen)}
                     disabled={!!exportingFormat}
-                    className="w-full flex items-center justify-between p-3 bg-slate-50 border border-slate-200 rounded-sm hover:border-slate-300 transition-all focus:outline-none focus:ring-2 focus:ring-slate-900/10 active:scale-[0.99]"
+                    className="w-full flex items-center justify-between p-3 bg-[var(--fin-page-bg)] border border-[var(--fin-border)] rounded-sm hover:border-[var(--fin-border)] transition-all focus:outline-none focus:ring-2 focus:ring-[var(--fin-table-shadow)] active:scale-[0.99]"
                   >
-                    <span className="text-xs font-bold text-slate-500 uppercase tracking-widest">
+                    <span className="text-xs font-bold text-[var(--fin-muted-text)] uppercase tracking-widest">
                       Calendar Year
                     </span>
                     <div className="flex items-center gap-2">
-                      <span className="font-bold text-slate-800 tracking-tight">
+                      <span className="font-bold text-[var(--fin-heading-tertiary)] tracking-tight">
                         {selectedCY}
                       </span>
                       <ChevronDown
-                        className={`w-4 h-4 text-slate-500 transition-transform duration-200 ${isCYSelectorOpen ? "rotate-180" : ""}`}
+                        className={`w-4 h-4 text-[var(--fin-muted-text)] transition-transform duration-200 ${isCYSelectorOpen ? "rotate-180" : ""}`}
                       />
                     </div>
                   </button>
 
                   {isCYSelectorOpen && (
-                    <div className="absolute top-[110%] left-0 w-full bg-white border border-slate-200 shadow-xl rounded-sm p-3 z-50 animate-in fade-in slide-in-from-top-2">
-                      <div className="flex items-center justify-between mb-3 border-b border-slate-100 pb-2">
+                    <div className="absolute top-[110%] left-0 w-full bg-[var(--fin-table-bg)] border border-[var(--fin-border)] shadow-xl rounded-sm p-3 z-50 animate-in fade-in slide-in-from-top-2">
+                      <div className="flex items-center justify-between mb-3 border-b border-[var(--fin-border-subtle)] pb-2">
                         <button
                           onClick={() => setCyPage((p) => Math.max(0, p - 1))}
                           disabled={cyPage === 0}
-                          className="p-1 text-slate-400 hover:text-slate-900 disabled:opacity-30 disabled:hover:text-slate-400"
+                          className="p-1 text-[var(--fin-aux-text)] hover:text-[var(--fin-heading-primary)] disabled:opacity-30 disabled:hover:text-[var(--fin-aux-text)]"
                         >
                           <ChevronLeft className="w-4 h-4" />
                         </button>
-                        <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
+                        <span className="text-[10px] font-bold text-[var(--fin-muted-text)] uppercase tracking-widest">
                           Page {cyPage + 1} of {maxCYPages}
                         </span>
                         <button
@@ -1231,7 +1231,7 @@ export default function ClientHoldingsView({
                             setCyPage((p) => Math.min(maxCYPages - 1, p + 1))
                           }
                           disabled={cyPage === maxCYPages - 1}
-                          className="p-1 text-slate-400 hover:text-slate-900 disabled:opacity-30 disabled:hover:text-slate-400"
+                          className="p-1 text-[var(--fin-aux-text)] hover:text-[var(--fin-heading-primary)] disabled:opacity-30 disabled:hover:text-[var(--fin-aux-text)]"
                         >
                           <ChevronRight className="w-4 h-4" />
                         </button>
@@ -1245,7 +1245,7 @@ export default function ClientHoldingsView({
                               setIsCYSelectorOpen(false);
                               setCGNotif(null);
                             }}
-                            className={`py-2 px-1 text-xs font-bold rounded-sm border transition-all ${selectedCY === cy ? "bg-distributor-50 border-distributor-500 text-distributor-700 shadow-sm" : "bg-white border-slate-200 text-slate-600 hover:border-slate-300 hover:bg-slate-50"}`}
+                            className={`py-2 px-1 text-xs font-bold rounded-sm border transition-all ${selectedCY === cy ? "bg-[var(--fin-brand-50)] border-[var(--fin-brand-500)] text-[var(--fin-brand-700)] shadow-sm" : "bg-[var(--fin-table-bg)] border-[var(--fin-border)] text-[var(--fin-body-text)] hover:border-[var(--fin-border)] hover:bg-[var(--fin-page-bg)]"}`}
                           >
                             {cy}
                           </button>
@@ -1259,7 +1259,7 @@ export default function ClientHoldingsView({
               {cgReportType === "CUSTOM" && (
                 <div className="flex flex-col gap-3.5 animate-in fade-in slide-in-from-bottom-2 duration-200">
                   <div className="flex flex-col">
-                    <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5">
+                    <label className="block text-[10px] font-black text-[var(--fin-aux-text)] uppercase tracking-widest mb-1.5">
                       Start Date
                     </label>
                     <input
@@ -1270,11 +1270,11 @@ export default function ClientHoldingsView({
                         setCGNotif(null);
                       }}
                       disabled={!!exportingFormat}
-                      className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-sm text-xs font-black text-slate-800 tracking-tight focus:border-distributor-600 focus:bg-white focus:ring-4 focus:ring-distributor-500/10 focus:outline-none transition-all cursor-pointer hover:bg-slate-100/50"
+                      className="w-full px-3 py-2 bg-[var(--fin-page-bg)] border border-[var(--fin-border)] rounded-sm text-xs font-black text-[var(--fin-heading-tertiary)] tracking-tight focus:border-[var(--fin-brand-600)] focus:bg-[var(--fin-table-bg)] focus:ring-4 focus:ring-[var(--fin-brand-500)]/10 focus:outline-none transition-all cursor-pointer hover:bg-[var(--fin-skeleton-base)]/50"
                     />
                   </div>
                   <div className="flex flex-col">
-                    <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5">
+                    <label className="block text-[10px] font-black text-[var(--fin-aux-text)] uppercase tracking-widest mb-1.5">
                       End Date
                     </label>
                     <input
@@ -1285,7 +1285,7 @@ export default function ClientHoldingsView({
                         setCGNotif(null);
                       }}
                       disabled={!!exportingFormat}
-                      className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-sm text-xs font-black text-slate-800 tracking-tight focus:border-distributor-600 focus:bg-white focus:ring-4 focus:ring-distributor-500/10 focus:outline-none transition-all cursor-pointer hover:bg-slate-100/50"
+                      className="w-full px-3 py-2 bg-[var(--fin-page-bg)] border border-[var(--fin-border)] rounded-sm text-xs font-black text-[var(--fin-heading-tertiary)] tracking-tight focus:border-[var(--fin-brand-600)] focus:bg-[var(--fin-table-bg)] focus:ring-4 focus:ring-[var(--fin-brand-500)]/10 focus:outline-none transition-all cursor-pointer hover:bg-[var(--fin-skeleton-base)]/50"
                     />
                   </div>
                 </div>
@@ -1297,7 +1297,7 @@ export default function ClientHoldingsView({
                   disabled={
                     !!exportingFormat || isFYSelectorOpen || isCYSelectorOpen
                   }
-                  className="flex flex-col items-center justify-center gap-2 p-3 rounded-sm border-2 border-slate-100 hover:border-rose-200 hover:bg-rose-50 text-rose-600 disabled:opacity-50 active:scale-95 transition-all"
+                  className="flex flex-col items-center justify-center gap-2 p-3 rounded-sm border-2 border-[var(--fin-border-subtle)] hover:border-[var(--fin-badge-danger-border)] hover:bg-[var(--fin-badge-danger-bg)] text-[var(--fin-badge-danger-text)] disabled:opacity-50 active:scale-95 transition-all"
                 >
                   {exportingFormat === "pdf" ? (
                     <Loader2 className="w-6 h-6 animate-spin" />
@@ -1314,7 +1314,7 @@ export default function ClientHoldingsView({
                   disabled={
                     !!exportingFormat || isFYSelectorOpen || isCYSelectorOpen
                   }
-                  className="flex flex-col items-center justify-center gap-2 p-3 rounded-sm border-2 border-slate-100 hover:border-distributor-200 hover:bg-distributor-50 text-distributor-600 disabled:opacity-50 active:scale-95 transition-all"
+                  className="flex flex-col items-center justify-center gap-2 p-3 rounded-sm border-2 border-[var(--fin-border-subtle)] hover:border-[var(--fin-brand-200)] hover:bg-[var(--fin-brand-50)] text-[var(--fin-brand-600)] disabled:opacity-50 active:scale-95 transition-all"
                 >
                   {exportingFormat === "excel" ? (
                     <Loader2 className="w-6 h-6 animate-spin" />

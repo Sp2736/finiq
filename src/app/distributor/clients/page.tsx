@@ -158,7 +158,7 @@ export default function InvestorsPage() {
   if (isCheckingStorage) {
     return (
       <div className="flex-1 flex items-center justify-center h-full">
-        <Loader2 className="w-8 h-8 text-distributor-600 animate-spin" />
+        <Loader2 className="w-8 h-8 text-[var(--fin-brand-600)] animate-spin" />
       </div>
     );
   }
@@ -174,10 +174,10 @@ export default function InvestorsPage() {
       {/* Header & Controls */}
       <div className="shrink-0 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
         <div>
-          <h1 className="text-2xl lg:text-3xl font-black tracking-tight text-slate-900 mb-1">
-            <span className="text-distributor-600">Investors</span>
+          <h1 className="text-2xl lg:text-3xl font-black tracking-tight text-[var(--fin-heading-primary)] mb-1">
+            <span className="text-[var(--fin-brand-600)]">Investors</span>
           </h1>
-          <p className="text-slate-500 font-medium text-xs lg:text-sm">
+          <p className="text-[var(--fin-muted-text)] font-medium text-xs lg:text-sm">
             Manage your network of mapped investors and portfolios.
           </p>
         </div>
@@ -185,14 +185,14 @@ export default function InvestorsPage() {
         <div className="flex w-full md:w-auto items-center gap-3">
           <div className="relative flex-1 md:w-64 flex flex-col justify-center">
             <div className="relative w-full">
-              <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+              <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-[var(--fin-aux-text)]" />
               <input
                 type="text"
                 placeholder="Search Name or PAN..."
                 value={searchInput}
                 onChange={(e) => setSearchInput(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && handleSearchTrigger()}
-                className="w-full pl-9 pr-4 py-2 bg-white border border-slate-200 rounded-md text-sm focus:border-distributor-600 transition-all shadow-sm"
+                className="w-full pl-9 pr-4 py-2 bg-[var(--fin-table-bg)] border border-[var(--fin-border)] rounded-md text-sm focus:border-[var(--fin-brand-600)] transition-all shadow-sm"
               />
             </div>
           </div>
@@ -200,7 +200,7 @@ export default function InvestorsPage() {
           <button 
             onClick={handleExportExcel}
             disabled={isExporting || isLoading}
-            className="flex items-center gap-2 px-4 py-2 bg-distributor-700 text-white rounded-md text-sm font-bold shadow-md hover:bg-distributor-800 transition-all whitespace-nowrap active:scale-95 disabled:opacity-70 disabled:active:scale-100"
+            className="flex items-center gap-2 px-4 py-2 bg-[var(--fin-brand-700)] text-[var(--fin-btn-primary-text)] rounded-md text-sm font-bold shadow-md hover:bg-[var(--fin-brand-800)] transition-all whitespace-nowrap active:scale-95 disabled:opacity-70 disabled:active:scale-100"
           >
             {isExporting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
             <span className="hidden sm:inline">{isExporting ? 'Generating...' : 'Generate Excel'}</span>
@@ -209,11 +209,11 @@ export default function InvestorsPage() {
       </div>
 
       {/* Table Area */}
-      <div className="flex-1 min-h-0 bg-white rounded-md border border-slate-200 shadow-sm flex flex-col relative overflow-hidden mt-1 md:mt-0">
+      <div className="flex-1 min-h-0 bg-[var(--fin-table-bg)] rounded-md border border-[var(--fin-border)] shadow-sm flex flex-col relative overflow-hidden mt-1 md:mt-0">
         
         {isLoading && (
-          <div className="absolute inset-0 bg-white/60 backdrop-blur-[2px] z-50 flex flex-col gap-3 items-center justify-center">
-            <Loader2 className="w-8 h-8 text-distributor-600 animate-spin" />
+          <div className="absolute inset-0 bg-[var(--fin-table-bg)]/60 backdrop-blur-[2px] z-50 flex flex-col gap-3 items-center justify-center">
+            <Loader2 className="w-8 h-8 text-[var(--fin-brand-600)] animate-spin" />
           </div>
         )}
         
@@ -221,29 +221,29 @@ export default function InvestorsPage() {
           <DesktopClientTable clients={clients} onClientClick={setActiveClientId} />
         </div>
 
-        <div className="lg:hidden flex flex-col flex-1 overflow-y-auto bg-slate-50/30">
+        <div className="lg:hidden flex flex-col flex-1 overflow-y-auto bg-[var(--fin-page-bg)]/30">
           <MobileClientList clients={clients} onClientClick={setActiveClientId} />
         </div>
 
-        <div className="shrink-0 p-4 border-t border-slate-100 flex items-center justify-between bg-slate-50/50">
-          <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">
+        <div className="shrink-0 p-4 border-t border-[var(--fin-border-subtle)] flex items-center justify-between bg-[var(--fin-page-bg)]/50">
+          <p className="text-[10px] font-black text-[var(--fin-muted-text)] uppercase tracking-widest">
             Total {pagination.totalItems.toLocaleString('en-IN')} Clients
           </p>
           <div className="flex items-center gap-2">
             <button 
               disabled={pagination.page === 1 || isLoading}
               onClick={() => fetchClients(pagination.page - 1, searchTerm)}
-              className="p-2 border border-slate-200 rounded-md hover:bg-white disabled:opacity-50 transition-all"
+              className="p-2 border border-[var(--fin-border)] rounded-md hover:bg-[var(--fin-table-bg)] disabled:opacity-50 transition-all"
             >
-              <ChevronLeft className="w-4 h-4 text-slate-600" />
+              <ChevronLeft className="w-4 h-4 text-[var(--fin-body-text)]" />
             </button>
-            <span className="text-xs font-black text-slate-900 px-2">Page {pagination.page} of {pagination.totalPages}</span>
+            <span className="text-xs font-black text-[var(--fin-heading-primary)] px-2">Page {pagination.page} of {pagination.totalPages}</span>
             <button 
               disabled={pagination.page === pagination.totalPages || isLoading}
               onClick={() => fetchClients(pagination.page + 1, searchTerm)}
-              className="p-2 border border-slate-200 rounded-md hover:bg-white disabled:opacity-50 transition-all"
+              className="p-2 border border-[var(--fin-border)] rounded-md hover:bg-[var(--fin-table-bg)] disabled:opacity-50 transition-all"
             >
-              <ChevronRight className="w-4 h-4 text-slate-600" />
+              <ChevronRight className="w-4 h-4 text-[var(--fin-body-text)]" />
             </button>
           </div>
         </div>

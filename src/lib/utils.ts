@@ -17,7 +17,7 @@ export const formatPercent = (val?: number | null) => {
 
 export const getStatusColor = (val?: number | null) => {
   const safeVal = val ?? 0;
-  return safeVal > 0 ? 'text-emerald-600' : safeVal < 0 ? 'text-rose-600' : 'text-slate-600';
+  return safeVal > 0 ? 'text-[var(--fin-badge-success-text)]' : safeVal < 0 ? 'text-[var(--fin-badge-danger-text)]' : 'text-[var(--fin-body-text)]';
 };
 
 export const formatCompactNumber = (number: number) => {

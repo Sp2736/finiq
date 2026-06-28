@@ -103,8 +103,8 @@ export default function DistributorDashboard() {
           change: `${(((summary.total_current - summary.total_invested) / summary.total_invested) * 100).toFixed(1)}%`,
           isPositive: summary.total_current >= summary.total_invested,
           icon: Briefcase,
-          bgClass: "bg-distributor-50",
-          textClass: "text-distributor-600",
+          bgClass: "bg-[var(--fin-brand-50)]",
+          textClass: "text-[var(--fin-brand-600)]",
         },
         {
           name: "Total Invested",
@@ -113,8 +113,8 @@ export default function DistributorDashboard() {
           change: "Capital",
           isPositive: true,
           icon: TrendingUp,
-          bgClass: "bg-distributor-50",
-          textClass: "text-distributor-600",
+          bgClass: "bg-[var(--fin-brand-50)]",
+          textClass: "text-[var(--fin-brand-600)]",
         },
         {
           name: "Total Clients",
@@ -123,8 +123,8 @@ export default function DistributorDashboard() {
           change: "Active",
           isPositive: true,
           icon: Users,
-          bgClass: "bg-distributor-50",
-          textClass: "text-distributor-600",
+          bgClass: "bg-[var(--fin-brand-50)]",
+          textClass: "text-[var(--fin-brand-600)]",
         },
       ]
     : [];
@@ -133,8 +133,8 @@ export default function DistributorDashboard() {
     return (
       <div className="flex items-center justify-center h-full">
         <div className="flex flex-col items-center gap-3">
-          <div className="w-10 h-10 border-3 border-distributor-600 border-t-transparent rounded-full animate-spin" />
-          <p className="text-slate-400 font-bold tracking-widest uppercase text-[10px]">
+          <div className="w-10 h-10 border-3 border-[var(--fin-brand-600)] border-t-transparent rounded-full animate-spin" />
+          <p className="text-[var(--fin-aux-text)] font-bold tracking-widest uppercase text-[10px]">
             Syncing...
           </p>
         </div>
@@ -147,10 +147,10 @@ export default function DistributorDashboard() {
       {/* Header - Compact */}
       <div className="shrink-0 flex flex-col md:flex-row justify-between items-start md:items-end gap-4 mb-5">
         <div>
-          <h1 className="text-2xl lg:text-3xl font-black tracking-tight text-slate-900 mb-1">
-            Client and <span className="text-distributor-600">AUM Insights</span>
+          <h1 className="text-2xl lg:text-3xl font-black tracking-tight text-[var(--fin-heading-primary)] mb-1">
+            Client and <span className="text-[var(--fin-brand-600)]">AUM Insights</span>
           </h1>
-          <p className="text-slate-500 font-medium text-xs lg:text-sm max-w-xl">
+          <p className="text-[var(--fin-muted-text)] font-medium text-xs lg:text-sm max-w-xl">
             Synchronization of contributor pipelines.
           </p>
         </div>
@@ -161,12 +161,12 @@ export default function DistributorDashboard() {
           {kpis.map((kpi) => (
             <div
               key={kpi.name}
-              className="bg-white p-5 rounded-md border relative overflow-hidden group hover:bg-distributor-600 hover:border-distributor-600 hover:shadow-md transition-all duration-300 cursor-default"
+              className="bg-[var(--fin-table-bg)] p-5 rounded-md border relative overflow-hidden group hover:bg-[var(--fin-brand-600)] hover:border-[var(--fin-brand-600)] hover:shadow-md transition-all duration-300 cursor-default"
               style={{ borderColor: 'var(--fin-kpi-border)', boxShadow: '0 4px 15px var(--fin-kpi-shadow)' }}
             >
               {/* --- KPI (fades out on hover) --- */}
               <div className="group-hover:opacity-0 transition-opacity duration-300">
-                <div className="absolute top-0 right-0 w-24 h-24 bg-distributor-50 rounded-full -mr-12 -mt-12 group-hover:scale-125 transition-transform duration-700 pointer-events-none opacity-50" />
+                <div className="absolute top-0 right-0 w-24 h-24 bg-[var(--fin-brand-50)] rounded-full -mr-12 -mt-12 group-hover:scale-125 transition-transform duration-700 pointer-events-none opacity-50" />
 
                 <div className="flex items-center gap-4 relative z-10">
                   <div
@@ -175,15 +175,15 @@ export default function DistributorDashboard() {
                     <kpi.icon className="w-5 h-5" />
                   </div>
                   <div className="min-w-0">
-                    <p className="text-slate-400 font-bold uppercase text-[9px] tracking-widest mb-0.5">
+                    <p className="text-[var(--fin-aux-text)] font-bold uppercase text-[9px] tracking-widest mb-0.5">
                       {kpi.name}
                     </p>
                     <div className="flex items-baseline gap-2">
-                      <h3 className="text-xl lg:text-2xl font-black text-slate-900 tracking-tight">
+                      <h3 className="text-xl lg:text-2xl font-black text-[var(--fin-heading-primary)] tracking-tight">
                         {kpi.value}
                       </h3>
                       <div
-                        className={`flex items-center gap-0.5 text-[10px] font-black ${kpi.isPositive ? "text-distributor-600" : "text-rose-600"}`}
+                        className={`flex items-center gap-0.5 text-[10px] font-black ${kpi.isPositive ? "text-[var(--fin-brand-600)]" : "text-[var(--fin-badge-danger-text)]"}`}
                       >
                         {kpi.isPositive ? (
                           <ArrowUpRight className="w-3 h-3" />
@@ -199,7 +199,7 @@ export default function DistributorDashboard() {
 
               {/* --- HOVER STATE (Full Value only, fades in on hover) --- */}
               <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20">
-                <h3 className="text-lg lg:text-xl font-black text-white tracking-tight">
+                <h3 className="text-lg lg:text-xl font-black text-[var(--fin-btn-primary-text)] tracking-tight">
                   {kpi.fullValue}
                 </h3>
               </div>

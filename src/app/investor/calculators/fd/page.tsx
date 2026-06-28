@@ -148,12 +148,12 @@ const SyncedSlider: React.FC<SyncedSliderProps> = ({
   return (
     <div className="space-y-3">
       <div className="flex justify-between items-center">
-        <label className="text-xs font-black uppercase text-slate-500">
+        <label className="text-xs font-black uppercase text-[var(--fin-muted-text)]">
           {label}
         </label>
-        <div className="flex items-center bg-investor-50 px-3 py-1.5 rounded-md border border-distributor-100 focus-within:border-distributor-500 transition-colors">
+        <div className="flex items-center bg-[var(--fin-brand-50)] px-3 py-1.5 rounded-md border border-[var(--fin-brand-100)] focus-within:border-[var(--fin-brand-500)] transition-colors">
           {unit === "₹" && (
-            <span className="text-sm font-black text-distributor-700 mr-1">
+            <span className="text-sm font-black text-[var(--fin-brand-700)] mr-1">
               ₹
             </span>
           )}
@@ -162,11 +162,11 @@ const SyncedSlider: React.FC<SyncedSliderProps> = ({
             value={localStr}
             onChange={handleTextChange}
             onBlur={handleBlur}
-            className="bg-transparent text-sm font-black text-distributor-700 outline-none w-24 text-right appearance-none"
+            className="bg-transparent text-sm font-black text-[var(--fin-brand-700)] outline-none w-24 text-right appearance-none"
             style={{ MozAppearance: "textfield" }}
           />
           {unit !== "₹" && (
-            <span className="text-sm font-black text-distributor-700 ml-1 whitespace-nowrap">
+            <span className="text-sm font-black text-[var(--fin-brand-700)] ml-1 whitespace-nowrap">
               {unit}
             </span>
           )}
@@ -179,11 +179,13 @@ const SyncedSlider: React.FC<SyncedSliderProps> = ({
         step={step}
         value={value}
         onChange={handleSliderChange}
-        className="w-full h-1.5 bg-slate-200 rounded-md appearance-none cursor-pointer accent-distributor-600"
+        className="w-full h-1.5 bg-[var(--fin-skeleton-base)] rounded-md appearance-none cursor-pointer accent-[var(--fin-brand-600)]"
       />
     </div>
   );
 };
+
+import { useChartTheme } from "@/hooks/useChartTheme";
 
 export default function FDCalculator() {
   // ─── STATE MANAGEMENT ───
@@ -191,6 +193,9 @@ export default function FDCalculator() {
   const [investment, setInvestment] = useState<number>(100000); // Default ₹1 L
   const [rate, setRate] = useState<number>(7.5); // Default 7.5%
   const [duration, setDuration] = useState<number>(5); // Default 5 Yrs
+
+  // ─── DYNAMIC CHART COLORS ───
+  const chartColors = useChartTheme();
 
   // ─── DYNAMIC CONFIG ───
   const limits = {
@@ -250,35 +255,35 @@ export default function FDCalculator() {
         FD_TYPE_OPTIONS.find((o) => o.value === fdType)?.label || "";
 
       return (
-        <div className="bg-white p-3 rounded-md border border-slate-200 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.1)] min-w-[200px] text-xs z-50">
-          <p className="font-bold text-slate-500 mb-2 border-b border-slate-100 pb-2 flex justify-between">
+        <div className="bg-[var(--fin-table-bg)] p-3 rounded-md border border-[var(--fin-border)] shadow-[0_4px_20px_-4px_rgba(0,0,0,0.1)] min-w-[200px] text-xs z-50">
+          <p className="font-bold text-[var(--fin-muted-text)] mb-2 border-b border-[var(--fin-border-subtle)] pb-2 flex justify-between">
             <span>Duration: {data.duration} Years</span>
-            <span className="text-distributor-600">{rate}% p.a</span>
+            <span className="text-[var(--fin-brand-600)]">{rate}% p.a</span>
           </p>
           <div className="space-y-1.5">
             <div className="flex justify-between gap-4">
-              <span className="text-slate-500 font-medium">Principal</span>
-              <span className="font-bold text-slate-700">
+              <span className="text-[var(--fin-muted-text)] font-medium">Principal</span>
+              <span className="font-bold text-[var(--fin-table-row-text)]">
                 {formatCurrency(data.invested)}
               </span>
             </div>
             <div className="flex justify-between gap-4">
-              <span className="text-slate-500 font-medium">
+              <span className="text-[var(--fin-muted-text)] font-medium">
                 Interest Earned
               </span>
-              <span className="font-bold text-distributor-600">
+              <span className="font-bold text-[var(--fin-brand-600)]">
                 {formatCurrency(data.interest)}
               </span>
             </div>
-            <div className="flex justify-between gap-4 pt-1.5 mt-1.5 border-t border-slate-100 border-dashed">
-              <span className="font-bold text-slate-800">Total Maturity</span>
-              <span className="font-black text-distributor-700">
+            <div className="flex justify-between gap-4 pt-1.5 mt-1.5 border-t border-[var(--fin-border-subtle)] border-dashed">
+              <span className="font-bold text-[var(--fin-heading-tertiary)]">Total Maturity</span>
+              <span className="font-black text-[var(--fin-brand-700)]">
                 {formatCurrency(
                   data.maturity + (fdType === "CUMULATIVE" ? 0 : data.interest),
                 )}
               </span>
             </div>
-            <p className="text-[9px] text-slate-400 font-medium uppercase mt-2 pt-2 border-t border-slate-100">
+            <p className="text-[9px] text-[var(--fin-aux-text)] font-medium uppercase mt-2 pt-2 border-t border-[var(--fin-border-subtle)]">
               {typeLabel}
             </p>
           </div>
@@ -294,10 +299,10 @@ export default function FDCalculator() {
       {/* ─── HEADER ─── */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 shrink-0">
         <div>
-          <h1 className="text-2xl lg:text-3xl font-black tracking-tight text-slate-900 mb-1">
-            Fixed <span className="text-investor-600">Deposits</span>
+          <h1 className="text-2xl lg:text-3xl font-black tracking-tight text-[var(--fin-heading-primary)] mb-1">
+            Fixed <span className="text-[var(--fin-brand-600)]">Deposits</span>
           </h1>
-          <p className="text-sm font-medium text-slate-500">
+          <p className="text-sm font-medium text-[var(--fin-muted-text)]">
             Calculate secure returns with accurate compounding rules.
           </p>
         </div>
@@ -311,10 +316,10 @@ export default function FDCalculator() {
       {/* Changed from `grid lg:grid-cols-12 flex-1 min-h-0` to stack beautifully on mobile */}
       <div className="flex flex-col lg:grid lg:grid-cols-12 gap-6 lg:gap-8 shrink-0 w-full">
         {/* ─── INPUTS ─── */}
-        <div className="lg:col-span-5 bg-white p-6 sm:p-8 rounded-md border relative z-20"
+        <div className="lg:col-span-5 bg-[var(--fin-table-bg)] p-6 sm:p-8 rounded-md border relative z-20"
              style={{ borderColor: 'var(--fin-kpi-border)', boxShadow: '0 4px 15px var(--fin-kpi-shadow)' }}>
           <div className="space-y-3 mb-8 z-20">
-            <label className="text-xs font-black uppercase text-slate-500">
+            <label className="text-xs font-black uppercase text-[var(--fin-muted-text)]">
               Type of Fixed Deposit
             </label>
             <CalculatorSelect
@@ -356,7 +361,7 @@ export default function FDCalculator() {
         </div>
 
         {/* ─── CHART ─── */}
-        <div className="lg:col-span-7 bg-white p-6 sm:p-8 rounded-md border min-h-[350px] lg:min-h-0 lg:h-full flex flex-col relative z-10"
+        <div className="lg:col-span-7 bg-[var(--fin-table-bg)] p-6 sm:p-8 rounded-md border min-h-[350px] lg:min-h-0 lg:h-full flex flex-col relative z-10"
              style={{ borderColor: 'var(--fin-kpi-border)', boxShadow: '0 4px 15px var(--fin-kpi-shadow)' }}>
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart
@@ -366,18 +371,18 @@ export default function FDCalculator() {
               <CartesianGrid
                 strokeDasharray="3 3"
                 vertical={false}
-                stroke="#f1f5f9"
+                stroke={chartColors.grid}
               />
               <XAxis
                 dataKey="yearLabel"
-                tick={{ fontSize: 11, fontWeight: 600, fill: "#64748b" }}
+                tick={{ fontSize: 11, fontWeight: 600, fill: chartColors.text }}
                 axisLine={false}
                 tickLine={false}
                 dy={12}
               />
               <YAxis
                 tickFormatter={(val) => formatCompactCurrency(val)}
-                tick={{ fontSize: 11, fontWeight: 500, fill: "#94a3b8" }}
+                tick={{ fontSize: 11, fontWeight: 500, fill: chartColors.textMuted }}
                 axisLine={false}
                 tickLine={false}
                 width={70}
@@ -385,14 +390,14 @@ export default function FDCalculator() {
                   value: "Wealth Value",
                   angle: -90,
                   position: "insideLeft",
-                  style: { fontSize: 11, fill: "#64748b", fontWeight: 700 },
+                  style: { fontSize: 11, fill: chartColors.text, fontWeight: 700 },
                   dx: -5,
                 }}
               />
               <Tooltip
                 content={<CustomTooltip />}
                 cursor={{
-                  stroke: "rgba(61, 96, 171, 0.1)",
+                  stroke: chartColors.tooltipBg,
                   strokeWidth: 2,
                   fill: "transparent",
                 }}
@@ -404,7 +409,7 @@ export default function FDCalculator() {
                 wrapperStyle={{
                   fontSize: "11px",
                   fontWeight: 600,
-                  color: "#64748b",
+                  color: chartColors.text,
                   paddingTop: "20px",
                 }}
               />
@@ -415,7 +420,7 @@ export default function FDCalculator() {
                 name="Principal Invested"
                 stackId="1"
                 stroke="none"
-                fill="var(--fin-chart-color-1)"
+                fill={chartColors.color1}
                 animationDuration={800}
               />
               <Area
@@ -424,7 +429,7 @@ export default function FDCalculator() {
                 name="Total Interest"
                 stackId="1"
                 stroke="none"
-                fill="var(--fin-chart-color-4)"
+                fill={chartColors.color4}
                 animationDuration={800}
               />
             </AreaChart>
@@ -438,7 +443,7 @@ export default function FDCalculator() {
           {
             label: "Invested Amount",
             val: results.invested,
-            color: "text-slate-900",
+            color: "text-[var(--fin-heading-primary)]",
           },
           {
             label:
@@ -454,7 +459,7 @@ export default function FDCalculator() {
           {
             label: "Total Interest Earned",
             val: results.totalInterest,
-            color: "text-slate-900",
+            color: "text-[var(--fin-heading-primary)]",
           },
           {
             label:
@@ -465,16 +470,16 @@ export default function FDCalculator() {
               results.maturity +
               (fdType === "CUMULATIVE" ? 0 : results.totalInterest),
             color:
-              "text-distributor-700 bg-investor-50 -m-5 p-5 h-[calc(100%+40px)] rounded-md flex flex-col justify-center border border-distributor-100",
+              "text-[var(--fin-brand-700)] bg-[var(--fin-brand-50)] -m-5 p-5 h-[calc(100%+40px)] rounded-md flex flex-col justify-center border border-[var(--fin-brand-100)]",
           },
         ].map((card, i) => (
           <div
             key={i}
-            className="bg-white p-5 rounded-md border relative overflow-hidden"
+            className="bg-[var(--fin-table-bg)] p-5 rounded-md border relative overflow-hidden"
             style={{ borderColor: 'var(--fin-kpi-border)', boxShadow: '0 4px 15px var(--fin-kpi-shadow)' }}
           >
             <div className={card.color.includes("bg-") ? card.color : ""}>
-              <p className="text-[10px] font-black uppercase text-slate-400 tracking-widest relative z-10">
+              <p className="text-[10px] font-black uppercase text-[var(--fin-aux-text)] tracking-widest relative z-10">
                 {card.label}
               </p>
               <p

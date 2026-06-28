@@ -26,6 +26,13 @@ const toTitleCase = (str: string): string => {
   return str.toLowerCase().replace(/\b\w/g, (char) => char.toUpperCase());
 };
 
+const getThemeColorHex = (cssVarName: string, fallbackHex: string): string => {
+  if (typeof window === "undefined") return fallbackHex;
+  const hex = getComputedStyle(document.documentElement).getPropertyValue(cssVarName).trim();
+  if (!hex || !hex.startsWith('#')) return fallbackHex;
+  return hex;
+};
+
 export const generateTransactionReportPDF = (
   data: TransactionReportData,
   distributorInfo?: {
@@ -37,10 +44,11 @@ export const generateTransactionReportPDF = (
 ) => {
   const doc = new jsPDF("landscape");
 
-  // Strict ethical finance palette: Blue, Black, White
-  const primaryBlue = "#003366";
-  const black = "#000000";
-  const white = "#FFFFFF";
+  // Dynamically fetch Finiq Theme Colors
+  const primaryBlue = getThemeColorHex("--fin-brand-600", "#003366");
+  const black = getThemeColorHex("--fin-heading-primary", "#000000");
+  const white = getThemeColorHex("--fin-btn-primary-text", "#FFFFFF");
+  const alternateRow = getThemeColorHex("--fin-page-bg-subtle", "#F4F7FB");
 
   const formattedName = toTitleCase(data.investor_name);
 
@@ -120,7 +128,7 @@ export const generateTransactionReportPDF = (
       lineWidth: 0.1,
     },
     alternateRowStyles: {
-      fillColor: "#F4F7FB",
+      fillColor: alternateRow,
     },
   });
 

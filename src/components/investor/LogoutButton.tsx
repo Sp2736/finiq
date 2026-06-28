@@ -28,7 +28,7 @@ export default function LogoutButton({
   return (
     <button
       onClick={handleLogout}
-      className="flex items-center gap-2 px-4 py-2.5 rounded-md bg-white/60 hover:bg-rose-50 border border-slate-200 hover:border-rose-200 text-slate-600 hover:text-rose-600 transition-all duration-300 backdrop-blur-md shadow-sm group"
+      className="flex items-center gap-2 px-4 py-2.5 rounded-md bg-[var(--fin-table-bg)]/60 hover:bg-[var(--fin-badge-danger-bg)] border border-[var(--fin-border)] hover:border-[var(--fin-badge-danger-border)] text-[var(--fin-body-text)] hover:text-[var(--fin-badge-danger-text)] transition-all duration-300 backdrop-blur-md shadow-sm group"
     >
       <svg
         className="w-4 h-4 transition-transform group-hover:-translate-x-0.5"

@@ -62,9 +62,9 @@ const InlineNotif = ({
   onDismiss: () => void;
 }) => {
   const styles: Record<NotifType, string> = {
-    error: "bg-rose-50 border-rose-200 text-rose-700",
-    info: "bg-investor-50 border-investor-200 text-investor-700",
-    warning: "bg-amber-50 border-amber-200 text-amber-700",
+    error: "bg-[var(--fin-badge-danger-bg)] border-[var(--fin-badge-danger-border)] text-[var(--fin-badge-danger-text)]",
+    info: "bg-[var(--fin-brand-50)] border-[var(--fin-brand-200)] text-[var(--fin-brand-700)]",
+    warning: "bg-[var(--fin-badge-warning-bg)] border-[var(--fin-badge-warning-border)] text-[var(--fin-badge-warning-text)]",
   };
   const icons: Record<NotifType, React.ReactNode> = {
     error: <AlertTriangle className="w-4 h-4 shrink-0" />,
@@ -515,9 +515,9 @@ export default function UnifiedPortfolioApp() {
 
   if (isLoading) {
     return (
-      <div className="h-[100dvh] flex flex-col items-center justify-center bg-slate-50">
-        <div className="w-8 h-8 border-4 border-investor-600 border-t-transparent rounded-full animate-spin mb-4" />
-        <p className="text-slate-500 font-bold text-sm tracking-wide uppercase">
+      <div className="h-[100dvh] flex flex-col items-center justify-center bg-[var(--fin-page-bg)]">
+        <div className="w-8 h-8 border-4 border-[var(--fin-brand-600)] border-t-transparent rounded-full animate-spin mb-4" />
+        <p className="text-[var(--fin-muted-text)] font-bold text-sm tracking-wide uppercase">
           Decrypting Portfolio...
         </p>
       </div>
@@ -526,15 +526,15 @@ export default function UnifiedPortfolioApp() {
 
   if (error || !normalizedPortfolio) {
     return (
-      <div className="h-[100dvh] flex flex-col items-center justify-center bg-slate-50 px-4">
-        <div className="bg-white p-6 rounded-md shadow-sm border border-rose-200 text-center max-w-sm w-full">
-          <div className="w-12 h-12 bg-rose-50 text-rose-500 rounded-full flex items-center justify-center mx-auto mb-4">
+      <div className="h-[100dvh] flex flex-col items-center justify-center bg-[var(--fin-page-bg)] px-4">
+        <div className="bg-[var(--fin-table-bg)] p-6 rounded-md shadow-sm border border-[var(--fin-badge-danger-border)] text-center max-w-sm w-full">
+          <div className="w-12 h-12 bg-[var(--fin-badge-danger-bg)] text-[var(--fin-badge-danger-text)] rounded-full flex items-center justify-center mx-auto mb-4">
             <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
             </svg>
           </div>
-          <h3 className="text-slate-900 font-bold mb-2">Connection Error</h3>
-          <p className="text-slate-500 text-sm mb-6">
+          <h3 className="text-[var(--fin-heading-primary)] font-bold mb-2">Connection Error</h3>
+          <p className="text-[var(--fin-muted-text)] text-sm mb-6">
             {error || "Could not retrieve portfolio data."}
           </p>
           <LogoutButton portal="investor" redirectTo="/login" />
@@ -544,7 +544,7 @@ export default function UnifiedPortfolioApp() {
   }
 
   return (
-    <div className="flex flex-col lg:flex-row h-[100dvh] w-full overflow-hidden bg-gradient-to-br from-slate-50 via-white to-slate-100 font-sans relative selection:bg-investor-500/20 selection:text-investor-900">
+    <div className="flex flex-col lg:flex-row h-[100dvh] w-full overflow-hidden bg-gradient-to-br from-[var(--fin-page-bg)] via-[var(--fin-content-surface)] to-[var(--fin-badge-neutral-bg)] font-sans relative selection:bg-[var(--fin-brand-500)]/20 selection:text-[var(--fin-brand-900)]">
       
       {/* ─── MAIN CONTENT ─── */}
       <main className="flex-1 flex flex-col min-w-0 min-h-0 relative z-10 overflow-hidden">
@@ -583,17 +583,17 @@ export default function UnifiedPortfolioApp() {
         <div className="hidden lg:flex flex-col relative z-10 px-4 sm:px-8 lg:px-12 py-6 max-w-[1800px] mx-auto space-y-3 w-full h-full overflow-hidden animate-[fadeIn_0.5s_ease-out]">
           <div className="shrink-0 flex justify-between items-end gap-4">
             <div>
-              <h1 className="text-2xl lg:text-3xl font-black tracking-tight text-slate-900 mb-1">
-                Portfolio <span className="text-investor-600">Overview</span>
+              <h1 className="text-2xl lg:text-3xl font-black tracking-tight text-[var(--fin-heading-primary)] mb-1">
+                Portfolio <span className="text-[var(--fin-brand-600)]">Overview</span>
               </h1>
-              <p className="text-slate-500 font-medium mt-0 text-sm">
+              <p className="text-[var(--fin-muted-text)] font-medium mt-0 text-sm">
                 Holistic view of your capital allocation and performance.
               </p>
               <div className="mt-2 flex items-center gap-2">
-                <span className="flex items-center justify-center w-6 h-6 rounded-full bg-investor-100 text-investor-700 font-bold text-[10px]">
+                <span className="flex items-center justify-center w-6 h-6 rounded-full bg-[var(--fin-brand-100)] text-[var(--fin-brand-700)] font-bold text-[10px]">
                   {getInitials(normalizedPortfolio.clientName)}
                 </span>
-                <h2 className="text-sm font-bold text-investor-700 tracking-wide uppercase">
+                <h2 className="text-sm font-bold text-[var(--fin-brand-700)] tracking-wide uppercase">
                   {normalizedPortfolio.clientName}
                 </h2>
               </div>
@@ -636,24 +636,24 @@ export default function UnifiedPortfolioApp() {
       {/* ─── CAPITAL GAINS MODAL (INVESTOR THEME) ─── */}
       {isCGModalOpen && (
         <div
-          className="absolute inset-0 z-[100] flex items-center justify-center p-4 bg-white/80 backdrop-blur-sm animate-in fade-in duration-200"
+          className="absolute inset-0 z-[100] flex items-center justify-center p-4 bg-[var(--fin-table-bg)]/80 backdrop-blur-sm animate-in fade-in duration-200"
           role="dialog"
           aria-modal="true"
         >
           <div className="absolute inset-0" onClick={handleCloseModal} />
 
-          <div className="bg-white rounded-sm shadow-xl border border-slate-200 w-full max-w-sm overflow-visible animate-in zoom-in-95 duration-200 relative z-10 flex flex-col">
-            <div className="flex items-center justify-between p-4 border-b border-slate-100 shrink-0">
+          <div className="bg-[var(--fin-table-bg)] rounded-sm shadow-xl border border-[var(--fin-border)] w-full max-w-sm overflow-visible animate-in zoom-in-95 duration-200 relative z-10 flex flex-col">
+            <div className="flex items-center justify-between p-4 border-b border-[var(--fin-border-subtle)] shrink-0">
               <h3
                 id="cg-modal-title"
-                className="font-black text-slate-900 text-lg"
+                className="font-black text-[var(--fin-heading-primary)] text-lg"
               >
                 Capital Gains Report
               </h3>
               <button
                 onClick={handleCloseModal}
                 disabled={!!exportingFormat}
-                className="p-1.5 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-sm disabled:opacity-40 disabled:cursor-not-allowed"
+                className="p-1.5 text-[var(--fin-aux-text)] hover:text-[var(--fin-table-row-text)] hover:bg-[var(--fin-skeleton-base)] rounded-sm disabled:opacity-40 disabled:cursor-not-allowed"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -670,9 +670,9 @@ export default function UnifiedPortfolioApp() {
               )}
 
               {/* Report Type Segmented Selector */}
-              <div className="relative flex bg-slate-100/80 p-1 rounded-sm mb-5 border border-slate-200/40 select-none z-0">
+              <div className="relative flex bg-[var(--fin-skeleton-base)]/80 p-1 rounded-sm mb-5 border border-[var(--fin-border)]/40 select-none z-0">
                 <div
-                  className="absolute top-1 bottom-1 w-[calc((100%-8px)/3)] bg-white rounded-sm shadow-sm border border-slate-200/40 transition-transform duration-300 ease-in-out -z-10"
+                  className="absolute top-1 bottom-1 w-[calc((100%-8px)/3)] bg-[var(--fin-table-bg)] rounded-sm shadow-sm border border-[var(--fin-border)]/40 transition-transform duration-300 ease-in-out -z-10"
                   style={{
                     left: "4px",
                     transform:
@@ -699,8 +699,8 @@ export default function UnifiedPortfolioApp() {
                     disabled={!!exportingFormat}
                     className={`relative z-10 flex-1 py-1.5 text-xs font-black rounded-sm transition-colors duration-300 active:scale-95 disabled:opacity-50 ${
                       cgReportType === type.id
-                        ? "text-investor-700"
-                        : "text-slate-500 hover:text-slate-800"
+                        ? "text-[var(--fin-brand-700)]"
+                        : "text-[var(--fin-muted-text)] hover:text-[var(--fin-heading-tertiary)]"
                     }`}
                   >
                     {type.label}
@@ -716,17 +716,17 @@ export default function UnifiedPortfolioApp() {
                     <button
                       onClick={() => setIsFYSelectorOpen(!isFYSelectorOpen)}
                       disabled={!!exportingFormat}
-                      className="w-full flex items-center justify-between p-3 bg-slate-50 border border-slate-200 rounded-sm hover:border-slate-300 transition-all focus:outline-none focus:ring-2 focus:ring-slate-900/10 active:scale-[0.99]"
+                      className="w-full flex items-center justify-between p-3 bg-[var(--fin-page-bg)] border border-[var(--fin-border)] rounded-sm hover:border-[var(--fin-border)] transition-all focus:outline-none focus:ring-2 focus:ring-[var(--fin-table-shadow)] active:scale-[0.99]"
                     >
-                      <span className="text-xs font-bold text-slate-500 uppercase tracking-widest">
+                      <span className="text-xs font-bold text-[var(--fin-muted-text)] uppercase tracking-widest">
                         Financial Year
                       </span>
                       <div className="flex items-center gap-2">
-                        <span className="font-bold text-slate-800 tracking-tight">
+                        <span className="font-bold text-[var(--fin-heading-tertiary)] tracking-tight">
                           {selectedFY}
                         </span>
                         <ChevronDown
-                          className={`w-4 h-4 text-slate-500 transition-transform duration-200 ${
+                          className={`w-4 h-4 text-[var(--fin-muted-text)] transition-transform duration-200 ${
                             isFYSelectorOpen ? "rotate-180" : ""
                           }`}
                         />
@@ -734,16 +734,16 @@ export default function UnifiedPortfolioApp() {
                     </button>
 
                     {isFYSelectorOpen && (
-                      <div className="absolute top-[110%] left-0 w-full bg-white border border-slate-200 shadow-xl rounded-sm p-3 z-50 animate-in fade-in slide-in-from-top-2">
-                        <div className="flex items-center justify-between mb-3 border-b border-slate-100 pb-2">
+                      <div className="absolute top-[110%] left-0 w-full bg-[var(--fin-table-bg)] border border-[var(--fin-border)] shadow-xl rounded-sm p-3 z-50 animate-in fade-in slide-in-from-top-2">
+                        <div className="flex items-center justify-between mb-3 border-b border-[var(--fin-border-subtle)] pb-2">
                           <button
                             onClick={() => setFyPage((p) => Math.max(0, p - 1))}
                             disabled={fyPage === 0}
-                            className="p-1 text-slate-400 hover:text-slate-900 disabled:opacity-30 disabled:hover:text-slate-400"
+                            className="p-1 text-[var(--fin-aux-text)] hover:text-[var(--fin-heading-primary)] disabled:opacity-30 disabled:hover:text-[var(--fin-aux-text)]"
                           >
                             <ChevronLeft className="w-4 h-4" />
                           </button>
-                          <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
+                          <span className="text-[10px] font-bold text-[var(--fin-muted-text)] uppercase tracking-widest">
                             Page {fyPage + 1} of {maxPages}
                           </span>
                           <button
@@ -751,7 +751,7 @@ export default function UnifiedPortfolioApp() {
                               setFyPage((p) => Math.min(maxPages - 1, p + 1))
                             }
                             disabled={fyPage === maxPages - 1}
-                            className="p-1 text-slate-400 hover:text-slate-900 disabled:opacity-30 disabled:hover:text-slate-400"
+                            className="p-1 text-[var(--fin-aux-text)] hover:text-[var(--fin-heading-primary)] disabled:opacity-30 disabled:hover:text-[var(--fin-aux-text)]"
                           >
                             <ChevronRight className="w-4 h-4" />
                           </button>
@@ -767,8 +767,8 @@ export default function UnifiedPortfolioApp() {
                               }}
                               className={`py-2 px-1 text-xs font-bold rounded-sm border transition-all ${
                                 selectedFY === fy
-                                  ? "bg-investor-50 border-investor-500 text-investor-700 shadow-sm"
-                                  : "bg-white border-slate-200 text-slate-600 hover:border-slate-300 hover:bg-slate-50"
+                                  ? "bg-[var(--fin-brand-50)] border-[var(--fin-brand-500)] text-[var(--fin-brand-700)] shadow-sm"
+                                  : "bg-[var(--fin-table-bg)] border-[var(--fin-border)] text-[var(--fin-body-text)] hover:border-[var(--fin-border)] hover:bg-[var(--fin-page-bg)]"
                               }`}
                             >
                               {fy}
@@ -785,17 +785,17 @@ export default function UnifiedPortfolioApp() {
                     <button
                       onClick={() => setIsCYSelectorOpen(!isCYSelectorOpen)}
                       disabled={!!exportingFormat}
-                      className="w-full flex items-center justify-between p-3 bg-slate-50 border border-slate-200 rounded-sm hover:border-slate-300 transition-all focus:outline-none focus:ring-2 focus:ring-slate-900/10 active:scale-[0.99]"
+                      className="w-full flex items-center justify-between p-3 bg-[var(--fin-page-bg)] border border-[var(--fin-border)] rounded-sm hover:border-[var(--fin-border)] transition-all focus:outline-none focus:ring-2 focus:ring-[var(--fin-table-shadow)] active:scale-[0.99]"
                     >
-                      <span className="text-xs font-bold text-slate-500 uppercase tracking-widest">
+                      <span className="text-xs font-bold text-[var(--fin-muted-text)] uppercase tracking-widest">
                         Calendar Year
                       </span>
                       <div className="flex items-center gap-2">
-                        <span className="font-bold text-slate-800 tracking-tight">
+                        <span className="font-bold text-[var(--fin-heading-tertiary)] tracking-tight">
                           {selectedCY}
                         </span>
                         <ChevronDown
-                          className={`w-4 h-4 text-slate-500 transition-transform duration-200 ${
+                          className={`w-4 h-4 text-[var(--fin-muted-text)] transition-transform duration-200 ${
                             isCYSelectorOpen ? "rotate-180" : ""
                           }`}
                         />
@@ -803,16 +803,16 @@ export default function UnifiedPortfolioApp() {
                     </button>
 
                     {isCYSelectorOpen && (
-                      <div className="absolute top-[110%] left-0 w-full bg-white border border-slate-200 shadow-xl rounded-sm p-3 z-50 animate-in fade-in slide-in-from-top-2">
-                        <div className="flex items-center justify-between mb-3 border-b border-slate-100 pb-2">
+                      <div className="absolute top-[110%] left-0 w-full bg-[var(--fin-table-bg)] border border-[var(--fin-border)] shadow-xl rounded-sm p-3 z-50 animate-in fade-in slide-in-from-top-2">
+                        <div className="flex items-center justify-between mb-3 border-b border-[var(--fin-border-subtle)] pb-2">
                           <button
                             onClick={() => setCyPage((p) => Math.max(0, p - 1))}
                             disabled={cyPage === 0}
-                            className="p-1 text-slate-400 hover:text-slate-900 disabled:opacity-30 disabled:hover:text-slate-400"
+                            className="p-1 text-[var(--fin-aux-text)] hover:text-[var(--fin-heading-primary)] disabled:opacity-30 disabled:hover:text-[var(--fin-aux-text)]"
                           >
                             <ChevronLeft className="w-4 h-4" />
                           </button>
-                          <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
+                          <span className="text-[10px] font-bold text-[var(--fin-muted-text)] uppercase tracking-widest">
                             Page {cyPage + 1} of {maxCYPages}
                           </span>
                           <button
@@ -820,7 +820,7 @@ export default function UnifiedPortfolioApp() {
                               setCyPage((p) => Math.min(maxCYPages - 1, p + 1))
                             }
                             disabled={cyPage === maxCYPages - 1}
-                            className="p-1 text-slate-400 hover:text-slate-900 disabled:opacity-30 disabled:hover:text-slate-400"
+                            className="p-1 text-[var(--fin-aux-text)] hover:text-[var(--fin-heading-primary)] disabled:opacity-30 disabled:hover:text-[var(--fin-aux-text)]"
                           >
                             <ChevronRight className="w-4 h-4" />
                           </button>
@@ -836,8 +836,8 @@ export default function UnifiedPortfolioApp() {
                               }}
                               className={`py-2 px-1 text-xs font-bold rounded-sm border transition-all ${
                                 selectedCY === cy
-                                  ? "bg-investor-50 border-investor-500 text-investor-700 shadow-sm"
-                                  : "bg-white border-slate-200 text-slate-600 hover:border-slate-300 hover:bg-slate-50"
+                                  ? "bg-[var(--fin-brand-50)] border-[var(--fin-brand-500)] text-[var(--fin-brand-700)] shadow-sm"
+                                  : "bg-[var(--fin-table-bg)] border-[var(--fin-border)] text-[var(--fin-body-text)] hover:border-[var(--fin-border)] hover:bg-[var(--fin-page-bg)]"
                               }`}
                             >
                               {cy}
@@ -852,7 +852,7 @@ export default function UnifiedPortfolioApp() {
                 {cgReportType === "CUSTOM" && (
                   <div className="flex flex-col gap-3.5 animate-in fade-in slide-in-from-bottom-2 duration-200">
                     <div className="flex flex-col">
-                      <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5">
+                      <label className="block text-[10px] font-black text-[var(--fin-aux-text)] uppercase tracking-widest mb-1.5">
                         Start Date
                       </label>
                       <input
@@ -863,11 +863,11 @@ export default function UnifiedPortfolioApp() {
                           setCGNotif(null);
                         }}
                         disabled={!!exportingFormat}
-                        className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-sm text-xs font-black text-slate-800 tracking-tight focus:border-investor-600 focus:bg-white focus:ring-4 focus:ring-investor-500/10 focus:outline-none transition-all cursor-pointer hover:bg-slate-100/50"
+                        className="w-full px-3 py-2 bg-[var(--fin-page-bg)] border border-[var(--fin-border)] rounded-sm text-xs font-black text-[var(--fin-heading-tertiary)] tracking-tight focus:border-[var(--fin-brand-600)] focus:bg-[var(--fin-table-bg)] focus:ring-4 focus:ring-[var(--fin-brand-500)]/10 focus:outline-none transition-all cursor-pointer hover:bg-[var(--fin-skeleton-base)]/50"
                       />
                     </div>
                     <div className="flex flex-col">
-                      <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5">
+                      <label className="block text-[10px] font-black text-[var(--fin-aux-text)] uppercase tracking-widest mb-1.5">
                         End Date
                       </label>
                       <input
@@ -878,7 +878,7 @@ export default function UnifiedPortfolioApp() {
                           setCGNotif(null);
                         }}
                         disabled={!!exportingFormat}
-                        className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-sm text-xs font-black text-slate-800 tracking-tight focus:border-investor-600 focus:bg-white focus:ring-4 focus:ring-investor-500/10 focus:outline-none transition-all cursor-pointer hover:bg-slate-100/50"
+                        className="w-full px-3 py-2 bg-[var(--fin-page-bg)] border border-[var(--fin-border)] rounded-sm text-xs font-black text-[var(--fin-heading-tertiary)] tracking-tight focus:border-[var(--fin-brand-600)] focus:bg-[var(--fin-table-bg)] focus:ring-4 focus:ring-[var(--fin-brand-500)]/10 focus:outline-none transition-all cursor-pointer hover:bg-[var(--fin-skeleton-base)]/50"
                       />
                     </div>
                   </div>
@@ -893,7 +893,7 @@ export default function UnifiedPortfolioApp() {
                   disabled={
                     !!exportingFormat || isFYSelectorOpen || isCYSelectorOpen
                   }
-                  className="flex flex-col items-center justify-center gap-2 p-3 rounded-sm border-2 border-slate-100 hover:border-rose-200 hover:bg-rose-50 text-rose-600 disabled:opacity-50 active:scale-95 transition-all"
+                  className="flex flex-col items-center justify-center gap-2 p-3 rounded-sm border-2 border-[var(--fin-border-subtle)] hover:border-[var(--fin-badge-danger-border)] hover:bg-[var(--fin-badge-danger-bg)] text-[var(--fin-badge-danger-text)] disabled:opacity-50 active:scale-95 transition-all"
                 >
                   {exportingFormat === "pdf" ? (
                     <Loader2 className="w-6 h-6 animate-spin" />
@@ -910,7 +910,7 @@ export default function UnifiedPortfolioApp() {
                   disabled={
                     !!exportingFormat || isFYSelectorOpen || isCYSelectorOpen
                   }
-                  className="flex flex-col items-center justify-center gap-2 p-3 rounded-sm border-2 border-slate-100 hover:border-investor-200 hover:bg-investor-50 text-investor-600 disabled:opacity-50 active:scale-95 transition-all"
+                  className="flex flex-col items-center justify-center gap-2 p-3 rounded-sm border-2 border-[var(--fin-border-subtle)] hover:border-[var(--fin-brand-200)] hover:bg-[var(--fin-brand-50)] text-[var(--fin-brand-600)] disabled:opacity-50 active:scale-95 transition-all"
                 >
                   {exportingFormat === "excel" ? (
                     <Loader2 className="w-6 h-6 animate-spin" />

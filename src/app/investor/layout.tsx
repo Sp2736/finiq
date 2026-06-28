@@ -33,7 +33,7 @@ export default function InvestorLayout({
       <ThemeProvider>
 
 
-      <div className="flex h-screen overflow-hidden selection:bg-investor-100 selection:text-investor-900" style={{ backgroundColor: 'var(--fin-page-bg)' }}>
+      <div className="flex h-screen overflow-hidden selection:bg-[var(--fin-brand-100)] selection:text-[var(--fin-brand-900)]" style={{ backgroundColor: 'var(--fin-page-bg)' }}>
         
         {/* Sidebar remains fixed */}
         <InvestorSidebar 

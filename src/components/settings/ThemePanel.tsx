@@ -300,9 +300,9 @@ export default function ThemePanel() {
     <div className="h-full">
       {/* Mobile restriction message */}
       <div className="lg:hidden flex flex-col items-center justify-center h-[60vh] text-center p-6">
-        <Monitor size={48} className="text-slate-300 mb-4" />
-        <h2 className="text-xl font-black text-slate-700 mb-2">Desktop Only</h2>
-        <p className="text-sm text-slate-500 font-medium max-w-sm">
+        <Monitor size={48} className="text-[var(--fin-aux-text)] mb-4" />
+        <h2 className="text-xl font-black text-[var(--fin-table-row-text)] mb-2">Desktop Only</h2>
+        <p className="text-sm text-[var(--fin-muted-text)] font-medium max-w-sm">
           The advanced theme customizer is only available on desktop and large tablet screens. Please switch to a larger device to edit your platform's appearance.
         </p>
       </div>
@@ -321,14 +321,14 @@ export default function ThemePanel() {
               transition={{ duration: 0.25 }}
               className={`pointer-events-auto flex items-center gap-3 px-5 py-3.5 rounded-2xl shadow-xl backdrop-blur-md border text-sm font-semibold ${
                 toast.type === "success"
-                  ? "bg-emerald-50 border-emerald-200 text-emerald-800"
-                  : "bg-rose-50 border-rose-200 text-rose-800"
+                  ? "bg-[var(--fin-badge-success-bg)] border-[var(--fin-badge-success-border)] text-[var(--fin-badge-success-text)]"
+                  : "bg-[var(--fin-badge-danger-bg)] border-[var(--fin-badge-danger-border)] text-[var(--fin-badge-danger-text)]"
               }`}
             >
               {toast.type === "success" ? (
-                <CheckCircle2 size={18} className="text-emerald-600 shrink-0" />
+                <CheckCircle2 size={18} className="text-[var(--fin-badge-success-text)] shrink-0" />
               ) : (
-                <XCircle size={18} className="text-rose-600 shrink-0" />
+                <XCircle size={18} className="text-[var(--fin-badge-danger-text)] shrink-0" />
               )}
               {toast.message}
             </motion.div>
@@ -357,25 +357,25 @@ export default function ThemePanel() {
             <div className="min-w-0">
               {isEditing ? (
                 <div>
-                  <label className="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1.5">
+                  <label className="block text-[10px] font-black text-[var(--fin-muted-text)] uppercase tracking-widest mb-1.5">
                     {editorMode.type === "edit" ? "Editing Theme" : "New Theme Name"}
                   </label>
                   <div className="flex items-center gap-3">
-                    {editorMode.type === "edit" && <Pencil size={14} className="text-slate-400 shrink-0" />}
+                    {editorMode.type === "edit" && <Pencil size={14} className="text-[var(--fin-aux-text)] shrink-0" />}
                     <input
                       ref={themeNameRef}
                       type="text"
                       placeholder="e.g. Corporate Blue, Saffron Brand…"
                       value={themeName}
                       onChange={(e) => { setThemeName(e.target.value); setHasUnsavedChanges(true); }}
-                      className="w-full sm:max-w-md px-3.5 py-2.5 border border-slate-200 rounded-xl text-sm font-semibold bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all placeholder:text-slate-400"
+                      className="w-full sm:max-w-md px-3.5 py-2.5 border border-[var(--fin-border)] rounded-xl text-sm font-semibold bg-[var(--fin-table-bg)] focus:outline-none focus:ring-2 focus:ring-[var(--fin-input-ring-focus)] focus:border-transparent transition-all placeholder:text-[var(--fin-aux-text)]"
                     />
                   </div>
                 </div>
               ) : (
                 <div>
-                  <h2 className="text-xl font-black text-slate-900">Theme Customizer</h2>
-                  <p className="text-sm text-slate-500 mt-1">
+                  <h2 className="text-xl font-black text-[var(--fin-heading-primary)]">Theme Customizer</h2>
+                  <p className="text-sm text-[var(--fin-muted-text)] mt-1">
                     Select a theme to edit, or create a new one from scratch.
                   </p>
                 </div>
@@ -388,7 +388,7 @@ export default function ThemePanel() {
                 <motion.span
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
-                  className="text-[10px] font-bold text-amber-600 bg-amber-50 border border-amber-200 px-3 py-1.5 rounded-full uppercase tracking-wider"
+                  className="text-[10px] font-bold text-[var(--fin-badge-warning-text)] bg-[var(--fin-badge-warning-bg)] border border-[var(--fin-badge-warning-border)] px-3 py-1.5 rounded-full uppercase tracking-wider"
                 >
                   Unsaved changes
                 </motion.span>
@@ -398,7 +398,7 @@ export default function ThemePanel() {
               <button
                 onClick={handleReset}
                 disabled={isSubmitting}
-                className="px-4 py-2.5 flex items-center gap-2 text-sm font-bold text-slate-600 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 transition-colors shadow-sm disabled:opacity-50"
+                className="px-4 py-2.5 flex items-center gap-2 text-sm font-bold text-[var(--fin-body-text)] bg-[var(--fin-table-bg)] border border-[var(--fin-border)] rounded-xl hover:bg-[var(--fin-page-bg)] transition-colors shadow-sm disabled:opacity-50"
                 title="Reset color pickers to system defaults (does not change active theme)"
               >
                 <RotateCcw size={15} />
@@ -406,12 +406,12 @@ export default function ThemePanel() {
               </button>
 
               {isEditing && (
-                <div className="flex flex-wrap items-center gap-3 border-l-0 sm:border-l sm:border-slate-200 pl-0 sm:pl-3 w-full sm:w-auto mt-2 sm:mt-0">
+                <div className="flex flex-wrap items-center gap-3 border-l-0 sm:border-l sm:border-[var(--fin-border)] pl-0 sm:pl-3 w-full sm:w-auto mt-2 sm:mt-0">
                   {/* Cancel */}
                   <button
                     onClick={handleCancelEdit}
                     disabled={isSubmitting}
-                    className="px-4 py-2.5 text-sm font-bold text-slate-500 bg-slate-100 border border-slate-200 rounded-xl hover:bg-slate-200 transition-colors disabled:opacity-50"
+                    className="px-4 py-2.5 text-sm font-bold text-[var(--fin-muted-text)] bg-[var(--fin-skeleton-base)] border border-[var(--fin-border)] rounded-xl hover:bg-[var(--fin-skeleton-base)] transition-colors disabled:opacity-50"
                   >
                     {hasUnsavedChanges ? "Discard" : "Cancel"}
                   </button>
@@ -423,14 +423,14 @@ export default function ThemePanel() {
                         <button
                           onClick={handleDeleteCurrent}
                           disabled={isDeleting}
-                          className="px-4 py-2.5 text-sm font-bold text-white bg-rose-600 border border-rose-700 rounded-xl hover:bg-rose-700 transition-colors shadow-sm disabled:opacity-50 flex items-center gap-2"
+                          className="px-4 py-2.5 text-sm font-bold text-[var(--fin-btn-primary-text)] bg-[var(--fin-badge-danger-text)] border border-[var(--fin-badge-danger-text)] rounded-xl hover:bg-[var(--fin-badge-danger-text)] transition-colors shadow-sm disabled:opacity-50 flex items-center gap-2"
                         >
                           {isDeleting ? <Loader2 size={15} className="animate-spin" /> : "Confirm Delete"}
                         </button>
                         <button
                           onClick={() => setConfirmDelete(false)}
                           disabled={isDeleting}
-                          className="px-4 py-2.5 text-sm font-bold text-slate-600 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 transition-colors shadow-sm"
+                          className="px-4 py-2.5 text-sm font-bold text-[var(--fin-body-text)] bg-[var(--fin-table-bg)] border border-[var(--fin-border)] rounded-xl hover:bg-[var(--fin-page-bg)] transition-colors shadow-sm"
                         >
                           Cancel
                         </button>
@@ -439,7 +439,7 @@ export default function ThemePanel() {
                       <button
                         onClick={() => setConfirmDelete(true)}
                         disabled={isSubmitting || isActivating}
-                        className="px-4 py-2.5 flex items-center gap-2 text-sm font-bold text-rose-600 bg-white border border-rose-200 rounded-xl hover:bg-rose-50 transition-colors shadow-sm disabled:opacity-50"
+                        className="px-4 py-2.5 flex items-center gap-2 text-sm font-bold text-[var(--fin-badge-danger-text)] bg-[var(--fin-table-bg)] border border-[var(--fin-badge-danger-border)] rounded-xl hover:bg-[var(--fin-badge-danger-bg)] transition-colors shadow-sm disabled:opacity-50"
                         title="Delete Theme"
                       >
                         <Trash2 size={15} />
@@ -455,8 +455,8 @@ export default function ThemePanel() {
                       disabled={isSubmitting || isActivating || hasUnsavedChanges}
                       className={`px-4 py-2.5 flex items-center gap-2 text-sm font-bold rounded-xl transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed ${
                         currentIsActive
-                          ? "text-emerald-700 bg-emerald-50 border border-emerald-200 hover:bg-emerald-100 cursor-default"
-                          : "text-blue-700 bg-blue-50 border border-blue-200 hover:bg-blue-100"
+                          ? "text-[var(--fin-badge-success-text)] bg-[var(--fin-badge-success-bg)] border border-[var(--fin-badge-success-border)] hover:bg-[var(--fin-badge-success-bg)] cursor-default"
+                          : "text-[var(--fin-badge-broker-text)] bg-[var(--fin-badge-broker-bg)] border border-[var(--fin-badge-broker-border)] hover:bg-[var(--fin-badge-broker-bg)]"
                       }`}
                       title={
                         currentIsActive
@@ -483,7 +483,7 @@ export default function ThemePanel() {
                   <button
                     onClick={handleSave}
                     disabled={isSubmitting || !(themeName || "").trim()}
-                    className="px-6 py-2.5 flex items-center gap-2 text-sm font-bold text-white bg-blue-900 border border-blue-950 rounded-xl hover:bg-blue-950 transition-colors shadow-md disabled:opacity-60 disabled:cursor-not-allowed"
+                    className="px-6 py-2.5 flex items-center gap-2 text-sm font-bold text-[var(--fin-btn-primary-text)] bg-[var(--fin-badge-broker-text)] border border-[var(--fin-badge-broker-border)] rounded-xl hover:bg-[var(--fin-badge-broker-bg)] transition-colors shadow-md disabled:opacity-60 disabled:cursor-not-allowed"
                   >
                     {isSubmitting ? (
                       <Loader2 size={15} className="animate-spin" />
@@ -507,9 +507,9 @@ export default function ThemePanel() {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-2xl text-sm text-blue-700 font-medium flex items-center gap-3"
+                className="mb-6 p-4 bg-[var(--fin-badge-broker-bg)] border border-[var(--fin-badge-broker-border)] rounded-2xl text-sm text-[var(--fin-badge-broker-text)] font-medium flex items-center gap-3"
               >
-                <Pencil size={16} className="shrink-0 text-blue-500" />
+                <Pencil size={16} className="shrink-0 text-[var(--fin-badge-broker-text)]" />
                 Click on any theme card above to edit it, or create a new one. Color changes below will apply only when a theme is selected.
               </motion.div>
             )}
