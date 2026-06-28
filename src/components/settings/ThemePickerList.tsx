@@ -42,8 +42,9 @@ export default function ThemePickerList({
 
   const handleActivate = async (themeId: string) => {
     if (hasUnsavedChanges) {
-      addToast("error", "You have unsaved changes. Save or cancel before switching themes.");
-      return;
+      if (!window.confirm("You have unsaved changes. Discard them and switch themes?")) {
+        return;
+      }
     }
     setActivatingId(themeId);
     try {
@@ -59,8 +60,9 @@ export default function ThemePickerList({
 
   const handleActivateDefault = async () => {
     if (hasUnsavedChanges) {
-      addToast("error", "You have unsaved changes. Save or cancel before switching themes.");
-      return;
+      if (!window.confirm("You have unsaved changes. Discard them and switch themes?")) {
+        return;
+      }
     }
     setActivatingId("default");
     try {
@@ -90,16 +92,18 @@ export default function ThemePickerList({
 
   const handleStartEdit = (theme: SavedTheme) => {
     if (hasUnsavedChanges) {
-      addToast("error", "You have unsaved changes. Save or cancel before editing another theme.");
-      return;
+      if (!window.confirm("You have unsaved changes. Discard them and edit this theme?")) {
+        return;
+      }
     }
     onStartEdit(theme);
   };
 
   const handleStartNew = () => {
     if (hasUnsavedChanges) {
-      addToast("error", "You have unsaved changes. Save or cancel before creating a new theme.");
-      return;
+      if (!window.confirm("You have unsaved changes. Discard them and create a new theme?")) {
+        return;
+      }
     }
     onStartNew();
   };

@@ -53,15 +53,14 @@ export default function DistributorLoginPage() {
       const fullPhone = `${phoneInfo.countryCode}${phoneInfo.number.replace(/\D/g, "")}`;
       const response = await authService.verifyOtp(fullPhone, otp);
 
-      // if (response.data?.user?.company_logo) {
-      //   localStorage.setItem(
-      //     "company_logo_base64",
-      //     response.data.user.company_logo,
-      //   );
-      // }
+      // Store company logo so both sidebars can display it without an extra API call
+      if (response.data?.user?.company_logo) {
+        try {
+          localStorage.setItem("company_logo_base64", response.data.user.company_logo);
+        } catch (_) {}
+      }
 
       if (response.success) {
-        // Updated to pass 'staff' and the user's ID
         setAuthCookies(
           response.data.access_token,
           response.data.refresh_token,

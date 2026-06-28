@@ -30,14 +30,19 @@ export default function LoginPage() {
       // Navigate to the exact location of the token in your JSON
       const actualToken = response.data?.access_token;
 
-      if (actualToken) {
-        setAuthCookies(actualToken, undefined, "investor");
-      } else {
-        // If we still can't find it, throw an error instead of using a dummy session
-        throw new Error(
-          "API connected, but access_token was missing in the data object.",
-        );
+      if (!actualToken) {
+        throw new Error("API connected, but access_token was missing in the data object.");
       }
+
+      // Store company logo so InvestorSidebar can display it without extra API calls
+      if (response.data?.investor?.logo_base64) {
+        try {
+          localStorage.setItem("company_logo_base64", response.data.investor.logo_base64);
+        } catch (_) {}
+      }
+
+      // Store access token
+      setAuthCookies(actualToken, undefined, "investor");
 
       // Redirect seamlessly to the dashboard
       router.push("/investor");

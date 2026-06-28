@@ -20,20 +20,36 @@ let toastCounter = 0;
 
 // ─── Default CSS variable values ─────────────────────────────────────────────
 const DEFAULT_VARS: Record<string, string> = {
+  // Full brand scale — must be complete so preview pane is fully isolated
+  "--fin-brand-50":  "#f0f4fa",
+  "--fin-brand-100": "#e3ecf7",
+  "--fin-brand-200": "#cddcf0",
+  "--fin-brand-300": "#abc5e6",
+  "--fin-brand-400": "#83a8d9",
   "--fin-brand-500": "#658ccb",
   "--fin-brand-600": "#3d60ab",
+  "--fin-brand-700": "#334e8f",
+  "--fin-brand-800": "#2b4177",
   "--fin-brand-900": "#263760",
+  "--fin-brand-950": "#18223e",
+  // Page & surfaces
   "--fin-page-bg": "#f8fafc",
   "--fin-page-bg-subtle": "#f1f5f9",
   "--fin-content-surface": "#ffffff",
   "--fin-sidebar-bg": "#ffffff",
+  // Typography
   "--fin-heading-primary": "#0f172a",
   "--fin-heading-secondary": "#1e293b",
   "--fin-heading-tertiary": "#334155",
   "--fin-body-text": "#475569",
   "--fin-muted-text": "#64748b",
+  "--fin-aux-text": "#94a3b8",
+  "--fin-overline-text": "#94a3b8",
+  "--fin-link-text": "#3d60ab",
+  // Borders
   "--fin-border": "#e2e8f0",
   "--fin-border-subtle": "#f1f5f9",
+  // Buttons
   "--fin-btn-primary-bg": "#3d60ab",
   "--fin-btn-primary-bg-hover": "#263760",
   "--fin-btn-primary-text": "#ffffff",
@@ -41,24 +57,45 @@ const DEFAULT_VARS: Record<string, string> = {
   "--fin-btn-secondary-bg-hover": "#f8fafc",
   "--fin-btn-secondary-text": "#334155",
   "--fin-btn-secondary-border": "#e2e8f0",
+  // KPI Cards
   "--fin-kpi-bg": "#ffffff",
   "--fin-kpi-border": "#e2e8f0",
   "--fin-kpi-label": "#64748b",
   "--fin-kpi-value-revealed": "#0f172a",
   "--fin-kpi-icon-color": "#64748b",
+  "--fin-kpi-accent-bar": "#658ccb",
+  // Sidebar
   "--fin-sidebar-item-active-bg": "#3d60ab",
   "--fin-sidebar-item-hover-bg": "#f0f4fa",
   "--fin-sidebar-brand-label": "#3d60ab",
+  // Ribbon
+  "--fin-ribbon-bg": "#ffffff",
+  "--fin-ribbon-border": "rgba(226,232,240,0.60)",
+  "--fin-ribbon-label": "#94a3b8",
+  "--fin-ribbon-value": "#0f172a",
+  "--fin-ribbon-highlight-value": "#3d60ab",
+  // Modals
+  "--fin-modal-bg": "#ffffff",
+  "--fin-modal-border": "#e2e8f0",
+  "--fin-modal-tab-active-border": "#3d60ab",
+  // Filters & Pagination
+  "--fin-filter-option-active-bg": "#3d60ab",
+  "--fin-filter-option-active-text": "#ffffff",
+  "--fin-page-btn-active-bg": "#3d60ab",
+  // Tables
   "--fin-table-header-bg": "#f8fafc",
   "--fin-table-header-text": "#64748b",
   "--fin-table-row-hover-bg": "rgba(248,250,252,0.60)",
   "--fin-table-row-text": "#334155",
+  "--fin-table-row-border": "#f1f5f9",
+  // Charts
   "--fin-chart-color-1": "#3d60ab",
   "--fin-chart-color-2": "#658ccb",
   "--fin-chart-color-3": "#83a8d9",
   "--fin-chart-color-4": "#10b981",
   "--fin-chart-color-5": "#f59e0b",
   "--fin-chart-color-6": "#ef4444",
+  // Status
   "--fin-kpi-positive-text": "#16a34a",
   "--fin-kpi-negative-text": "#dc2626",
   "--fin-analysis-positive-bg": "#f0fdf4",
@@ -111,20 +148,18 @@ export default function ThemePanel() {
       const merged = { ...DEFAULT_VARS, ...editorMode.theme.variables };
       setLocalVars(merged);
       setThemeName(editorMode.theme.name || "");
-      applyPreview(merged);
       setHasUnsavedChanges(false);
     } else if (editorMode.type === "new") {
+      // Start a new theme from the current active vars as a base
       const merged = { ...DEFAULT_VARS, ...variables };
       setLocalVars(merged);
       setThemeName("");
-      applyPreview(merged);
       setHasUnsavedChanges(false);
       setTimeout(() => themeNameRef.current?.focus(), 100);
     } else {
-      // idle: revert to whatever is active
+      // idle: reset editor to active theme
       setLocalVars({ ...DEFAULT_VARS, ...variables });
       setThemeName("");
-      revertPreview();
       setHasUnsavedChanges(false);
     }
     setConfirmDelete(false);
@@ -140,28 +175,29 @@ export default function ThemePanel() {
     setLocalVars((prev) => {
       let updated = { ...prev, [key]: val };
 
-      // When the main brand accent changes, auto-derive the full scale
+      // Auto-derive the full brand scale when the 600 (accent) changes
       if (key === "--fin-brand-600") {
         const scale = deriveColorScale(val);
         updated = { ...updated, ...scale };
-        // Also sync sidebar active, button primary, link colors to new brand
+        // Sync all tokens that should always match the brand accent
         updated["--fin-sidebar-item-active-bg"] = val;
         updated["--fin-sidebar-brand-label"] = val;
         updated["--fin-btn-primary-bg"] = val;
+        updated["--fin-btn-primary-bg-hover"] = scale["--fin-brand-700"] ?? val;
         updated["--fin-link-text"] = val;
         updated["--fin-heading-secondary"] = val;
         updated["--fin-kpi-value-revealed"] = val;
-        updated["--fin-kpi-accent-bar"] = scale["--fin-brand-500"] || val;
+        updated["--fin-kpi-accent-bar"] = scale["--fin-brand-500"] ?? val;
         updated["--fin-filter-option-active-bg"] = val;
         updated["--fin-page-btn-active-bg"] = val;
         updated["--fin-chart-color-1"] = val;
+        updated["--fin-modal-tab-active-border"] = val;
       }
-
-      applyPreview(updated);
+      // No applyPreview here — localVars flows to ThemePreviewPane via props
       return updated;
     });
     setHasUnsavedChanges(true);
-  }, [applyPreview]);
+  }, []); // No dependencies needed — no external calls
 
   const handleSave = async () => {
     if (!(themeName || "").trim()) {
@@ -172,21 +208,29 @@ export default function ThemePanel() {
     setIsSubmitting(true);
     try {
       if (editorMode.type === "edit") {
-        await updateSavedTheme(editorMode.theme.id, themeName.trim(), localVars);
-        // If this is the active theme, reactivate to push updated vars to everyone
+        // Update the saved theme in the DB
+        const updated = await updateSavedTheme(
+          editorMode.theme.id,
+          themeName.trim(),
+          localVars,
+        );
+        // updateSavedTheme in context already re-activates if it's the active theme
         if (activeThemeId === editorMode.theme.id) {
-          await activateTheme(editorMode.theme.id);
           addToast("success", `"${themeName.trim()}" updated and live across your company.`);
         } else {
-          addToast("success", `"${themeName.trim()}" updated and saved.`);
+          addToast("success", `"${themeName.trim()}" saved. Use "Set Active" to apply it.`);
         }
-        setEditorMode({ type: "edit", theme: { ...editorMode.theme, name: themeName.trim(), variables: localVars } });
+        setEditorMode({
+          type: "edit",
+          theme: { ...editorMode.theme, name: themeName.trim(), variables: localVars },
+        });
       } else {
-        // 1. Save the theme to DB
+        // Save as a new theme — does NOT auto-activate
         const saved = await saveTheme(themeName.trim(), localVars);
-        // 2. Immediately activate it for the company so all users see it
-        await activateTheme(saved.id);
-        addToast("success", `"${saved.name}" saved and activated for your company.`);
+        addToast(
+          "success",
+          `"${saved.name}" saved. Click "Set Active" to apply it company-wide.`,
+        );
         setEditorMode({ type: "edit", theme: saved });
       }
       setHasUnsavedChanges(false);
@@ -204,6 +248,8 @@ export default function ThemePanel() {
     setLocalVars({ ...DEFAULT_VARS });
     if (isEditing) {
       applyPreview({ ...DEFAULT_VARS });
+    } else {
+      setEditorMode({ type: "new" });
     }
     setHasUnsavedChanges(true); // Mark as changed so user knows to save if they want
     addToast("success", "Color inputs reset to system defaults. Save to apply.");
@@ -367,11 +413,11 @@ export default function ThemePanel() {
                     disabled={isSubmitting}
                     className="px-4 py-2.5 text-sm font-bold text-slate-500 bg-slate-100 border border-slate-200 rounded-xl hover:bg-slate-200 transition-colors disabled:opacity-50"
                   >
-                    Cancel
+                    {hasUnsavedChanges ? "Discard" : "Cancel"}
                   </button>
                   
                   {/* Delete Theme */}
-                  {editorMode.type === "edit" && !currentIsActive && (
+                  {editorMode.type === "edit" && (
                     confirmDelete ? (
                       <div className="flex gap-1 animate-in fade-in slide-in-from-right-4 duration-200">
                         <button
@@ -402,16 +448,34 @@ export default function ThemePanel() {
                     )
                   )}
 
-                  {/* Apply Theme */}
-                  {editorMode.type === "edit" && !currentIsActive && (
+                  {/* Set Active button — shown when in edit mode */}
+                  {editorMode.type === "edit" && (
                     <button
                       onClick={handleActivateCurrent}
                       disabled={isSubmitting || isActivating || hasUnsavedChanges}
-                      className="px-4 py-2.5 flex items-center gap-2 text-sm font-bold text-blue-700 bg-blue-50 border border-blue-200 rounded-xl hover:bg-blue-100 transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
-                      title={hasUnsavedChanges ? "Save changes before applying" : "Apply as active theme"}
+                      className={`px-4 py-2.5 flex items-center gap-2 text-sm font-bold rounded-xl transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed ${
+                        currentIsActive
+                          ? "text-emerald-700 bg-emerald-50 border border-emerald-200 hover:bg-emerald-100 cursor-default"
+                          : "text-blue-700 bg-blue-50 border border-blue-200 hover:bg-blue-100"
+                      }`}
+                      title={
+                        currentIsActive
+                          ? "This is the active theme"
+                          : hasUnsavedChanges
+                            ? "Save changes before activating"
+                            : "Apply as the active theme for your entire company"
+                      }
                     >
-                      {isActivating ? <Loader2 size={15} className="animate-spin" /> : <Zap size={15} />}
-                      <span className="hidden xl:inline">Set Active</span>
+                      {isActivating ? (
+                        <Loader2 size={15} className="animate-spin" />
+                      ) : currentIsActive ? (
+                        <CheckCircle2 size={15} />
+                      ) : (
+                        <Zap size={15} />
+                      )}
+                      <span className="hidden xl:inline">
+                        {currentIsActive ? "Active" : "Set Active"}
+                      </span>
                     </button>
                   )}
 
@@ -427,9 +491,7 @@ export default function ThemePanel() {
                       <Save size={15} />
                     )}
                     <span>
-                      {editorMode.type === "edit"
-                        ? "Save Changes"
-                        : "Save & Activate"}
+                      {editorMode.type === "edit" ? "Save Changes" : "Save Theme"}
                     </span>
                   </button>
                 </div>

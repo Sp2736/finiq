@@ -44,7 +44,8 @@ async function fetchWithConfig<T>(
     });
 
     // ─── REFRESH TOKEN INTERCEPTOR ───
-    if (response.status === 401 && !endpoint.includes("/auth/refresh")) {
+    // Investors do not use refresh tokens (their JWT lasts 7 days), so skip refresh logic for them.
+    if (response.status === 401 && !endpoint.includes("/auth/refresh") && portal === "staff") {
       const refreshToken = getCookieValue(`${portal}-refresh-token`);
       const userId = getCookieValue(`${portal}-user-id`);
 
@@ -52,14 +53,11 @@ async function fetchWithConfig<T>(
         if (!isRefreshing) {
           isRefreshing = true;
 
-          // Execute refresh token request
+          // Execute refresh token request (only for staff)
           refreshPromise = fetch(`${baseUrl}/auth/refresh`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              user_id: userId,
-              refresh_token: refreshToken,
-            }),
+            body: JSON.stringify({ user_id: userId, refresh_token: refreshToken }),
           })
             .then((res) => res.json())
             .then((data) => {
