@@ -170,12 +170,12 @@ const SyncedSlider: React.FC<SyncedSliderProps> = ({
   return (
     <div className="space-y-3">
       <div className="flex justify-between items-center">
-        <label className="text-xs font-black uppercase text-slate-500">
+        <label className="text-xs font-black uppercase text-[var(--fin-muted-text)]">
           {label}
         </label>
-        <div className="flex items-center bg-investor-50 px-3 py-1.5 rounded-md border border-distributor-100 focus-within:border-distributor-500 transition-colors">
+        <div className="flex items-center bg-[var(--fin-brand-50)] px-3 py-1.5 rounded-md border border-[var(--fin-brand-100)] focus-within:border-[var(--fin-brand-500)] transition-colors">
           {unit === "₹" && (
-            <span className="text-sm font-black text-distributor-700 mr-1">
+            <span className="text-sm font-black text-[var(--fin-brand-700)] mr-1">
               ₹
             </span>
           )}
@@ -184,11 +184,11 @@ const SyncedSlider: React.FC<SyncedSliderProps> = ({
             value={localStr}
             onChange={handleTextChange}
             onBlur={handleBlur}
-            className="bg-transparent text-sm font-black text-distributor-700 outline-none w-24 text-right appearance-none"
+            className="bg-transparent text-sm font-black text-[var(--fin-brand-700)] outline-none w-24 text-right appearance-none"
             style={{ MozAppearance: "textfield" }}
           />
           {unit !== "₹" && (
-            <span className="text-sm font-black text-distributor-700 ml-1 whitespace-nowrap">
+            <span className="text-sm font-black text-[var(--fin-brand-700)] ml-1 whitespace-nowrap">
               {unit}
             </span>
           )}
@@ -201,11 +201,13 @@ const SyncedSlider: React.FC<SyncedSliderProps> = ({
         step={step}
         value={value}
         onChange={handleSliderChange}
-        className="w-full h-1.5 bg-slate-200 rounded-md appearance-none cursor-pointer accent-distributor-600"
+        className="w-full h-1.5 bg-[var(--fin-skeleton-base)] rounded-md appearance-none cursor-pointer accent-[var(--fin-brand-600)]"
       />
     </div>
   );
 };
+
+import { useChartTheme } from "@/hooks/useChartTheme";
 
 export default function ReverseEMICalculator() {
   // ─── STATE MANAGEMENT ───
@@ -216,6 +218,9 @@ export default function ReverseEMICalculator() {
 
   // SIP Offset States
   const [sipRate, setSipRate] = useState<number>(12); // Default 12%
+
+  // ─── DYNAMIC CHART COLORS ───
+  const chartColors = useChartTheme();
 
   // ─── DYNAMIC CONFIG ───
   const limits = {
@@ -294,32 +299,32 @@ export default function ReverseEMICalculator() {
     if (active && payload && payload.length) {
       const data = payload[0].payload;
       return (
-        <div className="bg-white p-3 rounded-md border border-slate-200 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.1)] min-w-[210px] text-xs z-50">
-          <p className="font-bold text-slate-500 mb-2 border-b border-slate-100 pb-2 flex justify-between">
+        <div className="bg-[var(--fin-table-bg)] p-3 rounded-md border border-[var(--fin-border)] shadow-[0_4px_20px_-4px_rgba(0,0,0,0.1)] min-w-[210px] text-xs z-50">
+          <p className="font-bold text-[var(--fin-muted-text)] mb-2 border-b border-[var(--fin-border-subtle)] pb-2 flex justify-between">
             <span>Duration: {data.duration} Years</span>
           </p>
           <div className="space-y-1.5">
             <div className="flex justify-between gap-4">
-              <span className="text-slate-500 font-medium">Monthly EMI</span>
-              <span className="font-bold text-slate-700">
+              <span className="text-[var(--fin-muted-text)] font-medium">Monthly EMI</span>
+              <span className="font-bold text-[var(--fin-table-row-text)]">
                 {formatCurrency(data.emi)}
               </span>
             </div>
             <div className="flex justify-between gap-4">
-              <span className="text-slate-500 font-medium">Principal</span>
+              <span className="text-[var(--fin-muted-text)] font-medium">Principal</span>
               <span className="font-bold text-[var(--fin-chart-color-4)]">
                 {formatCurrency(data.principal)}
               </span>
             </div>
             <div className="flex justify-between gap-4">
-              <span className="text-slate-500 font-medium">Total Interest</span>
-              <span className="font-bold text-[#8b5cf6]">
+              <span className="text-[var(--fin-muted-text)] font-medium">Total Interest</span>
+              <span className="font-bold text-[var(--fin-chart-color-1)]">
                 {formatCurrency(data.totalInterest)}
               </span>
             </div>
-            <div className="flex justify-between gap-4 pt-1.5 mt-1.5 border-t border-slate-100 border-dashed">
-              <span className="font-bold text-slate-800">Total Repayment</span>
-              <span className="font-black text-distributor-700">
+            <div className="flex justify-between gap-4 pt-1.5 mt-1.5 border-t border-[var(--fin-border-subtle)] border-dashed">
+              <span className="font-bold text-[var(--fin-heading-tertiary)]">Total Repayment</span>
+              <span className="font-black text-[var(--fin-brand-700)]">
                 {formatCurrency(data.totalRepayment)}
               </span>
             </div>
@@ -336,10 +341,10 @@ export default function ReverseEMICalculator() {
       {/* ─── HEADER ─── */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 shrink-0">
         <div>
-          <h1 className="text-2xl lg:text-3xl font-black tracking-tight text-slate-900 mb-1">
-            Reverse <span className="text-investor-600">EMI</span>
+          <h1 className="text-2xl lg:text-3xl font-black tracking-tight text-[var(--fin-heading-primary)] mb-1">
+            Reverse <span className="text-[var(--fin-brand-600)]">EMI</span>
           </h1>
-          <p className="text-sm font-medium text-slate-500">
+          <p className="text-sm font-medium text-[var(--fin-muted-text)]">
             Calculate loan repayment and formulate a SIP offset strategy.
           </p>
         </div>
@@ -354,7 +359,7 @@ export default function ReverseEMICalculator() {
       ========================================= */}
       <div className="grid lg:grid-cols-12 gap-6 lg:gap-8 shrink-0">
         {/* ─── LOAN INPUTS ─── */}
-        <div className="lg:col-span-5 bg-white p-6 sm:p-8 rounded-md border relative"
+        <div className="lg:col-span-5 bg-[var(--fin-table-bg)] p-6 sm:p-8 rounded-md border relative"
              style={{ borderColor: 'var(--fin-kpi-border)', boxShadow: '0 4px 15px var(--fin-kpi-shadow)' }}>
           <div className="z-10 space-y-8">
             <SyncedSlider
@@ -388,7 +393,7 @@ export default function ReverseEMICalculator() {
         </div>
 
         {/* ─── LOAN CHART ─── */}
-        <div className="lg:col-span-7 bg-white p-6 rounded-md border h-[360px] flex flex-col relative z-0"
+        <div className="lg:col-span-7 bg-[var(--fin-table-bg)] p-6 rounded-md border h-[360px] flex flex-col relative z-0"
              style={{ borderColor: 'var(--fin-kpi-border)', boxShadow: '0 4px 15px var(--fin-kpi-shadow)' }}>
           <ResponsiveContainer width="100%" height="100%">
             <BarChart
@@ -398,18 +403,18 @@ export default function ReverseEMICalculator() {
               <CartesianGrid
                 strokeDasharray="3 3"
                 vertical={false}
-                stroke="#f1f5f9"
+                stroke={chartColors.grid}
               />
               <XAxis
                 dataKey="yearLabel"
-                tick={{ fontSize: 11, fontWeight: 600, fill: "#64748b" }}
+                tick={{ fontSize: 11, fontWeight: 600, fill: chartColors.text }}
                 axisLine={false}
                 tickLine={false}
                 dy={12}
               />
               <YAxis
                 tickFormatter={(val) => formatCompactCurrency(val)}
-                tick={{ fontSize: 11, fontWeight: 500, fill: "#94a3b8" }}
+                tick={{ fontSize: 11, fontWeight: 500, fill: chartColors.textMuted }}
                 axisLine={false}
                 tickLine={false}
                 width={70}
@@ -417,13 +422,13 @@ export default function ReverseEMICalculator() {
                   value: "Repayment Value",
                   angle: -90,
                   position: "insideLeft",
-                  style: { fontSize: 11, fill: "#64748b", fontWeight: 700 },
+                  style: { fontSize: 11, fill: chartColors.text, fontWeight: 700 },
                   dx: -5,
                 }}
               />
               <Tooltip
                 content={<CustomTooltip />}
-                cursor={{ fill: "rgba(61, 96, 171, 0.04)" }}
+                cursor={{ fill: chartColors.tooltipBg }}
               />
               <Legend
                 verticalAlign="bottom"
@@ -432,7 +437,7 @@ export default function ReverseEMICalculator() {
                 wrapperStyle={{
                   fontSize: "11px",
                   fontWeight: 600,
-                  color: "#64748b",
+                  color: chartColors.text,
                   paddingTop: "20px",
                 }}
               />
@@ -442,7 +447,7 @@ export default function ReverseEMICalculator() {
                 dataKey="principal"
                 name="Principal Amount"
                 stackId="a"
-                fill="var(--fin-chart-color-4)"
+                fill={chartColors.color4}
                 radius={[0, 0, 4, 4]}
                 maxBarSize={60}
                 animationDuration={800}
@@ -451,7 +456,7 @@ export default function ReverseEMICalculator() {
                 dataKey="totalInterest"
                 name="Total Interest"
                 stackId="a"
-                fill="var(--fin-chart-color-1)"
+                fill={chartColors.color1}
                 radius={[4, 4, 0, 0]}
                 maxBarSize={60}
                 animationDuration={800}
@@ -467,7 +472,7 @@ export default function ReverseEMICalculator() {
           {
             label: "Monthly EMI",
             val: loanResults.emi,
-            color: "text-slate-900",
+            color: "text-[var(--fin-heading-primary)]",
           },
           {
             label: "Principal Amount",
@@ -483,16 +488,16 @@ export default function ReverseEMICalculator() {
             label: "Total Value (Repayment)",
             val: loanResults.totalRepayment,
             color:
-              "text-distributor-700 bg-investor-50 -m-5 p-5 h-[calc(100%+40px)] rounded-md flex flex-col justify-center border border-distributor-100",
+              "text-[var(--fin-brand-700)] bg-[var(--fin-brand-50)] -m-5 p-5 h-[calc(100%+40px)] rounded-md flex flex-col justify-center border border-[var(--fin-brand-100)]",
           },
         ].map((card, i) => (
           <div
             key={i}
-            className="bg-white p-5 rounded-md border relative overflow-hidden"
+            className="bg-[var(--fin-table-bg)] p-5 rounded-md border relative overflow-hidden"
             style={{ borderColor: 'var(--fin-kpi-border)', boxShadow: '0 4px 15px var(--fin-kpi-shadow)' }}
           >
             <div className={card.color.includes("bg-") ? card.color : ""}>
-              <p className="text-[10px] font-black uppercase text-slate-400 tracking-widest relative z-10">
+              <p className="text-[10px] font-black uppercase text-[var(--fin-aux-text)] tracking-widest relative z-10">
                 {card.label}
               </p>
               <p
@@ -508,14 +513,14 @@ export default function ReverseEMICalculator() {
       {/* =========================================
           SECTION 2: SIP OFFSET ANALYZER
       ========================================= */}
-      <div className="mt-4 pt-8 border-t border-slate-200/60 shrink-0">
-        <h2 className="text-xl font-black text-slate-900 tracking-tight mb-6">
+      <div className="mt-4 pt-8 border-t border-[var(--fin-border)]/60 shrink-0">
+        <h2 className="text-xl font-black text-[var(--fin-heading-primary)] tracking-tight mb-6">
           SIP Offset Strategy
         </h2>
 
         <div className="grid lg:grid-cols-12 gap-6 lg:gap-8">
           {/* SIP RATE INPUT */}
-          <div className="lg:col-span-4 bg-white p-6 rounded-md border flex flex-col justify-center"
+          <div className="lg:col-span-4 bg-[var(--fin-table-bg)] p-6 rounded-md border flex flex-col justify-center"
                style={{ borderColor: 'var(--fin-kpi-border)', boxShadow: '0 4px 15px var(--fin-kpi-shadow)' }}>
             <div className="z-10">
               <SyncedSlider
@@ -528,7 +533,7 @@ export default function ReverseEMICalculator() {
                 unit="%"
               />
             </div>
-            <p className="text-xs text-slate-400 font-medium mt-4">
+            <p className="text-xs text-[var(--fin-aux-text)] font-medium mt-4">
               Adjust the return rate to see how much monthly SIP is required to
               recover your loan costs over {tenure} years.
             </p>
@@ -537,27 +542,27 @@ export default function ReverseEMICalculator() {
           {/* OFFSET RESULT BLOCKS */}
           <div className="lg:col-span-8 grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Block 1: Offset Interest Only */}
-            <div className="bg-slate-50 p-6 rounded-md border flex flex-col justify-between"
+            <div className="bg-[var(--fin-page-bg)] p-6 rounded-md border flex flex-col justify-between"
                  style={{ borderColor: 'var(--fin-kpi-border)', boxShadow: '0 4px 15px var(--fin-kpi-shadow)' }}>
               <div>
-                <p className="text-[10px] font-black uppercase text-slate-400 tracking-widest mb-1">
+                <p className="text-[10px] font-black uppercase text-[var(--fin-aux-text)] tracking-widest mb-1">
                   Target Recovery
                 </p>
-                <h3 className="text-base font-black text-slate-800 mb-6">
+                <h3 className="text-base font-black text-[var(--fin-heading-tertiary)] mb-6">
                   Recover Total Interest Only
                 </h3>
 
                 <div className="space-y-4">
-                  <div className="flex justify-between items-center border-b border-slate-200/60 pb-3">
-                    <span className="text-sm font-semibold text-slate-500">
+                  <div className="flex justify-between items-center border-b border-[var(--fin-border)]/60 pb-3">
+                    <span className="text-sm font-semibold text-[var(--fin-muted-text)]">
                       Required SIP / Mo
                     </span>
-                    <span className="text-lg font-black text-distributor-700">
+                    <span className="text-lg font-black text-[var(--fin-brand-700)]">
                       {formatCurrency(sipInterestOffset.requiredSIP)}
                     </span>
                   </div>
-                  <div className="flex justify-between items-center border-b border-slate-200/60 pb-3">
-                    <span className="text-sm font-semibold text-slate-500">
+                  <div className="flex justify-between items-center border-b border-[var(--fin-border)]/60 pb-3">
+                    <span className="text-sm font-semibold text-[var(--fin-muted-text)]">
                       Expected Returns Generated
                     </span>
                     <span className="text-lg font-black text-[var(--fin-chart-color-4)]">
@@ -565,10 +570,10 @@ export default function ReverseEMICalculator() {
                     </span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="text-sm font-semibold text-slate-500">
+                    <span className="text-sm font-semibold text-[var(--fin-muted-text)]">
                       Recovered Value
                     </span>
-                    <span className="text-lg font-black text-slate-900">
+                    <span className="text-lg font-black text-[var(--fin-heading-primary)]">
                       {formatCurrency(sipInterestOffset.corpusAtMaturity)}
                     </span>
                   </div>
@@ -577,27 +582,27 @@ export default function ReverseEMICalculator() {
             </div>
 
             {/* Block 2: Offset Entire Repayment */}
-            <div className="bg-investor-50 p-6 rounded-md border flex flex-col justify-between"
+            <div className="bg-[var(--fin-brand-50)] p-6 rounded-md border flex flex-col justify-between"
                  style={{ borderColor: 'var(--fin-kpi-border)', boxShadow: '0 4px 15px var(--fin-kpi-shadow)' }}>
               <div>
-                <p className="text-[10px] font-black uppercase text-distributor-400 tracking-widest mb-1">
+                <p className="text-[10px] font-black uppercase text-[var(--fin-brand-400)] tracking-widest mb-1">
                   Target Recovery
                 </p>
-                <h3 className="text-base font-black text-distributor-900 mb-6">
+                <h3 className="text-base font-black text-[var(--fin-brand-900)] mb-6">
                   Recover Entire Repayment Amount
                 </h3>
 
                 <div className="space-y-4">
-                  <div className="flex justify-between items-center border-b border-distributor-200/60 pb-3">
-                    <span className="text-sm font-semibold text-distributor-600/80">
+                  <div className="flex justify-between items-center border-b border-[var(--fin-brand-200)]/60 pb-3">
+                    <span className="text-sm font-semibold text-[var(--fin-brand-600)]/80">
                       Required SIP / Mo
                     </span>
-                    <span className="text-lg font-black text-distributor-700">
+                    <span className="text-lg font-black text-[var(--fin-brand-700)]">
                       {formatCurrency(sipTotalOffset.requiredSIP)}
                     </span>
                   </div>
-                  <div className="flex justify-between items-center border-b border-distributor-200/60 pb-3">
-                    <span className="text-sm font-semibold text-distributor-600/80">
+                  <div className="flex justify-between items-center border-b border-[var(--fin-brand-200)]/60 pb-3">
+                    <span className="text-sm font-semibold text-[var(--fin-brand-600)]/80">
                       Expected Returns Generated
                     </span>
                     <span className="text-lg font-black text-[var(--fin-chart-color-4)]">
@@ -605,10 +610,10 @@ export default function ReverseEMICalculator() {
                     </span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="text-sm font-semibold text-distributor-600/80">
+                    <span className="text-sm font-semibold text-[var(--fin-brand-600)]/80">
                       Recovered Value
                     </span>
-                    <span className="text-lg font-black text-slate-900">
+                    <span className="text-lg font-black text-[var(--fin-heading-primary)]">
                       {formatCurrency(sipTotalOffset.corpusAtMaturity)}
                     </span>
                   </div>

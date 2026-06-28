@@ -1,11 +1,50 @@
 "use client";
 
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
+
+function hexToRgb(hex: string) {
+  if (!hex) return "255, 255, 255";
+  const cleanHex = hex.replace('#', '').trim();
+  if (cleanHex.length !== 6) return "255, 255, 255";
+  const r = parseInt(cleanHex.substring(0, 2), 16);
+  const g = parseInt(cleanHex.substring(2, 4), 16);
+  const b = parseInt(cleanHex.substring(4, 6), 16);
+  return `${r}, ${g}, ${b}`;
+}
+
+const getCSSVar = (name: string, fallback: string) => {
+  if (typeof window === "undefined") return fallback;
+  return (
+    getComputedStyle(document.documentElement).getPropertyValue(name).trim() ||
+    fallback
+  );
+};
 
 export default function InvestorFluidBackground() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  
+  const [colors, setColors] = useState({
+    color50: "248, 250, 252",
+    color100: "241, 245, 249",
+    color200: "224, 231, 255",
+    color400: "99, 102, 241",
+    color600: "37, 99, 235",
+    color800: "30, 58, 138",
+    color950: "2, 6, 23"
+  });
 
   useEffect(() => {
+    const rootStyle = getComputedStyle(document.documentElement);
+    setColors({
+      color50: hexToRgb(rootStyle.getPropertyValue('--fin-brand-50')),
+      color100: hexToRgb(rootStyle.getPropertyValue('--fin-brand-100')),
+      color200: hexToRgb(rootStyle.getPropertyValue('--fin-brand-200')),
+      color400: hexToRgb(rootStyle.getPropertyValue('--fin-brand-400')),
+      color600: hexToRgb(rootStyle.getPropertyValue('--fin-brand-600')),
+      color800: hexToRgb(rootStyle.getPropertyValue('--fin-brand-800')),
+      color950: hexToRgb(rootStyle.getPropertyValue('--fin-brand-950'))
+    });
+
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext("2d");
@@ -27,10 +66,13 @@ export default function InvestorFluidBackground() {
       const w = canvas.width;
       const h = canvas.height;
 
-      // 1. Base Background: Pure White to investor-50 (#eef2ff)
+      const pageBg = getCSSVar("--fin-page-bg", "#f8fafc");
+      const surfaceBg = getCSSVar("--fin-content-surface", "#ffffff");
+
+      // 1. Base Background: Pure White to [var(--fin-brand-50)] (#eef2ff)
       const bgGrad = ctx.createLinearGradient(0, 0, w, h);
-      bgGrad.addColorStop(0, "#ffffff"); 
-      bgGrad.addColorStop(1, "#eef2ff"); 
+      bgGrad.addColorStop(0, surfaceBg);
+      bgGrad.addColorStop(1, pageBg);
       ctx.fillStyle = bgGrad;
       ctx.fillRect(0, 0, w, h);
 
@@ -65,14 +107,14 @@ export default function InvestorFluidBackground() {
         ctx.fill();
       };
 
-      // 2. Top Wave: investor-100 to investor-200 (Soft depth)
-      drawWave(h * 0.35, 120, 1.5, 0, "rgba(224, 231, 255, 0.5)", "rgba(199, 210, 254, 0.7)", true);
+      // 2. Top Wave: Pearlescent Ice Blue (Keeps dark text highly readable)
+      drawWave(h * 0.35, 120, 1.5, 0, `rgba(${colors.color100}, 0.8)`, `rgba(${colors.color200}, 0.9)`, true);
 
-      // 3. Middle Wave: Core Brand Indigo (#4f46e5 / investor-600)
-      drawWave(h * 0.6, 150, 1.2, 2, "rgba(99, 102, 241, 0.8)", "rgba(79, 70, 229, 0.9)", false);
+      // 3. Middle Wave: Modern SaaS Indigo / Azure Blue (Tech & Intelligence)
+      drawWave(h * 0.6, 150, 1.2, 2, `rgba(${colors.color400}, 0.85)`, `rgba(${colors.color600}, 0.9)`, false);
 
-      // 4. Bottom Wave: investor-800 to investor-950 (Deep Wealth Stability)
-      drawWave(h * 0.75, 100, 1.8, 4, "rgba(55, 48, 163, 0.95)", "rgba(30, 27, 75, 1)", false);
+      // 4. Bottom Wave: Deep Institutional Navy (Security & Stability)
+      drawWave(h * 0.75, 100, 1.8, 4, `rgba(${colors.color800}, 0.95)`, `rgba(${colors.color950}, 1)`, false);
 
       animationFrameId = requestAnimationFrame(render);
     };

@@ -137,12 +137,12 @@ const SyncedSlider: React.FC<SyncedSliderProps> = ({
   return (
     <div className="space-y-3">
       <div className="flex justify-between items-center">
-        <label className="text-xs font-black uppercase text-slate-500">
+        <label className="text-xs font-black uppercase text-[var(--fin-muted-text)]">
           {label}
         </label>
-        <div className="flex items-center bg-investor-50 px-3 py-1.5 rounded-md border border-distributor-100 focus-within:border-distributor-500 transition-colors">
+        <div className="flex items-center bg-[var(--fin-brand-50)] px-3 py-1.5 rounded-md border border-[var(--fin-brand-100)] focus-within:border-[var(--fin-brand-500)] transition-colors">
           {unit === "₹" && (
-            <span className="text-sm font-black text-distributor-700 mr-1">
+            <span className="text-sm font-black text-[var(--fin-brand-700)] mr-1">
               ₹
             </span>
           )}
@@ -151,11 +151,11 @@ const SyncedSlider: React.FC<SyncedSliderProps> = ({
             value={localStr}
             onChange={handleTextChange}
             onBlur={handleBlur}
-            className="bg-transparent text-sm font-black text-distributor-700 outline-none w-24 text-right appearance-none"
+            className="bg-transparent text-sm font-black text-[var(--fin-brand-700)] outline-none w-24 text-right appearance-none"
             style={{ MozAppearance: "textfield" }}
           />
           {unit !== "₹" && (
-            <span className="text-sm font-black text-distributor-700 ml-1 whitespace-nowrap">
+            <span className="text-sm font-black text-[var(--fin-brand-700)] ml-1 whitespace-nowrap">
               {unit}
             </span>
           )}
@@ -168,11 +168,13 @@ const SyncedSlider: React.FC<SyncedSliderProps> = ({
         step={step}
         value={value}
         onChange={handleSliderChange}
-        className="w-full h-1.5 bg-slate-200 rounded-md appearance-none cursor-pointer accent-distributor-600"
+        className="w-full h-1.5 bg-[var(--fin-skeleton-base)] rounded-md appearance-none cursor-pointer accent-[var(--fin-brand-600)]"
       />
     </div>
   );
 };
+
+import { useChartTheme } from "@/hooks/useChartTheme";
 
 export default function SWPCalculator() {
   // ─── STATE MANAGEMENT ───
@@ -180,6 +182,9 @@ export default function SWPCalculator() {
   const [withdrawal, setWithdrawal] = useState<number>(25000); // Default ₹25k / mo
   const [rate, setRate] = useState<number>(10); // Default 10% p.a
   const [duration, setDuration] = useState<number>(10); // Default 10 Yrs
+
+  // ─── DYNAMIC CHART COLORS ───
+  const chartColors = useChartTheme();
 
   // ─── DYNAMIC CONFIG ───
   const limits = {
@@ -249,32 +254,32 @@ export default function SWPCalculator() {
     if (active && payload && payload.length) {
       const data = payload[0].payload;
       return (
-        <div className="bg-white p-3 rounded-md border border-slate-200 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.1)] min-w-[200px] text-xs z-50">
-          <p className="font-bold text-slate-500 mb-2 border-b border-slate-100 pb-2 flex justify-between">
+        <div className="bg-[var(--fin-table-bg)] p-3 rounded-md border border-[var(--fin-border)] shadow-[0_4px_20px_-4px_rgba(0,0,0,0.1)] min-w-[200px] text-xs z-50">
+          <p className="font-bold text-[var(--fin-muted-text)] mb-2 border-b border-[var(--fin-border-subtle)] pb-2 flex justify-between">
             <span>Duration: {data.duration} Years</span>
-            <span className="text-distributor-600">{rate}% p.a</span>
+            <span className="text-[var(--fin-brand-600)]">{rate}% p.a</span>
           </p>
           <div className="space-y-1.5">
             <div className="flex justify-between gap-4">
-              <span className="text-slate-500 font-medium">
+              <span className="text-[var(--fin-muted-text)] font-medium">
                 Initial Investment
               </span>
-              <span className="font-bold text-slate-700">
+              <span className="font-bold text-[var(--fin-table-row-text)]">
                 {formatCurrency(investment)}
               </span>
             </div>
             <div className="flex justify-between gap-4">
-              <span className="text-slate-500 font-medium">
+              <span className="text-[var(--fin-muted-text)] font-medium">
                 Total Withdrawn
               </span>
               <span className="font-bold text-[var(--fin-chart-color-4)]">
                 {formatCurrency(data.withdrawn)}
               </span>
             </div>
-            <div className="flex justify-between gap-4 pt-1.5 mt-1.5 border-t border-slate-100 border-dashed">
-              <span className="font-bold text-slate-800">Remaining Corpus</span>
+            <div className="flex justify-between gap-4 pt-1.5 mt-1.5 border-t border-[var(--fin-border-subtle)] border-dashed">
+              <span className="font-bold text-[var(--fin-heading-tertiary)]">Remaining Corpus</span>
               <span
-                className={`font-black ${data.corpus > 0 ? "text-distributor-700" : "text-red-500"}`}
+                className={`font-black ${data.corpus > 0 ? "text-[var(--fin-brand-700)]" : "text-[var(--fin-badge-danger-text)]"}`}
               >
                 {formatCurrency(data.corpus)}
               </span>
@@ -292,10 +297,10 @@ export default function SWPCalculator() {
       {/* ─── HEADER ─── */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 shrink-0">
         <div>
-          <h1 className="text-2xl lg:text-3xl font-black tracking-tight text-slate-900 mb-1">
-            SWP <span className="text-investor-600">Calculator</span>
+          <h1 className="text-2xl lg:text-3xl font-black tracking-tight text-[var(--fin-heading-primary)] mb-1">
+            SWP <span className="text-[var(--fin-brand-600)]">Calculator</span>
           </h1>
-          <p className="text-sm font-medium text-slate-500">
+          <p className="text-sm font-medium text-[var(--fin-muted-text)]">
             Analyze the sustainability of your systematic withdrawals.
           </p>
         </div>
@@ -308,7 +313,7 @@ export default function SWPCalculator() {
       {/* ─── RESPONSIVE MAIN GRID ─── */}
       <div className="flex flex-col lg:grid lg:grid-cols-12 gap-6 lg:gap-8 shrink-0 w-full">
         {/* ─── INPUTS ─── */}
-        <div className="lg:col-span-5 bg-white p-6 sm:p-8 rounded-md border relative z-20"
+        <div className="lg:col-span-5 bg-[var(--fin-table-bg)] p-6 sm:p-8 rounded-md border relative z-20"
              style={{ borderColor: 'var(--fin-kpi-border)', boxShadow: '0 4px 15px var(--fin-kpi-shadow)' }}>
           <div className="z-10 space-y-8">
             <SyncedSlider
@@ -351,7 +356,7 @@ export default function SWPCalculator() {
         </div>
 
         {/* ─── CHART ─── */}
-        <div className="lg:col-span-7 bg-white p-6 sm:p-8 rounded-md border min-h-[350px] lg:min-h-0 lg:h-full flex flex-col relative z-10"
+        <div className="lg:col-span-7 bg-[var(--fin-table-bg)] p-6 sm:p-8 rounded-md border min-h-[350px] lg:min-h-0 lg:h-full flex flex-col relative z-10"
              style={{ borderColor: 'var(--fin-kpi-border)', boxShadow: '0 4px 15px var(--fin-kpi-shadow)' }}>
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart
@@ -361,18 +366,18 @@ export default function SWPCalculator() {
               <CartesianGrid
                 strokeDasharray="3 3"
                 vertical={false}
-                stroke="#f1f5f9"
+                stroke={chartColors.grid}
               />
               <XAxis
                 dataKey="yearLabel"
-                tick={{ fontSize: 11, fontWeight: 600, fill: "#64748b" }}
+                tick={{ fontSize: 11, fontWeight: 600, fill: chartColors.text }}
                 axisLine={false}
                 tickLine={false}
                 dy={12}
               />
               <YAxis
                 tickFormatter={(val) => formatCompactCurrency(val)}
-                tick={{ fontSize: 11, fontWeight: 500, fill: "#94a3b8" }}
+                tick={{ fontSize: 11, fontWeight: 500, fill: chartColors.textMuted }}
                 axisLine={false}
                 tickLine={false}
                 width={70}
@@ -380,14 +385,14 @@ export default function SWPCalculator() {
                   value: "Value Generated",
                   angle: -90,
                   position: "insideLeft",
-                  style: { fontSize: 11, fill: "#64748b", fontWeight: 700 },
+                  style: { fontSize: 11, fill: chartColors.text, fontWeight: 700 },
                   dx: -5,
                 }}
               />
               <Tooltip
                 content={<CustomTooltip />}
                 cursor={{
-                  stroke: "rgba(61, 96, 171, 0.1)",
+                  stroke: chartColors.tooltipBg,
                   strokeWidth: 2,
                   fill: "transparent",
                 }}
@@ -399,7 +404,7 @@ export default function SWPCalculator() {
                 wrapperStyle={{
                   fontSize: "11px",
                   fontWeight: 600,
-                  color: "#64748b",
+                  color: chartColors.text,
                   paddingTop: "20px",
                 }}
               />
@@ -409,7 +414,7 @@ export default function SWPCalculator() {
                 type="monotone"
                 dataKey="corpus"
                 name="Remaining Corpus"
-                stroke="var(--fin-chart-color-1)"
+                stroke={chartColors.color1}
                 strokeWidth={3}
                 fill="url(#colorCorpus)"
                 animationDuration={800}
@@ -418,7 +423,7 @@ export default function SWPCalculator() {
                 type="monotone"
                 dataKey="withdrawn"
                 name="Total Withdrawn"
-                stroke="var(--fin-chart-color-4)"
+                stroke={chartColors.color4}
                 strokeWidth={3}
                 fill="url(#colorWithdrawn)"
                 fillOpacity={0.1}
@@ -428,12 +433,12 @@ export default function SWPCalculator() {
               {/* Gradients for aesthetics */}
               <defs>
                 <linearGradient id="colorCorpus" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="var(--fin-chart-color-1)" stopOpacity={0.25} />
-                  <stop offset="95%" stopColor="var(--fin-chart-color-1)" stopOpacity={0} />
+                  <stop offset="5%" stopColor={chartColors.color1} stopOpacity={0.25} />
+                  <stop offset="95%" stopColor={chartColors.color1} stopOpacity={0} />
                 </linearGradient>
                 <linearGradient id="colorWithdrawn" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="var(--fin-chart-color-4)" stopOpacity={0.15} />
-                  <stop offset="95%" stopColor="var(--fin-chart-color-4)" stopOpacity={0} />
+                  <stop offset="5%" stopColor={chartColors.color4} stopOpacity={0.15} />
+                  <stop offset="95%" stopColor={chartColors.color4} stopOpacity={0} />
                 </linearGradient>
               </defs>
             </AreaChart>
@@ -447,12 +452,12 @@ export default function SWPCalculator() {
           {
             label: "Total Investment",
             val: investment,
-            color: "text-slate-900",
+            color: "text-[var(--fin-heading-primary)]",
           },
           {
             label: "Monthly Withdrawal",
             val: withdrawal,
-            color: "text-slate-900",
+            color: "text-[var(--fin-heading-primary)]",
           },
           {
             label: "Total Withdrawn",
@@ -462,16 +467,16 @@ export default function SWPCalculator() {
           {
             label: "Final Corpus Value",
             val: results.finalValue,
-            color: `bg-investor-50 -m-5 p-5 h-[calc(100%+40px)] rounded-md flex flex-col justify-center border border-distributor-100 ${results.isDepleted ? "text-red-500" : "text-distributor-700"}`,
+            color: `bg-[var(--fin-brand-50)] -m-5 p-5 h-[calc(100%+40px)] rounded-md flex flex-col justify-center border border-[var(--fin-brand-100)] ${results.isDepleted ? "text-[var(--fin-badge-danger-text)]" : "text-[var(--fin-brand-700)]"}`,
           },
         ].map((card, i) => (
           <div
             key={i}
-            className="bg-white p-5 rounded-md border relative overflow-hidden"
+            className="bg-[var(--fin-table-bg)] p-5 rounded-md border relative overflow-hidden"
             style={{ borderColor: 'var(--fin-kpi-border)', boxShadow: '0 4px 15px var(--fin-kpi-shadow)' }}
           >
             <div className={card.color.includes("bg-") ? card.color : ""}>
-              <p className="text-[10px] font-black uppercase text-slate-400 tracking-widest relative z-10">
+              <p className="text-[10px] font-black uppercase text-[var(--fin-aux-text)] tracking-widest relative z-10">
                 {card.label}
               </p>
               <p

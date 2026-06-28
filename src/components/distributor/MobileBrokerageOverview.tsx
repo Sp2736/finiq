@@ -37,32 +37,32 @@ export default function MobileBrokerageOverview({ data, totals }: { data: any[],
     <div className="flex flex-col space-y-4 pb-16 px-1">
       
       {/* Light Theme Grand Totals Card */}
-      <div className="bg-white p-5 rounded-md border border-slate-200 shadow-sm relative overflow-hidden mb-2">
-        <div className="absolute top-0 right-0 w-32 h-32 bg-distributor-50 rounded-full blur-2xl -mr-10 -mt-10 pointer-events-none" />
-        <h3 className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-4 relative z-10">Grand Totals</h3>
+      <div className="bg-[var(--fin-table-bg)] p-5 rounded-md border border-[var(--fin-border)] shadow-sm relative overflow-hidden mb-2">
+        <div className="absolute top-0 right-0 w-32 h-32 bg-[var(--fin-brand-50)] rounded-full blur-2xl -mr-10 -mt-10 pointer-events-none" />
+        <h3 className="text-[10px] font-black text-[var(--fin-muted-text)] uppercase tracking-widest mb-4 relative z-10">Grand Totals</h3>
         
         <div className="grid grid-cols-2 gap-4 relative z-10 mb-4">
           <div>
-            <p className="text-[10px] text-slate-500 uppercase font-bold tracking-wider mb-1">Gross</p>
-            <p className="text-sm font-black text-slate-900">{formatCurrency(totals.gross)}</p>
+            <p className="text-[10px] text-[var(--fin-muted-text)] uppercase font-bold tracking-wider mb-1">Gross</p>
+            <p className="text-sm font-black text-[var(--fin-heading-primary)]">{formatCurrency(totals.gross)}</p>
           </div>
           <div>
-            <p className="text-[10px] text-distributor-600 uppercase font-bold tracking-wider mb-1">Total Paid</p>
-            <p className="text-sm font-black text-distributor-700">{formatCurrency(grandTotalPaid)}</p>
+            <p className="text-[10px] text-[var(--fin-brand-600)] uppercase font-bold tracking-wider mb-1">Total Paid</p>
+            <p className="text-sm font-black text-[var(--fin-brand-700)]">{formatCurrency(grandTotalPaid)}</p>
           </div>
         </div>
         
-        <div className="pt-3 border-t border-slate-100 relative z-10 flex justify-between items-center">
-          <p className="text-[10px] text-teal-600 uppercase font-bold tracking-wider">Net Receivable</p>
-          <p className="text-lg font-black text-teal-700">{formatCurrency(grandNetReceivable)}</p>
+        <div className="pt-3 border-t border-[var(--fin-border-subtle)] relative z-10 flex justify-between items-center">
+          <p className="text-[10px] text-[var(--fin-badge-broker-text)] uppercase font-bold tracking-wider">Net Receivable</p>
+          <p className="text-lg font-black text-[var(--fin-badge-broker-text)]">{formatCurrency(grandNetReceivable)}</p>
         </div>
       </div>
 
       {/* Hierarchy Cards */}
       {(!flatData || flatData.length === 0) ? (
-        <div className="bg-white p-6 rounded-md border border-slate-200 text-center shadow-sm">
-          <h3 className="text-sm font-bold text-slate-900 mb-1">No Hierarchy Found</h3>
-          <p className="text-slate-500 text-xs">Adjust your search parameters.</p>
+        <div className="bg-[var(--fin-table-bg)] p-6 rounded-md border border-[var(--fin-border)] text-center shadow-sm">
+          <h3 className="text-sm font-bold text-[var(--fin-heading-primary)] mb-1">No Hierarchy Found</h3>
+          <p className="text-[var(--fin-muted-text)] text-xs">Adjust your search parameters.</p>
         </div>
       ) : (
         flatData.map((user) => {
@@ -75,18 +75,18 @@ export default function MobileBrokerageOverview({ data, totals }: { data: any[],
             <div key={user.id} className="flex flex-col mb-1">
               <div 
                 onClick={() => toggleUser(user.id)}
-                className={`bg-white p-4 rounded-md border cursor-pointer ${isUserExpanded ? 'border-distributor-200 shadow-md ring-1 ring-distributor-50' : 'border-slate-200 shadow-sm'} relative overflow-hidden transition-all group`}
+                className={`bg-[var(--fin-table-bg)] p-4 rounded-md border cursor-pointer ${isUserExpanded ? 'border-[var(--fin-brand-200)] shadow-md ring-1 ring-[var(--fin-brand-50)]' : 'border-[var(--fin-border)] shadow-sm'} relative overflow-hidden transition-all group`}
               >
-                <div className={`absolute left-0 top-0 bottom-0 w-1 transition-colors ${isUserExpanded ? 'bg-distributor-500' : 'bg-slate-200 group-hover:bg-distributor-300'}`} />
+                <div className={`absolute left-0 top-0 bottom-0 w-1 transition-colors ${isUserExpanded ? 'bg-[var(--fin-brand-500)]' : 'bg-[var(--fin-skeleton-base)] group-hover:bg-[var(--fin-brand-300)]'}`} />
                 
                 {/* Collapsed/Header View */}
                 <div className="flex justify-between items-start pl-2">
                   <div className="flex items-start gap-3">
-                    <button className={`mt-0.5 text-slate-400 p-1 rounded-md transition-colors ${isUserExpanded ? 'bg-distributor-50 text-distributor-600' : 'bg-slate-50 group-hover:bg-distributor-50 group-hover:text-distributor-600'}`}>
+                    <button className={`mt-0.5 text-[var(--fin-aux-text)] p-1 rounded-md transition-colors ${isUserExpanded ? 'bg-[var(--fin-brand-50)] text-[var(--fin-brand-600)]' : 'bg-[var(--fin-page-bg)] group-hover:bg-[var(--fin-brand-50)] group-hover:text-[var(--fin-brand-600)]'}`}>
                       <ChevronRight className={`w-4 h-4 transition-transform ${isUserExpanded ? 'rotate-90' : ''}`} />
                     </button>
                     <div>
-                      <h3 className="text-slate-900 font-bold text-sm leading-tight pr-2">{user.user}</h3>
+                      <h3 className="text-[var(--fin-heading-primary)] font-bold text-sm leading-tight pr-2">{user.user}</h3>
                       <div className="flex flex-wrap items-center gap-1.5 mt-1.5">
                         <Badge intent="neutral">{user.type}</Badge>
                         <Badge intent="neutral">{user.template}</Badge>
@@ -97,8 +97,8 @@ export default function MobileBrokerageOverview({ data, totals }: { data: any[],
                   {/* Quick Summary shown ONLY when collapsed */}
                   {!isUserExpanded && (
                     <div className="text-right pr-1 shrink-0 animate-[fadeIn_0.3s_ease-out]">
-                      <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-0.5">Net Rec.</p>
-                      <p className="text-xs font-black text-slate-800">{formatCurrency(netReceivable)}</p>
+                      <p className="text-[9px] font-bold text-[var(--fin-aux-text)] uppercase tracking-widest mb-0.5">Net Rec.</p>
+                      <p className="text-xs font-black text-[var(--fin-heading-tertiary)]">{formatCurrency(netReceivable)}</p>
                     </div>
                   )}
                 </div>
@@ -108,41 +108,41 @@ export default function MobileBrokerageOverview({ data, totals }: { data: any[],
                   <div className="overflow-hidden">
                     
                     {/* Financial Grid */}
-                    <div className="grid grid-cols-2 gap-3 bg-slate-50 p-3.5 rounded-md ml-2 mb-3">
+                    <div className="grid grid-cols-2 gap-3 bg-[var(--fin-page-bg)] p-3.5 rounded-md ml-2 mb-3">
                       <div>
-                        <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Gross Rec.</p>
-                        <p className="text-sm font-black text-slate-700">{formatCurrency(user.gross)}</p>
+                        <p className="text-[10px] font-bold text-[var(--fin-muted-text)] uppercase tracking-widest mb-1">Gross Rec.</p>
+                        <p className="text-sm font-black text-[var(--fin-table-row-text)]">{formatCurrency(user.gross)}</p>
                       </div>
                       <div>
-                        <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Total Paid</p>
-                        <p className="text-sm font-black text-distributor-600">{formatCurrency(totalPaid)}</p>
+                        <p className="text-[10px] font-bold text-[var(--fin-muted-text)] uppercase tracking-widest mb-1">Total Paid</p>
+                        <p className="text-sm font-black text-[var(--fin-brand-600)]">{formatCurrency(totalPaid)}</p>
                       </div>
-                      <div className="col-span-2 pt-2.5 border-t border-slate-200 flex justify-between items-end">
-                        <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Net Receivable</p>
-                        <p className="text-base font-black text-slate-900">{formatCurrency(netReceivable)}</p>
+                      <div className="col-span-2 pt-2.5 border-t border-[var(--fin-border)] flex justify-between items-end">
+                        <p className="text-[10px] font-bold text-[var(--fin-muted-text)] uppercase tracking-widest mb-1">Net Receivable</p>
+                        <p className="text-base font-black text-[var(--fin-heading-primary)]">{formatCurrency(netReceivable)}</p>
                       </div>
                     </div>
 
                     {/* AMC Breakdown Section */}
                     {hasAmc && (
-                      <div className="mt-2 mb-1 space-y-2 border-l-2 border-distributor-200 pl-3 ml-3">
+                      <div className="mt-2 mb-1 space-y-2 border-l-2 border-[var(--fin-brand-200)] pl-3 ml-3">
                         <div className="flex items-center gap-2 mb-2 pt-1">
-                          <Building2 className="w-4 h-4 text-distributor-600" />
-                          <h4 className="text-[10px] font-black text-distributor-700 uppercase tracking-widest">AMC Breakdown</h4>
+                          <Building2 className="w-4 h-4 text-[var(--fin-brand-600)]" />
+                          <h4 className="text-[10px] font-black text-[var(--fin-brand-700)] uppercase tracking-widest">AMC Breakdown</h4>
                         </div>
                         {user.amcBreakdown.map((amc: any) => {
                           const amcTotal = amc.paid + amc.paidSub;
                           const amcNet = amc.gross - amcTotal;
                           return (
-                            <div key={amc.id} className="bg-white p-3 rounded-md border border-slate-200 shadow-sm flex flex-col gap-2">
-                              <h5 className="font-bold text-xs text-slate-800">{amc.amcName}</h5>
+                            <div key={amc.id} className="bg-[var(--fin-table-bg)] p-3 rounded-md border border-[var(--fin-border)] shadow-sm flex flex-col gap-2">
+                              <h5 className="font-bold text-xs text-[var(--fin-heading-tertiary)]">{amc.amcName}</h5>
                               <div className="flex justify-between items-center">
-                                <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Gross: {formatCurrency(amc.gross)}</span>
-                                <span className="text-[10px] font-bold text-distributor-600 uppercase tracking-widest">Paid: {formatCurrency(amcTotal)}</span>
+                                <span className="text-[10px] font-bold text-[var(--fin-muted-text)] uppercase tracking-widest">Gross: {formatCurrency(amc.gross)}</span>
+                                <span className="text-[10px] font-bold text-[var(--fin-brand-600)] uppercase tracking-widest">Paid: {formatCurrency(amcTotal)}</span>
                               </div>
-                              <div className="pt-2 border-t border-slate-100 flex justify-between items-center">
-                                <span className="text-[10px] font-black text-slate-700 uppercase tracking-widest">Net Rec</span>
-                                <span className="text-sm font-black text-slate-900">{formatCurrency(amcNet)}</span>
+                              <div className="pt-2 border-t border-[var(--fin-border-subtle)] flex justify-between items-center">
+                                <span className="text-[10px] font-black text-[var(--fin-table-row-text)] uppercase tracking-widest">Net Rec</span>
+                                <span className="text-sm font-black text-[var(--fin-heading-primary)]">{formatCurrency(amcNet)}</span>
                               </div>
                             </div>
                           );

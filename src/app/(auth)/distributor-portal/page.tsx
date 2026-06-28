@@ -81,7 +81,7 @@ export default function DistributorLoginPage() {
 
   return (
     <div className="min-h-screen bg-background font-sans selection:bg-primary/20 selection:text-primary relative flex items-center justify-center overflow-x-hidden">
-      <div className="absolute inset-0 z-0 bg-gradient-to-br from-slate-100 via-white to-slate-200" />
+      <div className="absolute inset-0 z-0 bg-gradient-to-br from-[var(--fin-page-bg)] via-[var(--fin-content-surface)] to-[var(--fin-skeleton-base)]" />
       <div className="absolute inset-0 z-0 opacity-[0.35] bg-[radial-gradient(#94a3b8_1px,transparent_1px)] [background-size:24px_24px] sm:[background-size:32px_32px] pointer-events-none" />
 
       <div
@@ -95,16 +95,16 @@ export default function DistributorLoginPage() {
         <DistributorFluidBackground />
       </div>
 
-      <div className="absolute -top-40 -left-40 w-[400px] sm:w-[600px] h-[400px] sm:h-[600px] bg-distributor-500/10 rounded-full blur-[80px] sm:blur-[100px] pointer-events-none z-0" />
-      <div className="absolute bottom-0 right-0 w-[500px] sm:w-[800px] h-[500px] sm:h-[800px] bg-indigo-500/10 rounded-full blur-[100px] sm:blur-[120px] pointer-events-none z-0" />
+      <div className="absolute -top-40 -left-40 w-[400px] sm:w-[600px] h-[400px] sm:h-[600px] bg-[var(--fin-brand-500)]/10 rounded-full blur-[80px] sm:blur-[100px] pointer-events-none z-0" />
+      <div className="absolute bottom-0 right-0 w-[500px] sm:w-[800px] h-[500px] sm:h-[800px] bg-[var(--fin-badge-admin-bg)]/10 rounded-full blur-[100px] sm:blur-[120px] pointer-events-none z-0" />
 
       <div className="relative z-10 w-full max-w-[1600px] mx-auto px-6 sm:px-12 lg:px-20 py-10 lg:py-16 flex flex-col lg:flex-row items-center justify-between gap-10 md:gap-12 lg:gap-20">
         <div className="w-full lg:w-3/5 flex flex-col justify-center items-center md:items-start">
           <div className="inline-flex items-center justify-center lg:justify-start gap-3 mb-6 lg:mb-8">
-            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-md bg-gradient-to-br from-distributor-600 to-distributor-800 flex items-center justify-center shadow-lg shadow-distributor-900/30 relative overflow-hidden">
-              <div className="absolute inset-0 bg-white/20 transform -skew-x-12 -translate-x-full animate-[shine_4s_infinite]" />
+            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-md bg-gradient-to-br from-[var(--fin-brand-600)] to-[var(--fin-brand-800)] flex items-center justify-center shadow-lg shadow-[var(--fin-brand-900)]/30 relative overflow-hidden">
+              <div className="absolute inset-0 bg-[var(--fin-table-bg)]/20 transform -skew-x-12 -translate-x-full animate-[shine_4s_infinite]" />
               <svg
-                className="w-6 h-6 sm:w-7 sm:h-7 text-white relative z-10"
+                className="w-6 h-6 sm:w-7 sm:h-7 text-[var(--fin-btn-primary-text)] relative z-10"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -117,22 +117,22 @@ export default function DistributorLoginPage() {
                 />
               </svg>
             </div>
-            <div className="text-3xl sm:text-4xl lg:text-3xl font-black tracking-tight text-slate-900">
+            <div className="text-3xl sm:text-4xl lg:text-3xl font-black tracking-tight text-[var(--fin-heading-primary)]">
               FinIQ{" "}
-              <span className="text-distributor-600 font-light">
+              <span className="text-[var(--fin-brand-600)] font-light">
                 | {portalName}
               </span>
             </div>
           </div>
 
           <div className="hidden md:block w-full">
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-extrabold tracking-tight text-slate-900 leading-[1.1] mb-4 sm:mb-6">
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-extrabold tracking-tight text-[var(--fin-heading-primary)] leading-[1.1] mb-4 sm:mb-6">
               Partner Network, <br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-distributor-200 via-distributor-400 to-distributor-400">
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[var(--fin-brand-200)] via-[var(--fin-brand-400)] to-[var(--fin-brand-400)]">
                 Connected.
               </span>
             </h1>
-            <p className="text-base sm:text-lg lg:text-xl text-white-600 font-medium max-w-xl leading-relaxed mb-8 sm:mb-12">
+            <p className="text-base sm:text-lg lg:text-xl text-[var(--fin-btn-primary-text)]-600 font-medium max-w-xl leading-relaxed mb-8 sm:mb-12">
               Access your distributor dashboard to manage client pipelines and
               track portfolio allocations globally.
             </p>
@@ -141,16 +141,16 @@ export default function DistributorLoginPage() {
 
         <div className="w-full lg:w-2/5 flex justify-center lg:justify-end relative z-20">
           <div
-            className="w-full max-w-[440px] md:max-w-[500px] lg:max-w-[440px] bg-white/95 backdrop-blur-3xl border border-white shadow-[0_30px_80px_-15px_rgba(0,0,0,0.15)] rounded-[1.0rem] p-6 sm:p-10 lg:p-12 relative overflow-hidden"
+            className="w-full max-w-[440px] md:max-w-[500px] lg:max-w-[440px] bg-[var(--fin-table-bg)]/95 backdrop-blur-3xl border border-[var(--fin-border-subtle)] shadow-[0_30px_80px_-15px_rgba(0,0,0,0.15)] rounded-[1.0rem] p-6 sm:p-10 lg:p-12 relative overflow-hidden"
             style={{
               animation:
                 "slideFadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards",
             }}
           >
-            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-distributor-600 to-transparent opacity-80" />
+            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[var(--fin-brand-600)] to-transparent opacity-80" />
 
             {error && (
-              <div className="mb-6 p-4 bg-rose-50 border border-rose-100 rounded-md text-rose-600 text-sm font-medium animate-in fade-in slide-in-from-top-2">
+              <div className="mb-6 p-4 bg-[var(--fin-badge-danger-bg)] border border-[var(--fin-badge-danger-border)] rounded-md text-[var(--fin-badge-danger-text)] text-sm font-medium animate-in fade-in slide-in-from-top-2">
                 {error}
               </div>
             )}
@@ -158,10 +158,10 @@ export default function DistributorLoginPage() {
             {step === "phone" && (
               <div style={{ animation: "fadeIn 0.4s ease-out forwards" }}>
                 <div className="mb-8 sm:mb-10 text-center lg:text-left">
-                  <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-slate-900 mb-2">
+                  <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-[var(--fin-heading-primary)] mb-2">
                     Distributor Access
                   </h2>
-                  <p className="text-sm text-slate-600 font-medium">
+                  <p className="text-sm text-[var(--fin-body-text)] font-medium">
                     Enter your registered phone number to sign in.
                   </p>
                 </div>

@@ -75,22 +75,22 @@ export default function OTPVerificationForm({ onVerify, onBack, phoneInfo }: OTP
 
   // Updated default focus colors to match the distributor theme
   const getInputBorderColor = () => {
-    if (status === 'error') return 'border-rose-400 text-rose-600 bg-rose-50 focus:border-rose-500 focus:ring-rose-500/20';
-    if (status === 'success') return 'border-distributor-400 text-distributor-600 bg-distributor-50 focus:border-distributor-500 focus:ring-distributor-500/20';
-    return 'border-slate-200 text-slate-900 bg-white focus:bg-white focus:border-distributor-500 focus:ring-distributor-500/20';
+    if (status === 'error') return 'border-[var(--fin-badge-danger-border)] text-[var(--fin-badge-danger-text)] bg-[var(--fin-badge-danger-bg)] focus:border-[var(--fin-badge-danger-border)] focus:ring-[var(--fin-badge-danger-border)]/20';
+    if (status === 'success') return 'border-[var(--fin-brand-400)] text-[var(--fin-brand-600)] bg-[var(--fin-brand-50)] focus:border-[var(--fin-brand-500)] focus:ring-[var(--fin-brand-500)]/20';
+    return 'border-[var(--fin-border)] text-[var(--fin-heading-primary)] bg-[var(--fin-table-bg)] focus:bg-[var(--fin-table-bg)] focus:border-[var(--fin-brand-500)] focus:ring-[var(--fin-brand-500)]/20';
   };
 
   return (
     <div className="w-full flex flex-col">
-      <button onClick={onBack} className="self-start mb-4 md:mb-6 text-xs md:text-sm font-bold text-slate-400 hover:text-slate-600 transition-colors flex items-center gap-1">
+      <button onClick={onBack} className="self-start mb-4 md:mb-6 text-xs md:text-sm font-bold text-[var(--fin-aux-text)] hover:text-[var(--fin-body-text)] transition-colors flex items-center gap-1">
         <svg className="w-3 h-3 md:w-4 md:h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 19l-7-7 7-7" /></svg>
         Back
       </button>
 
       <div className="text-center lg:text-left mb-6 md:mb-8">
-        <h2 className="text-2xl md:text-3xl font-extrabold tracking-tight text-slate-900 mb-1 md:mb-2">Verify device</h2>
-        <p className="text-xs sm:text-sm md:text-base text-slate-500 font-medium">
-          Code sent to <span className="text-slate-800 whitespace-nowrap bg-slate-100 px-1.5 py-0.5 rounded-md ml-1">{phoneInfo.number.replace(/(\d{3})(\d{3})(\d{4})/, '$1 $2 $3')}</span>
+        <h2 className="text-2xl md:text-3xl font-extrabold tracking-tight text-[var(--fin-heading-primary)] mb-1 md:mb-2">Verify device</h2>
+        <p className="text-xs sm:text-sm md:text-base text-[var(--fin-muted-text)] font-medium">
+          Code sent to <span className="text-[var(--fin-heading-tertiary)] whitespace-nowrap bg-[var(--fin-skeleton-base)] px-1.5 py-0.5 rounded-md ml-1">{phoneInfo.number.replace(/(\d{3})(\d{3})(\d{4})/, '$1 $2 $3')}</span>
         </p>
       </div>
 
@@ -108,20 +108,20 @@ export default function OTPVerificationForm({ onVerify, onBack, phoneInfo }: OTP
               onKeyDown={e => handleKeyDown(index, e)}
               onPaste={index === 0 ? handlePaste : undefined}
               disabled={status === 'loading' || status === 'success'}
-              className={`w-12 h-14 sm:w-14 sm:h-16 md:w-16 md:h-20 text-center text-xl md:text-3xl font-bold bg-white border-2 rounded-md md:rounded-md shadow-sm focus:outline-none focus:ring-4 transition-all duration-300 ${getInputBorderColor()}`}
+              className={`w-12 h-14 sm:w-14 sm:h-16 md:w-16 md:h-20 text-center text-xl md:text-3xl font-bold bg-[var(--fin-table-bg)] border-2 rounded-md md:rounded-md shadow-sm focus:outline-none focus:ring-4 transition-all duration-300 ${getInputBorderColor()}`}
             />
           ))}
         </div>
 
         <div className="h-5 md:h-6 mt-1.5 md:mt-3 flex items-center justify-center lg:justify-start">
-          {status === 'error' && <p className="text-rose-500 text-[11px] md:text-sm font-bold animate-fadeIn">{errorMessage}</p>}
+          {status === 'error' && <p className="text-[var(--fin-badge-danger-text)] text-[11px] md:text-sm font-bold animate-fadeIn">{errorMessage}</p>}
         </div>
 
         {/* Updated button to use distributor styling instead of indigo */}
         <button
           onClick={() => triggerVerification(otp.join(''))}
           disabled={otp.some(char => char === '') || status === 'loading' || status === 'success'}
-          className="w-full py-2.5 md:py-4 px-4 mt-2 md:mt-4 bg-distributor-600 text-white text-sm md:text-base font-bold rounded-md shadow-md hover:bg-distributor-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-distributor-500 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+          className="w-full py-2.5 md:py-4 px-4 mt-2 md:mt-4 bg-[var(--fin-brand-600)] text-[var(--fin-btn-primary-text)] text-sm md:text-base font-bold rounded-md shadow-md hover:bg-[var(--fin-brand-700)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[var(--fin-brand-500)] transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
         >
           {status === 'loading' ? (
             <svg className="animate-spin h-4 w-4 md:h-5 md:w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>

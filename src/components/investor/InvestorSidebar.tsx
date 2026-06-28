@@ -210,8 +210,8 @@ export default function InvestorSidebar({
               isCollapsed ? "justify-center" : "justify-between"
             } px-4 py-3 rounded-md transition-all duration-300 group ${
               pathname === "/investor"
-                ? "bg-investor-600 text-white shadow-md shadow-investor-600/20"
-                : "text-slate-600 hover:bg-investor-50 hover:text-investor-700"
+                ? "bg-[var(--fin-sidebar-item-active-bg)] text-[var(--fin-sidebar-item-active-text)] shadow-md shadow-[var(--fin-sidebar-item-active-bg)]/20"
+                : "text-[var(--fin-sidebar-item-default-text)] hover:bg-[var(--fin-sidebar-item-hover-bg)] hover:text-[var(--fin-sidebar-item-hover-text)]"
             }`}
           >
             <div className="flex items-center gap-3">
@@ -229,7 +229,7 @@ export default function InvestorSidebar({
               )}
             </div>
             {!isCollapsed && pathname === "/investor" && (
-              <div className="w-1.5 h-1.5 shrink-0 bg-white rounded-full" />
+              <div className="w-1.5 h-1.5 shrink-0 bg-[var(--fin-sidebar-item-active-dot)] rounded-full" />
             )}
           </Link>
 
@@ -241,15 +241,15 @@ export default function InvestorSidebar({
                 isCollapsed ? "justify-center" : "justify-between"
               } px-4 py-3 rounded-md transition-all duration-300 group ${
                 isReportsOpen
-                  ? "bg-investor-50 text-investor-700"
-                  : "text-slate-600 hover:bg-investor-50 hover:text-investor-700"
+                  ? "bg-[var(--fin-sidebar-group-active-bg)] text-[var(--fin-sidebar-group-active-text)]"
+                  : "text-[var(--fin-sidebar-item-default-text)] hover:bg-[var(--fin-sidebar-item-hover-bg)] hover:text-[var(--fin-sidebar-item-hover-text)]"
               }`}
             >
               <div className="flex items-center gap-3">
                 <BarChart3
                   className={`w-5 h-5 shrink-0 transition-transform duration-300 ${
                     isReportsOpen
-                      ? "scale-110 text-investor-600"
+                      ? "scale-110 text-[var(--fin-sidebar-section-accent)]"
                       : "group-hover:scale-110"
                   }`}
                 />
@@ -263,8 +263,8 @@ export default function InvestorSidebar({
                 <ChevronDown
                   className={`w-4 h-4 shrink-0 transition-transform duration-300 ${
                     isReportsOpen
-                      ? "rotate-180 text-investor-600"
-                      : "text-slate-400"
+                      ? "rotate-180 text-[var(--fin-sidebar-chevron-open)]"
+                      : "text-[var(--fin-sidebar-chevron-closed)]"
                   }`}
                 />
               )}
@@ -275,10 +275,10 @@ export default function InvestorSidebar({
                 <button
                   onClick={handleTransactionExport}
                   disabled={isExportingTxn}
-                  className="w-full flex items-center gap-3 px-4 py-2.5 rounded-md transition-all duration-200 text-slate-500 hover:text-investor-600 hover:bg-white/50 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full flex items-center gap-3 px-4 py-2.5 rounded-md transition-all duration-200 text-[var(--fin-sidebar-sub-item-text)] hover:text-[var(--fin-sidebar-sub-item-hover-text)] hover:bg-[var(--fin-sidebar-sub-item-hover-bg)] disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {isExportingTxn ? (
-                    <Loader2 className="w-4 h-4 shrink-0 animate-spin text-investor-600" />
+                    <Loader2 className="w-4 h-4 shrink-0 animate-spin text-[var(--fin-sidebar-section-accent)]" />
                   ) : (
                     <Download className="w-4 h-4 shrink-0" />
                   )}
@@ -293,10 +293,10 @@ export default function InvestorSidebar({
                     setIsMobileOpen(false);
                   }}
                   disabled={!isPortfolioLoaded || isExporting}
-                  className="w-full flex items-center gap-3 px-4 py-2.5 rounded-md transition-all duration-200 text-slate-500 hover:text-investor-600 hover:bg-white/50 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full flex items-center gap-3 px-4 py-2.5 rounded-md transition-all duration-200 text-[var(--fin-sidebar-sub-item-text)] hover:text-[var(--fin-sidebar-sub-item-hover-text)] hover:bg-[var(--fin-sidebar-sub-item-hover-bg)] disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {isExporting ? (
-                    <Loader2 className="w-4 h-4 shrink-0 animate-spin text-investor-600" />
+                    <Loader2 className="w-4 h-4 shrink-0 animate-spin text-[var(--fin-sidebar-section-accent)]" />
                   ) : (
                     <Download className="w-4 h-4 shrink-0" />
                   )}
@@ -312,7 +312,7 @@ export default function InvestorSidebar({
                     setIsMobileOpen(false);
                   }}
                   disabled={!isPortfolioLoaded}
-                  className="w-full flex items-center gap-3 px-4 py-2.5 rounded-md transition-all duration-200 text-slate-500 hover:text-investor-600 hover:bg-white/50 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full flex items-center gap-3 px-4 py-2.5 rounded-md transition-all duration-200 text-[var(--fin-sidebar-sub-item-text)] hover:text-[var(--fin-sidebar-sub-item-hover-text)] hover:bg-[var(--fin-sidebar-sub-item-hover-bg)] disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <FileText className="w-4 h-4 shrink-0" />
                   <span className="text-xs cursor-pointer font-bold whitespace-nowrap">
@@ -324,8 +324,8 @@ export default function InvestorSidebar({
                   onClick={() => setIsMobileOpen(false)}
                   className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-md transition-all duration-200 ${
                     pathname === "/investor/reports/systematic-transactions"
-                      ? "bg-white text-investor-700 ring-1 ring-investor-100"
-                      : "text-slate-500 hover:text-investor-600 hover:bg-white/50"
+                      ? "bg-[var(--fin-sidebar-sub-item-active-bg)] text-[var(--fin-sidebar-sub-item-active-text)] ring-1 ring-[var(--fin-sidebar-sub-item-active-ring)]"
+                      : "text-[var(--fin-sidebar-sub-item-text)] hover:text-[var(--fin-sidebar-sub-item-hover-text)] hover:bg-[var(--fin-sidebar-sub-item-hover-bg)]"
                   }`}
                 >
                   <Repeat className="w-4 h-4 shrink-0" />
@@ -345,15 +345,15 @@ export default function InvestorSidebar({
                 isCollapsed ? "justify-center" : "justify-between"
               } px-4 py-3 rounded-md transition-all duration-300 group ${
                 pathname.startsWith("/investor/calculators")
-                  ? "bg-investor-50 text-investor-700"
-                  : "text-slate-600 hover:bg-investor-50 hover:text-investor-700"
+                  ? "bg-[var(--fin-sidebar-group-active-bg)] text-[var(--fin-sidebar-group-active-text)]"
+                  : "text-[var(--fin-sidebar-item-default-text)] hover:bg-[var(--fin-sidebar-item-hover-bg)] hover:text-[var(--fin-sidebar-item-hover-text)]"
               }`}
             >
               <div className="flex items-center gap-3">
                 <Calculator
                   className={`w-5 h-5 shrink-0 transition-transform duration-300 ${
                     pathname.startsWith("/investor/calculators")
-                      ? "scale-110 text-investor-600"
+                      ? "scale-110 text-[var(--fin-sidebar-section-accent)]"
                       : "group-hover:scale-110"
                   }`}
                 />
@@ -367,8 +367,8 @@ export default function InvestorSidebar({
                 <ChevronDown
                   className={`w-4 h-4 shrink-0 transition-transform duration-300 ${
                     isCalculatorsOpen
-                      ? "rotate-180 text-investor-600"
-                      : "text-slate-400"
+                      ? "rotate-180 text-[var(--fin-sidebar-chevron-open)]"
+                      : "text-[var(--fin-sidebar-chevron-closed)]"
                   }`}
                 />
               )}
@@ -381,8 +381,8 @@ export default function InvestorSidebar({
                   onClick={() => setIsMobileOpen(false)}
                   className={`flex items-center gap-3 px-4 py-2.5 rounded-md transition-all duration-200 ${
                     pathname === "/investor/calculators/mf-returns"
-                      ? "bg-white text-investor-700 ring-1 ring-investor-100"
-                      : "text-slate-500 hover:text-investor-600 hover:bg-white/50"
+                      ? "bg-[var(--fin-sidebar-sub-item-active-bg)] text-[var(--fin-sidebar-sub-item-active-text)] ring-1 ring-[var(--fin-sidebar-sub-item-active-ring)]"
+                      : "text-[var(--fin-sidebar-sub-item-text)] hover:text-[var(--fin-sidebar-sub-item-hover-text)] hover:bg-[var(--fin-sidebar-sub-item-hover-bg)]"
                   }`}
                 >
                   <TrendingUp className="w-4 h-4 shrink-0" />
@@ -393,8 +393,8 @@ export default function InvestorSidebar({
                   onClick={() => setIsMobileOpen(false)}
                   className={`flex items-center gap-3 px-4 py-2.5 rounded-md transition-all duration-200 ${
                     pathname === "/investor/calculators/goal"
-                      ? "bg-white text-investor-700 ring-1 ring-investor-100"
-                      : "text-slate-500 hover:text-investor-600 hover:bg-white/50"
+                      ? "bg-[var(--fin-sidebar-sub-item-active-bg)] text-[var(--fin-sidebar-sub-item-active-text)] ring-1 ring-[var(--fin-sidebar-sub-item-active-ring)]"
+                      : "text-[var(--fin-sidebar-sub-item-text)] hover:text-[var(--fin-sidebar-sub-item-hover-text)] hover:bg-[var(--fin-sidebar-sub-item-hover-bg)]"
                   }`}
                 >
                   <Target className="w-4 h-4 shrink-0" />
@@ -405,8 +405,8 @@ export default function InvestorSidebar({
                   onClick={() => setIsMobileOpen(false)}
                   className={`flex items-center gap-3 px-4 py-2.5 rounded-md transition-all duration-200 ${
                     pathname === "/investor/calculators/fd"
-                      ? "bg-white text-investor-700 ring-1 ring-investor-100"
-                      : "text-slate-500 hover:text-investor-600 hover:bg-white/50"
+                      ? "bg-[var(--fin-sidebar-sub-item-active-bg)] text-[var(--fin-sidebar-sub-item-active-text)] ring-1 ring-[var(--fin-sidebar-sub-item-active-ring)]"
+                      : "text-[var(--fin-sidebar-sub-item-text)] hover:text-[var(--fin-sidebar-sub-item-hover-text)] hover:bg-[var(--fin-sidebar-sub-item-hover-bg)]"
                   }`}
                 >
                   <PiggyBank className="w-4 h-4 shrink-0" />
@@ -417,8 +417,8 @@ export default function InvestorSidebar({
                   onClick={() => setIsMobileOpen(false)}
                   className={`flex items-center gap-3 px-4 py-2.5 rounded-md transition-all duration-200 ${
                     pathname === "/investor/calculators/swp"
-                      ? "bg-white text-investor-700 ring-1 ring-investor-100"
-                      : "text-slate-500 hover:text-investor-600 hover:bg-white/50"
+                      ? "bg-[var(--fin-sidebar-sub-item-active-bg)] text-[var(--fin-sidebar-sub-item-active-text)] ring-1 ring-[var(--fin-sidebar-sub-item-active-ring)]"
+                      : "text-[var(--fin-sidebar-sub-item-text)] hover:text-[var(--fin-sidebar-sub-item-hover-text)] hover:bg-[var(--fin-sidebar-sub-item-hover-bg)]"
                   }`}
                 >
                   <TrendingDown className="w-4 h-4 shrink-0" />
@@ -429,8 +429,8 @@ export default function InvestorSidebar({
                   onClick={() => setIsMobileOpen(false)}
                   className={`flex items-center gap-3 px-4 py-2.5 rounded-md transition-all duration-200 ${
                     pathname === "/investor/calculators/stp"
-                      ? "bg-white text-investor-700 ring-1 ring-investor-100"
-                      : "text-slate-500 hover:text-investor-600 hover:bg-white/50"
+                      ? "bg-[var(--fin-sidebar-sub-item-active-bg)] text-[var(--fin-sidebar-sub-item-active-text)] ring-1 ring-[var(--fin-sidebar-sub-item-active-ring)]"
+                      : "text-[var(--fin-sidebar-sub-item-text)] hover:text-[var(--fin-sidebar-sub-item-hover-text)] hover:bg-[var(--fin-sidebar-sub-item-hover-bg)]"
                   }`}
                 >
                   <ArrowRightLeft className="w-4 h-4 shrink-0" />
@@ -441,8 +441,8 @@ export default function InvestorSidebar({
                   onClick={() => setIsMobileOpen(false)}
                   className={`flex items-center gap-3 px-4 py-2.5 rounded-md transition-all duration-200 ${
                     pathname === "/investor/calculators/reverse-emi"
-                      ? "bg-white text-investor-700 ring-1 ring-investor-100"
-                      : "text-slate-500 hover:text-investor-600 hover:bg-white/50"
+                      ? "bg-[var(--fin-sidebar-sub-item-active-bg)] text-[var(--fin-sidebar-sub-item-active-text)] ring-1 ring-[var(--fin-sidebar-sub-item-active-ring)]"
+                      : "text-[var(--fin-sidebar-sub-item-text)] hover:text-[var(--fin-sidebar-sub-item-hover-text)] hover:bg-[var(--fin-sidebar-sub-item-hover-bg)]"
                   }`}
                 >
                   <RefreshCcw className="w-4 h-4 shrink-0" />
@@ -464,7 +464,7 @@ export default function InvestorSidebar({
           {/* Collapse Icon */}
           <button
             onClick={() => setIsCollapsed(!isCollapsed)}
-            className="hidden lg:flex p-2.5 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-md transition-colors shrink-0"
+            className="hidden lg:flex p-2.5 text-[var(--fin-sidebar-collapse-icon-color)] hover:text-[var(--fin-sidebar-collapse-icon-hover)] hover:bg-[var(--fin-sidebar-item-hover-bg)] rounded-md transition-colors shrink-0"
             title={isCollapsed ? "Expand Sidebar" : "Collapse Sidebar"}
           >
             {isCollapsed ? (
@@ -484,7 +484,7 @@ export default function InvestorSidebar({
               <Link
                 href="/login"
                 title="Sign Out"
-                className="p-2.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-md transition-colors flex items-center justify-center"
+                className="p-2.5 text-[var(--fin-sidebar-collapse-icon-color)] hover:text-[var(--fin-sidebar-icon-logout-hover)] hover:bg-[var(--fin-sidebar-icon-logout-hover-bg)] rounded-md transition-colors flex items-center justify-center"
               >
                 <svg
                   className="w-5 h-5"

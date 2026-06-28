@@ -14,7 +14,7 @@ export default function ThemePreviewPane({
   // Apply preview variables as inline styles so they cascade through this container
   return (
     <div
-      className="rounded-2xl overflow-hidden border border-slate-200 shadow-2xl flex flex-col h-full bg-[var(--fin-page-bg)] transition-colors duration-300 relative z-20"
+      className="rounded-2xl overflow-hidden border border-[var(--fin-border)] shadow-2xl flex flex-col h-full bg-[var(--fin-page-bg)] transition-colors duration-300 relative z-20"
       style={previewVariables as React.CSSProperties}
     >
       {/* Mock Header */}
@@ -22,19 +22,27 @@ export default function ThemePreviewPane({
         <div className="flex items-center space-x-3">
           <Menu size={18} className="text-[var(--fin-muted-text)]" />
           <div className="flex items-center space-x-2">
-            <div className="w-7 h-7 rounded-md bg-gradient-to-br from-[var(--fin-brand-500)] to-[var(--fin-brand-900)] flex items-center justify-center text-white text-xs font-bold shadow-sm">
+            <div className="w-7 h-7 rounded-md bg-gradient-to-br from-[var(--fin-brand-500)] to-[var(--fin-brand-900)] flex items-center justify-center text-[var(--fin-btn-primary-text)] text-xs font-bold shadow-sm">
               F
             </div>
-            <span className="font-black text-[var(--fin-heading-primary)] tracking-tight">
+            <span className="font-black text-[var(--fin-sidebar-brand-label)] tracking-tight">
               FinIQ
             </span>
+          </div>
+          <div className="hidden sm:flex items-center space-x-1 ml-4 border-l border-[var(--fin-border)] pl-4">
+            <div className="px-2.5 py-1.5 rounded-md bg-[var(--fin-sidebar-item-active-bg)] text-[var(--fin-btn-primary-text)] text-xs font-bold">
+              Active
+            </div>
+            <div className="px-2.5 py-1.5 rounded-md hover:bg-[var(--fin-sidebar-item-hover-bg)] text-[var(--fin-muted-text)] text-xs font-bold transition-colors cursor-pointer">
+              Hover
+            </div>
           </div>
         </div>
         <div className="flex items-center space-x-4">
           <Search size={16} className="text-[var(--fin-muted-text)]" />
           <div className="relative">
             <Bell size={16} className="text-[var(--fin-muted-text)]" />
-            <div className="absolute -top-1 -right-1 w-2 h-2 bg-rose-500 rounded-full border border-white" />
+            <div className="absolute -top-1 -right-1 w-2 h-2 bg-[var(--fin-badge-danger-bg)] rounded-full border border-[var(--fin-border-subtle)]" />
           </div>
           <div className="w-8 h-8 rounded-full bg-[var(--fin-brand-100)] border border-[var(--fin-brand-200)] flex items-center justify-center text-[var(--fin-brand-900)] text-xs font-bold">
             AD
@@ -83,7 +91,7 @@ export default function ThemePreviewPane({
               ₹42.5 Cr
             </div>
             <div className="mt-2 flex items-center space-x-2">
-              <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-700 flex items-center">
+              <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-[var(--fin-analysis-positive-bg)] text-[var(--fin-kpi-positive-text)] flex items-center">
                 <ArrowUpRight size={10} className="mr-0.5" /> 12.4%
               </span>
               <span className="text-[10px] font-medium text-[var(--fin-muted-text)]">vs last month</span>
@@ -107,7 +115,7 @@ export default function ThemePreviewPane({
               1,248
             </div>
             <div className="mt-2 flex items-center space-x-2">
-              <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-700 flex items-center">
+              <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-[var(--fin-analysis-positive-bg)] text-[var(--fin-kpi-positive-text)] flex items-center">
                 <ArrowUpRight size={10} className="mr-0.5" /> 24
               </span>
               <span className="text-[10px] font-medium text-[var(--fin-muted-text)]">new this week</span>
@@ -135,7 +143,8 @@ export default function ThemePreviewPane({
                   initial={{ height: 0 }}
                   animate={{ height: `${h}%` }}
                   transition={{ duration: 0.5, delay: i * 0.1 }}
-                  className="w-full bg-[var(--fin-brand-500)] rounded-t-sm opacity-90 hover:opacity-100"
+                  className="w-full rounded-t-sm opacity-90 hover:opacity-100"
+                  style={{ backgroundColor: `var(--fin-chart-color-${(i % 6) + 1})` }}
                 />
                 <span className="text-[8px] font-bold text-[var(--fin-muted-text)] shrink-0">M{i+1}</span>
               </div>
@@ -185,18 +194,18 @@ export default function ThemePreviewPane({
 
         {/* Mock List */}
         <div className="bg-[var(--fin-content-surface)] border border-[var(--fin-border)] rounded-xl shadow-sm overflow-hidden">
-          <div className="px-4 py-3 border-b border-[var(--fin-border-subtle)] bg-[var(--fin-page-bg-subtle)]">
-            <h3 className="text-xs font-bold text-[var(--fin-heading-secondary)] uppercase tracking-wider">Recent Activity</h3>
+          <div className="px-4 py-3 border-b border-[var(--fin-table-row-border)] bg-[var(--fin-table-header-bg)]">
+            <h3 className="text-xs font-bold text-[var(--fin-table-header-text)] uppercase tracking-wider">Recent Activity</h3>
           </div>
-          <div className="divide-y divide-[var(--fin-border-subtle)]">
+          <div className="divide-y divide-[var(--fin-table-row-border)]">
             {[1, 2].map((i) => (
-              <div key={i} className="px-4 py-3 flex items-center justify-between hover:bg-[var(--fin-page-bg)] transition-colors">
+              <div key={i} className="px-4 py-3 flex items-center justify-between hover:bg-[var(--fin-table-row-hover-bg)] transition-colors">
                 <div className="flex items-center space-x-3">
                   <div className="w-8 h-8 rounded-full bg-[var(--fin-brand-50)] flex items-center justify-center text-[var(--fin-brand-600)]">
                     <CheckCircle2 size={14} />
                   </div>
                   <div>
-                    <p className="text-xs font-bold text-[var(--fin-heading-secondary)]">SIP Registered</p>
+                    <p className="text-xs font-bold text-[var(--fin-table-row-text)]">SIP Registered</p>
                     <p className="text-[10px] font-medium text-[var(--fin-muted-text)] mt-0.5">HDFC Mid-Cap Opportunities</p>
                   </div>
                 </div>

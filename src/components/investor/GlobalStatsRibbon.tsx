@@ -23,7 +23,7 @@ export default function GlobalStatsRibbon({ client, useCompactValues = true }: G
       className="backdrop-blur-xl rounded-md overflow-x-auto custom-scrollbar border"
       style={{ backgroundColor: 'var(--fin-ribbon-bg)', borderColor: 'var(--fin-ribbon-border)', boxShadow: '0 4px 15px var(--fin-kpi-shadow)' }}
     >
-      <div className="flex w-max min-w-full divide-x divide-slate-100 p-1.5">
+      <div className="flex w-max min-w-full divide-x divide-[var(--fin-table-row-border)] p-1.5">
         {[
           { label: "Invested Capital", value: getFormattedValue(client.investedCapital), title: formatCurrency(client.investedCapital) },
           { label: "Current Value", value: getFormattedValue(client.currentValue), title: formatCurrency(client.currentValue), highlight: true },
@@ -32,7 +32,7 @@ export default function GlobalStatsRibbon({ client, useCompactValues = true }: G
             value: getFormattedValue(client.unrealisedGain),
             valNum: client.unrealisedGain,
             subStats: (client.unrealisedGainLT !== undefined || client.unrealisedGainST !== undefined) ? (
-              <div className="mt-1 flex gap-2.5 text-[9px] font-bold text-slate-400/80 leading-none select-none">
+              <div className="mt-1 flex gap-2.5 text-[9px] font-bold text-[var(--fin-aux-text)]/80 leading-none select-none">
                 <span>LT: {getFormattedValue(client.unrealisedGainLT ?? 0)}</span>
                 <span>ST: {getFormattedValue(client.unrealisedGainST ?? 0)}</span>
               </div>

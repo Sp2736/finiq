@@ -84,8 +84,8 @@ export default function FundPortfolioTab({ amfiCode }: FundPortfolioTabProps) {
   if (isLoading) {
     return (
       <div className="flex flex-col items-center justify-center py-12">
-        <Loader2 className="w-8 h-8 animate-spin text-distributor-500 mb-3" />
-        <p className="text-slate-500 font-bold text-xs">
+        <Loader2 className="w-8 h-8 animate-spin text-[var(--fin-brand-500)] mb-3" />
+        <p className="text-[var(--fin-muted-text)] font-bold text-xs">
           Loading portfolio data...
         </p>
       </div>
@@ -95,20 +95,20 @@ export default function FundPortfolioTab({ amfiCode }: FundPortfolioTabProps) {
   if (error) {
     return (
       <div className="flex flex-col items-center justify-center py-12">
-        <ShieldAlert className="w-10 h-10 text-rose-300 mb-2" />
-        <p className="text-rose-600 font-bold text-xs">{error}</p>
+        <ShieldAlert className="w-10 h-10 text-[var(--fin-badge-danger-text)] mb-2" />
+        <p className="text-[var(--fin-badge-danger-text)] font-bold text-xs">{error}</p>
       </div>
     );
   }
 
   if (sectors.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center py-16 text-center border-2 border-dashed border-slate-100 rounded-md bg-slate-50/50">
-        <PieChart className="w-10 h-10 text-slate-300 mb-3" />
-        <h3 className="text-xs font-black text-slate-700 uppercase tracking-widest mb-1">
+      <div className="flex flex-col items-center justify-center py-16 text-center border-2 border-dashed border-[var(--fin-border-subtle)] rounded-md bg-[var(--fin-page-bg)]/50">
+        <PieChart className="w-10 h-10 text-[var(--fin-aux-text)] mb-3" />
+        <h3 className="text-xs font-black text-[var(--fin-table-row-text)] uppercase tracking-widest mb-1">
           No Data
         </h3>
-        <p className="text-[10px] text-slate-400">
+        <p className="text-[10px] text-[var(--fin-aux-text)]">
           Sector allocation data is not available for this fund.
         </p>
       </div>
@@ -149,12 +149,12 @@ export default function FundPortfolioTab({ amfiCode }: FundPortfolioTabProps) {
 
       {/* ─── SECTOR ALLOCATION SVG ─── */}
       <div
-        className={`border border-slate-200 rounded-md overflow-hidden shadow-sm flex flex-col ${isCluttered ? "" : "lg:flex-row"} bg-white`}
+        className={`border border-[var(--fin-border)] rounded-md overflow-hidden shadow-sm flex flex-col ${isCluttered ? "" : "lg:flex-row"} bg-[var(--fin-table-bg)]`}
       >
         <div
-          className={`p-4 sm:p-6 relative flex flex-col ${isCluttered ? "border-b border-slate-100 w-full" : "flex-1 border-b lg:border-b-0 lg:border-r border-slate-100 min-w-0"}`}
+          className={`p-4 sm:p-6 relative flex flex-col ${isCluttered ? "border-b border-[var(--fin-border-subtle)] w-full" : "flex-1 border-b lg:border-b-0 lg:border-r border-[var(--fin-border-subtle)] min-w-0"}`}
         >
-          <h3 className="text-xs font-black text-slate-700 uppercase tracking-widest mb-4">
+          <h3 className="text-xs font-black text-[var(--fin-table-row-text)] uppercase tracking-widest mb-4">
             Sector Allocation (%)
           </h3>
 
@@ -174,7 +174,7 @@ export default function FundPortfolioTab({ amfiCode }: FundPortfolioTabProps) {
                       y1={y}
                       x2={WIDTH - PADDING_RIGHT}
                       y2={y}
-                      stroke="#f1f5f9"
+                      stroke="var(--fin-chart-grid)"
                       strokeWidth="1"
                       strokeDasharray="3 3"
                     />
@@ -182,7 +182,7 @@ export default function FundPortfolioTab({ amfiCode }: FundPortfolioTabProps) {
                       x="5"
                       y={y + 3}
                       fontSize="10"
-                      fill="#94a3b8"
+                      fill="var(--fin-chart-axis-text)"
                       fontWeight="600"
                     >
                       {Math.round(maxVal * ratio)}%
@@ -196,7 +196,7 @@ export default function FundPortfolioTab({ amfiCode }: FundPortfolioTabProps) {
                 y1={HEIGHT - PADDING_BOTTOM}
                 x2={WIDTH - PADDING_RIGHT}
                 y2={HEIGHT - PADDING_BOTTOM}
-                stroke="#cbd5e1"
+                stroke="var(--fin-chart-axis-text)"
                 strokeWidth="2"
               />
 
@@ -231,7 +231,7 @@ export default function FundPortfolioTab({ amfiCode }: FundPortfolioTabProps) {
                       y={HEIGHT - 12}
                       textAnchor="middle"
                       fontSize="10"
-                      fill="#64748b"
+                      fill="var(--fin-table-header-text)"
                       fontWeight="800"
                     >
                       {s.abbr}
@@ -245,41 +245,41 @@ export default function FundPortfolioTab({ amfiCode }: FundPortfolioTabProps) {
 
         {/* LEGEND */}
         <div
-          className={`${isCluttered ? "w-full" : "w-full lg:w-96 shrink-0"} bg-slate-50 p-4 sm:p-5 flex flex-col max-h-[400px]`}
+          className={`${isCluttered ? "w-full" : "w-full lg:w-96 shrink-0"} bg-[var(--fin-page-bg)] p-4 sm:p-5 flex flex-col max-h-[400px]`}
         >
-          <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3 shrink-0">
+          <h4 className="text-[10px] font-black text-[var(--fin-aux-text)] uppercase tracking-widest mb-3 shrink-0">
             Legend
           </h4>
-          <div className="overflow-x-auto overflow-y-auto table-scrollbar rounded-md border border-slate-200 bg-white">
+          <div className="overflow-x-auto overflow-y-auto table-scrollbar rounded-md border border-[var(--fin-border)] bg-[var(--fin-table-bg)]">
             <table className="w-full text-left text-xs border-collapse">
-              <thead className="bg-slate-100 text-[10px] text-slate-500 uppercase tracking-wider sticky top-0 z-10">
+              <thead className="bg-[var(--fin-skeleton-base)] text-[10px] text-[var(--fin-muted-text)] uppercase tracking-wider sticky top-0 z-10">
                 <tr>
-                  <th className="p-3 font-bold border-b border-slate-200">
+                  <th className="p-3 font-bold border-b border-[var(--fin-border)]">
                     Sector
                   </th>
-                  <th className="p-3 font-bold text-right border-b border-slate-200 border-l border-slate-100 w-24">
+                  <th className="p-3 font-bold text-right border-b border-[var(--fin-border)] border-l border-[var(--fin-border-subtle)] w-24">
                     Allocation
                   </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100">
+              <tbody className="divide-y divide-[var(--fin-table-row-border)]">
                 {sectors.map((s, i) => (
                   <tr
                     key={i}
-                    className="hover:bg-slate-50/50 transition-colors"
+                    className="hover:bg-[var(--fin-page-bg)]/50 transition-colors"
                   >
                     <td className="p-3">
                       <div className="flex items-center gap-2.5">
                         <span className="w-2 h-2 rounded-sm shrink-0 bg-[var(--fin-brand-500)]" />
-                        <span className="font-semibold text-slate-700 whitespace-normal">
+                        <span className="font-semibold text-[var(--fin-table-row-text)] whitespace-normal">
                           {toTitleCase(s.name)}{" "}
-                          <span className="text-slate-400 font-bold ml-1 text-[10px]">
+                          <span className="text-[var(--fin-aux-text)] font-bold ml-1 text-[10px]">
                             ({s.abbr})
                           </span>
                         </span>
                       </div>
                     </td>
-                    <td className="p-3 text-right font-black text-distributor-700 bg-distributor-50/30 border-l border-slate-100 whitespace-nowrap">
+                    <td className="p-3 text-right font-black text-[var(--fin-brand-700)] bg-[var(--fin-brand-50)]/30 border-l border-[var(--fin-border-subtle)] whitespace-nowrap">
                       {s.value.toFixed(2)}%
                     </td>
                   </tr>

@@ -33,7 +33,7 @@ export default function DistributorLayout({
         }}
       />
       <ThemeProvider>
-      <div className="flex h-screen overflow-hidden selection:bg-distributor-100 selection:text-distributor-900" style={{ backgroundColor: 'var(--fin-page-bg)' }}>
+      <div className="flex h-screen overflow-hidden selection:bg-[var(--fin-brand-100)] selection:text-[var(--fin-brand-900)]" style={{ backgroundColor: 'var(--fin-page-bg)' }}>
         <Sidebar isCollapsed={isCollapsed} setIsCollapsed={setIsCollapsed} />
 
         {/* CRITICAL CHANGE: Changed overflow-y-auto to overflow-hidden and forced h-screen. 

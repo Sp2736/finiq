@@ -112,12 +112,12 @@ const SyncedSlider: React.FC<SyncedSliderProps> = ({
   return (
     <div className="space-y-3">
       <div className="flex justify-between items-center">
-        <label className="text-xs font-black uppercase text-slate-500">
+        <label className="text-xs font-black uppercase text-[var(--fin-muted-text)]">
           {label}
         </label>
-        <div className="flex items-center bg-investor-50 px-3 py-1.5 rounded-md border border-distributor-100 focus-within:border-distributor-500 transition-colors">
+        <div className="flex items-center bg-[var(--fin-brand-50)] px-3 py-1.5 rounded-md border border-[var(--fin-brand-100)] focus-within:border-[var(--fin-brand-500)] transition-colors">
           {unit === "₹" && (
-            <span className="text-sm font-black text-distributor-700 mr-1">
+            <span className="text-sm font-black text-[var(--fin-brand-700)] mr-1">
               ₹
             </span>
           )}
@@ -126,11 +126,11 @@ const SyncedSlider: React.FC<SyncedSliderProps> = ({
             value={localStr}
             onChange={handleTextChange}
             onBlur={handleBlur}
-            className="bg-transparent text-sm font-black text-distributor-700 outline-none w-24 text-right appearance-none"
+            className="bg-transparent text-sm font-black text-[var(--fin-brand-700)] outline-none w-24 text-right appearance-none"
             style={{ MozAppearance: "textfield" }}
           />
           {unit !== "₹" && (
-            <span className="text-sm font-black text-distributor-700 ml-1 whitespace-nowrap">
+            <span className="text-sm font-black text-[var(--fin-brand-700)] ml-1 whitespace-nowrap">
               {unit}
             </span>
           )}
@@ -143,11 +143,13 @@ const SyncedSlider: React.FC<SyncedSliderProps> = ({
         step={step}
         value={value}
         onChange={handleSliderChange}
-        className="w-full h-1.5 bg-slate-200 rounded-md appearance-none cursor-pointer accent-distributor-600"
+        className="w-full h-1.5 bg-[var(--fin-skeleton-base)] rounded-md appearance-none cursor-pointer accent-[var(--fin-brand-600)]"
       />
     </div>
   );
 };
+
+import { useChartTheme } from "@/hooks/useChartTheme";
 
 export default function GoalCalculator() {
   // ─── STATE MANAGEMENT ───
@@ -155,6 +157,9 @@ export default function GoalCalculator() {
   const [goal, setGoal] = useState<number>(1500000);
   const [rate, setRate] = useState<number>(12);
   const [duration, setDuration] = useState<number>(10);
+
+  // ─── DYNAMIC CHART COLORS ───
+  const chartColors = useChartTheme();
 
   // ─── CORE COMPUTATIONS ───
   const results = useMemo(() => {
@@ -237,20 +242,20 @@ export default function GoalCalculator() {
     if (active && payload && payload.length) {
       const data = payload[0].payload;
       return (
-        <div className="bg-white p-3 rounded-md border border-slate-200 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.1)] min-w-[180px] text-xs z-50">
-          <p className="font-bold text-slate-500 mb-2 border-b border-slate-100 pb-2">
+        <div className="bg-[var(--fin-table-bg)] p-3 rounded-md border border-[var(--fin-border)] shadow-[0_4px_20px_-4px_rgba(0,0,0,0.1)] min-w-[180px] text-xs z-50">
+          <p className="font-bold text-[var(--fin-muted-text)] mb-2 border-b border-[var(--fin-border-subtle)] pb-2">
             Duration: {data.duration} Years
           </p>
           <div className="space-y-1.5">
             <div className="flex justify-between gap-4">
-              <span className="text-slate-500 font-medium">Target Goal</span>
-              <span className="font-bold text-slate-700">
+              <span className="text-[var(--fin-muted-text)] font-medium">Target Goal</span>
+              <span className="font-bold text-[var(--fin-table-row-text)]">
                 {formatCurrency(data.goalAmount)}
               </span>
             </div>
-            <div className="flex justify-between gap-4 pt-1.5 mt-1.5 border-t border-slate-100 border-dashed">
-              <span className="font-bold text-slate-800">Required {mode}</span>
-              <span className="font-black text-distributor-700">
+            <div className="flex justify-between gap-4 pt-1.5 mt-1.5 border-t border-[var(--fin-border-subtle)] border-dashed">
+              <span className="font-bold text-[var(--fin-heading-tertiary)]">Required {mode}</span>
+              <span className="font-black text-[var(--fin-brand-700)]">
                 {formatCurrency(data.required)}
               </span>
               {/** fix: handle the required mode: remove lumpsum div */}
@@ -268,10 +273,10 @@ export default function GoalCalculator() {
       {/* ─── HEADER ─── */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 shrink-0">
         <div>
-          <h1 className="text-2xl lg:text-3xl font-black tracking-tight text-slate-900 mb-1">
-            Goal <span className="text-investor-600">Calculator</span>
+          <h1 className="text-2xl lg:text-3xl font-black tracking-tight text-[var(--fin-heading-primary)] mb-1">
+            Goal <span className="text-[var(--fin-brand-600)]">Calculator</span>
           </h1>
-          <p className="text-sm font-medium text-slate-500">
+          <p className="text-sm font-medium text-[var(--fin-muted-text)]">
             Find out how much to invest to reach your target.
           </p>
         </div>
@@ -284,11 +289,11 @@ export default function GoalCalculator() {
       {/* ─── RESPONSIVE MAIN GRID ─── */}
       <div className="flex flex-col lg:grid lg:grid-cols-12 gap-6 lg:gap-8 shrink-0 w-full">
         {/* ─── INPUTS ─── */}
-        <div className="lg:col-span-5 bg-white p-6 sm:p-8 rounded-md border relative z-20"
+        <div className="lg:col-span-5 bg-[var(--fin-table-bg)] p-6 sm:p-8 rounded-md border relative z-20"
              style={{ borderColor: 'var(--fin-kpi-border)', boxShadow: '0 4px 15px var(--fin-kpi-shadow)' }}>
           {/* Mode Selector */}
           <div className="space-y-3 mb-8 z-20">
-            <label className="text-xs font-black uppercase text-slate-500">
+            <label className="text-xs font-black uppercase text-[var(--fin-muted-text)]">
               Investment Mode
             </label>
             <CalculatorSelect
@@ -333,7 +338,7 @@ export default function GoalCalculator() {
         </div>
 
         {/* ─── CHART ─── */}
-        <div className="lg:col-span-7 bg-white p-6 sm:p-8 rounded-md border min-h-[350px] lg:min-h-0 lg:h-full flex flex-col relative z-10"
+        <div className="lg:col-span-7 bg-[var(--fin-table-bg)] p-6 sm:p-8 rounded-md border min-h-[350px] lg:min-h-0 lg:h-full flex flex-col relative z-10"
              style={{ borderColor: 'var(--fin-kpi-border)', boxShadow: '0 4px 15px var(--fin-kpi-shadow)' }}>
           <ResponsiveContainer width="100%" height="100%">
             <BarChart
@@ -343,18 +348,18 @@ export default function GoalCalculator() {
               <CartesianGrid
                 strokeDasharray="3 3"
                 vertical={false}
-                stroke="#f1f5f9"
+                stroke={chartColors.grid}
               />
               <XAxis
                 dataKey="yearLabel"
-                tick={{ fontSize: 11, fontWeight: 600, fill: "#64748b" }}
+                tick={{ fontSize: 11, fontWeight: 600, fill: chartColors.text }}
                 axisLine={false}
                 tickLine={false}
                 dy={12}
               />
               <YAxis
                 tickFormatter={(val) => formatCompactCurrency(val)}
-                tick={{ fontSize: 11, fontWeight: 500, fill: "#94a3b8" }}
+                tick={{ fontSize: 11, fontWeight: 500, fill: chartColors.textMuted }}
                 axisLine={false}
                 tickLine={false}
                 width={70}
@@ -362,13 +367,13 @@ export default function GoalCalculator() {
                   value: `Required ${mode}`,
                   angle: -90,
                   position: "insideLeft",
-                  style: { fontSize: 11, fill: "#64748b", fontWeight: 700 },
+                  style: { fontSize: 11, fill: chartColors.text, fontWeight: 700 },
                   dx: -5,
                 }}
               />
               <Tooltip
                 content={<CustomTooltip />}
-                cursor={{ fill: "rgba(61, 96, 171, 0.04)" }}
+                cursor={{ fill: chartColors.tooltipBg }}
               />
               <Legend
                 verticalAlign="bottom"
@@ -377,7 +382,7 @@ export default function GoalCalculator() {
                 wrapperStyle={{
                   fontSize: "11px",
                   fontWeight: 600,
-                  color: "#64748b",
+                  color: chartColors.text,
                   paddingTop: "20px",
                 }}
               />
@@ -386,7 +391,7 @@ export default function GoalCalculator() {
               <Bar
                 dataKey="required"
                 name={`Required ${mode === "SIP" ? "Monthly SIP" : "Lumpsum"}`}
-                fill="var(--fin-chart-color-1)"
+                fill={chartColors.color1}
                 radius={[4, 4, 0, 0]}
                 maxBarSize={60}
                 animationDuration={800}
@@ -399,11 +404,11 @@ export default function GoalCalculator() {
       {/* ─── SUMMARY CARDS ─── */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 shrink-0 relative z-0">
         {[
-          { label: "Target Goal", val: goal, color: "text-slate-900" },
+          { label: "Target Goal", val: goal, color: "text-[var(--fin-heading-primary)]" },
           {
             label: "Total Invested",
             val: results.invested,
-            color: "text-slate-900",
+            color: "text-[var(--fin-heading-primary)]",
           },
           {
             label: "Estimated Returns",
@@ -414,16 +419,16 @@ export default function GoalCalculator() {
             label: mode === "SIP" ? "Required SIP / Mo" : "Required Lumpsum",
             val: results.required,
             color:
-              "text-distributor-700 bg-investor-50 -m-5 p-5 h-[calc(100%+40px)] rounded-md flex flex-col justify-center border border-distributor-100",
+              "text-[var(--fin-brand-700)] bg-[var(--fin-brand-50)] -m-5 p-5 h-[calc(100%+40px)] rounded-md flex flex-col justify-center border border-[var(--fin-brand-100)]",
           },
         ].map((card, i) => (
           <div
             key={i}
-            className="bg-white p-5 rounded-md border relative overflow-hidden"
+            className="bg-[var(--fin-table-bg)] p-5 rounded-md border relative overflow-hidden"
             style={{ borderColor: 'var(--fin-kpi-border)', boxShadow: '0 4px 15px var(--fin-kpi-shadow)' }}
           >
             <div className={card.color.includes("bg-") ? card.color : ""}>
-              <p className="text-[10px] font-black uppercase text-slate-400 tracking-widest relative z-10">
+              <p className="text-[10px] font-black uppercase text-[var(--fin-aux-text)] tracking-widest relative z-10">
                 {card.label}
               </p>
               <p
