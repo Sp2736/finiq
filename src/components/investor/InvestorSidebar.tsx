@@ -138,7 +138,8 @@ export default function InvestorSidebar({
       {/* Mobile Hamburger */}
       <button
         onClick={() => setIsMobileOpen(true)}
-        className="lg:hidden fixed top-4 right-4 z-50 p-2.5 bg-white border border-slate-200 rounded-md shadow-sm text-slate-600"
+        style={{ backgroundColor: 'var(--fin-sidebar-mobile-btn-bg)', borderColor: 'var(--fin-sidebar-mobile-btn-border)', color: 'var(--fin-sidebar-mobile-btn-text)' }}
+        className="lg:hidden fixed top-4 right-4 z-50 p-2.5 border rounded-md shadow-sm"
       >
         <Menu className="w-5 h-5" />
       </button>
@@ -146,7 +147,8 @@ export default function InvestorSidebar({
       {/* Mobile Backdrop */}
       {isMobileOpen && (
         <div
-          className="lg:hidden fixed inset-0 bg-slate-900/20 backdrop-blur-sm z-40"
+          className="lg:hidden fixed inset-0 backdrop-blur-sm z-40"
+          style={{ backgroundColor: 'var(--fin-sidebar-mobile-backdrop)' }}
           onClick={() => setIsMobileOpen(false)}
         />
       )}
@@ -154,7 +156,8 @@ export default function InvestorSidebar({
       {/* Sidebar Container */}
       {/* Note: changed 'fixed' to 'fixed lg:relative' so it sits perfectly in your flex-row page layout without overlapping */}
       <aside
-        className={`h-screen bg-white/80 backdrop-blur-xl border-r border-slate-200 flex flex-col fixed lg:relative left-0 top-0 z-50 transition-all duration-300 ease-in-out overflow-x-hidden flex-shrink-0
+        style={{ backgroundColor: 'var(--fin-sidebar-bg)', borderColor: 'var(--fin-sidebar-border)' }}
+        className={`h-screen backdrop-blur-xl border-r flex flex-col fixed lg:relative left-0 top-0 z-50 transition-all duration-300 ease-in-out overflow-x-hidden flex-shrink-0
         ${isMobileOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"} 
         ${isCollapsed ? "w-24" : "w-72"}`}
       >
@@ -452,7 +455,8 @@ export default function InvestorSidebar({
 
         {/* ─── COMPACT BOTTOM ACTIONS ROW ─── */}
         <div
-          className={`p-4 mt-auto border-t border-slate-100 bg-white/50 flex ${
+          style={{ backgroundColor: 'var(--fin-sidebar-footer-bg)', borderColor: 'var(--fin-sidebar-footer-border)' }}
+          className={`p-4 mt-auto border-t flex ${
             isCollapsed ? "flex-col items-center gap-3" : "items-center gap-2"
           } shrink-0`}
         >

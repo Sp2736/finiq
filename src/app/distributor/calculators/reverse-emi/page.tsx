@@ -305,13 +305,13 @@ export default function ReverseEMICalculator() {
             </div>
             <div className="flex justify-between gap-4">
               <span className="text-slate-500 font-medium">Principal</span>
-              <span className="font-bold text-[#10b981]">
+              <span className="font-bold text-[var(--fin-chart-color-4)]">
                 {formatCurrency(data.principal)}
               </span>
             </div>
             <div className="flex justify-between gap-4">
               <span className="text-slate-500 font-medium">Total Interest</span>
-              <span className="font-bold text-[#8b5cf6]">
+              <span className="font-bold text-[var(--fin-chart-color-1)]">
                 {formatCurrency(data.totalInterest)}
               </span>
             </div>
@@ -348,7 +348,8 @@ export default function ReverseEMICalculator() {
       ========================================= */}
       <div className="grid lg:grid-cols-12 gap-6 lg:gap-8 shrink-0">
         {/* ─── LOAN INPUTS ─── */}
-        <div className="lg:col-span-5 bg-white p-6 sm:p-8 rounded-md border border-slate-200 shadow-sm flex flex-col justify-center relative">
+        <div className="lg:col-span-5 bg-white p-6 sm:p-8 rounded-md border relative"
+             style={{ borderColor: 'var(--fin-kpi-border)', boxShadow: '0 4px 15px var(--fin-kpi-shadow)' }}>
           <div className="z-10 space-y-8">
             <SyncedSlider
               label="Loan Amount"
@@ -381,7 +382,8 @@ export default function ReverseEMICalculator() {
         </div>
 
         {/* ─── LOAN CHART ─── */}
-        <div className="lg:col-span-7 bg-white p-6 rounded-md border border-slate-200 shadow-sm h-[360px] flex flex-col relative z-0">
+        <div className="lg:col-span-7 bg-white p-6 rounded-md border h-[360px] flex flex-col relative z-0"
+             style={{ borderColor: 'var(--fin-kpi-border)', boxShadow: '0 4px 15px var(--fin-kpi-shadow)' }}>
           <ResponsiveContainer width="100%" height="100%">
             <BarChart
               data={chartData}
@@ -434,7 +436,7 @@ export default function ReverseEMICalculator() {
                 dataKey="principal"
                 name="Principal Amount"
                 stackId="a"
-                fill="#10b981"
+                fill="var(--fin-chart-color-4)"
                 radius={[0, 0, 4, 4]}
                 maxBarSize={60}
                 animationDuration={800}
@@ -443,7 +445,7 @@ export default function ReverseEMICalculator() {
                 dataKey="totalInterest"
                 name="Total Interest"
                 stackId="a"
-                fill="#3d60ab"
+                fill="var(--fin-chart-color-1)"
                 radius={[4, 4, 0, 0]}
                 maxBarSize={60}
                 animationDuration={800}
@@ -464,12 +466,12 @@ export default function ReverseEMICalculator() {
           {
             label: "Principal Amount",
             val: loanResults.principal,
-            color: "text-[#10b981]",
+            color: "text-[var(--fin-chart-color-4)]",
           }, // Match Chart Green
           {
             label: "Total Interest",
             val: loanResults.totalInterest,
-            color: "text-[#3d60ab]",
+            color: "text-[var(--fin-chart-color-1)]",
           },
           {
             label: "Total Value (Repayment)",
@@ -480,7 +482,8 @@ export default function ReverseEMICalculator() {
         ].map((card, i) => (
           <div
             key={i}
-            className="bg-white p-5 rounded-md border border-slate-200 shadow-sm relative overflow-hidden"
+            className="bg-white p-5 rounded-md border relative overflow-hidden"
+            style={{ borderColor: 'var(--fin-kpi-border)', boxShadow: '0 4px 15px var(--fin-kpi-shadow)' }}
           >
             <div className={card.color.includes("bg-") ? card.color : ""}>
               <p className="text-[10px] font-black uppercase text-slate-400 tracking-widest relative z-10">
@@ -506,7 +509,8 @@ export default function ReverseEMICalculator() {
 
         <div className="grid lg:grid-cols-12 gap-6 lg:gap-8">
           {/* SIP RATE INPUT */}
-          <div className="lg:col-span-4 bg-white p-6 rounded-md border border-slate-200 shadow-sm flex flex-col justify-center">
+          <div className="lg:col-span-4 bg-white p-6 rounded-md border flex flex-col justify-center"
+               style={{ borderColor: 'var(--fin-kpi-border)', boxShadow: '0 4px 15px var(--fin-kpi-shadow)' }}>
             <div className="z-10">
               <SyncedSlider
                 label="SIP Expected Return (p.a)"
@@ -527,7 +531,8 @@ export default function ReverseEMICalculator() {
           {/* OFFSET RESULT BLOCKS */}
           <div className="lg:col-span-8 grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Block 1: Offset Interest Only */}
-            <div className="bg-slate-50 p-6 rounded-md border border-slate-200 shadow-sm flex flex-col justify-between">
+            <div className="bg-slate-50 p-6 rounded-md border flex flex-col justify-between"
+                 style={{ borderColor: 'var(--fin-kpi-border)', boxShadow: '0 4px 15px var(--fin-kpi-shadow)' }}>
               <div>
                 <p className="text-[10px] font-black uppercase text-slate-400 tracking-widest mb-1">
                   Target Recovery
@@ -549,7 +554,7 @@ export default function ReverseEMICalculator() {
                     <span className="text-sm font-semibold text-slate-500">
                       Expected Returns Generated
                     </span>
-                    <span className="text-lg font-black text-emerald-600">
+                    <span className="text-lg font-black text-[var(--fin-chart-color-4)]">
                       {formatCurrency(sipInterestOffset.wealthGained)}
                     </span>
                   </div>
@@ -566,7 +571,8 @@ export default function ReverseEMICalculator() {
             </div>
 
             {/* Block 2: Offset Entire Repayment */}
-            <div className="bg-distributor-50 p-6 rounded-md border border-distributor-100 shadow-sm flex flex-col justify-between">
+            <div className="bg-distributor-50 p-6 rounded-md border flex flex-col justify-between"
+                 style={{ borderColor: 'var(--fin-kpi-border)', boxShadow: '0 4px 15px var(--fin-kpi-shadow)' }}>
               <div>
                 <p className="text-[10px] font-black uppercase text-distributor-400 tracking-widest mb-1">
                   Target Recovery
@@ -588,7 +594,7 @@ export default function ReverseEMICalculator() {
                     <span className="text-sm font-semibold text-distributor-600/80">
                       Expected Returns Generated
                     </span>
-                    <span className="text-lg font-black text-emerald-600">
+                    <span className="text-lg font-black text-[var(--fin-chart-color-4)]">
                       {formatCurrency(sipTotalOffset.wealthGained)}
                     </span>
                   </div>

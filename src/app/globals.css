@@ -1,50 +1,338 @@
 @import "tailwindcss";
 
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* ── PAGE FOUNDATION ─────────────────────────────── */
+  --fin-page-bg:              #f8fafc;
+  --fin-page-bg-subtle:       #f1f5f9;
+  --fin-content-surface:      #ffffff;
+  --fin-content-surface-alt:  #f8fafc;
+  --fin-border:               #e2e8f0;
+  --fin-border-subtle:        #f1f5f9;
+  --fin-shadow-color:         rgba(0,0,0,0.04);
+
+  /* ── BRAND / PRIMARY PALETTE ────────────────────── */
+  --fin-brand-50:   #f0f4fa;
+  --fin-brand-100:  #e3ecf7;
+  --fin-brand-200:  #cddcf0;
+  --fin-brand-300:  #abc5e6;
+  --fin-brand-400:  #83a8d9;
+  --fin-brand-500:  #658ccb;
+  --fin-brand-600:  #3d60ab;
+  --fin-brand-700:  #334e8f;
+  --fin-brand-800:  #2b4177;
+  --fin-brand-900:  #263760;
+  --fin-brand-950:  #18223e;
+
+  /* ── SIDEBAR / NAVBAR ────────────────────────────── */
+  --fin-sidebar-bg:                    #ffffff;
+  --fin-sidebar-bg-opacity:            0.80;
+  --fin-sidebar-border:                #e2e8f0;
+  --fin-sidebar-brand-logo-from:       #3d60ab;
+  --fin-sidebar-brand-logo-to:         #2b4177;
+  --fin-sidebar-brand-label:           #3d60ab;
+  --fin-sidebar-item-default-text:     #475569;
+  --fin-sidebar-item-hover-bg:         #f0f4fa;
+  --fin-sidebar-item-hover-text:       #334e8f;
+  --fin-sidebar-item-active-bg:        #3d60ab;
+  --fin-sidebar-item-active-text:      #ffffff;
+  --fin-sidebar-item-active-dot:       #ffffff;
+  --fin-sidebar-sub-item-text:         #64748b;
+  --fin-sidebar-sub-item-hover-text:   #3d60ab;
+  --fin-sidebar-sub-item-hover-bg:     rgba(255,255,255,0.5);
+  --fin-sidebar-sub-item-active-bg:    #ffffff;
+  --fin-sidebar-sub-item-active-text:  #334e8f;
+  --fin-sidebar-sub-item-active-ring:  #e3ecf7;
+  --fin-sidebar-group-active-bg:       #f0f4fa;
+  --fin-sidebar-group-active-text:     #334e8f;
+  --fin-sidebar-footer-bg:             rgba(255,255,255,0.50);
+  --fin-sidebar-footer-border:         #f1f5f9;
+  --fin-sidebar-icon-settings-hover:   #3d60ab;
+  --fin-sidebar-icon-settings-hover-bg:#f0f4fa;
+  --fin-sidebar-icon-logout-hover:     #e11d48;
+  --fin-sidebar-icon-logout-hover-bg:  #fff1f2;
+  --fin-sidebar-collapse-icon-color:   #94a3b8;
+  --fin-sidebar-collapse-icon-hover:   #1e293b;
+  --fin-sidebar-mobile-backdrop:       rgba(15,23,42,0.20);
+  --fin-sidebar-mobile-btn-bg:         #ffffff;
+  --fin-sidebar-mobile-btn-border:     #e2e8f0;
+  --fin-sidebar-mobile-btn-text:       #475569;
+  --fin-sidebar-section-accent:        #658ccb;
+  --fin-sidebar-chevron-open:          #3d60ab;
+  --fin-sidebar-chevron-closed:        #94a3b8;
+
+  /* ── TYPOGRAPHY ──────────────────────────────────── */
+  --fin-heading-primary:    #0f172a;
+  --fin-heading-secondary:  #3d60ab;
+  --fin-heading-tertiary:   #1e293b;
+  --fin-subheading:         #334155;
+  --fin-body-text:          #475569;
+  --fin-muted-text:         #64748b;
+  --fin-aux-text:           #94a3b8;
+  --fin-label-text:         #64748b;
+  --fin-overline-text:      #94a3b8;
+  --fin-placeholder-text:   #94a3b8;
+  --fin-link-text:          #3d60ab;
+  --fin-link-hover:         #334e8f;
+
+  /* ── KPI CARDS ───────────────────────────────────── */
+  --fin-kpi-bg:              #ffffff;
+  --fin-kpi-border:          #e2e8f0;
+  --fin-kpi-shadow:          rgba(0,0,0,0.04);
+  --fin-kpi-label:           #94a3b8;
+  --fin-kpi-value-hidden:    #0f172a;
+  --fin-kpi-value-revealed:  #3d60ab;
+  --fin-kpi-accent-bar:      #658ccb;
+  --fin-kpi-icon-bg:         #f0f4fa;
+  --fin-kpi-icon-color:      #3d60ab;
+  --fin-kpi-hover-bg:        #f0f4fa;
+  --fin-kpi-hover-shadow:    rgba(61,96,171,0.08);
+  --fin-kpi-positive-text:   #16a34a;
+  --fin-kpi-negative-text:   #dc2626;
+  --fin-kpi-neutral-text:    #475569;
+
+  /* ── GLOBAL STATS RIBBON ─────────────────────────── */
+  --fin-ribbon-bg:            #ffffff;
+  --fin-ribbon-bg-opacity:    0.80;
+  --fin-ribbon-border:        rgba(226,232,240,0.60);
+  --fin-ribbon-divider:       #f1f5f9;
+  --fin-ribbon-label:         #94a3b8;
+  --fin-ribbon-value:         #0f172a;
+  --fin-ribbon-highlight-value: #3d60ab;
+  --fin-ribbon-positive:      #16a34a;
+  --fin-ribbon-negative:      #dc2626;
+
+  /* ── TABLES ──────────────────────────────────────── */
+  --fin-table-bg:             #ffffff;
+  --fin-table-border:         #e2e8f0;
+  --fin-table-shadow:         rgba(0,0,0,0.04);
+  --fin-table-header-bg:      #f8fafc;
+  --fin-table-header-text:    #64748b;
+  --fin-table-header-border:  rgba(226,232,240,0.80);
+  --fin-table-row-bg:         #ffffff;
+  --fin-table-row-alt-bg:     #ffffff;
+  --fin-table-row-hover-bg:   rgba(248,250,252,0.60);
+  --fin-table-row-border:     #f1f5f9;
+  --fin-table-row-text:       #334155;
+  --fin-table-row-muted:      #64748b;
+  --fin-table-sticky-border:  rgba(226,232,240,0.50);
+  --fin-table-sticky-shadow:  rgba(0,0,0,0.05);
+  --fin-table-expanded-bg:    rgba(248,250,252,0.60);
+  --fin-table-expanded-border:#e3ecf7;
+
+  /* ── INFO CARDS (mobile) ──────────────────────────── */
+  --fin-card-bg:              #ffffff;
+  --fin-card-border:          #e2e8f0;
+  --fin-card-shadow:          rgba(0,0,0,0.04);
+  --fin-card-hover-shadow:    rgba(61,96,171,0.06);
+  --fin-card-header-bg:       #f0f4fa;
+  --fin-card-header-text:     #334e8f;
+  --fin-card-header-border:   #e3ecf7;
+  --fin-card-label:           #94a3b8;
+  --fin-card-value:           #0f172a;
+  --fin-card-badge-bg:        #f0f4fa;
+  --fin-card-badge-text:      #334e8f;
+
+  /* ── BADGES ──────────────────────────────────────── */
+  --fin-badge-brand-bg:       #f0f4fa;
+  --fin-badge-brand-text:     #334e8f;
+  --fin-badge-brand-border:   #e3ecf7;
+  --fin-badge-success-bg:     #f0fdf4;
+  --fin-badge-success-text:   #15803d;
+  --fin-badge-success-border: #bbf7d0;
+  --fin-badge-danger-bg:      #fef2f2;
+  --fin-badge-danger-text:    #dc2626;
+  --fin-badge-danger-border:  #fecaca;
+  --fin-badge-warning-bg:     #fffbeb;
+  --fin-badge-warning-text:   #d97706;
+  --fin-badge-warning-border: #fde68a;
+  --fin-badge-neutral-bg:     #f8fafc;
+  --fin-badge-neutral-text:   #475569;
+  --fin-badge-neutral-border: #e2e8f0;
+  --fin-badge-admin-bg:       #faf5ff;
+  --fin-badge-admin-text:     #7e22ce;
+  --fin-badge-admin-border:   #e9d5ff;
+  --fin-badge-broker-bg:      #f0f9ff;
+  --fin-badge-broker-text:    #0369a1;
+  --fin-badge-broker-border:  #bae6fd;
+
+  /* ── FORM INPUTS ──────────────────────────────────── */
+  --fin-input-bg:             #ffffff;
+  --fin-input-border:         #e2e8f0;
+  --fin-input-border-hover:   #cbd5e1;
+  --fin-input-border-focus:   #3d60ab;
+  --fin-input-ring-focus:     rgba(61,96,171,0.20);
+  --fin-input-text:           #334155;
+  --fin-input-placeholder:    #94a3b8;
+  --fin-input-disabled-bg:    #f8fafc;
+  --fin-input-disabled-text:  #94a3b8;
+
+  /* ── BUTTONS ─────────────────────────────────────── */
+  --fin-btn-primary-bg:       #3d60ab;
+  --fin-btn-primary-bg-hover: #334e8f;
+  --fin-btn-primary-text:     #ffffff;
+  --fin-btn-primary-shadow:   rgba(61,96,171,0.20);
+  --fin-btn-secondary-bg:     #ffffff;
+  --fin-btn-secondary-bg-hover:#f8fafc;
+  --fin-btn-secondary-text:   #334155;
+  --fin-btn-secondary-border: #e2e8f0;
+  --fin-btn-ghost-hover-bg:   #f0f4fa;
+  --fin-btn-ghost-hover-text: #334e8f;
+  --fin-btn-danger-bg:        #dc2626;
+  --fin-btn-danger-text:      #ffffff;
+
+  /* ── MODALS ──────────────────────────────────────── */
+  --fin-modal-backdrop:           rgba(15,23,42,0.50);
+  --fin-modal-bg:                 #ffffff;
+  --fin-modal-border:             #e2e8f0;
+  --fin-modal-shadow:             rgba(0,0,0,0.15);
+  --fin-modal-header-text:        #0f172a;
+  --fin-modal-close-hover:        #ef4444;
+  --fin-modal-tab-active-bg:      #f0f4fa;
+  --fin-modal-tab-active-text:    #334e8f;
+  --fin-modal-tab-active-border:  #3d60ab;
+  --fin-modal-tab-idle-text:      #64748b;
+  --fin-modal-tab-idle-hover-bg:  #f8fafc;
+
+  /* ── CHARTS ──────────────────────────────────────── */
+  --fin-chart-color-1:   #3d60ab;
+  --fin-chart-color-2:   #658ccb;
+  --fin-chart-color-3:   #83a8d9;
+  --fin-chart-color-4:   #10b981;
+  --fin-chart-color-5:   #f59e0b;
+  --fin-chart-color-6:   #ef4444;
+  --fin-chart-color-7:   #8b5cf6;
+  --fin-chart-color-8:   #06b6d4;
+  --fin-chart-grid:      rgba(226,232,240,0.60);
+  --fin-chart-axis-text: #94a3b8;
+  --fin-chart-tooltip-bg:   #1e293b;
+  --fin-chart-tooltip-text: #f8fafc;
+  --fin-chart-invested-fill: rgba(61,96,171,0.15);
+  --fin-chart-returns-fill:  rgba(16,185,129,0.15);
+
+  /* ── ANALYSIS BOXES ──────────────────────────────── */
+  --fin-analysis-bg:              #f0f4fa;
+  --fin-analysis-border:          #e3ecf7;
+  --fin-analysis-label:           #334e8f;
+  --fin-analysis-value:           #263760;
+  --fin-analysis-positive-bg:     #f0fdf4;
+  --fin-analysis-positive-border: #bbf7d0;
+  --fin-analysis-positive-text:   #15803d;
+  --fin-analysis-negative-bg:     #fef2f2;
+  --fin-analysis-negative-border: #fecaca;
+  --fin-analysis-negative-text:   #dc2626;
+  --fin-analysis-neutral-bg:      #f8fafc;
+  --fin-analysis-neutral-border:  #e2e8f0;
+  --fin-analysis-neutral-text:    #334155;
+  --fin-analysis-risk-low-bg:     #f0fdf4;
+  --fin-analysis-risk-low-text:   #15803d;
+  --fin-analysis-risk-high-bg:    #fef2f2;
+  --fin-analysis-risk-high-text:  #dc2626;
+  --fin-analysis-risk-mid-bg:     #fffbeb;
+  --fin-analysis-risk-mid-text:   #d97706;
+
+  /* ── FILTER BAR ──────────────────────────────────── */
+  --fin-filter-bg:                    #ffffff;
+  --fin-filter-border:                #e2e8f0;
+  --fin-filter-option-active-bg:      #3d60ab;
+  --fin-filter-option-active-text:    #ffffff;
+  --fin-filter-option-idle-bg:        #ffffff;
+  --fin-filter-option-idle-text:      #475569;
+  --fin-filter-option-idle-hover-bg:  #f0f4fa;
+  --fin-filter-option-idle-hover-text:#334e8f;
+  --fin-filter-search-bg:             #ffffff;
+  --fin-filter-search-border:         #e2e8f0;
+  --fin-filter-search-focus-border:   #3d60ab;
+  --fin-filter-search-icon:           #94a3b8;
+
+  /* ── PAGINATION ──────────────────────────────────── */
+  --fin-page-btn-active-bg:   #3d60ab;
+  --fin-page-btn-active-text: #ffffff;
+  --fin-page-btn-idle-bg:     #ffffff;
+  --fin-page-btn-idle-text:   #334155;
+  --fin-page-btn-idle-border: #e2e8f0;
+  --fin-page-btn-hover-bg:    #f0f4fa;
+  --fin-page-btn-hover-text:  #334e8f;
+
+  /* ── SETTINGS ─────────────────────────────────────── */
+  --fin-settings-tab-active-border: #3d60ab;
+  --fin-settings-tab-active-text:   #334e8f;
+  --fin-settings-tab-idle-text:     #64748b;
+  --fin-settings-tab-hover-bg:      #f0f4fa;
+  --fin-settings-section-bg:        #ffffff;
+  --fin-settings-section-border:    #e2e8f0;
+  --fin-settings-toggle-on-bg:      #3d60ab;
+  --fin-settings-toggle-off-bg:     #e2e8f0;
+  --fin-settings-toggle-knob:       #ffffff;
+
+  /* ── CALCULATORS ──────────────────────────────────── */
+  --fin-calc-card-bg:             #ffffff;
+  --fin-calc-card-border:         #e2e8f0;
+  --fin-calc-select-bg:           #f0f4fa;
+  --fin-calc-select-border:       #e3ecf7;
+  --fin-calc-select-text:         #334e8f;
+  --fin-calc-select-hover-border: #abc5e6;
+  --fin-calc-result-invested-bg:  rgba(61,96,171,0.08);
+  --fin-calc-result-returns-bg:   rgba(16,185,129,0.08);
+  --fin-calc-result-total-bg:     #3d60ab;
+  --fin-calc-result-total-text:   #ffffff;
+  --fin-calc-slider-track:        #cddcf0;
+  --fin-calc-slider-thumb:        #3d60ab;
+
+  /* ── USER TREE ────────────────────────────────────── */
+  --fin-tree-connector-color: #e2e8f0;
+  --fin-tree-row-hover-bg:    rgba(248,250,252,0.60);
+  --fin-tree-expanded-bg:     #f8fafc;
+
+  /* ── SCROLLBARS ──────────────────────────────────── */
+  --fin-scrollbar-track:       rgba(241,245,249,0.50);
+  --fin-scrollbar-thumb:       #cbd5e1;
+  --fin-scrollbar-thumb-hover: #94a3b8;
+
+  /* ── SKELETON ─────────────────────────────────────── */
+  --fin-skeleton-base:      #f1f5f9;
+  --fin-skeleton-highlight: #e2e8f0;
+
+  /* ── SELECTION ────────────────────────────────────── */
+  --fin-selection-bg:   #e3ecf7;
+  --fin-selection-text: #263760;
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-inter);
 
-  /* =========================================
-     1. INVESTOR THEME PALETTE (Deep Indigo)
-     Base: #4f46e5
-  ========================================= */
-  --color-investor-50: #f0f4fa;
-  --color-investor-100: #e3ecf7;
-  --color-investor-200: #cddcf0;
-  --color-investor-300: #abc5e6;
-  --color-investor-400: #83a8d9;
-  --color-investor-500: #658ccb;
-  --color-investor-600: #3d60ab;
-  --color-investor-700: #334e8f;
-  --color-investor-800: #2b4177;
-  --color-investor-900: #263760;
-  --color-investor-950: #18223e;
+  /* Remap distributor palette to fin vars */
+  --color-distributor-50:  var(--fin-brand-50);
+  --color-distributor-100: var(--fin-brand-100);
+  --color-distributor-200: var(--fin-brand-200);
+  --color-distributor-300: var(--fin-brand-300);
+  --color-distributor-400: var(--fin-brand-400);
+  --color-distributor-500: var(--fin-brand-500);
+  --color-distributor-600: var(--fin-brand-600);
+  --color-distributor-700: var(--fin-brand-700);
+  --color-distributor-800: var(--fin-brand-800);
+  --color-distributor-900: var(--fin-brand-900);
+  --color-distributor-950: var(--fin-brand-950);
 
-  /* =========================================
-     2. DISTRIBUTOR THEME PALETTE (Finiq Brand Blue)
-     Base: #3d60ab
-  ========================================= */
-  --color-distributor-50: #f0f4fa;
-  --color-distributor-100: #e3ecf7;
-  --color-distributor-200: #cddcf0;
-  --color-distributor-300: #abc5e6;
-  --color-distributor-400: #83a8d9;
-  --color-distributor-500: #658ccb;
-  --color-distributor-600: #3d60ab;
-  --color-distributor-700: #334e8f;
-  --color-distributor-800: #2b4177;
-  --color-distributor-900: #263760;
-  --color-distributor-950: #18223e;
-  
+  /* Remap investor palette to same fin vars */
+  --color-investor-50:  var(--fin-brand-50);
+  --color-investor-100: var(--fin-brand-100);
+  --color-investor-200: var(--fin-brand-200);
+  --color-investor-300: var(--fin-brand-300);
+  --color-investor-400: var(--fin-brand-400);
+  --color-investor-500: var(--fin-brand-500);
+  --color-investor-600: var(--fin-brand-600);
+  --color-investor-700: var(--fin-brand-700);
+  --color-investor-800: var(--fin-brand-800);
+  --color-investor-900: var(--fin-brand-900);
+  --color-investor-950: var(--fin-brand-950);
+
   --color-border: var(--border);
-}
-
-:root {
-  /* Core Foundation Variables */
-  --background: #f8fafc; 
-  --foreground: #0f172a; 
-  --border: #e2e8f0;     
 }
 
 /* =========================================

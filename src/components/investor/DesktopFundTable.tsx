@@ -18,21 +18,24 @@ export default function DesktopFundTable({ funds, onOpenAnalytics }: { funds: Un
   };
 
   return (
-    <div className="bg-white rounded-md border border-slate-200 shadow-[0_8px_30px_rgb(0,0,0,0.04)] relative h-full flex flex-col overflow-hidden">
+    <div
+      className="rounded-md border relative h-full flex flex-col overflow-hidden"
+      style={{ backgroundColor: 'var(--fin-table-bg)', borderColor: 'var(--fin-table-border)', boxShadow: '0 8px 30px var(--fin-table-shadow)' }}
+    >
       <div className="flex-1 overflow-auto table-scrollbar">
         <table className="w-full text-left border-collapse min-w-[1400px]">
           <thead className="sticky top-0 z-30 shadow-sm ring-1 ring-slate-200/50">
-            <tr className="bg-slate-50 text-[10px] uppercase tracking-widest text-slate-500 font-bold">
-              <th className="px-3 py-4 w-12 sticky left-0 z-40 bg-slate-50 border-r border-slate-200/80"></th>
-              <th className="px-3 py-4 w-[280px] sticky left-12 z-40 bg-slate-50 border-r border-slate-200/50 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.05)]">Fund Details</th>
-              <th className="px-3 py-4 bg-slate-50">Purch. Date</th>
-              <th className="px-3 py-4 text-right bg-slate-50">Inv. Capital</th>
-              <th className="px-3 py-4 text-right bg-slate-50">Current Val</th>
-              <th className="px-3 py-4 text-right bg-slate-50">Units</th>
-              <th className="px-3 py-4 text-right bg-slate-50">NAV (Cur/Avg)</th>
-              <th className="px-3 py-4 text-right bg-slate-50">Dividend</th>
-              <th className="px-3 py-4 text-right bg-slate-50">Unrealised Gain</th>
-              <th className="px-4 py-4 text-center bg-slate-50 w-28">Action</th>
+            <tr className="text-[10px] uppercase tracking-widest font-bold" style={{ backgroundColor: 'var(--fin-table-header-bg)', color: 'var(--fin-table-header-text)' }}>
+              <th className="px-3 py-4 w-12 sticky left-0 z-40 border-r bg-[var(--fin-table-header-bg)]" style={{ borderColor: 'var(--fin-table-header-border)' }}></th>
+              <th className="px-3 py-4 w-[280px] sticky left-12 z-40 border-r shadow-[2px_0_5px_-2px_rgba(0,0,0,0.05)] bg-[var(--fin-table-header-bg)]" style={{ borderColor: 'var(--fin-table-header-border)' }}>Fund Details</th>
+              <th className="px-3 py-4">Purch. Date</th>
+              <th className="px-3 py-4 text-right">Inv. Capital</th>
+              <th className="px-3 py-4 text-right">Current Val</th>
+              <th className="px-3 py-4 text-right">Units</th>
+              <th className="px-3 py-4 text-right">NAV (Cur/Avg)</th>
+              <th className="px-3 py-4 text-right">Dividend</th>
+              <th className="px-3 py-4 text-right">Unrealised Gain</th>
+              <th className="px-4 py-4 text-center w-28">Action</th>
             </tr>
           </thead>
           <tbody className="text-[13px]">
@@ -59,17 +62,18 @@ export default function DesktopFundTable({ funds, onOpenAnalytics }: { funds: Un
                 return (
                   <React.Fragment key={fund.folioNo}>
                     <tr 
-                      className={`group border-b border-slate-100 cursor-pointer transition-colors duration-200 ${isFundExpanded ? 'bg-investor-50/30' : 'hover:bg-slate-50/80'}`}
+                      className={`group border-b cursor-pointer transition-colors duration-200 ${isFundExpanded ? 'bg-[var(--fin-table-expanded-bg)]' : 'hover:bg-[var(--fin-table-row-hover-bg)]'}`}
+                      style={{ borderColor: 'var(--fin-table-row-border)' }}
                       onClick={() => toggleFund(fund.folioNo)}
                     >
-                      <td className={`px-3 py-4 text-center sticky left-0 z-10 border-r border-slate-100 transition-colors ${isFundExpanded ? 'bg-[#f8f9fc]' : 'bg-white group-hover:bg-[#f8fafc]'}`}>
+                      <td className={`px-3 py-4 text-center sticky left-0 z-10 border-r transition-colors ${isFundExpanded ? 'bg-[var(--fin-table-expanded-bg)]' : 'bg-[var(--fin-table-bg)] group-hover:bg-[var(--fin-table-row-hover-bg)]'}`} style={{ borderColor: 'var(--fin-table-sticky-border)' }}>
                         <button className="text-slate-400 hover:text-investor-600 outline-none">
                           <svg className={`w-4 h-4 transition-transform duration-300 ${isFundExpanded ? 'rotate-90 text-investor-600' : 'rotate-0'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M9 5l7 7-7 7" />
                           </svg>
                         </button>
                       </td>
-                      <td className={`px-3 py-4 sticky left-12 z-10 border-r border-slate-50 transition-colors ${isFundExpanded ? 'bg-[#f8f9fc]' : 'bg-white group-hover:bg-[#f8fafc]'}`}>
+                      <td className={`px-3 py-4 sticky left-12 z-10 border-r transition-colors ${isFundExpanded ? 'bg-[var(--fin-table-expanded-bg)]' : 'bg-[var(--fin-table-bg)] group-hover:bg-[var(--fin-table-row-hover-bg)]'}`} style={{ borderColor: 'var(--fin-table-sticky-border)' }}>
                         <span className="font-bold text-slate-900 block mb-1.5 truncate w-[260px]">{fund.fundName}</span>
                         <div className="flex flex-wrap items-center gap-1.5">
                           <Badge intent="neutral">Folio: {fund.folioNo}</Badge>
@@ -110,8 +114,8 @@ export default function DesktopFundTable({ funds, onOpenAnalytics }: { funds: Un
                     </tr>
 
                     {/* Desktop Expanded Transactions Row */}
-                    <tr className="bg-slate-50/40">
-                      <td colSpan={10} className="p-0 border-b border-slate-200/60">
+                    <tr className="bg-[var(--fin-table-expanded-bg)]">
+                      <td colSpan={10} className="p-0 border-b" style={{ borderColor: 'var(--fin-table-expanded-border)' }}>
                         <div className={`grid transition-all duration-300 ease-in-out ${isFundExpanded ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'}`}>
                           <div className="overflow-hidden">
                             <div className="p-5 pl-12 border-l-[3px] border-investor-300 ml-4 my-3">
@@ -145,7 +149,7 @@ export default function DesktopFundTable({ funds, onOpenAnalytics }: { funds: Un
                                   <table className="w-full text-left text-xs">
                                     <tbody>
                                       {fund.transactions.map((txn, idx) => (
-                                        <tr key={txn.id} className={`hover:bg-slate-50/80 transition-colors ${idx !== fund.transactions.length - 1 ? "border-b border-slate-100" : ""}`}>
+                                        <tr key={txn.id} className={`hover:bg-[var(--fin-table-row-hover-bg)] transition-colors ${idx !== fund.transactions.length - 1 ? "border-b" : ""}`} style={{ borderColor: 'var(--fin-table-row-border)' }}>
                                           <td className="p-3 w-[12%] font-medium text-slate-600 tabular-nums">{txn.transactionDate}</td>
                                           <td className="p-3 w-[18%]">
                                             <Badge intent={txn.transactionType.includes('PURCHASE') || txn.transactionType.includes('ADDITIONAL') || txn.transactionType.includes('SIP') || txn.transactionType.includes('SIN') ? 'brand' : 'neutral'}>{txn.transactionType}</Badge>

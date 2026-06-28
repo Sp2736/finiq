@@ -573,7 +573,8 @@ export default function ClientHoldingsView({
       )}
 
       {/* ─── DATA CONTAINER ─── */}
-      <div className="flex-1 min-h-0 bg-white rounded-sm border border-slate-200 shadow-sm flex flex-col relative overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-500 delay-200 fill-both">
+      <div className="flex-1 min-h-0 bg-white rounded-sm border border-slate-200 flex flex-col relative overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-500 delay-200 fill-both"
+           style={{ boxShadow: '0 4px 15px var(--fin-kpi-shadow)' }}>
         {isLoading ? (
           <div className="absolute inset-0 bg-white/60 backdrop-blur-[1px] z-50 flex flex-col items-center justify-center gap-4">
             <Loader2 className="w-8 h-8 animate-spin text-distributor-600" />
@@ -658,7 +659,7 @@ export default function ClientHoldingsView({
                           }`}
                         >
                           <td
-                            className={`p-3 text-center border-b border-slate-100 transition-colors ${isExpanded ? "bg-[#b0ddff0b]" : "bg-white group-hover:bg-[#f8fafc]"}`}
+                            className={`p-3 text-center border-b border-slate-100 transition-colors ${isExpanded ? "bg-distributor-50" : "bg-white group-hover:bg-slate-50"}`}
                           >
                             <button
                               aria-label={
@@ -786,7 +787,7 @@ export default function ClientHoldingsView({
                             >
                               <div className="overflow-hidden">
                                 <div className="p-4 pl-14 pr-6">
-                                  <div className="bg-white rounded-sm border border-slate-200 shadow-sm overflow-hidden">
+                                  <div className="bg-white rounded-sm border border-slate-200 overflow-hidden" style={{ boxShadow: '0 4px 15px var(--fin-kpi-shadow)' }}>
                                     <div className="px-4 py-3 border-b border-slate-100 bg-slate-50 flex items-center justify-between">
                                       <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-500">
                                         Transaction History
@@ -893,7 +894,8 @@ export default function ClientHoldingsView({
                   return (
                     <div
                       key={`mobile-${i}`}
-                      className={`bg-white border transition-colors rounded-sm overflow-hidden shadow-sm flex flex-col ${isExpanded ? "border-distributor-300 ring-1 ring-distributor-100" : "border-slate-200"}`}
+                      className={`bg-white border transition-colors rounded-sm overflow-hidden flex flex-col ${isExpanded ? "border-distributor-300 ring-1 ring-distributor-100" : "border-slate-200"}`}
+                      style={{ boxShadow: '0 4px 15px var(--fin-kpi-shadow)' }}
                     >
                       {/* Card Header */}
                       <div className="p-3 sm:p-4 border-b border-slate-100 flex justify-between items-start gap-3">

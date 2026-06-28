@@ -284,7 +284,8 @@ export default function GoalCalculator() {
       {/* ─── RESPONSIVE MAIN GRID ─── */}
       <div className="flex flex-col lg:grid lg:grid-cols-12 gap-6 lg:gap-8 shrink-0 w-full">
         {/* ─── INPUTS ─── */}
-        <div className="lg:col-span-5 bg-white p-6 sm:p-8 rounded-md border border-slate-200 shadow-sm flex flex-col justify-center relative z-20">
+        <div className="lg:col-span-5 bg-white p-6 sm:p-8 rounded-md border relative z-20"
+             style={{ borderColor: 'var(--fin-kpi-border)', boxShadow: '0 4px 15px var(--fin-kpi-shadow)' }}>
           {/* Mode Selector */}
           <div className="space-y-3 mb-8 z-20">
             <label className="text-xs font-black uppercase text-slate-500">
@@ -332,7 +333,8 @@ export default function GoalCalculator() {
         </div>
 
         {/* ─── CHART ─── */}
-        <div className="lg:col-span-7 bg-white p-6 sm:p-8 rounded-md border border-slate-200 shadow-sm min-h-[350px] lg:min-h-0 lg:h-full flex flex-col relative z-10">
+        <div className="lg:col-span-7 bg-white p-6 sm:p-8 rounded-md border min-h-[350px] lg:min-h-0 lg:h-full flex flex-col relative z-10"
+             style={{ borderColor: 'var(--fin-kpi-border)', boxShadow: '0 4px 15px var(--fin-kpi-shadow)' }}>
           <ResponsiveContainer width="100%" height="100%">
             <BarChart
               data={chartData}
@@ -384,7 +386,7 @@ export default function GoalCalculator() {
               <Bar
                 dataKey="required"
                 name={`Required ${mode === "SIP" ? "Monthly SIP" : "Lumpsum"}`}
-                fill="#3d60ab"
+                fill="var(--fin-chart-color-1)"
                 radius={[4, 4, 0, 0]}
                 maxBarSize={60}
                 animationDuration={800}
@@ -406,7 +408,7 @@ export default function GoalCalculator() {
           {
             label: "Estimated Returns",
             val: results.returns,
-            color: "text-emerald-600",
+            color: "text-[var(--fin-chart-color-4)]",
           },
           {
             label: mode === "SIP" ? "Required SIP / Mo" : "Required Lumpsum",
@@ -417,7 +419,8 @@ export default function GoalCalculator() {
         ].map((card, i) => (
           <div
             key={i}
-            className="bg-white p-5 rounded-md border border-slate-200 shadow-sm relative overflow-hidden"
+            className="bg-white p-5 rounded-md border relative overflow-hidden"
+            style={{ borderColor: 'var(--fin-kpi-border)', boxShadow: '0 4px 15px var(--fin-kpi-shadow)' }}
           >
             <div className={card.color.includes("bg-") ? card.color : ""}>
               <p className="text-[10px] font-black uppercase text-slate-400 tracking-widest relative z-10">

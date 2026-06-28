@@ -161,7 +161,8 @@ export default function DistributorDashboard() {
           {kpis.map((kpi) => (
             <div
               key={kpi.name}
-              className="bg-white p-5 rounded-md border border-slate-200 shadow-sm relative overflow-hidden group hover:bg-distributor-600 hover:border-distributor-600 hover:shadow-md transition-all duration-300 cursor-default"
+              className="bg-white p-5 rounded-md border relative overflow-hidden group hover:bg-distributor-600 hover:border-distributor-600 hover:shadow-md transition-all duration-300 cursor-default"
+              style={{ borderColor: 'var(--fin-kpi-border)', boxShadow: '0 4px 15px var(--fin-kpi-shadow)' }}
             >
               {/* --- KPI (fades out on hover) --- */}
               <div className="group-hover:opacity-0 transition-opacity duration-300">
