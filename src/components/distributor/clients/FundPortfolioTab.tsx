@@ -213,9 +213,8 @@ export default function FundPortfolioTab({ amfiCode }: FundPortfolioTabProps) {
                       y={y - 8}
                       textAnchor="middle"
                       fontSize="10"
-                      fill="#274C9C"
                       fontWeight="800"
-                      className="opacity-0 group-hover:opacity-100 transition-opacity"
+                      className="opacity-0 group-hover:opacity-100 transition-opacity fill-[var(--fin-brand-700)]"
                     >
                       {s.value.toFixed(2)}%
                     </text>
@@ -224,9 +223,8 @@ export default function FundPortfolioTab({ amfiCode }: FundPortfolioTabProps) {
                       y={y}
                       width={BAR_WIDTH}
                       height={Math.max(barHeight, 2)}
-                      fill="#2C6CD4BC"
                       rx="2"
-                      className="transition-all duration-300 group-hover:fill-[#274C9C] cursor-pointer"
+                      className="transition-all duration-300 fill-[var(--fin-brand-500)] opacity-80 group-hover:opacity-100 group-hover:fill-[var(--fin-brand-700)] cursor-pointer"
                     />
                     <text
                       x={x}
@@ -272,7 +270,7 @@ export default function FundPortfolioTab({ amfiCode }: FundPortfolioTabProps) {
                   >
                     <td className="p-3">
                       <div className="flex items-center gap-2.5">
-                        <span className="w-2 h-2 rounded-sm bg-distributor-500 shrink-0" />
+                        <span className="w-2 h-2 rounded-sm shrink-0 bg-[var(--fin-brand-500)]" />
                         <span className="font-semibold text-slate-700 whitespace-normal">
                           {toTitleCase(s.name)}{" "}
                           <span className="text-slate-400 font-bold ml-1 text-[10px]">

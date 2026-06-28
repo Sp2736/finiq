@@ -323,6 +323,11 @@ export const distributorService = {
     );
   },
 
+  createBankAccount: async (bankData: any) => {
+    // This now hits your secure NestJS backend instead of the local DB
+    return apiClient.post('/bank-accounts', bankData);
+  },
+
   addLedgerEntry: async (
     data: LedgerEntryPayload,
   ): Promise<ApiResponse<any>> => {

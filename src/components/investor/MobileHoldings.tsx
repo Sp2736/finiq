@@ -36,7 +36,7 @@ export default function MobileHoldings({
   return (
     <div className="flex flex-col h-full overflow-hidden">
       {/* Portfolio Summary Section (FIXED TOP) */}
-      <div className="shrink-0 bg-white px-5 md:px-8 pt-8 pb-6 shadow-[0_4px_20px_-10px_rgba(0,0,0,0.05)] relative z-20">
+      <div className="shrink-0 bg-white px-5 md:px-8 pt-8 pb-6 relative z-20" style={{ boxShadow: '0 4px 15px var(--fin-kpi-shadow)' }}>
         <div className="flex justify-between items-start mb-6">
           <div>
             <h1 className="text-2xl md:text-3xl font-black tracking-tight text-slate-900 mb-1">
@@ -84,7 +84,7 @@ export default function MobileHoldings({
       </div>
 
       {/* Filters Section (FIXED TOP) */}
-      <div className="shrink-0 px-5 md:px-8 pt-6 pb-2 z-10 bg-slate-50 shadow-sm border-b border-slate-200">
+      <div className="shrink-0 px-5 md:px-8 pt-6 pb-2 z-10 bg-slate-50 border-b border-slate-200" style={{ boxShadow: '0 4px 15px var(--fin-kpi-shadow)' }}>
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-sm md:text-base font-bold text-slate-900">Your Holdings</h3>
           <span className="text-[11px] md:text-xs font-bold text-slate-400 bg-slate-200/50 px-2 py-0.5 rounded-full">{filteredFunds.length} Funds</span>
@@ -128,7 +128,8 @@ export default function MobileHoldings({
             <div 
               key={fund.folioNo}
               onClick={() => onNavigateToFund(fund)}
-              className="bg-white p-4 md:p-5 rounded-[1.25rem] border border-slate-200 shadow-sm hover:shadow-md active:scale-[0.98] transition-all cursor-pointer"
+              className="bg-white p-4 md:p-5 rounded-[1.25rem] border hover:shadow-md active:scale-[0.98] transition-all cursor-pointer"
+              style={{ borderColor: 'var(--fin-table-border)', boxShadow: '0 4px 15px var(--fin-kpi-shadow)' }}
             >
               <div className="mb-4">
                 <h4 className="font-bold text-slate-900 text-[13px] md:text-sm leading-tight mb-2">{fund.fundName}</h4>

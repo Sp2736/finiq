@@ -141,4 +141,6 @@ export const apiClient = {
       method: "PUT",
       body: JSON.stringify(data),
     }),
+  delete: <T>(endpoint: string, options?: RequestInit) =>
+    fetchWithConfig<T>(endpoint, { ...options, method: "DELETE" }),
 };

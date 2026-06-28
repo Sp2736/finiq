@@ -281,13 +281,13 @@ export default function STPCalculator() {
             </div>
             <div className="flex justify-between gap-4">
               <span className="text-slate-500 font-medium">Liquid Returns</span>
-              <span className="font-bold text-[#7c3aed]">
+              <span className="font-bold text-[var(--fin-chart-color-1)]">
                 {formatCurrency(data.liquidReturns)}
               </span>
             </div>
             <div className="flex justify-between gap-4">
               <span className="text-slate-500 font-medium">Equity Returns</span>
-              <span className="font-bold text-[#059669]">
+              <span className="font-bold text-[var(--fin-chart-color-4)]">
                 {formatCurrency(data.equityReturns)}
               </span>
             </div>
@@ -324,7 +324,8 @@ export default function STPCalculator() {
       {/* ─── RESPONSIVE MAIN GRID ─── */}
       <div className="flex flex-col lg:grid lg:grid-cols-12 gap-6 lg:gap-8 shrink-0 w-full">
         {/* ─── INPUTS ─── */}
-        <div className="lg:col-span-5 bg-white p-6 sm:p-8 rounded-md border border-slate-200 shadow-sm flex flex-col justify-center relative z-20">
+        <div className="lg:col-span-5 bg-white p-6 sm:p-8 rounded-md border relative z-20"
+             style={{ borderColor: 'var(--fin-kpi-border)', boxShadow: '0 4px 15px var(--fin-kpi-shadow)' }}>
           <div className="z-10 space-y-8">
             <SyncedSlider
               label="Total Investment"
@@ -366,7 +367,8 @@ export default function STPCalculator() {
         </div>
 
         {/* ─── CHART ─── */}
-        <div className="lg:col-span-7 bg-white p-6 sm:p-8 rounded-md border border-slate-200 shadow-sm min-h-[350px] lg:min-h-0 lg:h-full flex flex-col relative z-10">
+        <div className="lg:col-span-7 bg-white p-6 sm:p-8 rounded-md border min-h-[350px] lg:min-h-0 lg:h-full flex flex-col relative z-10"
+             style={{ borderColor: 'var(--fin-kpi-border)', boxShadow: '0 4px 15px var(--fin-kpi-shadow)' }}>
           <ResponsiveContainer width="100%" height="100%">
             <BarChart
               data={chartData}
@@ -419,7 +421,7 @@ export default function STPCalculator() {
                 dataKey="liquidReturns"
                 name="Liquid Returns"
                 stackId="a"
-                fill="#3d60ab"
+                fill="var(--fin-chart-color-1)"
                 radius={[0, 0, 4, 4]}
                 maxBarSize={60}
                 animationDuration={800}
@@ -428,7 +430,7 @@ export default function STPCalculator() {
                 dataKey="equityReturns"
                 name="Equity Returns"
                 stackId="a"
-                fill="#10b981" 
+                fill="var(--fin-chart-color-4)" 
                 radius={[4, 4, 0, 0]}
                 maxBarSize={60}
                 animationDuration={800}
@@ -454,12 +456,12 @@ export default function STPCalculator() {
           {
             label: "Liquid Returns",
             val: results.liquidReturns,
-            color: "text-[#3d60ab]",
+            color: "text-[var(--fin-chart-color-1)]",
           },
           {
             label: "Equity Returns",
             val: results.equityReturns,
-            color: "text-[#059669]",
+            color: "text-[var(--fin-chart-color-4)]",
           }, // Premium Green
           {
             label: "Future Value",
@@ -470,7 +472,8 @@ export default function STPCalculator() {
         ].map((card, i) => (
           <div
             key={i}
-            className="bg-white p-5 rounded-md border border-slate-200 shadow-sm relative overflow-hidden"
+            className="bg-white p-5 rounded-md border relative overflow-hidden"
+            style={{ borderColor: 'var(--fin-kpi-border)', boxShadow: '0 4px 15px var(--fin-kpi-shadow)' }}
           >
             <div className={card.color.includes("bg-") ? card.color : ""}>
               <p className="text-[10px] font-black uppercase text-slate-400 tracking-widest relative z-10">

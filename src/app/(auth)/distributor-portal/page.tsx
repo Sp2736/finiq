@@ -14,7 +14,10 @@ type Step = "phone" | "otp";
 
 export default function DistributorLoginPage() {
   const [step, setStep] = useState<Step>("phone");
-  const [phoneInfo, setPhoneInfo] = useState({ countryCode: "+91", number: "" });
+  const [phoneInfo, setPhoneInfo] = useState({
+    countryCode: "+91",
+    number: "",
+  });
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const router = useRouter();
@@ -22,7 +25,10 @@ export default function DistributorLoginPage() {
   // const activeRole = "Distributor";
   const portalName = "Distributor";
 
-  const handlePhoneSubmit = async (info: { countryCode: string; number: string }) => {
+  const handlePhoneSubmit = async (info: {
+    countryCode: string;
+    number: string;
+  }) => {
     setIsLoading(true);
     setError("");
     try {
@@ -32,7 +38,9 @@ export default function DistributorLoginPage() {
       setStep("otp");
     } catch (err: any) {
       console.error("OTP Error:", err);
-      setError(err.message || "Failed to send OTP. Please check your phone number.");
+      setError(
+        err.message || "Failed to send OTP. Please check your phone number.",
+      );
     } finally {
       setIsLoading(false);
     }
@@ -42,15 +50,23 @@ export default function DistributorLoginPage() {
     setIsLoading(true);
     setError("");
     try {
-      const fullPhone = `${phoneInfo.countryCode}${phoneInfo.number.replace(/\D/g, '')}`;
+      const fullPhone = `${phoneInfo.countryCode}${phoneInfo.number.replace(/\D/g, "")}`;
       const response = await authService.verifyOtp(fullPhone, otp);
+
+      // if (response.data?.user?.company_logo) {
+      //   localStorage.setItem(
+      //     "company_logo_base64",
+      //     response.data.user.company_logo,
+      //   );
+      // }
+
       if (response.success) {
         // Updated to pass 'staff' and the user's ID
         setAuthCookies(
-          response.data.access_token, 
-          response.data.refresh_token, 
-          'staff', 
-          response.data.user.id
+          response.data.access_token,
+          response.data.refresh_token,
+          "staff",
+          response.data.user.id,
         );
         router.push("/distributor");
       }
@@ -73,7 +89,8 @@ export default function DistributorLoginPage() {
         className="absolute top-0 left-0 w-full lg:w-[65%] h-full opacity-[0.85] pointer-events-none z-0"
         style={{
           maskImage: "linear-gradient(to right, black 40%, transparent 100%)",
-          WebkitMaskImage: "linear-gradient(to right, black 40%, transparent 100%)",
+          WebkitMaskImage:
+            "linear-gradient(to right, black 40%, transparent 100%)",
         }}
       >
         <DistributorFluidBackground />
@@ -83,17 +100,29 @@ export default function DistributorLoginPage() {
       <div className="absolute bottom-0 right-0 w-[500px] sm:w-[800px] h-[500px] sm:h-[800px] bg-indigo-500/10 rounded-full blur-[100px] sm:blur-[120px] pointer-events-none z-0" />
 
       <div className="relative z-10 w-full max-w-[1600px] mx-auto px-6 sm:px-12 lg:px-20 py-10 lg:py-16 flex flex-col lg:flex-row items-center justify-between gap-10 md:gap-12 lg:gap-20">
-
         <div className="w-full lg:w-3/5 flex flex-col justify-center items-center md:items-start">
           <div className="inline-flex items-center justify-center lg:justify-start gap-3 mb-6 lg:mb-8">
             <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-md bg-gradient-to-br from-distributor-600 to-distributor-800 flex items-center justify-center shadow-lg shadow-distributor-900/30 relative overflow-hidden">
               <div className="absolute inset-0 bg-white/20 transform -skew-x-12 -translate-x-full animate-[shine_4s_infinite]" />
-              <svg className="w-6 h-6 sm:w-7 sm:h-7 text-white relative z-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+              <svg
+                className="w-6 h-6 sm:w-7 sm:h-7 text-white relative z-10"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2.5}
+                  d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
+                />
               </svg>
             </div>
             <div className="text-3xl sm:text-4xl lg:text-3xl font-black tracking-tight text-slate-900">
-              FinIQ <span className="text-distributor-600 font-light">| {portalName}</span>
+              FinIQ{" "}
+              <span className="text-distributor-600 font-light">
+                | {portalName}
+              </span>
             </div>
           </div>
 
@@ -105,7 +134,8 @@ export default function DistributorLoginPage() {
               </span>
             </h1>
             <p className="text-base sm:text-lg lg:text-xl text-white-600 font-medium max-w-xl leading-relaxed mb-8 sm:mb-12">
-              Access your distributor dashboard to manage client pipelines and track portfolio allocations globally.
+              Access your distributor dashboard to manage client pipelines and
+              track portfolio allocations globally.
             </p>
           </div>
         </div>
@@ -113,7 +143,10 @@ export default function DistributorLoginPage() {
         <div className="w-full lg:w-2/5 flex justify-center lg:justify-end relative z-20">
           <div
             className="w-full max-w-[440px] md:max-w-[500px] lg:max-w-[440px] bg-white/95 backdrop-blur-3xl border border-white shadow-[0_30px_80px_-15px_rgba(0,0,0,0.15)] rounded-[1.0rem] p-6 sm:p-10 lg:p-12 relative overflow-hidden"
-            style={{ animation: "slideFadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards" }}
+            style={{
+              animation:
+                "slideFadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards",
+            }}
           >
             <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-distributor-600 to-transparent opacity-80" />
 
@@ -135,7 +168,10 @@ export default function DistributorLoginPage() {
                 </div>
 
                 <div className="relative z-10">
-                  <PhoneInputForm onSubmit={handlePhoneSubmit} isLoading={isLoading} />
+                  <PhoneInputForm
+                    onSubmit={handlePhoneSubmit}
+                    isLoading={isLoading}
+                  />
                 </div>
               </div>
             )}
@@ -153,8 +189,9 @@ export default function DistributorLoginPage() {
         </div>
       </div>
 
-      <style dangerouslySetInnerHTML={{
-        __html: `
+      <style
+        dangerouslySetInnerHTML={{
+          __html: `
         @keyframes slideFadeUp {
           from { opacity: 0; transform: translateY(20px); }
           to   { opacity: 1; transform: translateY(0); }
@@ -168,7 +205,9 @@ export default function DistributorLoginPage() {
           20%  { left: 200%; }
           100% { left: 200%; }
         }
-      `}} />
+      `,
+        }}
+      />
     </div>
   );
 }

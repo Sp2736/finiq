@@ -267,7 +267,7 @@ export default function SWPCalculator() {
               <span className="text-slate-500 font-medium">
                 Total Withdrawn
               </span>
-              <span className="font-bold text-emerald-600">
+              <span className="font-bold text-[var(--fin-chart-color-4)]">
                 {formatCurrency(data.withdrawn)}
               </span>
             </div>
@@ -308,7 +308,8 @@ export default function SWPCalculator() {
       {/* ─── RESPONSIVE MAIN GRID ─── */}
       <div className="flex flex-col lg:grid lg:grid-cols-12 gap-6 lg:gap-8 shrink-0 w-full">
         {/* ─── INPUTS ─── */}
-        <div className="lg:col-span-5 bg-white p-6 sm:p-8 rounded-md border border-slate-200 shadow-sm flex flex-col justify-center relative z-20">
+        <div className="lg:col-span-5 bg-white p-6 sm:p-8 rounded-md border relative z-20"
+             style={{ borderColor: 'var(--fin-kpi-border)', boxShadow: '0 4px 15px var(--fin-kpi-shadow)' }}>
           <div className="z-10 space-y-8">
             <SyncedSlider
               label="Total Investment"
@@ -350,7 +351,8 @@ export default function SWPCalculator() {
         </div>
 
         {/* ─── CHART ─── */}
-        <div className="lg:col-span-7 bg-white p-6 sm:p-8 rounded-md border border-slate-200 shadow-sm min-h-[350px] lg:min-h-0 lg:h-full flex flex-col relative z-10">
+        <div className="lg:col-span-7 bg-white p-6 sm:p-8 rounded-md border min-h-[350px] lg:min-h-0 lg:h-full flex flex-col relative z-10"
+             style={{ borderColor: 'var(--fin-kpi-border)', boxShadow: '0 4px 15px var(--fin-kpi-shadow)' }}>
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart
               data={chartData}
@@ -407,7 +409,7 @@ export default function SWPCalculator() {
                 type="monotone"
                 dataKey="corpus"
                 name="Remaining Corpus"
-                stroke="#3d60ab"
+                stroke="var(--fin-chart-color-1)"
                 strokeWidth={3}
                 fill="url(#colorCorpus)"
                 animationDuration={800}
@@ -416,7 +418,7 @@ export default function SWPCalculator() {
                 type="monotone"
                 dataKey="withdrawn"
                 name="Total Withdrawn"
-                stroke="#10b981"
+                stroke="var(--fin-chart-color-4)"
                 strokeWidth={3}
                 fill="url(#colorWithdrawn)"
                 fillOpacity={0.1}
@@ -426,12 +428,12 @@ export default function SWPCalculator() {
               {/* Gradients for aesthetics */}
               <defs>
                 <linearGradient id="colorCorpus" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#3d60ab" stopOpacity={0.25} />
-                  <stop offset="95%" stopColor="#3d60ab" stopOpacity={0} />
+                  <stop offset="5%" stopColor="var(--fin-chart-color-1)" stopOpacity={0.25} />
+                  <stop offset="95%" stopColor="var(--fin-chart-color-1)" stopOpacity={0} />
                 </linearGradient>
                 <linearGradient id="colorWithdrawn" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#10b981" stopOpacity={0.15} />
-                  <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
+                  <stop offset="5%" stopColor="var(--fin-chart-color-4)" stopOpacity={0.15} />
+                  <stop offset="95%" stopColor="var(--fin-chart-color-4)" stopOpacity={0} />
                 </linearGradient>
               </defs>
             </AreaChart>
@@ -455,7 +457,7 @@ export default function SWPCalculator() {
           {
             label: "Total Withdrawn",
             val: results.withdrawn,
-            color: "text-emerald-600",
+            color: "text-[var(--fin-chart-color-4)]",
           },
           {
             label: "Final Corpus Value",
@@ -465,7 +467,8 @@ export default function SWPCalculator() {
         ].map((card, i) => (
           <div
             key={i}
-            className="bg-white p-5 rounded-md border border-slate-200 shadow-sm relative overflow-hidden"
+            className="bg-white p-5 rounded-md border relative overflow-hidden"
+            style={{ borderColor: 'var(--fin-kpi-border)', boxShadow: '0 4px 15px var(--fin-kpi-shadow)' }}
           >
             <div className={card.color.includes("bg-") ? card.color : ""}>
               <p className="text-[10px] font-black uppercase text-slate-400 tracking-widest relative z-10">

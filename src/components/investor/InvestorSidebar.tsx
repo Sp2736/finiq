@@ -61,6 +61,33 @@ export default function InvestorSidebar({
   // Report States
   const [isExportingTxn, setIsExportingTxn] = useState(false);
 
+  // Dynamic Logo State
+  const [companyLogo, setCompanyLogo] = useState<string | null>(null);
+
+  // Extract and format logo from local storage
+  useEffect(() => {
+    try {
+      let storedLogo = localStorage.getItem("company_logo_base64");
+
+      if (
+        storedLogo &&
+        storedLogo !== "null" &&
+        storedLogo !== "undefined" &&
+        storedLogo.length > 20
+      ) {
+        // Append prefix if missing for proper rendering
+        if (!storedLogo.startsWith("data:image")) {
+          storedLogo = `data:image/png;base64,${storedLogo}`;
+        }
+        setCompanyLogo(storedLogo);
+      } else {
+        console.warn("Sidebar: No valid logo found in local storage.");
+      }
+    } catch (err) {
+      console.error("Sidebar: Error retrieving logo.", err);
+    }
+  }, []);
+
   // Auto-expand menus if we are inside their respective routes
   useEffect(() => {
     if (pathname.startsWith("/investor/calculators")) {
@@ -111,7 +138,8 @@ export default function InvestorSidebar({
       {/* Mobile Hamburger */}
       <button
         onClick={() => setIsMobileOpen(true)}
-        className="lg:hidden fixed top-4 right-4 z-50 p-2.5 bg-white border border-slate-200 rounded-md shadow-sm text-slate-600"
+        style={{ backgroundColor: 'var(--fin-sidebar-mobile-btn-bg)', borderColor: 'var(--fin-sidebar-mobile-btn-border)', color: 'var(--fin-sidebar-mobile-btn-text)' }}
+        className="lg:hidden fixed top-4 right-4 z-50 p-2.5 border rounded-md shadow-sm"
       >
         <Menu className="w-5 h-5" />
       </button>
@@ -119,7 +147,8 @@ export default function InvestorSidebar({
       {/* Mobile Backdrop */}
       {isMobileOpen && (
         <div
-          className="lg:hidden fixed inset-0 bg-slate-900/20 backdrop-blur-sm z-40"
+          className="lg:hidden fixed inset-0 backdrop-blur-sm z-40"
+          style={{ backgroundColor: 'var(--fin-sidebar-mobile-backdrop)' }}
           onClick={() => setIsMobileOpen(false)}
         />
       )}
@@ -127,52 +156,48 @@ export default function InvestorSidebar({
       {/* Sidebar Container */}
       {/* Note: changed 'fixed' to 'fixed lg:relative' so it sits perfectly in your flex-row page layout without overlapping */}
       <aside
-        className={`h-screen bg-white/80 backdrop-blur-xl border-r border-slate-200 flex flex-col fixed lg:relative left-0 top-0 z-50 transition-all duration-300 ease-in-out overflow-x-hidden flex-shrink-0
+        style={{ backgroundColor: 'var(--fin-sidebar-bg)', borderColor: 'var(--fin-sidebar-border)' }}
+        className={`h-screen backdrop-blur-xl border-r flex flex-col fixed lg:relative left-0 top-0 z-50 transition-all duration-300 ease-in-out overflow-x-hidden flex-shrink-0
         ${isMobileOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"} 
         ${isCollapsed ? "w-24" : "w-72"}`}
       >
-        {/* Brand Header */}
+        {/* ─── BRAND HEADER ─── */}
         <div
-          className={`p-8 pb-10 flex items-center ${
-            isCollapsed ? "justify-center px-4" : "justify-between"
-          }`}
+          className={`relative p-8 pb-10 flex items-center ${isCollapsed ? "justify-center px-4" : "justify-center w-full"}`}
         >
           <Link
-            href="/investor"
-            className="flex items-center gap-3 group overflow-hidden"
+            href={
+              pathname.startsWith("/investor") ? "/investor" : "/distributor"
+            }
+            className="flex items-center group overflow-hidden w-full justify-center"
           >
-            <div className="w-10 h-10 shrink-0 bg-gradient-to-br from-investor-600 to-investor-800 rounded-md flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-sm">
-              <svg
-                className="w-6 h-6 text-white"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2.5}
-                  d="M13 10V3L4 14h7v7l9-11h-7z"
+            <div
+              className={`shrink-0 transition-all duration-300 flex items-center justify-center ${isCollapsed ? "w-10 h-10" : "w-32 h-16"}`}
+            >
+              {companyLogo ? (
+                <img
+                  src={companyLogo}
+                  alt="Company Logo"
+                  className="max-w-full max-h-full object-contain group-hover:scale-105 transition-transform duration-300"
                 />
-              </svg>
+              ) : (
+                <div className="w-full h-full bg-theme-btnPrimaryBg rounded-md flex items-center justify-center shadow-sm group-hover:scale-105 transition-transform duration-300">
+                  <span className="text-theme-btnPrimaryText font-bold text-[10px]">
+                    LOGO
+                  </span>
+                </div>
+              )}
             </div>
-            {!isCollapsed && (
-              <div className="animate-[fadeIn_0.2s_ease-in] whitespace-nowrap">
-                <span className="text-xl font-black tracking-tight text-slate-900 block leading-none">
-                  FinIQ
-                </span>
-                <span className="text-[10px] font-bold text-investor-600 uppercase tracking-widest mt-1 block">
-                  Investor
-                </span>
-              </div>
-            )}
           </Link>
-          <button
-            onClick={() => setIsMobileOpen(false)}
-            className="lg:hidden text-slate-400"
-          >
-            <X className="w-5 h-5" />
-          </button>
+
+          {!isCollapsed && (
+            <button
+              onClick={() => setIsMobileOpen(false)}
+              className="lg:hidden absolute top-8 right-4 text-theme-textMuted"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          )}
         </div>
 
         {/* Navigation Area */}
@@ -430,18 +455,11 @@ export default function InvestorSidebar({
 
         {/* ─── COMPACT BOTTOM ACTIONS ROW ─── */}
         <div
-          className={`p-4 mt-auto border-t border-slate-100 bg-white/50 flex ${
+          style={{ backgroundColor: 'var(--fin-sidebar-footer-bg)', borderColor: 'var(--fin-sidebar-footer-border)' }}
+          className={`p-4 mt-auto border-t flex ${
             isCollapsed ? "flex-col items-center gap-3" : "items-center gap-2"
           } shrink-0`}
         >
-          {/* Settings Icon (Placeholder routing for future) */}
-          <Link
-            href="#"
-            title="Settings"
-            className="p-2.5 text-slate-400 hover:text-investor-600 hover:bg-investor-50 rounded-md transition-colors group shrink-0"
-          >
-            <Settings className="w-5 h-5 group-hover:rotate-45 transition-transform duration-500" />
-          </Link>
 
           {/* Collapse Icon */}
           <button

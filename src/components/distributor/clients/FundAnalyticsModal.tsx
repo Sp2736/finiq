@@ -148,7 +148,7 @@ export default function FundAnalyticsModal({
 
     return (
       <div className="flex flex-col gap-4">
-        <div className="rounded-md overflow-hidden shadow-sm">
+        <div className="rounded-md overflow-hidden" style={{ boxShadow: '0 4px 15px var(--fin-kpi-shadow)' }}>
           <div className="bg-slate-50 px-3 py-2 border border-slate-200 border-b-0 rounded-t-xl">
             <h3 className="text-[10px] font-black text-slate-700 uppercase tracking-widest">
               Fund Returns Overview (%)
@@ -218,7 +218,7 @@ export default function FundAnalyticsModal({
     const sortedYears = Object.keys(matrix).sort((a, b) => Number(b) - Number(a));
 
     return (
-      <div className="rounded-md overflow-hidden shadow-sm">
+      <div className="rounded-md overflow-hidden" style={{ boxShadow: '0 4px 15px var(--fin-kpi-shadow)' }}>
         <div className="bg-slate-50 px-3 py-2 border border-slate-200 border-b-0 rounded-t-xl">
           <h3 className="text-[10px] font-black text-slate-700 uppercase tracking-widest">
             Monthly Returns Matrix (%)
@@ -264,7 +264,7 @@ export default function FundAnalyticsModal({
 
     return (
       <div className="flex flex-col gap-4">
-        <div className="rounded-md overflow-hidden shadow-sm">
+        <div className="rounded-md overflow-hidden" style={{ boxShadow: '0 4px 15px var(--fin-kpi-shadow)' }}>
           <div className="bg-slate-50 px-3 py-2 border border-slate-200 border-b-0 rounded-t-xl">
             <h3 className="text-[10px] font-black text-slate-700 uppercase tracking-widest">
               Risk Measures
@@ -292,7 +292,7 @@ export default function FundAnalyticsModal({
           </div>
         </div>
 
-        <div className="rounded-md overflow-hidden shadow-sm">
+        <div className="rounded-md overflow-hidden" style={{ boxShadow: '0 4px 15px var(--fin-kpi-shadow)' }}>
           <div className="bg-slate-50 px-3 py-2 border border-slate-200 border-b-0 rounded-t-xl">
             <h3 className="text-[10px] font-black text-slate-700 uppercase tracking-widest">
               Relative Risk Measures

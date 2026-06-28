@@ -1,18 +1,44 @@
 "use client";
 
-import React, { useState } from 'react';
-import { User, Bell, Shield, Key, Smartphone, Monitor, Lock } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { User, Bell, Shield, Key, Smartphone, Monitor, Lock, Palette } from 'lucide-react';
+import { decodeJwt } from '@/lib/utils';
+import ThemePanel from '@/components/settings/ThemePanel';
 
-type TabType = 'profile' | 'notifications' | 'security';
+type TabType = 'profile' | 'notifications' | 'security' | 'appearance';
 
 export default function DistributorSettingsPage() {
   const [activeTab, setActiveTab] = useState<TabType>('profile');
+  const [hasAppearanceAccess, setHasAppearanceAccess] = useState(false);
+
+  useEffect(() => {
+    // Check role for appearance tab access
+    const getCookie = (name: string) => {
+      const value = `; ${document.cookie}`;
+      const parts = value.split(`; ${name}=`);
+      if (parts.length === 2) return parts.pop()?.split(';').shift();
+      return null;
+    };
+    
+    const token = getCookie('staff-auth-token');
+    if (token) {
+      const decoded = decodeJwt(token);
+      // Assuming role is directly on the payload or in user object. 
+      // If it's a list of roles, check accordingly.
+      const roles = decoded?.roles || decoded?.user?.roles || [];
+      const hasAccess = roles.some((r: any) => {
+        const roleName = typeof r === 'string' ? r : r.role;
+        return roleName === 'COMPANY_ADMIN' || roleName === 'TENANT_ADMIN';
+      });
+      setHasAppearanceAccess(hasAccess);
+    }
+  }, []);
 
   const renderContent = () => {
     switch (activeTab) {
       case 'profile':
         return (
-          <div className="space-y-6 max-w-xl animate-[fadeIn_0.3s_ease-out]">
+          <div className="space-y-6 max-w-xl mx-auto animate-[fadeIn_0.3s_ease-out]">
             <h2 className="text-xl font-black text-slate-900 tracking-tight mb-6">Profile Information</h2>
             <div>
               <label className="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">Full Name</label>
@@ -42,7 +68,7 @@ export default function DistributorSettingsPage() {
 
       case 'notifications':
         return (
-          <div className="space-y-8 max-w-xl animate-[fadeIn_0.3s_ease-out]">
+          <div className="space-y-8 max-w-xl mx-auto animate-[fadeIn_0.3s_ease-out]">
             <h2 className="text-xl font-black text-slate-900 tracking-tight mb-6">Notification Preferences</h2>
             
             <div className="space-y-6">
@@ -91,7 +117,7 @@ export default function DistributorSettingsPage() {
 
       case 'security':
         return (
-          <div className="space-y-10 max-w-2xl animate-[fadeIn_0.3s_ease-out]">
+          <div className="space-y-10 max-w-2xl mx-auto animate-[fadeIn_0.3s_ease-out]">
             
             <div>
               <h2 className="text-xl font-black text-slate-900 tracking-tight mb-6">Security Settings</h2>
@@ -162,6 +188,12 @@ export default function DistributorSettingsPage() {
 
           </div>
         );
+      case 'appearance':
+        return (
+          <div className="space-y-6 w-full animate-[fadeIn_0.3s_ease-out]">
+            <ThemePanel />
+          </div>
+        );
       default:
         return null;
     }
@@ -179,30 +211,41 @@ export default function DistributorSettingsPage() {
         </div>
       </div>
 
-      <div className="bg-white rounded-[2.5rem] border border-slate-200 shadow-sm overflow-hidden flex flex-col md:flex-row min-h-[600px]">
+      <div className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden flex flex-col h-full min-h-[600px]">
         
-        <div className="w-full md:w-72 bg-slate-50/50 border-r border-slate-100 p-6 flex flex-col gap-2">
+        {/* Horizontal Tabs */}
+        <div className="w-full bg-slate-50/50 border-b border-slate-100 p-4 sm:px-8 flex flex-row gap-4 overflow-x-auto no-scrollbar">
           <button 
             onClick={() => setActiveTab('profile')}
-            className={`flex items-center gap-3 px-4 py-3 rounded-md font-bold text-sm transition-colors text-left ${activeTab === 'profile' ? 'bg-distributor-50 text-distributor-700' : 'text-slate-600 hover:bg-slate-100'}`}
+            className={`shrink-0 flex items-center gap-2 px-5 py-2.5 rounded-full font-bold text-sm transition-colors ${activeTab === 'profile' ? 'bg-slate-900 text-white shadow-md' : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-100'}`}
           >
             <User className="w-4 h-4" /> Profile Information
           </button>
           <button 
             onClick={() => setActiveTab('notifications')}
-            className={`flex items-center gap-3 px-4 py-3 rounded-md font-bold text-sm transition-colors text-left ${activeTab === 'notifications' ? 'bg-distributor-50 text-distributor-700' : 'text-slate-600 hover:bg-slate-100'}`}
+            className={`shrink-0 flex items-center gap-2 px-5 py-2.5 rounded-full font-bold text-sm transition-colors ${activeTab === 'notifications' ? 'bg-slate-900 text-white shadow-md' : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-100'}`}
           >
             <Bell className="w-4 h-4" /> Notifications
           </button>
           <button 
             onClick={() => setActiveTab('security')}
-            className={`flex items-center gap-3 px-4 py-3 rounded-md font-bold text-sm transition-colors text-left ${activeTab === 'security' ? 'bg-distributor-50 text-distributor-700' : 'text-slate-600 hover:bg-slate-100'}`}
+            className={`shrink-0 flex items-center gap-2 px-5 py-2.5 rounded-full font-bold text-sm transition-colors ${activeTab === 'security' ? 'bg-slate-900 text-white shadow-md' : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-100'}`}
           >
             <Shield className="w-4 h-4" /> Privacy & Security
           </button>
+          
+          {hasAppearanceAccess && (
+            <button 
+              onClick={() => setActiveTab('appearance')}
+              className={`shrink-0 flex items-center gap-2 px-5 py-2.5 rounded-full font-bold text-sm transition-colors ${activeTab === 'appearance' ? 'bg-distributor-600 text-white shadow-md' : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-100'}`}
+            >
+              <Palette className="w-4 h-4" /> Appearance
+            </button>
+          )}
         </div>
 
-        <div className="flex-1 p-8 md:p-12 overflow-y-auto">
+        {/* Content Area */}
+        <div className="flex-1 p-6 md:p-8 overflow-y-auto">
           {renderContent()}
         </div>
 
