@@ -56,7 +56,7 @@ export default function DistributorLoginPage() {
       // Store company logo so both sidebars can display it without an extra API call
       if (response.data?.user?.company_logo) {
         try {
-          localStorage.setItem("company_logo_base64", response.data.user.company_logo);
+          localStorage.setItem("company-logo-dis", response.data.user.company_logo);
         } catch (_) {}
       }
 

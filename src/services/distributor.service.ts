@@ -234,19 +234,6 @@ export const distributorService = {
     return apiClient.get<ApiResponse<any>>(`/investors/${id}/holdings`);
   },
 
-  getCapitalGains: async (
-    data: CapitalGainsPayload,
-  ): Promise<ApiResponse<any>> => {
-    return apiClient.post<ApiResponse<any>>("/investors/capital-gains", data);
-  },
-
-  getTransactionReport: async (
-    investorId: string,
-  ): Promise<ApiResponse<any>> => {
-    return apiClient.post<ApiResponse<any>>("/investors/transaction-report", {
-      investor_id: investorId,
-    });
-  },
 
   getCompanyUsers: async (): Promise<ApiResponse<CompanyUsersResponse>> => {
     return apiClient.get<ApiResponse<CompanyUsersResponse>>("/admin/users");

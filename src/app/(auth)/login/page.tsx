@@ -22,7 +22,7 @@ export default function LoginPage() {
       // Access via response.data.investor
       if (response.data?.investor?.logo_base64) {
         localStorage.setItem(
-          "company_logo_base64",
+          "company-logo-inv",
           response.data.investor.logo_base64,
         );
       }
@@ -37,7 +37,7 @@ export default function LoginPage() {
       // Store company logo so InvestorSidebar can display it without extra API calls
       if (response.data?.investor?.logo_base64) {
         try {
-          localStorage.setItem("company_logo_base64", response.data.investor.logo_base64);
+          localStorage.setItem("company-logo-inv", response.data.investor.logo_base64);
         } catch (_) {}
       }
 

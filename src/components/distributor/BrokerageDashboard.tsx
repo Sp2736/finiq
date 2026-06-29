@@ -6,6 +6,7 @@ import MobileBrokerageOverview from './MobileBrokerageOverview';
 import { distributorService } from '@/services/distributor.service';
 import { formatCompactNumber } from '@/lib/utils';
 import { Search, Download, Calendar, AlertCircle, RefreshCw, Loader2 } from 'lucide-react';
+import ExcelJS from 'exceljs';
 
 // ─── GLOBAL CACHE FOR BROKERAGE VIEWS ───
 const globalHierarchyCache = new Map<string, any[]>();
@@ -146,6 +147,94 @@ export default function BrokerageDashboard() {
   const grandTotalPaid = totals.paid + totals.paidSub;
   const grandNetReceivable = totals.gross - grandTotalPaid;
 
+  const [isExporting, setIsExporting] = useState(false);
+
+  const handleExportExcel = async () => {
+    setIsExporting(true);
+    try {
+      const wb = new ExcelJS.Workbook();
+      const ws = wb.addWorksheet('Hierarchy Earnings');
+
+      ws.columns = [
+        { header: 'User', key: 'user', width: 30 },
+        { header: 'Type', key: 'type', width: 15 },
+        { header: 'Gross Rec. (Rs.)', key: 'gross', width: 20 },
+        { header: 'Paid (Self) (Rs.)', key: 'paid', width: 20 },
+        { header: 'Paid (Sub) (Rs.)', key: 'paidSub', width: 20 },
+        { header: 'Total Paid (Rs.)', key: 'totalPaid', width: 20 },
+        { header: 'Net Rec. (Rs.)', key: 'netRec', width: 20 },
+      ];
+
+      const headerRow = ws.getRow(1);
+      headerRow.font = { bold: true, color: { argb: 'FFFFFFFF' }, size: 11 };
+      headerRow.fill = {
+        type: 'pattern',
+        pattern: 'solid',
+        fgColor: { argb: 'FF0F2850' } // Default navy color
+      };
+      headerRow.alignment = { vertical: 'middle', horizontal: 'center' };
+
+      const flattenHierarchy = (nodes: any[]): any[] => {
+        let flat: any[] = [];
+        nodes.forEach(node => {
+          flat.push(node);
+          if (node.children && node.children.length > 0) {
+            flat = flat.concat(flattenHierarchy(node.children));
+          }
+        });
+        return flat;
+      };
+
+      const flatData = flattenHierarchy(filteredData || []);
+
+      flatData.forEach((user) => {
+        const totalPaid = user.paid + user.paidSub;
+        const netReceivable = user.gross - totalPaid;
+        const row = ws.addRow({
+          user: user.user,
+          type: user.type,
+          gross: user.gross,
+          paid: user.paid,
+          paidSub: user.paidSub,
+          totalPaid: totalPaid,
+          netRec: netReceivable
+        });
+        
+        ['gross', 'paid', 'paidSub', 'totalPaid', 'netRec'].forEach((key) => {
+          row.getCell(key).numFmt = '#,##0.00';
+        });
+      });
+
+      // Add grand totals
+      const grandTotalRow = ws.addRow({
+        user: 'GRAND TOTALS',
+        type: '',
+        gross: totals.gross,
+        paid: totals.paid,
+        paidSub: totals.paidSub,
+        totalPaid: totals.paid + totals.paidSub,
+        netRec: totals.gross - (totals.paid + totals.paidSub)
+      });
+      grandTotalRow.font = { bold: true, color: { argb: 'FF0F2850' } };
+      grandTotalRow.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFDCE8F7' } }; // Light steel
+
+      const buffer = await wb.xlsx.writeBuffer();
+      const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.setAttribute("href", url);
+      link.setAttribute("download", `Hierarchy_Earnings_${dateRange.fromDate}_to_${dateRange.toDate}.xlsx`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error("Export failed:", error);
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
   return (
     <div className="flex flex-col h-full animate-[fadeIn_0.5s_ease-out] overflow-hidden">
       
@@ -157,9 +246,9 @@ export default function BrokerageDashboard() {
           </h1>
         </div>
         <div className="hidden md:flex gap-3">
-          <button className="flex items-center gap-2 px-4 py-2 bg-[var(--fin-table-bg)] border border-[var(--fin-border)] text-[var(--fin-body-text)] font-bold text-xs rounded-md hover:border-[var(--fin-brand-600)] hover:text-[var(--fin-brand-600)] transition-all shadow-sm">
-            <Download className="w-4 h-4" />
-            <span>Export</span>
+          <button onClick={handleExportExcel} disabled={isExporting} className="flex items-center gap-2 px-4 py-2 bg-[var(--fin-table-bg)] border border-[var(--fin-border)] text-[var(--fin-body-text)] font-bold text-xs rounded-md hover:border-[var(--fin-brand-600)] hover:text-[var(--fin-brand-600)] transition-all shadow-sm disabled:opacity-50">
+            {isExporting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
+            <span>{isExporting ? 'Exporting...' : 'Export'}</span>
           </button>
         </div>
       </div>

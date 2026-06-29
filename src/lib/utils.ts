@@ -68,3 +68,15 @@ export function decodeJwt(token: string): any {
     return null;
   }
 };
+
+export const getCompanyLogoFromStorage = (): string | null => {
+  if (typeof window === 'undefined') return null;
+  let logo = localStorage.getItem("company-logo-dis") || localStorage.getItem("company-logo-inv") || null;
+  if (logo && logo !== "null" && logo !== "undefined" && logo.length > 20) {
+    if (!logo.startsWith("data:image")) {
+      logo = `data:image/png;base64,${logo}`;
+    }
+    return logo;
+  }
+  return null;
+};

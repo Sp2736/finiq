@@ -1,22 +1,24 @@
 import { apiClient } from "./apiClient";
 
-/**
- * Sends portfolio data to the backend for PDF generation.
- * This offloads heavy jsPDF/autoTable operations from the client browser.
- */
 export const generatePortfolioValuationPDF = async (
-  clientData: any, // Accepts the raw Finiq API JSON payload
+  investorId: string,
+  investorName: string,
   distributorInfo?: any,
 ) => {
   try {
-    const blob = await apiClient.postBlob("/investors/holdings-export", {
-      clientData,
-      distributorInfo,
-    });
+    const storedLogo = typeof window !== 'undefined' 
+      ? (localStorage.getItem('company-logo-dis') || localStorage.getItem('company-logo-inv')) 
+      : null;
+      
+    let finalDistributorInfo = distributorInfo || {};
+    if (storedLogo) {
+      finalDistributorInfo = { ...finalDistributorInfo, logoBase64: storedLogo };
+    }
 
-    // Formulate the filename in exactly the same way as the backend controller
-    const rawName =
-      clientData.investor_name || clientData.clientName || "Investor";
+    const payload = Object.keys(finalDistributorInfo).length > 0 ? { distributor_info: finalDistributorInfo } : {};
+    const blob = await apiClient.postBlob(`/investors/${investorId}/holdings/export`, payload);
+
+    const rawName = investorName || "Investor";
     const investorNameFormatted = rawName
       .toLowerCase()
       .split(" ")
@@ -26,7 +28,6 @@ export const generatePortfolioValuationPDF = async (
     const today = new Date().toLocaleDateString("en-GB").replace(/\//g, "_");
     const filename = `${investorNameFormatted}_Holdings_${today}.pdf`;
 
-    // Trigger download
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
@@ -37,5 +38,6 @@ export const generatePortfolioValuationPDF = async (
     window.URL.revokeObjectURL(url);
   } catch (error) {
     console.error("Failed to export Holdings PDF report:", error);
+    throw error;
   }
 };

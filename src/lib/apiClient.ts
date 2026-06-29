@@ -14,13 +14,19 @@ const getPortalContext = () => {
     : "staff";
 };
 
-// Global variables to prevent infinite refresh loops when multiple API calls fail simultaneously
 let isRefreshing = false;
 let refreshPromise: Promise<string | null> | null = null;
 
+// Single, unified options shape — every method (get/post/put/delete/postBlob)
+// is built on top of this, so there is only ONE place that knows how to
+// turn a fetch Response into json/blob/text/raw.
+export interface ApiClientOptions extends RequestInit {
+  responseType?: "json" | "blob" | "text" | "raw";
+}
+
 async function fetchWithConfig<T>(
   endpoint: string,
-  options: RequestInit = {},
+  options: ApiClientOptions = {},
 ): Promise<T> {
   const portal = getPortalContext();
   let token = getCookieValue(`${portal}-auth-token`);
@@ -45,7 +51,11 @@ async function fetchWithConfig<T>(
 
     // ─── REFRESH TOKEN INTERCEPTOR ───
     // Investors do not use refresh tokens (their JWT lasts 7 days), so skip refresh logic for them.
-    if (response.status === 401 && !endpoint.includes("/auth/refresh") && portal === "staff") {
+    if (
+      response.status === 401 &&
+      !endpoint.includes("/auth/refresh") &&
+      portal === "staff"
+    ) {
       const refreshToken = getCookieValue(`${portal}-refresh-token`);
       const userId = getCookieValue(`${portal}-user-id`);
 
@@ -53,11 +63,13 @@ async function fetchWithConfig<T>(
         if (!isRefreshing) {
           isRefreshing = true;
 
-          // Execute refresh token request (only for staff)
           refreshPromise = fetch(`${baseUrl}/auth/refresh`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ user_id: userId, refresh_token: refreshToken }),
+            body: JSON.stringify({
+              user_id: userId,
+              refresh_token: refreshToken,
+            }),
           })
             .then((res) => res.json())
             .then((data) => {
@@ -65,7 +77,6 @@ async function fetchWithConfig<T>(
                 const newAccess = data.data.access_token;
                 const newRefresh = data.data.refresh_token || refreshToken;
 
-                // Silently update cookies for another 30 days
                 const expires = new Date();
                 expires.setTime(expires.getTime() + 30 * 24 * 60 * 60 * 1000);
                 document.cookie = `${portal}-auth-token=${newAccess}; path=/; expires=${expires.toUTCString()}; max-age=2592000; SameSite=Lax`;
@@ -83,7 +94,6 @@ async function fetchWithConfig<T>(
 
         const newAccessToken = await refreshPromise;
 
-        // If refresh was successful, retry original request
         if (newAccessToken) {
           response = await fetch(`${baseUrl}${cleanEndpoint}`, {
             ...options,
@@ -117,6 +127,18 @@ async function fetchWithConfig<T>(
       throw new Error(errorData.message || `API Error: ${response.status}`);
     }
 
+    // ─── RESPONSE TYPE INTERCEPTOR ───
+    if (options.responseType === "blob") {
+      return response.blob() as unknown as Promise<T>;
+    }
+    if (options.responseType === "text") {
+      return response.text() as unknown as Promise<T>;
+    }
+    if (options.responseType === "raw") {
+      return response as unknown as Promise<T>;
+    }
+
+    // Default JSON parse
     return response.json();
   } catch (error) {
     console.error(`API Client Error [${endpoint}]:`, error);
@@ -125,20 +147,41 @@ async function fetchWithConfig<T>(
 }
 
 export const apiClient = {
-  get: <T>(endpoint: string, options?: RequestInit) =>
+  get: <T = any>(endpoint: string, options?: ApiClientOptions) =>
     fetchWithConfig<T>(endpoint, { ...options, method: "GET" }),
-  post: <T>(endpoint: string, data: any, options?: RequestInit) =>
+
+  post: <T = any>(endpoint: string, data: any, options?: ApiClientOptions) =>
     fetchWithConfig<T>(endpoint, {
       ...options,
       method: "POST",
       body: JSON.stringify(data),
     }),
-  put: <T>(endpoint: string, data: any, options?: RequestInit) =>
+
+  // Convenience wrapper kept for backward compatibility with
+  // portfolioExport.ts / capitalGainsExport.ts, which call
+  // apiClient.postBlob(...) directly. Internally this is just
+  // post() with responseType forced to "blob" — same fetchWithConfig
+  // path as everything else, so there is no second implementation
+  // of blob-handling to keep in sync.
+  postBlob: <T = Blob>(
+    endpoint: string,
+    data: any,
+    options?: ApiClientOptions,
+  ) =>
+    fetchWithConfig<T>(endpoint, {
+      ...options,
+      method: "POST",
+      body: JSON.stringify(data),
+      responseType: "blob",
+    }),
+
+  put: <T = any>(endpoint: string, data: any, options?: ApiClientOptions) =>
     fetchWithConfig<T>(endpoint, {
       ...options,
       method: "PUT",
       body: JSON.stringify(data),
     }),
-  delete: <T>(endpoint: string, options?: RequestInit) =>
+
+  delete: <T = any>(endpoint: string, options?: ApiClientOptions) =>
     fetchWithConfig<T>(endpoint, { ...options, method: "DELETE" }),
 };
