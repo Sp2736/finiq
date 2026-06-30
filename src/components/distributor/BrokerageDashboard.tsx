@@ -12,24 +12,35 @@ import ExcelJS from 'exceljs';
 const globalHierarchyCache = new Map<string, any[]>();
 const globalHierarchyPromiseCache = new Map<string, Promise<any[]>>();
 
-// Mapper to translate API Response into UI format
-const mapHierarchyData = (subBrokers: any[]) => {
+// Mapper to translate API Response into UI format.
+// `groupBy` is "AMC" or "Investor" (matches activeGroup state values).
+const mapHierarchyData = (subBrokers: any[], groupBy: string) => {
   if (!subBrokers || !Array.isArray(subBrokers)) return [];
+
+  const isInvestorGroup = groupBy === "Investor";
 
   return subBrokers.map((broker, index) => {
     let totalGross = 0;
     let totalPaid = 0;
 
-    const amcBreakdown = (broker.amc_wise_brokerage || []).map((amc: any, i: number) => {
-      totalGross += amc.total_brokerage || 0;
-      totalPaid += amc.paid_brokerage || 0;
+    const rawBreakdown = isInvestorGroup
+      ? broker.investor_wise_brokerage
+      : broker.amc_wise_brokerage;
+
+    const breakdown = (rawBreakdown || []).map((item: any, i: number) => {
+      totalGross += item.total_brokerage || 0;
+      totalPaid += item.paid_brokerage || 0;
 
       return {
-        id: `amc-${index}-${i}`,
-        amcName: amc.amc_name || "Uncategorized AMC",
-        gross: amc.total_brokerage || 0,
-        paid: amc.paid_brokerage || 0,
-        paidSub: 0 
+        id: isInvestorGroup
+          ? (item.investor_id || `investor-${index}-${i}`)
+          : `amc-${index}-${i}`,
+        name: isInvestorGroup
+          ? (item.investor_name || "Unnamed Investor")
+          : (item.amc_name || "Uncategorized AMC"),
+        gross: item.total_brokerage || 0,
+        paid: item.paid_brokerage || 0,
+        paidSub: 0,
       };
     });
 
@@ -41,8 +52,8 @@ const mapHierarchyData = (subBrokers: any[]) => {
       gross: totalGross,
       paid: totalPaid,
       paidSub: 0,
-      amcBreakdown: amcBreakdown,
-      children: [] 
+      amcBreakdown: breakdown, // keep this key name — both child components already read it
+      children: []
     };
   });
 };
@@ -99,7 +110,7 @@ export default function BrokerageDashboard() {
         );
         
         if (res.success && res.data) {
-          const mappedData = mapHierarchyData(res.data.sub_brokers || []);
+          const mappedData = mapHierarchyData(res.data.sub_brokers || [], activeGroup);
           globalHierarchyCache.set(currentCacheKey, mappedData);
           return mappedData;
         } else {
@@ -346,7 +357,7 @@ export default function BrokerageDashboard() {
                 <Loader2 className="w-8 h-8 text-[var(--fin-brand-600)] animate-spin" />
               </div>
             )}
-            <DesktopBrokerageTable data={filteredData} totals={totals} />
+            <DesktopBrokerageTable data={filteredData} totals={totals} groupLabel={activeGroup} />
           </div>
 
           <div className="md:hidden flex flex-col flex-1 min-h-0 overflow-y-auto pr-1 pb-4 relative">
@@ -355,7 +366,7 @@ export default function BrokerageDashboard() {
                 <Loader2 className="w-8 h-8 text-[var(--fin-brand-600)] animate-spin" />
               </div>
             )}
-             <MobileBrokerageOverview data={filteredData} totals={totals} />
+             <MobileBrokerageOverview data={filteredData} totals={totals} groupLabel={activeGroup} />
           </div>
         </React.Fragment>
       )}

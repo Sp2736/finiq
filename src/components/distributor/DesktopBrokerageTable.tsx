@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { formatCurrency } from '@/lib/utils';
 import Badge from '@/components/investor/Badge';
 
-export default function DesktopBrokerageTable({ data, totals }: { data: any[], totals: any }) {
+export default function DesktopBrokerageTable({ data, totals, groupLabel = "AMC" }: { data: any[], totals: any, groupLabel?: string }) {
   const [expandedUser, setExpandedUser] = useState<string | null>(null);
 
   const toggleUser = (id: string) => {
@@ -103,7 +103,7 @@ export default function DesktopBrokerageTable({ data, totals }: { data: any[], t
                                     <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                                     </svg>
-                                    AMC Commission Ledger
+                                    {groupLabel} Commission Ledger
                                   </h4>
                                 </div>
 
@@ -111,7 +111,7 @@ export default function DesktopBrokerageTable({ data, totals }: { data: any[], t
                                   <table className="w-full text-left text-[11px]">
                                     <thead className="bg-[var(--fin-page-bg)]/80 text-[8px] uppercase tracking-widest text-[var(--fin-muted-text)] font-bold border-b border-[var(--fin-border)]/80">
                                       <tr>
-                                        <th className="p-2 w-[25%] pl-4">AMC Name</th>
+                                        <th className="p-2 w-[25%] pl-4">{groupLabel} Name</th>
                                         <th className="p-2 w-[15%] text-right">Gross Brokerage</th>
                                         <th className="p-2 w-[15%] text-right">Paid Brokerage</th>
                                         <th className="p-2 w-[15%] text-right">Total Brokerage</th>
@@ -127,7 +127,7 @@ export default function DesktopBrokerageTable({ data, totals }: { data: any[], t
                                           const amcNet = amc.gross - amcTotal;
                                           return (
                                             <tr key={amc.id} className={`hover:bg-[var(--fin-page-bg)]/80 transition-colors ${idx !== user.amcBreakdown.length - 1 ? "border-b border-[var(--fin-border-subtle)]" : ""}`}>
-                                              <td className="p-2 w-[25%] pl-4 font-bold text-[var(--fin-table-row-text)]">{amc.amcName}</td>
+                                              <td className="p-2 w-[25%] pl-4 font-bold text-[var(--fin-table-row-text)]">{amc.name}</td>
                                               <td className="p-2 w-[15%] text-right font-medium text-[var(--fin-body-text)] tabular-nums">{formatCurrency(amc.gross)}</td>
                                               <td className="p-2 w-[15%] text-right text-[var(--fin-muted-text)] font-medium tabular-nums">{formatCurrency(amc.paid)}</td>
                                               <td className="p-2 w-[15%] text-right font-bold text-[var(--fin-brand-600)] tabular-nums">{formatCurrency(amcTotal)}</td>
