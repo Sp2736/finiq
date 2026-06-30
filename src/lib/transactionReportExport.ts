@@ -22,15 +22,15 @@ export const exportTransactionReport = async (
     );
 
     const rawName = investorName || "Investor";
-    const investorNameFormatted = rawName
+    const safeName = rawName
       .toLowerCase()
       .split(" ")
       .map((w: string) => (w ? w.charAt(0).toUpperCase() + w.slice(1) : w))
       .join("_")
       .replace(/[^a-zA-Z0-9_]/gi, "");
 
-    const today = new Date().toLocaleDateString("en-GB").replace(/\//g, "_");
-    const filename = `${investorNameFormatted}_Transactions_${today}.pdf`;
+    const today = new Date().toLocaleDateString("en-GB").replace(/\//g, "-");
+    const filename = `${safeName}_Transactions-Report_${today}.pdf`;
 
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement("a");

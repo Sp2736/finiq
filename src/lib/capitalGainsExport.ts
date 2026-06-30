@@ -32,8 +32,9 @@ export const exportCapitalGains = async (
   a.href = url;
   
   // Safe filename handling
-  const safeName = (investorName || 'Investor').replace(/[^a-zA-Z0-9_]/gi, '_');
-  a.download = `Capital_Gains_${safeName}_${periodLabel.replace(/[^a-zA-Z0-9_]/gi, '_')}.${format === 'excel' ? 'xlsx' : 'pdf'}`;
+  const safeName = (investorName || 'Investor').trim().replace(/\s+/g, '_').replace(/[^a-zA-Z0-9_]/gi, '');
+  const safePeriod = periodLabel.replace(/[^a-zA-Z0-9_-]/gi, '-');
+  a.download = `${safeName}_Capital-Gains-Report_${safePeriod}.${format === 'excel' ? 'xlsx' : 'pdf'}`;
   
   document.body.appendChild(a);
   a.click();

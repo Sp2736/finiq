@@ -19,14 +19,14 @@ export const generatePortfolioValuationPDF = async (
     const blob = await apiClient.postBlob(`/investors/${investorId}/holdings/export`, payload);
 
     const rawName = investorName || "Investor";
-    const investorNameFormatted = rawName
+    const safeName = rawName
       .toLowerCase()
       .split(" ")
       .map((w: string) => w.charAt(0).toUpperCase() + w.slice(1))
       .join("_")
       .replace(/[^a-zA-Z0-9_]/gi, "");
-    const today = new Date().toLocaleDateString("en-GB").replace(/\//g, "_");
-    const filename = `${investorNameFormatted}_Holdings_${today}.pdf`;
+    const today = new Date().toLocaleDateString("en-GB").replace(/\//g, "-");
+    const filename = `${safeName}_Holdings-Report_${today}.pdf`;
 
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement("a");

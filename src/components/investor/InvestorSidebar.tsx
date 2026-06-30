@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useParams } from "next/navigation";
 import LogoutButton from "@/components/investor/LogoutButton";
 import { exportTransactionReport } from "@/lib/transactionReportExport";
 import {
@@ -29,20 +29,17 @@ import {
 import { investorService } from "@/services/investor.service";
 
 
-interface InvestorSidebarProps {
-  onExportHoldings: () => void;
-  onOpenCapitalGains: () => void;
-  isExporting: boolean;
-  isPortfolioLoaded: boolean;
-}
+import { usePortfolio } from "@/hooks/usePortfolio";
+import { generatePortfolioValuationPDF } from "@/lib/portfolioExport";
+import CapitalGainsModal from "./CapitalGainsModal";
 
-export default function InvestorSidebar({
-  onExportHoldings,
-  onOpenCapitalGains,
-  isExporting,
-  isPortfolioLoaded,
-}: InvestorSidebarProps) {
+interface InvestorSidebarProps {}
+
+export default function InvestorSidebar(props: InvestorSidebarProps) {
   const pathname = usePathname();
+  const params = useParams();
+  const targetInvestorId = (params?.id as string) || "me";
+  
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
 
@@ -52,6 +49,14 @@ export default function InvestorSidebar({
 
   // Report States
   const [isExportingTxn, setIsExportingTxn] = useState(false);
+  const [isExportingHoldings, setIsExportingHoldings] = useState(false);
+  const [isCGModalOpen, setIsCGModalOpen] = useState(false);
+
+  const { isLoading: isPortfolioLoading, portfolio } = usePortfolio();
+  const isPortfolioLoaded = !isPortfolioLoading && !!portfolio;
+  
+  const rawP = portfolio?.data || portfolio;
+  const investorName = rawP?.investor_name || rawP?.clientName || "Investor";
 
   // Dynamic Logo State
   const [companyLogo, setCompanyLogo] = useState<string | null>(null);
@@ -110,11 +115,22 @@ export default function InvestorSidebar({
   const handleTransactionExport = async () => {
     setIsExportingTxn(true);
     try {
-      await exportTransactionReport("me", "Investor", undefined);
+      await exportTransactionReport(targetInvestorId, investorName, undefined);
     } catch (err: any) {
       console.error("Error exporting transaction report:", err);
     } finally {
       setIsExportingTxn(false);
+    }
+  };
+
+  const handleExportHoldings = async () => {
+    setIsExportingHoldings(true);
+    try {
+      await generatePortfolioValuationPDF(targetInvestorId, investorName, undefined);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsExportingHoldings(false);
     }
   };
 
@@ -274,13 +290,13 @@ export default function InvestorSidebar({
                 <button
                   onClick={(e) => {
                     e.preventDefault();
-                    onExportHoldings();
+                    handleExportHoldings();
                     setIsMobileOpen(false);
                   }}
-                  disabled={!isPortfolioLoaded || isExporting}
+                  disabled={!isPortfolioLoaded || isExportingHoldings}
                   className="w-full flex items-center gap-3 px-4 py-2.5 rounded-md transition-all duration-200 text-[var(--fin-sidebar-sub-item-text)] hover:text-[var(--fin-sidebar-sub-item-hover-text)] hover:bg-[var(--fin-sidebar-sub-item-hover-bg)] disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {isExporting ? (
+                  {isExportingHoldings ? (
                     <Loader2 className="w-4 h-4 shrink-0 animate-spin text-[var(--fin-sidebar-section-accent)]" />
                   ) : (
                     <Download className="w-4 h-4 shrink-0" />
@@ -293,7 +309,7 @@ export default function InvestorSidebar({
                 <button
                   onClick={(e) => {
                     e.preventDefault();
-                    onOpenCapitalGains();
+                    setIsCGModalOpen(true);
                     setIsMobileOpen(false);
                   }}
                   disabled={!isPortfolioLoaded}
@@ -473,6 +489,11 @@ export default function InvestorSidebar({
           </div>
         </div>
       </aside>
+
+      <CapitalGainsModal
+        isOpen={isCGModalOpen}
+        onClose={() => setIsCGModalOpen(false)}
+      />
     </>
   );
 }

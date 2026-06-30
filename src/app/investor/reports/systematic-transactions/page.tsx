@@ -2,7 +2,6 @@
 
 import React, { useState, useMemo } from "react";
 import { AlertCircle, Loader2, ArrowRight, Play, Download, Search } from "lucide-react";
-import InvestorSidebar from "@/components/investor/InvestorSidebar";
 import { investorService } from "@/services/investor.service";
 import { generateSystematicPDF } from "@/lib/systematicReportExport";
 
@@ -152,13 +151,6 @@ export default function InvestorSystematicTransactions() {
   return (
     <div className="flex h-[100dvh] md:h-screen w-full bg-[var(--fin-page-bg)] overflow-hidden">
       
-      {/* ─── INVESTOR SIDEBAR ─── */}
-      <InvestorSidebar
-        onExportHoldings={() => {}}
-        onOpenCapitalGains={() => {}}
-        isExporting={false}
-        isPortfolioLoaded={true}
-      />
 
       {/* ─── PAGE CONTENT CONTAINER ─── */}
       <div className="relative flex-1 flex flex-col w-full min-w-0 h-full overflow-hidden animate-in fade-in slide-in-from-bottom-2 duration-500 ease-out">
