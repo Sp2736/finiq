@@ -58,6 +58,7 @@ export interface CompanyUser {
 export interface CompanyUserPayload {
   company_id?: string;
   email?: string;
+  phone_number: string;
   role: string;
   name: string;
   arn_id: string;
@@ -212,6 +213,7 @@ export const distributorService = {
     return apiClient.get<ApiResponse<PaginatedResponse<Investor>>>(url);
   },
 
+  // for hierarchy earnings page
   getBrokerageSummary: async (
     fromDate: string,
     toDate: string,
@@ -234,7 +236,7 @@ export const distributorService = {
     return apiClient.get<ApiResponse<any>>(`/investors/${id}/holdings`);
   },
 
-
+  // for user management page
   getCompanyUsers: async (): Promise<ApiResponse<CompanyUsersResponse>> => {
     return apiClient.get<ApiResponse<CompanyUsersResponse>>("/admin/users");
   },
@@ -251,6 +253,12 @@ export const distributorService = {
   ): Promise<ApiResponse<any>> => {
     return apiClient.put<ApiResponse<any>>(`/admin/users/${id}`, data);
   },
+
+  deleteCompanyUser: async (id: string) => {
+    return apiClient.delete(`/admin/users/${id}`);
+  },
+
+  // for fund analytics modal
 
   getFundReturns: async (amfiCode: string) => {
     const response = await cachedApiGet(`/fund-analytics/returns/${amfiCode}`);
@@ -289,9 +297,7 @@ export const distributorService = {
     return response.data;
   },
 
-  // ─── NEW METHODS FOR BANK ACCOUNTS & LEDGER ───
-
-  // Fetch bank accounts (pass subBrokerId to filter for a specific user, omit for main company accounts)
+  // for the Broker Ledger page
   getBankAccounts: async (
     subBrokerId?: string,
   ): Promise<ApiResponse<BankAccount[]>> => {

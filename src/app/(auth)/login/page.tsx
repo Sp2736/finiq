@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 import EmailPasswordForm from "@/components/layouts/EmailPasswordForm";
 import InvestorFluidBackground from "@/components/layouts/InvestorFluidBackground";
 import { authService } from "@/services/auth.service";
-import { setAuthCookies } from "@/lib/authClient";
+import { setAuthCookies, decodeJwt, DecodedInvestorToken } from "@/lib/authClient";
 
 export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
@@ -19,14 +19,6 @@ export default function LoginPage() {
     try {
       const response = await authService.loginInvestor(identifier, password);
 
-      // Access via response.data.investor
-      if (response.data?.investor?.logo_base64) {
-        localStorage.setItem(
-          "company-logo-inv",
-          response.data.investor.logo_base64,
-        );
-      }
-
       // Navigate to the exact location of the token in your JSON
       const actualToken = response.data?.access_token;
 
@@ -34,10 +26,12 @@ export default function LoginPage() {
         throw new Error("API connected, but access_token was missing in the data object.");
       }
 
+      const decoded = decodeJwt<DecodedInvestorToken>(actualToken);
+
       // Store company logo so InvestorSidebar can display it without extra API calls
-      if (response.data?.investor?.logo_base64) {
+      if (response.data?.logo_base64) {
         try {
-          localStorage.setItem("company-logo-inv", response.data.investor.logo_base64);
+          localStorage.setItem("company-logo-inv", response.data.logo_base64);
         } catch (_) {}
       }
 

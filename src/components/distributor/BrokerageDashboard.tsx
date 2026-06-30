@@ -160,7 +160,6 @@ export default function BrokerageDashboard() {
         { header: 'Type', key: 'type', width: 15 },
         { header: 'Gross Rec. (Rs.)', key: 'gross', width: 20 },
         { header: 'Paid (Self) (Rs.)', key: 'paid', width: 20 },
-        { header: 'Paid (Sub) (Rs.)', key: 'paidSub', width: 20 },
         { header: 'Total Paid (Rs.)', key: 'totalPaid', width: 20 },
         { header: 'Net Rec. (Rs.)', key: 'netRec', width: 20 },
       ];
@@ -287,27 +286,6 @@ export default function BrokerageDashboard() {
             <option>Jan-2026</option>
           </select>
         </div>
-
-        {/* Search */}
-        <div className="flex-1 flex items-center gap-2">
-          <div className="relative flex-1">
-            <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-[var(--fin-aux-text)]" />
-            <input
-              type="text"
-              placeholder="Search user or type..."
-              value={searchInput}
-              onChange={(e) => setSearchInput(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && handleSearchTrigger()}
-              className="w-full pl-8 pr-3 py-1.5 bg-[var(--fin-page-bg)] border border-[var(--fin-border)] rounded-md text-xs font-medium focus:outline-none focus:border-[var(--fin-brand-600)] transition-all"
-            />
-          </div>
-          <button 
-            onClick={handleSearchTrigger}
-            className="px-3 py-1.5 bg-[var(--fin-brand-700)] text-[var(--fin-btn-primary-text)] rounded-md text-[11px] font-bold hover:bg-[var(--fin-brand-800)] transition-all shadow-sm"
-          >
-            Search
-          </button>
-        </div>
       </div>
 
       {/* KPI Section - Compact Grid, Less Padding */}
@@ -315,7 +293,7 @@ export default function BrokerageDashboard() {
         
         <div className="bg-[var(--fin-table-bg)] p-2.5 md:p-4 rounded-md border border-[var(--fin-border)] shadow-sm relative overflow-hidden group hover:bg-[var(--fin-brand-600)] transition-all cursor-default">
           <div className="group-hover:opacity-0 transition-opacity">
-            <p className="text-[9px] md:text-[10px] font-black text-[var(--fin-muted-text)] uppercase tracking-widest mb-0.5">Gross Rec.</p>
+            <p className="text-[9px] md:text-[10px] font-black text-[var(--fin-muted-text)] uppercase tracking-widest mb-0.5">Gross Brokerage</p>
             <h3 className="text-base md:text-xl font-black text-[var(--fin-heading-primary)]">{formatCompactNumber(totals.gross)}</h3>
           </div>
           <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
@@ -333,7 +311,7 @@ export default function BrokerageDashboard() {
           </div>
         </div>
 
-        <div className="bg-[var(--fin-table-bg)] p-2.5 md:p-4 rounded-md border border-[var(--fin-border)] shadow-sm relative overflow-hidden group hover:bg-[var(--fin-brand-600)] transition-all cursor-default">
+        {/* <div className="bg-[var(--fin-table-bg)] p-2.5 md:p-4 rounded-md border border-[var(--fin-border)] shadow-sm relative overflow-hidden group hover:bg-[var(--fin-brand-600)] transition-all cursor-default">
           <div className="group-hover:opacity-0 transition-opacity">
             <p className="text-[9px] md:text-[10px] font-black text-[var(--fin-muted-text)] uppercase tracking-widest mb-0.5">Paid (Sub)</p>
             <h3 className="text-base md:text-xl font-black text-[var(--fin-badge-broker-text)]">{formatCompactNumber(totals.paidSub)}</h3>
@@ -341,11 +319,11 @@ export default function BrokerageDashboard() {
           <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
             <h3 className="text-sm md:text-base font-black text-[var(--fin-btn-primary-text)]">₹{totals.paidSub.toLocaleString('en-IN', { maximumFractionDigits: 0 })}</h3>
           </div>
-        </div>
+        </div> */}
 
         <div className="bg-[var(--fin-brand-900)] p-2.5 md:p-4 rounded-md border border-[var(--fin-heading-primary)] shadow-sm relative overflow-hidden group hover:bg-[var(--fin-brand-600)] transition-all cursor-default">
           <div className="group-hover:opacity-0 transition-opacity relative z-10">
-            <p className="text-[9px] md:text-[10px] font-black text-[var(--fin-aux-text)] uppercase tracking-widest mb-0.5">Net Rec.</p>
+            <p className="text-[9px] md:text-[10px] font-black text-[var(--fin-aux-text)] uppercase tracking-widest mb-0.5">Net Receivable</p>
             <h3 className="text-base md:text-xl font-black text-[var(--fin-btn-primary-text)]">{formatCompactNumber(grandNetReceivable)}</h3>
           </div>
           <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity z-20">

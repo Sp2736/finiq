@@ -8,7 +8,7 @@ import PhoneInputForm from "@/components/layouts/PhoneInputForm";
 import OTPVerificationForm from "@/components/layouts/OTPVerificationForm";
 import DistributorFluidBackground from "@/components/layouts/DistributorFluidBackground";
 import { authService } from "@/services/auth.service";
-import { setAuthCookies } from "@/lib/authClient";
+import { setAuthCookies, decodeJwt, DecodedStaffToken } from "@/lib/authClient";
 
 type Step = "phone" | "otp";
 
@@ -53,19 +53,21 @@ export default function DistributorLoginPage() {
       const fullPhone = `${phoneInfo.countryCode}${phoneInfo.number.replace(/\D/g, "")}`;
       const response = await authService.verifyOtp(fullPhone, otp);
 
-      // Store company logo so both sidebars can display it without an extra API call
-      if (response.data?.user?.company_logo) {
-        try {
-          localStorage.setItem("company-logo-dis", response.data.user.company_logo);
-        } catch (_) {}
-      }
-
       if (response.success) {
+        const decoded = decodeJwt<DecodedStaffToken>(response.data.access_token);
+
+        // Store company logo so both sidebars can display it without an extra API call
+        if (response.data.company_logo) {
+          try {
+            localStorage.setItem("company-logo-dis", response.data.company_logo);
+          } catch (_) {}
+        }
+
         setAuthCookies(
           response.data.access_token,
           response.data.refresh_token,
           "staff",
-          response.data.user.id,
+          decoded?.sub, // was response.data.user.id
         );
         router.push("/distributor");
       }

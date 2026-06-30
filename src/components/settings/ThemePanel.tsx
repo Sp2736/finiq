@@ -20,8 +20,7 @@ let toastCounter = 0;
 
 // ─── Default CSS variable values ─────────────────────────────────────────────
 const DEFAULT_VARS: Record<string, string> = {
-  // Full brand scale — must be complete so preview pane is fully isolated
-  "--fin-brand-50":  "#f0f4fa",
+  "--fin-brand-50": "#f0f4fa",
   "--fin-brand-100": "#e3ecf7",
   "--fin-brand-200": "#cddcf0",
   "--fin-brand-300": "#abc5e6",
@@ -32,62 +31,74 @@ const DEFAULT_VARS: Record<string, string> = {
   "--fin-brand-800": "#2b4177",
   "--fin-brand-900": "#263760",
   "--fin-brand-950": "#18223e",
+
   // Page & surfaces
-  "--fin-page-bg": "#f8fafc",
-  "--fin-page-bg-subtle": "#f1f5f9",
-  "--fin-content-surface": "#ffffff",
-  "--fin-sidebar-bg": "#ffffff",
+  "--fin-page-bg": "#f0f4fa",
+  "--fin-page-bg-subtle": "#e3ecf7",
+  "--fin-content-surface": "#f0f4fa",
+  "--fin-sidebar-bg": "#f0f4fa",
   // Typography
-  "--fin-heading-primary": "#0f172a",
-  "--fin-heading-secondary": "#1e293b",
-  "--fin-heading-tertiary": "#334155",
-  "--fin-body-text": "#475569",
-  "--fin-muted-text": "#64748b",
-  "--fin-aux-text": "#94a3b8",
-  "--fin-overline-text": "#94a3b8",
+  "--fin-heading-primary": "#18223e",
+  "--fin-heading-secondary": "#3d60ab",
+  "--fin-heading-tertiary": "#263760",
+  "--fin-body-text": "#263760",
+  "--fin-muted-text": "#334e8f",
+  "--fin-aux-text": "#3d60ab",
+  "--fin-overline-text": "#3d60ab",
   "--fin-link-text": "#3d60ab",
   // Borders
-  "--fin-border": "#e2e8f0",
-  "--fin-border-subtle": "#f1f5f9",
+  "--fin-border": "#cddcf0",
+  "--fin-border-subtle": "#e3ecf7",
   // Buttons
   "--fin-btn-primary-bg": "#3d60ab",
-  "--fin-btn-primary-bg-hover": "#263760",
+  "--fin-btn-primary-bg-hover": "#334e8f",
   "--fin-btn-primary-text": "#ffffff",
-  "--fin-btn-secondary-bg": "#ffffff",
-  "--fin-btn-secondary-bg-hover": "#f8fafc",
-  "--fin-btn-secondary-text": "#334155",
-  "--fin-btn-secondary-border": "#e2e8f0",
+  "--fin-btn-secondary-bg": "#f0f4fa",
+  "--fin-btn-secondary-bg-hover": "#e3ecf7",
+  "--fin-btn-secondary-text": "#263760",
+  "--fin-btn-secondary-border": "#cddcf0",
   // KPI Cards
-  "--fin-kpi-bg": "#ffffff",
-  "--fin-kpi-border": "#e2e8f0",
-  "--fin-kpi-label": "#64748b",
-  "--fin-kpi-value-revealed": "#0f172a",
-  "--fin-kpi-icon-color": "#64748b",
+  "--fin-kpi-bg": "#f0f4fa",
+  "--fin-kpi-border": "#cddcf0",
+  "--fin-kpi-label": "#334e8f",
+  "--fin-kpi-value-revealed": "#3d60ab",
+  "--fin-kpi-icon-color": "#3d60ab",
   "--fin-kpi-accent-bar": "#658ccb",
   // Sidebar
   "--fin-sidebar-item-active-bg": "#3d60ab",
-  "--fin-sidebar-item-hover-bg": "#f0f4fa",
+  "--fin-sidebar-item-hover-bg": "#e3ecf7",
   "--fin-sidebar-brand-label": "#3d60ab",
   // Ribbon
-  "--fin-ribbon-bg": "#ffffff",
-  "--fin-ribbon-border": "rgba(226,232,240,0.60)",
-  "--fin-ribbon-label": "#94a3b8",
-  "--fin-ribbon-value": "#0f172a",
+  "--fin-ribbon-bg": "#f0f4fa",
+  "--fin-ribbon-border": "#cddcf0",
+  "--fin-ribbon-label": "#334e8f",
+  "--fin-ribbon-value": "#18223e",
   "--fin-ribbon-highlight-value": "#3d60ab",
   // Modals
-  "--fin-modal-bg": "#ffffff",
-  "--fin-modal-border": "#e2e8f0",
+  "--fin-modal-bg": "#f0f4fa",
+  "--fin-modal-border": "#cddcf0",
   "--fin-modal-tab-active-border": "#3d60ab",
+  // Calculators
+  "--fin-calc-card-bg": "#f0f4fa",
+  "--fin-calc-card-border": "#cddcf0",
+  "--fin-calc-select-bg": "#e3ecf7",
+  "--fin-calc-select-border": "#cddcf0",
+  "--fin-calc-select-text": "#2b4177",
+  "--fin-calc-select-hover-border": "#abc5e6",
+  "--fin-calc-result-total-bg": "#3d60ab",
+  "--fin-calc-slider-track": "#cddcf0",
+  "--fin-calc-slider-thumb": "#3d60ab",
   // Filters & Pagination
   "--fin-filter-option-active-bg": "#3d60ab",
   "--fin-filter-option-active-text": "#ffffff",
   "--fin-page-btn-active-bg": "#3d60ab",
   // Tables
-  "--fin-table-header-bg": "#f8fafc",
-  "--fin-table-header-text": "#64748b",
-  "--fin-table-row-hover-bg": "rgba(248,250,252,0.60)",
-  "--fin-table-row-text": "#334155",
-  "--fin-table-row-border": "#f1f5f9",
+  "--fin-table-bg": "#f0f4fa",
+  "--fin-table-header-bg": "#e3ecf7",
+  "--fin-table-header-text": "#334e8f",
+  "--fin-table-row-hover-bg": "#e3ecf7",
+  "--fin-table-row-text": "#263760",
+  "--fin-table-row-border": "#e3ecf7",
   // Charts
   "--fin-chart-color-1": "#3d60ab",
   "--fin-chart-color-2": "#658ccb",
@@ -179,19 +190,81 @@ export default function ThemePanel() {
       if (key === "--fin-brand-600") {
         const scale = deriveColorScale(val);
         updated = { ...updated, ...scale };
-        // Sync all tokens that should always match the brand accent
+        
+        // Backgrounds & Surfaces
+        updated["--fin-page-bg"] = scale["--fin-brand-50"];
+        updated["--fin-page-bg-subtle"] = scale["--fin-brand-100"];
+        updated["--fin-content-surface"] = scale["--fin-brand-50"];
+        updated["--fin-sidebar-bg"] = scale["--fin-brand-50"];
+        
+        // Borders
+        updated["--fin-border"] = scale["--fin-brand-200"];
+        updated["--fin-border-subtle"] = scale["--fin-brand-100"];
+        
+        // Typography
+        updated["--fin-heading-primary"] = scale["--fin-brand-950"];
+        updated["--fin-heading-secondary"] = val; // Brand 600
+        updated["--fin-heading-tertiary"] = scale["--fin-brand-900"];
+        updated["--fin-body-text"] = scale["--fin-brand-900"];
+        updated["--fin-muted-text"] = scale["--fin-brand-700"];
+        updated["--fin-aux-text"] = scale["--fin-brand-600"];
+        updated["--fin-overline-text"] = scale["--fin-brand-600"];
+        updated["--fin-link-text"] = val;
+
+        // KPI Cards
+        updated["--fin-kpi-bg"] = scale["--fin-brand-50"];
+        updated["--fin-kpi-border"] = scale["--fin-brand-200"];
+        updated["--fin-kpi-label"] = scale["--fin-brand-700"];
+        updated["--fin-kpi-value-revealed"] = val;
+        updated["--fin-kpi-icon-color"] = val;
+        updated["--fin-kpi-accent-bar"] = scale["--fin-brand-500"];
+        
+        // Ribbon
+        updated["--fin-ribbon-bg"] = scale["--fin-brand-50"];
+        updated["--fin-ribbon-border"] = scale["--fin-brand-200"];
+        updated["--fin-ribbon-label"] = scale["--fin-brand-700"];
+        updated["--fin-ribbon-value"] = scale["--fin-brand-950"];
+        updated["--fin-ribbon-highlight-value"] = val;
+
+        // Modals
+        updated["--fin-modal-bg"] = scale["--fin-brand-50"];
+        updated["--fin-modal-border"] = scale["--fin-brand-200"];
+        updated["--fin-modal-tab-active-border"] = val;
+        
+        // Calculators
+        updated["--fin-calc-card-bg"] = scale["--fin-brand-50"];
+        updated["--fin-calc-card-border"] = scale["--fin-brand-200"];
+        updated["--fin-calc-select-bg"] = scale["--fin-brand-100"];
+        updated["--fin-calc-select-border"] = scale["--fin-brand-200"];
+        updated["--fin-calc-select-text"] = scale["--fin-brand-800"];
+        updated["--fin-calc-select-hover-border"] = scale["--fin-brand-300"];
+        updated["--fin-calc-result-total-bg"] = val;
+        updated["--fin-calc-slider-track"] = scale["--fin-brand-200"];
+        updated["--fin-calc-slider-thumb"] = val;
+
+        // Tables
+        updated["--fin-table-bg"] = scale["--fin-brand-50"];
+        updated["--fin-table-header-bg"] = scale["--fin-brand-100"];
+        updated["--fin-table-header-text"] = scale["--fin-brand-700"];
+        updated["--fin-table-row-hover-bg"] = scale["--fin-brand-100"];
+        updated["--fin-table-row-text"] = scale["--fin-brand-900"];
+        updated["--fin-table-row-border"] = scale["--fin-brand-100"];
+
+        // Other interactive tokens
         updated["--fin-sidebar-item-active-bg"] = val;
+        updated["--fin-sidebar-item-hover-bg"] = scale["--fin-brand-100"];
         updated["--fin-sidebar-brand-label"] = val;
         updated["--fin-btn-primary-bg"] = val;
-        updated["--fin-btn-primary-bg-hover"] = scale["--fin-brand-700"] ?? val;
-        updated["--fin-link-text"] = val;
-        updated["--fin-heading-secondary"] = val;
-        updated["--fin-kpi-value-revealed"] = val;
-        updated["--fin-kpi-accent-bar"] = scale["--fin-brand-500"] ?? val;
+        updated["--fin-btn-primary-bg-hover"] = scale["--fin-brand-700"];
+        updated["--fin-btn-secondary-bg"] = scale["--fin-brand-50"];
+        updated["--fin-btn-secondary-bg-hover"] = scale["--fin-brand-100"];
+        updated["--fin-btn-secondary-text"] = scale["--fin-brand-900"];
+        updated["--fin-btn-secondary-border"] = scale["--fin-brand-200"];
         updated["--fin-filter-option-active-bg"] = val;
         updated["--fin-page-btn-active-bg"] = val;
         updated["--fin-chart-color-1"] = val;
-        updated["--fin-modal-tab-active-border"] = val;
+        updated["--fin-chart-color-2"] = scale["--fin-brand-400"];
+        updated["--fin-chart-color-3"] = scale["--fin-brand-300"];
       }
       // No applyPreview here — localVars flows to ThemePreviewPane via props
       return updated;
@@ -612,6 +685,7 @@ export default function ThemePanel() {
               label="Tables"
               description="Table headers, row backgrounds, and hover states."
               variables={[
+                { key: "--fin-table-bg", label: "Table Base", value: varGroupLabel("--fin-table-bg") },
                 { key: "--fin-table-header-bg", label: "Header Background", value: varGroupLabel("--fin-table-header-bg") },
                 { key: "--fin-table-header-text", label: "Header Text", value: varGroupLabel("--fin-table-header-text") },
                 { key: "--fin-table-row-hover-bg", label: "Row Hover", value: varGroupLabel("--fin-table-row-hover-bg") },
