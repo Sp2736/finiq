@@ -164,25 +164,42 @@ export default function BrokerageDashboard() {
     setIsExporting(true);
     try {
       const wb = new ExcelJS.Workbook();
-      const ws = wb.addWorksheet('Hierarchy Earnings');
+      const ws = wb.addWorksheet('Hierarchy Earnings', {
+        views: [{ state: 'frozen', ySplit: 5 }],
+        properties: { defaultRowHeight: 22 },
+        pageSetup: { orientation: 'landscape', fitToPage: true, fitToWidth: 1, fitToHeight: 0 }
+      });
 
-      ws.columns = [
-        { header: 'User', key: 'user', width: 30 },
-        { header: 'Type', key: 'type', width: 15 },
-        { header: 'Gross Rec. (Rs.)', key: 'gross', width: 20 },
-        { header: 'Paid (Self) (Rs.)', key: 'paid', width: 20 },
-        { header: 'Total Paid (Rs.)', key: 'totalPaid', width: 20 },
-        { header: 'Net Rec. (Rs.)', key: 'netRec', width: 20 },
-      ];
+      // Configure columns
+      ws.getColumn(1).width = 45;
+      ws.getColumn(2).width = 18;
+      ws.getColumn(3).width = 22; ws.getColumn(3).alignment = { horizontal: 'right' };
+      ws.getColumn(4).width = 22; ws.getColumn(4).alignment = { horizontal: 'right' };
+      ws.getColumn(5).width = 22; ws.getColumn(5).alignment = { horizontal: 'right' };
+      ws.getColumn(6).width = 22; ws.getColumn(6).alignment = { horizontal: 'right' };
 
-      const headerRow = ws.getRow(1);
-      headerRow.font = { bold: true, color: { argb: 'FFFFFFFF' }, size: 11 };
-      headerRow.fill = {
-        type: 'pattern',
-        pattern: 'solid',
-        fgColor: { argb: 'FF0F2850' } // Default navy color
-      };
+      // Title Block
+      const titleRow1 = ws.addRow(['Hierarchy Earnings Report - ' + activeGroup + ' Breakdown']);
+      titleRow1.font = { name: 'Calibri', bold: true, color: { argb: 'FF0F2850' }, size: 14 };
+      titleRow1.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFF4F7FC' } };
+
+      const titleRow2 = ws.addRow(['Period: ' + dateRange.fromDate + ' to ' + dateRange.toDate]);
+      titleRow2.font = { name: 'Calibri', color: { argb: 'FF0F2850' }, size: 11 };
+      titleRow2.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFF4F7FC' } };
+
+      const titleRow3 = ws.addRow(['Generated on: ' + new Date().toLocaleDateString('en-IN')]);
+      titleRow3.font = { name: 'Calibri', color: { argb: 'FF0F2850' }, size: 11 };
+      titleRow3.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFF4F7FC' } };
+
+      ws.addRow([]); // Empty row 4
+
+      // Header Row (Row 5)
+      const headerRow = ws.addRow(['User', 'Type', 'Gross Rec. (Rs.)', 'Paid (Self) (Rs.)', 'Total Paid (Rs.)', 'Net Rec. (Rs.)']);
+      headerRow.font = { name: 'Calibri', bold: true, color: { argb: 'FFFFFFFF' }, size: 11 };
+      headerRow.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF0F2850' } };
       headerRow.alignment = { vertical: 'middle', horizontal: 'center' };
+      
+      ws.autoFilter = { from: 'A5', to: 'F5' };
 
       const flattenHierarchy = (nodes: any[]): any[] => {
         let flat: any[] = [];
@@ -197,43 +214,99 @@ export default function BrokerageDashboard() {
 
       const flatData = flattenHierarchy(filteredData || []);
 
-      flatData.forEach((user) => {
+      flatData.forEach((user, index) => {
         const totalPaid = user.paid + user.paidSub;
         const netReceivable = user.gross - totalPaid;
-        const row = ws.addRow({
-          user: user.user,
-          type: user.type,
-          gross: user.gross,
-          paid: user.paid,
-          paidSub: user.paidSub,
-          totalPaid: totalPaid,
-          netRec: netReceivable
-        });
         
-        ['gross', 'paid', 'paidSub', 'totalPaid', 'netRec'].forEach((key) => {
-          row.getCell(key).numFmt = '#,##0.00';
+        const row = ws.addRow([
+          user.user,
+          user.type,
+          user.gross,
+          user.paid,
+          totalPaid,
+          netReceivable
+        ]);
+        
+        row.font = { name: 'Calibri', bold: true, size: 11, color: { argb: 'FF0F2850' } };
+        row.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFD6E0F0' } };
+        
+        row.eachCell((cell) => {
+           cell.border = { 
+               top: { style: 'thin', color: { argb: 'FFB8C9E6' } },
+               left: { style: 'thin', color: { argb: 'FFB8C9E6' } },
+               right: { style: 'thin', color: { argb: 'FFB8C9E6' } },
+               bottom: { style: 'thin', color: { argb: 'FFB8C9E6' } },
+           };
         });
+
+        [3, 4, 5, 6].forEach((colIndex) => {
+          row.getCell(colIndex).numFmt = '#,##0.00';
+        });
+
+        if (user.amcBreakdown && user.amcBreakdown.length > 0) {
+          user.amcBreakdown.forEach((breakdown: any, bIdx: number) => {
+            const breakdownRow = ws.addRow([
+              `   ↳ ${breakdown.name}`,
+              activeGroup,
+              breakdown.gross,
+              breakdown.paid,
+              breakdown.paid,
+              breakdown.gross - breakdown.paid
+            ]);
+
+            breakdownRow.font = { name: 'Calibri', italic: true, color: { argb: 'FF475569' }, size: 11 };
+            
+            // Alternate shading for children (white and near-white blue tint)
+            const childFill = bIdx % 2 === 0 ? 'FFFFFFFF' : 'FFF4F7FC';
+            breakdownRow.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: childFill } };
+
+            breakdownRow.eachCell((cell) => {
+               cell.border = { 
+                   left: { style: 'thin', color: { argb: 'FFB8C9E6' } },
+                   right: { style: 'thin', color: { argb: 'FFB8C9E6' } },
+                   bottom: { style: 'thin', color: { argb: 'FFB8C9E6' } },
+               };
+            });
+            
+            [3, 4, 5, 6].forEach((colIndex) => {
+              breakdownRow.getCell(colIndex).numFmt = '#,##0.00';
+            });
+          });
+        }
       });
 
       // Add grand totals
-      const grandTotalRow = ws.addRow({
-        user: 'GRAND TOTALS',
-        type: '',
-        gross: totals.gross,
-        paid: totals.paid,
-        paidSub: totals.paidSub,
-        totalPaid: totals.paid + totals.paidSub,
-        netRec: totals.gross - (totals.paid + totals.paidSub)
+      const grandTotalRow = ws.addRow([
+        'GRAND TOTALS',
+        '',
+        totals.gross,
+        totals.paid,
+        totals.paid + totals.paidSub,
+        totals.gross - (totals.paid + totals.paidSub)
+      ]);
+      
+      grandTotalRow.font = { name: 'Calibri', bold: true, color: { argb: 'FFFFFFFF' }, size: 12 };
+      grandTotalRow.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF1E3A6E' } };
+      
+      grandTotalRow.eachCell((cell) => {
+         cell.border = {
+             top: { style: 'medium', color: { argb: 'FF0F2850' } },
+             bottom: { style: 'thin', color: { argb: 'FFB8C9E6' } },
+             left: { style: 'thin', color: { argb: 'FFB8C9E6' } },
+             right: { style: 'thin', color: { argb: 'FFB8C9E6' } },
+         };
       });
-      grandTotalRow.font = { bold: true, color: { argb: 'FF0F2850' } };
-      grandTotalRow.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFDCE8F7' } }; // Light steel
+
+      [3, 4, 5, 6].forEach((colIndex) => {
+        grandTotalRow.getCell(colIndex).numFmt = '#,##0.00';
+      });
 
       const buffer = await wb.xlsx.writeBuffer();
       const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
       const url = URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.setAttribute("href", url);
-      link.setAttribute("download", `Hierarchy_Earnings_${dateRange.fromDate}_to_${dateRange.toDate}.xlsx`);
+      link.setAttribute("download", `Hierarchy_Earnings_by_${activeGroup}_${dateRange.fromDate}_to_${dateRange.toDate}.xlsx`);
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);

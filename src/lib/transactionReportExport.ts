@@ -1,4 +1,5 @@
 import { apiClient } from "./apiClient";
+import { buildDistributorInfoPayload } from "./companyInfo";
 
 export const exportTransactionReport = async (
   investorId: string,
@@ -6,14 +7,7 @@ export const exportTransactionReport = async (
   distributorInfo?: any,
 ): Promise<void> => {
   try {
-    const storedLogo = typeof window !== 'undefined' 
-      ? (localStorage.getItem('company-logo-dis') || localStorage.getItem('company-logo-inv')) 
-      : null;
-      
-    let finalDistributorInfo = distributorInfo || {};
-    if (storedLogo) {
-      finalDistributorInfo = { ...finalDistributorInfo, logoBase64: storedLogo };
-    }
+    const finalDistributorInfo = { ...buildDistributorInfoPayload(), ...(distributorInfo || {}) };
 
     const payload = Object.keys(finalDistributorInfo).length > 0 ? { distributor_info: finalDistributorInfo } : {};
     const blob = await apiClient.postBlob(

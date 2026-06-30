@@ -13,10 +13,8 @@ import {
 } from "lucide-react";
 import Sidebar from "@/components/distributor/Sidebar";
 import { distributorService } from "@/services/distributor.service";
-import {
-  generateSystematicPDF,
-  toTitleCase,
-} from "@/lib/systematicReportExport";
+import { exportSystematicReportPDF } from "@/lib/systematicReportPdfExport";
+import { toTitleCase } from "@/lib/utils";
 
 // Single-word default selections
 const TRANSACTION_TYPES = ["All", "SIP", "STP", "SWP"];
@@ -41,6 +39,7 @@ const GROUP_BY_OPTIONS = ["None", "Client", "AMC", "Scheme", "Registrar"];
 export default function SystematicTransactionsReport() {
   const [reportData, setReportData] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [isExportingPdf, setIsExportingPdf] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
 
   // Global Investors State
@@ -69,6 +68,9 @@ export default function SystematicTransactionsReport() {
   const [appliedGroupBy, setAppliedGroupBy] = useState<string>(
     GROUP_BY_OPTIONS[0],
   );
+  const [appliedRegistrar, setAppliedRegistrar] = useState<string>(
+    REGISTRARS[0],
+  );
 
   // Fetch Global Investor List on Mount
   useEffect(() => {
@@ -82,7 +84,7 @@ export default function SystematicTransactionsReport() {
         );
         if (response.success && response.data && response.data.data) {
           const mapped = response.data.data.map((inv: any) => ({
-            id: toTitleCase(inv.name),
+            id: inv.id,
             name: toTitleCase(inv.name),
           }));
           const unique = Array.from(
@@ -138,11 +140,23 @@ export default function SystematicTransactionsReport() {
     setAppliedMode(selectedMode);
     setAppliedType(selectedType);
     setAppliedGroupBy(selectedGroupBy);
+    setAppliedRegistrar(selectedRegistrar);
 
     try {
       const payload: any = {};
-      if (selectedType !== "All") payload.types = [selectedType];
+      if (selectedType !== "All") payload.type = selectedType;
       if (selectedRegistrar !== "All") payload.registrar = selectedRegistrar;
+      if (selectedInvestorId !== "ALL") payload.investor_id = selectedInvestorId;
+
+      const STATUS_MAP: Record<string, string> = {
+        Running: "CURRENTLY_RUNNING",
+        Forthcoming: "FORTHCOMING",
+        Terminated: "PREMATURELY_TERMINATED",
+        Expired: "DUE_TO_MATURITY",
+      };
+      if (selectedMode !== "All" && STATUS_MAP[selectedMode]) {
+        payload.status = STATUS_MAP[selectedMode];
+      }
 
       const response = await distributorService.getSystematicReport(payload);
       if (response.success && response.data) {
@@ -158,27 +172,7 @@ export default function SystematicTransactionsReport() {
     }
   };
 
-  // Local filtering mapping original complex statuses
-  const filteredReportData = useMemo(() => {
-    return reportData.filter((item) => {
-      const matchInvestor =
-        appliedInvestorId === "ALL" ||
-        toTitleCase(item.investor_name) === appliedInvestorId;
-      const matchType =
-        appliedType === "All" || item.systematic_type === appliedType;
 
-      let status = "Running";
-      if (item.termination_date) {
-        status = "Terminated";
-      } else if (new Date(item.end_date) < new Date()) {
-        status = "Expired";
-      }
-      // Expand matching here based on custom statuses if API provides distinct flags
-      const matchMode = appliedMode === "All" || status === appliedMode;
-
-      return matchInvestor && matchType && matchMode;
-    });
-  }, [reportData, appliedInvestorId, appliedType, appliedMode]);
 
   // Local Grouping Aggregation
   const groupedReportData = useMemo(() => {
@@ -186,11 +180,11 @@ export default function SystematicTransactionsReport() {
 
     const groups: Record<string, { count: number; totalAmount: number }> = {};
 
-    filteredReportData.forEach((item) => {
+    reportData.forEach((item) => {
       let key = "Unknown";
       if (appliedGroupBy === "Client")
         key = toTitleCase(item.investor_name || "Unknown Client");
-      else if (appliedGroupBy === "AMC") key = item.amc_code || "Unknown AMC";
+      else if (appliedGroupBy === "AMC") key = item.amc_name || "Unknown AMC";
       else if (appliedGroupBy === "Scheme")
         key = item.scheme_name || "Unknown Scheme";
       else if (appliedGroupBy === "Registrar")
@@ -208,53 +202,50 @@ export default function SystematicTransactionsReport() {
         totalAmount: data.totalAmount,
       }))
       .sort((a, b) => b.totalAmount - a.totalAmount);
-  }, [filteredReportData, appliedGroupBy]);
+  }, [reportData, appliedGroupBy]);
 
-  const handleExportPDF = () => {
-    if (appliedGroupBy === "None" && filteredReportData.length === 0) return;
+  const handleExportPDF = async () => {
+    if (appliedGroupBy === "None" && reportData.length === 0) return;
     if (
       appliedGroupBy !== "None" &&
       (!groupedReportData || groupedReportData.length === 0)
     )
       return;
 
-    const nameToExport =
-      appliedInvestorId === "ALL" ? "All Investors" : appliedInvestorId;
-    generateSystematicPDF(
-      filteredReportData,
-      appliedType,
-      nameToExport,
-      groupedReportData,
-      appliedGroupBy,
-    );
+    setIsExportingPdf(true);
+    try {
+      const investorLabel =
+        appliedInvestorId === "ALL"
+          ? "All Investors"
+          : dynamicInvestors.find((inv) => inv.id === appliedInvestorId)?.name || "All Investors";
+
+      const STATUS_MAP: Record<string, string> = {
+        Running: "CURRENTLY_RUNNING",
+        Forthcoming: "FORTHCOMING",
+        Terminated: "PREMATURELY_TERMINATED",
+        Expired: "DUE_TO_MATURITY",
+      };
+
+      await exportSystematicReportPDF({
+        type: appliedType !== "All" ? appliedType : undefined,
+        status: appliedMode !== "All" ? STATUS_MAP[appliedMode] : undefined,
+        registrar: appliedRegistrar !== "All" ? appliedRegistrar : undefined,
+        investorId: appliedInvestorId !== "ALL" ? appliedInvestorId : undefined,
+        investorLabel,
+        groupBy: appliedGroupBy,
+      });
+    } catch (error) {
+      console.error("Export failed:", error);
+    } finally {
+      setIsExportingPdf(false);
+    }
   };
 
-  const getStatusBadge = (item: any) => {
-    const now = new Date();
-    if (item.termination_date) {
-      return (
-        <span className="px-2 py-1 bg-[var(--fin-badge-danger-bg)] text-[var(--fin-badge-danger-text)] text-[10px] font-bold rounded border border-[var(--fin-badge-danger-border)] uppercase tracking-wider">
-          Terminated
-        </span>
-      );
-    }
-    if (item.end_date && new Date(item.end_date) < now) {
-      return (
-        <span className="px-2 py-1 bg-[var(--fin-skeleton-base)] text-[var(--fin-table-row-text)] text-[10px] font-bold rounded border border-[var(--fin-border)] uppercase tracking-wider">
-          Expired
-        </span>
-      );
-    }
-    return (
-      <span className="px-2 py-1 bg-[var(--fin-badge-success-bg)] text-[var(--fin-badge-success-text)] text-[10px] font-bold rounded border border-[var(--fin-badge-success-border)] uppercase tracking-wider">
-        Running
-      </span>
-    );
-  };
+
 
   const hasData =
     appliedGroupBy === "None"
-      ? filteredReportData.length > 0
+      ? reportData.length > 0
       : groupedReportData && groupedReportData.length > 0;
 
   const [isCollapsed, setIsCollapsed] = useState(false);
@@ -281,10 +272,10 @@ export default function SystematicTransactionsReport() {
             </div>
             <button
               onClick={handleExportPDF}
-              disabled={!hasSearched || !hasData || isLoading}
+              disabled={!hasSearched || !hasData || isLoading || isExportingPdf}
               className="flex items-center justify-center gap-2 px-5 py-2.5 bg-[var(--fin-brand-600)] hover:bg-[var(--fin-brand-700)] disabled:opacity-50 disabled:cursor-not-allowed text-[var(--fin-btn-primary-text)] text-sm font-semibold rounded-md shadow-sm transition-all shrink-0"
             >
-              <Download className="w-4 h-4" />
+              {isExportingPdf ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
               Export PDF
             </button>
           </div>
@@ -480,22 +471,28 @@ export default function SystematicTransactionsReport() {
                     ) : (
                       <tr>
                         <th className="px-6 py-4 font-bold tracking-wide">
-                          Type & Trxn No
+                          Trxn No.
                         </th>
                         <th className="px-6 py-4 font-bold tracking-wide">
-                          Scheme Details
+                          Folio Number
                         </th>
                         <th className="px-6 py-4 font-bold tracking-wide">
-                          Folio No
+                          Investor Name
+                        </th>
+                        <th className="px-6 py-4 font-bold tracking-wide">
+                          Scheme Name
                         </th>
                         <th className="px-6 py-4 font-bold tracking-wide text-right">
-                          Amount
+                          Amount (Rs.)
                         </th>
                         <th className="px-6 py-4 font-bold tracking-wide">
-                          Period
+                          Start Date
                         </th>
                         <th className="px-6 py-4 font-bold tracking-wide">
-                          Status
+                          End Date
+                        </th>
+                        <th className="px-6 py-4 font-bold tracking-wide">
+                          Source
                         </th>
                       </tr>
                     )}
@@ -522,42 +519,24 @@ export default function SystematicTransactionsReport() {
                             </td>
                           </tr>
                         ))
-                      : filteredReportData.map((item, idx) => (
+                      : reportData.map((item, idx) => (
                           <tr
                             key={idx}
                             className="hover:bg-[var(--fin-page-bg)]/50 transition-colors group"
                           >
-                            <td className="px-6 py-4">
-                              <div className="flex flex-col gap-1">
-                                <div className="flex items-center gap-2">
-                                  <span className="px-2 py-1 bg-[var(--fin-skeleton-base)] text-[var(--fin-table-row-text)] font-black rounded text-[10px] border border-[var(--fin-border)]">
-                                    {item.systematic_type || "N/A"}
-                                  </span>
-                                  <span className="text-[10px] font-bold text-[var(--fin-aux-text)] uppercase tracking-wider">
-                                    {item.source}
-                                  </span>
-                                </div>
-                                <div className="text-[10px] font-mono font-semibold text-[var(--fin-muted-text)] tracking-wide bg-[var(--fin-page-bg)] border border-[var(--fin-border)] px-1.5 py-0.5 rounded w-max">
-                                  {item.trxn_no || "N/A"}
-                                </div>
-                              </div>
+                            <td className="px-6 py-4 font-mono text-xs text-[var(--fin-body-text)] font-semibold">
+                              {item.trxn_no || "N/A"}
+                            </td>
+                            <td className="px-6 py-4 font-mono text-xs text-[var(--fin-body-text)] font-medium">
+                              {item.folio_number || "—"}
+                            </td>
+                            <td className="px-6 py-4 font-bold text-[var(--fin-heading-primary)] whitespace-nowrap">
+                              {item.investor_name ? toTitleCase(item.investor_name) : "—"}
                             </td>
                             <td className="px-6 py-4">
                               <div className="font-bold text-[var(--fin-heading-tertiary)] whitespace-normal min-w-[200px] max-w-sm leading-tight">
-                                {item.scheme_name}
+                                {item.scheme_name || "—"}
                               </div>
-                              {item.systematic_type === "STP" &&
-                                item.target_scheme && (
-                                  <div className="text-[11px] text-[var(--fin-muted-text)] mt-1.5 flex items-start gap-1.5 whitespace-normal">
-                                    <ArrowRight className="w-3.5 h-3.5 mt-0.5 text-[var(--fin-brand-500)] shrink-0" />
-                                    <span className="font-medium text-[var(--fin-body-text)]">
-                                      {item.target_scheme}
-                                    </span>
-                                  </div>
-                                )}
-                            </td>
-                            <td className="px-6 py-4 font-mono text-xs text-[var(--fin-body-text)] font-medium">
-                              {item.folio_number}
                             </td>
                             <td className="px-6 py-4 text-right">
                               <div className="font-black text-[var(--fin-heading-primary)]">
@@ -568,34 +547,28 @@ export default function SystematicTransactionsReport() {
                                 }).format(item.amount)}
                               </div>
                             </td>
-                            <td className="px-6 py-4">
-                              <div className="text-[var(--fin-heading-tertiary)] font-bold text-xs">
-                                {new Date(item.start_date).toLocaleDateString(
-                                  "en-IN",
-                                  {
+                            <td className="px-6 py-4 text-xs font-semibold text-[var(--fin-table-row-text)]">
+                              {item.start_date && !item.start_date.toString().startsWith("2999") && !item.start_date.toString().startsWith("2099")
+                                ? new Date(item.start_date).toLocaleDateString("en-IN", {
                                     day: "2-digit",
                                     month: "short",
                                     year: "numeric",
-                                  },
-                                )}
-                              </div>
-                              <div className="text-[10px] font-semibold text-[var(--fin-aux-text)] mt-0.5 uppercase tracking-wider">
-                                To{" "}
-                                {item.end_date?.startsWith("2999") ||
-                                item.end_date?.startsWith("2099")
-                                  ? "—"
-                                  : new Date(item.end_date).toLocaleDateString(
-                                      "en-IN",
-                                      {
-                                        day: "2-digit",
-                                        month: "short",
-                                        year: "numeric",
-                                      },
-                                    )}
-                              </div>
+                                  })
+                                : "—"}
+                            </td>
+                            <td className="px-6 py-4 text-xs font-semibold text-[var(--fin-table-row-text)]">
+                              {item.end_date && !item.end_date.toString().startsWith("2999") && !item.end_date.toString().startsWith("2099")
+                                ? new Date(item.end_date).toLocaleDateString("en-IN", {
+                                    day: "2-digit",
+                                    month: "short",
+                                    year: "numeric",
+                                  })
+                                : "—"}
                             </td>
                             <td className="px-6 py-4">
-                              {getStatusBadge(item)}
+                              <span className="text-[10px] font-bold text-[var(--fin-aux-text)] uppercase tracking-wider">
+                                {item.source || "N/A"}
+                              </span>
                             </td>
                           </tr>
                         ))}
@@ -630,29 +603,28 @@ export default function SystematicTransactionsReport() {
                           </div>
                         </div>
                       ))
-                    : filteredReportData.map((item, idx) => (
+                    : reportData.map((item, idx) => (
                         <div
                           key={idx}
                           className="p-4 flex flex-col gap-3 hover:bg-[var(--fin-page-bg)] transition-colors"
                         >
                           <div className="flex justify-between items-start gap-2">
-                            <div className="flex flex-col gap-1.5">
-                              <div className="flex flex-wrap items-center gap-2">
-                                <span className="px-2 py-1 bg-[var(--fin-skeleton-base)] text-[var(--fin-table-row-text)] font-black rounded text-[10px] border border-[var(--fin-border)]">
-                                  {item.systematic_type || "N/A"}
-                                </span>
-                                <span className="text-[10px] font-bold text-[var(--fin-aux-text)] uppercase tracking-wider">
-                                  {item.source}
-                                </span>
+                            <div className="flex flex-col gap-1.5 w-full">
+                              <div className="flex justify-between items-center w-full">
                                 <span className="text-[10px] font-mono font-semibold text-[var(--fin-muted-text)] tracking-wide bg-[var(--fin-page-bg)] border border-[var(--fin-border)] px-1.5 py-0.5 rounded w-max">
                                   {item.trxn_no || "N/A"}
                                 </span>
+                                <span className="text-[10px] font-bold text-[var(--fin-aux-text)] uppercase tracking-wider">
+                                  {item.source || "N/A"}
+                                </span>
                               </div>
-                              <div className="font-bold text-[var(--fin-heading-tertiary)] text-sm leading-snug">
-                                {item.scheme_name}
+                              <div className="font-bold text-[var(--fin-heading-primary)] text-sm mt-1">
+                                {item.investor_name ? toTitleCase(item.investor_name) : "—"}
+                              </div>
+                              <div className="font-semibold text-[var(--fin-heading-tertiary)] text-xs leading-snug">
+                                {item.scheme_name || "—"}
                               </div>
                             </div>
-                            <div>{getStatusBadge(item)}</div>
                           </div>
 
                           <div className="grid grid-cols-2 gap-y-3 gap-x-4 mt-1 border-t border-[var(--fin-table-row-border)] pt-3">
@@ -673,19 +645,13 @@ export default function SystematicTransactionsReport() {
                                 Period
                               </p>
                               <div className="text-xs font-semibold text-[var(--fin-table-row-text)]">
-                                {new Date(item.start_date).toLocaleDateString(
-                                  "en-IN",
-                                  { day: "2-digit", month: "short" },
-                                )}{" "}
-                                <span className="font-normal text-[var(--fin-aux-text)] mx-0.5">
-                                  to
-                                </span>{" "}
-                                {item.end_date?.startsWith("2999")
-                                  ? "—"
-                                  : new Date(item.end_date).toLocaleDateString(
-                                      "en-IN",
-                                      { day: "2-digit", month: "short" },
-                                    )}
+                                {item.start_date && !item.start_date.toString().startsWith("2999")
+                                  ? new Date(item.start_date).toLocaleDateString("en-IN", { day: "2-digit", month: "short" })
+                                  : "—"}
+                                <span className="font-normal text-[var(--fin-aux-text)] mx-0.5">to</span>
+                                {item.end_date && !item.end_date.toString().startsWith("2999")
+                                  ? new Date(item.end_date).toLocaleDateString("en-IN", { day: "2-digit", month: "short" })
+                                  : "—"}
                               </div>
                             </div>
                             <div className="col-span-2">
@@ -693,7 +659,7 @@ export default function SystematicTransactionsReport() {
                                 Folio No.
                               </p>
                               <div className="text-[var(--fin-body-text)] font-mono text-xs font-medium">
-                                {item.folio_number}
+                                {item.folio_number || "—"}
                               </div>
                             </div>
                           </div>

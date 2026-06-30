@@ -80,3 +80,14 @@ export const getCompanyLogoFromStorage = (): string | null => {
   }
   return null;
 };
+
+export const getCompanyInfoFromStorage = () => {
+  if (typeof window === 'undefined') return {};
+  try {
+    const infoStr = localStorage.getItem("company-info-dis") || localStorage.getItem("company-info-inv");
+    if (infoStr && infoStr !== "null" && infoStr !== "undefined") {
+      return JSON.parse(infoStr);
+    }
+  } catch (_) {}
+  return {};
+};

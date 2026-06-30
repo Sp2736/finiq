@@ -1,4 +1,5 @@
 import { apiClient } from './apiClient';
+import { buildDistributorInfoPayload } from './companyInfo';
 
 export const exportCapitalGains = async (
   format: 'pdf' | 'excel',
@@ -9,14 +10,7 @@ export const exportCapitalGains = async (
   periodLabel: string,
   distributorInfo: any,
 ) => {
-  const storedLogo = typeof window !== 'undefined' 
-    ? (localStorage.getItem('company-logo-dis') || localStorage.getItem('company-logo-inv')) 
-    : null;
-    
-  let finalDistributorInfo = distributorInfo || {};
-  if (storedLogo) {
-    finalDistributorInfo = { ...finalDistributorInfo, logoBase64: storedLogo };
-  }
+  const finalDistributorInfo = { ...buildDistributorInfoPayload(), ...(distributorInfo || {}) };
 
   const blob = await apiClient.postBlob('/capital-gains/export', {
     investor_id: investorId,

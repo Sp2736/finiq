@@ -3,7 +3,7 @@
 import React, { useState, useMemo } from "react";
 import { AlertCircle, Loader2, ArrowRight, Play, Download, Search } from "lucide-react";
 import { investorService } from "@/services/investor.service";
-import { generateSystematicPDF } from "@/lib/systematicReportExport";
+import { exportSystematicReportPDF } from "@/lib/systematicReportPdfExport";
 
 const TRANSACTION_TYPES = ["All", "SIP", "STP", "SWP"];
 
@@ -38,6 +38,7 @@ export default function InvestorSystematicTransactions() {
 
   // Data State
   const [isLoading, setIsLoading] = useState(false);
+  const [isExportingPdf, setIsExportingPdf] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
   const [reportData, setReportData] = useState<any[]>([]);
 
@@ -53,11 +54,22 @@ export default function InvestorSystematicTransactions() {
 
     try {
       // The investor API might map back to slightly different fields.
-      const response = await investorService.getSystematicReport({
+      const payload: any = {
         type: filterType === "All" ? undefined : filterType,
-        status: filterStatus === "All" ? undefined : filterStatus,
         registrar: filterRegistrar === "All" ? undefined : filterRegistrar,
-      });
+      };
+
+      const STATUS_MAP: Record<string, string> = {
+        Running: "CURRENTLY_RUNNING",
+        Forthcoming: "FORTHCOMING",
+        Terminated: "PREMATURELY_TERMINATED",
+        Expired: "DUE_TO_MATURITY",
+      };
+      if (filterStatus !== "All" && STATUS_MAP[filterStatus]) {
+        payload.status = STATUS_MAP[filterStatus];
+      }
+
+      const response = await investorService.getSystematicReport(payload);
 
       if (response.success && response.data) {
         setReportData(response.data);
@@ -72,7 +84,7 @@ export default function InvestorSystematicTransactions() {
     }
   };
 
-  const handleExportPDF = () => {
+  const handleExportPDF = async () => {
     let pdfGroupedData = null;
 
     if (appliedGroupBy !== "None") {
@@ -81,7 +93,7 @@ export default function InvestorSystematicTransactions() {
       reportData.forEach((item) => {
         let key = "Other";
         if (appliedGroupBy === "Scheme") key = item.scheme_name || "Unknown Scheme";
-        else if (appliedGroupBy === "AMC") key = item.amc_code || "Unknown AMC";
+        else if (appliedGroupBy === "AMC") key = item.amc_name || "Unknown AMC";
         else if (appliedGroupBy === "Registrar") key = item.source || "Unknown Registrar";
 
         if (!groups[key]) groups[key] = { count: 0, totalAmount: 0 };
@@ -101,19 +113,27 @@ export default function InvestorSystematicTransactions() {
     if (appliedGroupBy === "None" && reportData.length === 0) return;
     if (appliedGroupBy !== "None" && (!pdfGroupedData || pdfGroupedData.length === 0)) return;
 
-    // Provide default string to prevent toTitleCase error since column is omitted visually
-    const exportData = reportData.map(item => ({
-      ...item,
-      investor_name: item.investor_name || "My Portfolio"
-    }));
+    setIsExportingPdf(true);
+    try {
+      const STATUS_MAP: Record<string, string> = {
+        Running: "CURRENTLY_RUNNING",
+        Forthcoming: "FORTHCOMING",
+        Terminated: "PREMATURELY_TERMINATED",
+        Expired: "DUE_TO_MATURITY",
+      };
 
-    generateSystematicPDF(
-      exportData,
-      appliedType,
-      "My Portfolio",
-      pdfGroupedData,
-      appliedGroupBy
-    );
+      await exportSystematicReportPDF({
+        type: appliedType !== "All" ? appliedType : undefined,
+        status: appliedStatus !== "All" ? STATUS_MAP[appliedStatus] : undefined,
+        registrar: appliedRegistrar !== "All" ? appliedRegistrar : undefined,
+        investorLabel: "My Portfolio",
+        groupBy: appliedGroupBy,
+      });
+    } catch (error) {
+      console.error("Export failed:", error);
+    } finally {
+      setIsExportingPdf(false);
+    }
   };
 
   const groupedData = useMemo(() => {
@@ -125,7 +145,7 @@ export default function InvestorSystematicTransactions() {
     reportData.forEach((item) => {
       let key = "Other";
       if (appliedGroupBy === "Scheme") key = item.scheme_name || "Unknown Scheme";
-      else if (appliedGroupBy === "AMC") key = item.amc_code || "Unknown AMC";
+      else if (appliedGroupBy === "AMC") key = item.amc_name || "Unknown AMC";
       else if (appliedGroupBy === "Registrar") key = item.source || "Unknown Registrar";
 
       if (!groups[key]) groups[key] = [];
@@ -168,10 +188,10 @@ export default function InvestorSystematicTransactions() {
             </div>
             <button
               onClick={handleExportPDF}
-              disabled={!hasSearched || !hasData || isLoading}
+              disabled={!hasSearched || !hasData || isLoading || isExportingPdf}
               className="flex items-center justify-center gap-2 px-5 py-2.5 bg-[var(--fin-brand-600)] hover:bg-[var(--fin-brand-700)] disabled:opacity-50 disabled:cursor-not-allowed text-[var(--fin-btn-primary-text)] text-sm font-semibold rounded-md shadow-sm transition-all shrink-0"
             >
-              <Download className="w-4 h-4" />
+              {isExportingPdf ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
               Export PDF
             </button>
           </div>
@@ -277,6 +297,7 @@ export default function InvestorSystematicTransactions() {
                         <thead className="bg-[var(--fin-page-bg)] border-b border-[var(--fin-border)] text-[var(--fin-muted-text)] sticky top-0 z-10 shadow-[0_1px_0_0_var(--fin-border-subtle)]">
                           <tr>
                             <th className="px-6 py-4 font-bold tracking-wide">Type & Trxn No</th>
+                            <th className="px-6 py-4 font-bold tracking-wide">AMC</th>
                             <th className="px-6 py-4 font-bold tracking-wide">Scheme Details</th>
                             <th className="px-6 py-4 font-bold tracking-wide">Folio No</th>
                             <th className="px-6 py-4 font-bold tracking-wide text-right">Amount</th>
@@ -300,6 +321,9 @@ export default function InvestorSystematicTransactions() {
                                   {item.trxn_no || "N/A"}
                                 </div>
                               </div>
+                            </td>
+                            <td className="px-6 py-4 font-bold text-[var(--fin-body-text)]">
+                              {item.amc_name || "N/A"}
                             </td>
                             <td className="px-6 py-4">
                               <div className="font-bold text-[var(--fin-heading-tertiary)] whitespace-normal min-w-[200px] max-w-sm leading-tight">
@@ -350,6 +374,7 @@ export default function InvestorSystematicTransactions() {
                                 </span>
                               </div>
                               <div className="font-bold text-[var(--fin-heading-tertiary)] text-sm leading-snug">{item.scheme_name}</div>
+                              <div className="text-xs text-[var(--fin-muted-text)] font-semibold mt-0.5">{item.amc_name || "N/A"}</div>
                             </div>
                             <div>{getStatusBadge(item)}</div>
                           </div>

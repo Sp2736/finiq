@@ -131,6 +131,7 @@ export interface InvestorSip {
   frequency: string;
   status: string;
   start_date: string;
+  end_date: string | null;
 }
 
 export interface SipDetail {
@@ -162,6 +163,7 @@ export interface SystematicReportItem {
   systematic_type: string;
   source: string;
   termination_date: string | null;
+  amc_name: string;
 }
 
 const analyticsApiCache = new Map<string, Promise<any>>();

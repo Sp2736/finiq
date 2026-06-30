@@ -12,6 +12,12 @@ export interface VerifyOtpData {
   access_token: string;
   refresh_token: string;
   company_logo?: string | null;
+  company_info?: {
+    name: string | null;
+    address: string | null;
+    email: string | null;
+    phone: string | null;
+  } | null;
 }
 
 export interface SendOtpData {
@@ -25,6 +31,12 @@ export interface LoginResponse {
   data: {
     access_token: string;
     logo_base64?: string | null;
+    company_info?: {
+      name?: string | null;
+      address?: string | null;
+      email?: string | null;
+      phone?: string | null;
+    } | null;
   };
 }
 
