@@ -13,8 +13,8 @@ import {
 } from "lucide-react";
 import Sidebar from "@/components/distributor/Sidebar";
 import { distributorService } from "@/services/distributor.service";
-import { exportSystematicReportPDF } from "@/lib/systematicReportPdfExport";
-import { toTitleCase } from "@/lib/utils";
+import { buildDistributorInfoPayload } from "@/lib/companyInfo";
+import { toTitleCase, triggerBlobDownload } from "@/lib/utils";
 
 // Single-word default selections
 const TRANSACTION_TYPES = ["All", "SIP", "STP", "SWP"];
@@ -40,6 +40,7 @@ export default function SystematicTransactionsReport() {
   const [reportData, setReportData] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isExportingPdf, setIsExportingPdf] = useState(false);
+  const [exportError, setExportError] = useState<string | null>(null);
   const [hasSearched, setHasSearched] = useState(false);
 
   // Global Investors State
@@ -212,30 +213,31 @@ export default function SystematicTransactionsReport() {
     )
       return;
 
+    if (isExportingPdf) return;
+
     setIsExportingPdf(true);
+    setExportError(null);
     try {
-      const investorLabel =
+      const nameToExport =
         appliedInvestorId === "ALL"
           ? "All Investors"
           : dynamicInvestors.find((inv) => inv.id === appliedInvestorId)?.name || "All Investors";
 
-      const STATUS_MAP: Record<string, string> = {
-        Running: "CURRENTLY_RUNNING",
-        Forthcoming: "FORTHCOMING",
-        Terminated: "PREMATURELY_TERMINATED",
-        Expired: "DUE_TO_MATURITY",
-      };
-
-      await exportSystematicReportPDF({
-        type: appliedType !== "All" ? appliedType : undefined,
-        status: appliedMode !== "All" ? STATUS_MAP[appliedMode] : undefined,
-        registrar: appliedRegistrar !== "All" ? appliedRegistrar : undefined,
-        investorId: appliedInvestorId !== "ALL" ? appliedInvestorId : undefined,
-        investorLabel,
+      const { blob, filename } = await distributorService.exportSystematicReport({
+        data: reportData,
+        type: appliedType,
+        investorLabel: nameToExport,
         groupBy: appliedGroupBy,
+        distributor_info: buildDistributorInfoPayload(),
       });
+      triggerBlobDownload(blob, filename);
     } catch (error) {
-      console.error("Export failed:", error);
+      console.error("Failed to export systematic transactions PDF", error);
+      setExportError(
+        error instanceof Error
+          ? error.message
+          : "Failed to generate the PDF. Please try again.",
+      );
     } finally {
       setIsExportingPdf(false);
     }
@@ -275,10 +277,17 @@ export default function SystematicTransactionsReport() {
               disabled={!hasSearched || !hasData || isLoading || isExportingPdf}
               className="flex items-center justify-center gap-2 px-5 py-2.5 bg-[var(--fin-brand-600)] hover:bg-[var(--fin-brand-700)] disabled:opacity-50 disabled:cursor-not-allowed text-[var(--fin-btn-primary-text)] text-sm font-semibold rounded-md shadow-sm transition-all shrink-0"
             >
-              {isExportingPdf ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
-              Export PDF
+              {isExportingPdf ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                <Download className="w-4 h-4" />
+              )}
+              {isExportingPdf ? "Generating…" : "Export PDF"}
             </button>
           </div>
+          {exportError && (
+            <p className="text-sm text-red-600 mt-2">{exportError}</p>
+          )}
         </div>
 
         {/* ─── SCROLLABLE AREA (Mobile) / FIXED AREA (Tablet & Desktop) ─── */}

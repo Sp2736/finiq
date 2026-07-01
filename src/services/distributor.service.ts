@@ -383,4 +383,18 @@ export const distributorService = {
       data,
     );
   },
+
+  exportSystematicReport: async (payload: {
+    data: SystematicReportItem[];
+    type: string;
+    investorLabel: string;
+    groupBy: string;
+    distributor_info?: any;
+  }) => {
+    return apiClient.postForFile(
+      "/sips/systematic-report/export",
+      payload,
+      "systematic-transactions-report.pdf",
+    );
+  },
 };
