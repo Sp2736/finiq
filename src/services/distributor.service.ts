@@ -234,13 +234,20 @@ export const distributorService = {
   downloadInvestorList: async (
     page: number = 1,
     limit: number = 30,
-    maxLimit: number = 5000,
+    maxLimit: number, //
     search: string = "",
   ): Promise<ApiResponse<PaginatedResponse<Investor>>> => {
-    let url = `/holdings-cache/investors?page=${page}&limit=${limit}&maxLimit=${maxLimit}`;
+    let url = `/holdings-cache/investors?page=${page}&limit=${limit}`;
+
+    // Only append maxLimit if explicitly provided
+    if (maxLimit !== undefined) {
+      url += `&maxLimit=${maxLimit}`;
+    }
+
     if (search && search.trim() !== "") {
       url += `&search=${encodeURIComponent(search.trim())}`;
     }
+
     return apiClient.get<ApiResponse<PaginatedResponse<Investor>>>(url);
   },
 
