@@ -20,7 +20,7 @@ export const exportSystematicReportPDF = async (
       distributor_info: Object.keys(finalDistributorInfo).length > 0 ? finalDistributorInfo : undefined,
     };
 
-    const blob = await apiClient.postBlob('/sips/systematic-report/export', body);
+    const { blob } = await apiClient.postForFile('/sips/systematic-report/export', body);
 
     const rawName = payload.investorLabel && payload.investorLabel !== "All Investors" ? payload.investorLabel : "All_Investors";
     const safeName = rawName

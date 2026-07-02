@@ -10,7 +10,7 @@ export const generatePortfolioValuationPDF = async (
     const finalDistributorInfo = { ...buildDistributorInfoPayload(), ...(distributorInfo || {}) };
 
     const payload = Object.keys(finalDistributorInfo).length > 0 ? { distributor_info: finalDistributorInfo } : {};
-    const blob = await apiClient.postBlob(`/investors/${investorId}/holdings/export`, payload);
+    const { blob } = await apiClient.postForFile(`/investors/${investorId}/holdings/export`, payload);
 
     const rawName = investorName || "Investor";
     const safeName = rawName

@@ -119,6 +119,20 @@ async function rawFetch(
   return response;
 }
 
+const isSensitiveError = (msg: string) => {
+  if (!msg) return false;
+  const lower = msg.toLowerCase();
+  return lower.includes('postgresql') || lower.includes('syntax error') || lower.includes('column') || lower.includes('relation') || lower.includes('typeorm') || lower.includes('constraint');
+};
+
+const sanitizeFrontendError = (msg: any, status: number): string => {
+  const messageStr = Array.isArray(msg) ? msg.join(', ') : (msg || '');
+  if (isSensitiveError(messageStr)) {
+    return 'An unexpected error occurred processing your request. Please try again.';
+  }
+  return messageStr || `API Error: ${status}`;
+};
+
 async function fetchWithConfig<T>(
   endpoint: string,
   options: RequestInit = {},
@@ -128,7 +142,7 @@ async function fetchWithConfig<T>(
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
-      throw new Error(errorData.message || `API Error: ${response.status}`);
+      throw new Error(sanitizeFrontendError(errorData.message, response.status));
     }
 
     return response.json();
@@ -172,7 +186,7 @@ async function fetchFile(
     if (!response.ok) {
       // Errors from these endpoints are still JSON (NestJS exception filters)
       const errorData = await response.json().catch(() => ({}));
-      throw new Error(errorData.message || `API Error: ${response.status}`);
+      throw new Error(sanitizeFrontendError(errorData.message, response.status));
     }
 
     const blob = await response.blob();

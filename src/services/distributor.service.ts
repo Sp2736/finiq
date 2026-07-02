@@ -166,6 +166,35 @@ export interface SystematicReportItem {
   amc_name: string;
 }
 
+// ─── INVESTOR MAPPING INTERFACES ───
+export interface AssignableBroker {
+  id: string;
+  name: string;
+  arn_id: string | null;
+  parent_id: string | null;
+  is_distributor: boolean;
+}
+
+export interface MappableInvestor {
+  id: string;
+  name: string;
+  pan: string;
+  email: string | null;
+  mobile: string | null;
+  current_sub_broker_id: string | null;
+  current_sub_broker_name: string | null;
+}
+
+export interface MappingHistoryEntry {
+  id: string;
+  action: string;
+  created_at: string;
+  investor_name: string;
+  investor_pan: string;
+  sub_broker_name: string;
+  performed_by_name: string;
+}
+
 const analyticsApiCache = new Map<string, Promise<any>>();
 
 const cachedApiGet = (url: string) => {
@@ -320,7 +349,7 @@ export const distributorService = {
 
   createBankAccount: async (bankData: any) => {
     // This now hits your secure NestJS backend instead of the local DB
-    return apiClient.post('/bank-accounts', bankData);
+    return apiClient.post("/bank-accounts", bankData);
   },
 
   addLedgerEntry: async (
@@ -395,6 +424,65 @@ export const distributorService = {
       "/sips/systematic-report/export",
       payload,
       "systematic-transactions-report.pdf",
+    );
+  },
+
+  // ─── INVESTOR MAPPING ENDPOINTS ───
+
+  getAssignableBrokers: async (): Promise<ApiResponse<AssignableBroker[]>> => {
+    return apiClient.get<ApiResponse<AssignableBroker[]>>(
+      "/companies/investor-mapping/brokers",
+    );
+  },
+
+  getMappableInvestors: async (
+    page: number = 1,
+    limit: number = 20,
+    search?: string,
+    status: "all" | "mapped" | "unmapped" = "all",
+    sub_broker_id?: string,
+  ): Promise<ApiResponse<PaginatedResponse<MappableInvestor>>> => {
+    let url = `/companies/investor-mapping/investors?page=${page}&limit=${limit}&status=${status}`;
+    if (search) url += `&search=${encodeURIComponent(search)}`;
+    if (sub_broker_id) url += `&sub_broker_id=${sub_broker_id}`;
+    return apiClient.get<ApiResponse<PaginatedResponse<MappableInvestor>>>(url);
+  },
+
+  getMappingHistory: async (
+    page: number = 1,
+    limit: number = 20,
+    sub_broker_id?: string,
+  ): Promise<ApiResponse<PaginatedResponse<MappingHistoryEntry>>> => {
+    let url = `/companies/investor-mapping/history?page=${page}&limit=${limit}`;
+    if (sub_broker_id) url += `&sub_broker_id=${sub_broker_id}`;
+    return apiClient.get<ApiResponse<PaginatedResponse<MappingHistoryEntry>>>(
+      url,
+    );
+  },
+
+  assignInvestors: async (
+    investor_ids: string[],
+    sub_broker_id: string,
+  ): Promise<ApiResponse<any>> => {
+    return apiClient.post<ApiResponse<any>>(
+      "/companies/investor-mapping/assign",
+      {
+        investor_ids,
+        sub_broker_id,
+      },
+    );
+  },
+
+  unassignInvestors: async (
+    investor_ids: string[],
+    sub_broker_id: string,
+  ): Promise<ApiResponse<any>> => {
+    return apiClient.post<ApiResponse<any>>(
+      "/companies/investor-mapping/unassign",
+      {
+        investor_ids,
+        sub_broker_id,
+      },
     );
   },
 };

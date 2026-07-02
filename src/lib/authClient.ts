@@ -1,6 +1,6 @@
 // src/lib/authClient.ts
 
-export type PortalType = 'investor' | 'staff';
+export type PortalType = "investor" | "staff";
 
 const getCookieNames = (type: PortalType) => ({
   access: `${type}-auth-token`,
@@ -8,12 +8,17 @@ const getCookieNames = (type: PortalType) => ({
   userId: `${type}-user-id`,
 });
 
-export const setAuthCookies = (accessToken: string, refreshToken?: string, portal: PortalType = 'staff', userId?: string) => {
+export const setAuthCookies = (
+  accessToken: string,
+  refreshToken?: string,
+  portal: PortalType = "staff",
+  userId?: string,
+) => {
   const { access, refresh, userId: userIdCookie } = getCookieNames(portal);
 
   // Extend cookie life to 30 days
   const expires = new Date();
-  expires.setTime(expires.getTime() + 30 * 24 * 60 * 60 * 1000); 
+  expires.setTime(expires.getTime() + 30 * 24 * 60 * 60 * 1000);
   const maxAge = 2592000; // 30 days in seconds
 
   document.cookie = `${access}=${accessToken}; path=/; expires=${expires.toUTCString()}; max-age=${maxAge}; SameSite=Lax`;
@@ -28,7 +33,7 @@ export const setAuthCookies = (accessToken: string, refreshToken?: string, porta
   }
 };
 
-export const removeAuthCookies = (portal: PortalType = 'staff') => {
+export const removeAuthCookies = (portal: PortalType = "staff") => {
   const { access, refresh, userId: userIdCookie } = getCookieNames(portal);
   document.cookie = `${access}=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Lax`;
   document.cookie = `${refresh}=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Lax`;
@@ -47,6 +52,7 @@ export interface DecodedStaffToken {
     company_name: string | null;
     first_name: string | null;
     last_name: string | null;
+    sub_broker_id?: string | null;
   }>;
   company_id: string | null;
   iat: number;
@@ -69,7 +75,9 @@ export interface DecodedInvestorToken {
  * Safe for client-side use because the token always originates from our own
  * backend (signature is verified server-side on every protected request).
  */
-export function decodeJwt<T = Record<string, unknown>>(token: string): T | null {
+export function decodeJwt<T = Record<string, unknown>>(
+  token: string,
+): T | null {
   try {
     const base64Url = token.split(".")[1];
     if (!base64Url) return null;
@@ -78,7 +86,7 @@ export function decodeJwt<T = Record<string, unknown>>(token: string): T | null 
       atob(base64)
         .split("")
         .map((c) => "%" + c.charCodeAt(0).toString(16).padStart(2, "0"))
-        .join("")
+        .join(""),
     );
     return JSON.parse(jsonPayload) as T;
   } catch (err) {

@@ -12,7 +12,7 @@ export const exportCapitalGains = async (
 ) => {
   const finalDistributorInfo = { ...buildDistributorInfoPayload(), ...(distributorInfo || {}) };
 
-  const blob = await apiClient.postBlob('/capital-gains/export', {
+  const { blob } = await apiClient.postForFile('/capital-gains/export', {
     investor_id: investorId,
     from_date: fromDate,
     to_date: toDate,

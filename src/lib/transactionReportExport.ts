@@ -10,7 +10,7 @@ export const exportTransactionReport = async (
     const finalDistributorInfo = { ...buildDistributorInfoPayload(), ...(distributorInfo || {}) };
 
     const payload = Object.keys(finalDistributorInfo).length > 0 ? { distributor_info: finalDistributorInfo } : {};
-    const blob = await apiClient.postBlob(
+    const { blob } = await apiClient.postForFile(
       `/investors/${investorId}/transactions/export`,
       payload
     );
