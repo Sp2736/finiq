@@ -233,22 +233,26 @@ export const distributorService = {
 
   downloadInvestorList: async (
     page: number = 1,
-    limit: number = 30,
-    maxLimit: number, //
+    limit: number = 100,
     search: string = "",
   ): Promise<ApiResponse<PaginatedResponse<Investor>>> => {
     let url = `/holdings-cache/investors?page=${page}&limit=${limit}`;
-
-    // Only append maxLimit if explicitly provided
-    if (maxLimit !== undefined) {
-      url += `&maxLimit=${maxLimit}`;
-    }
-
     if (search && search.trim() !== "") {
       url += `&search=${encodeURIComponent(search.trim())}`;
     }
-
     return apiClient.get<ApiResponse<PaginatedResponse<Investor>>>(url);
+  },
+
+  // Fetches the entire investor list in one bulk call instead of paging.
+  // A cheap probe (limit=1) tells us the true total, then a single request
+  // sized to that total pulls everything — no fixed page-size cap anywhere.
+  getAllInvestors: async (
+    search: string = "",
+  ): Promise<ApiResponse<PaginatedResponse<Investor>>> => {
+    const probe = await distributorService.downloadInvestorList(1, 1, search);
+    const total = probe?.data?.total ?? 0;
+    if (total <= 0) return probe;
+    return distributorService.downloadInvestorList(1, total, search);
   },
 
   // for hierarchy earnings page

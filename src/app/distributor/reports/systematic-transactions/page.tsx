@@ -78,20 +78,21 @@ export default function SystematicTransactionsReport() {
     const fetchAllInvestors = async () => {
       setIsInvestorsLoading(true);
       try {
-        const response = await distributorService.downloadInvestorList(
-          1,
-          5000,
-          5000,
-        );
-        if (response.success && response.data && response.data.data) {
-          const mapped = response.data.data.map((inv: any) => ({
+        const res = await distributorService.getAllInvestors();
+
+        if (res.success && res.data?.data?.length) {
+          const mapped = res.data.data.map((inv: any) => ({
             id: inv.id,
-            name: toTitleCase(inv.name),
+            name: toTitleCase(inv.name || "Unknown"),
           }));
+
           const unique = Array.from(
             new Map(mapped.map((item: any) => [item.name, item])).values(),
           );
+
           setAllInvestors(unique);
+        } else {
+          setAllInvestors([]);
         }
       } catch (error) {
         console.error("Failed to fetch global investor list", error);
@@ -172,8 +173,6 @@ export default function SystematicTransactionsReport() {
       setIsLoading(false);
     }
   };
-
-
 
   // Local Grouping Aggregation
   const groupedReportData = useMemo(() => {
