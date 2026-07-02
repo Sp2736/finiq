@@ -23,6 +23,8 @@ import {
   CompanyUser,
   BankAccount,
 } from "@/services/distributor.service";
+import ErrorNotice from "@/components/ui/ErrorNotice";
+import SuccessNotice from "@/components/ui/SuccessNotice";
 
 // ─── CUSTOM THEMED DROPDOWN COMPONENT ───
 const CustomSelect = ({
@@ -132,6 +134,11 @@ export default function BrokerLedgerPage() {
   const [isClosingConfirm, setIsClosingConfirm] = useState(false);
   const [isSubmittingTransfer, setIsSubmittingTransfer] = useState(false);
 
+  const [pageError, setPageError] = useState<string | null>(null);
+  const [pageSuccess, setPageSuccess] = useState<string | null>(null);
+  const [modalBankError, setModalBankError] = useState<string | null>(null);
+  const [modalTransferError, setModalTransferError] = useState<string | null>(null);
+
   // --- Transfer Form States ---
   const [sourceAcc, setSourceAcc] = useState("");
   const [receiver, setReceiver] = useState("");
@@ -220,7 +227,8 @@ export default function BrokerLedgerPage() {
       };
 
       await distributorService.addBankAccount(payload);
-      alert("Bank account successfully added to database!");
+      setPageSuccess("Bank account successfully added to database!");
+      setPageError(null);
 
       if (newBank.targetType === "COMPANY") {
         const res = await distributorService.getBankAccounts();
@@ -232,7 +240,7 @@ export default function BrokerLedgerPage() {
 
       handleCloseAddBank();
     } catch (error: any) {
-      alert(`Failed to add bank account: ${error.message}`);
+      setModalBankError(`Failed to add bank account: ${error.message}`);
     } finally {
       setIsSubmittingBank(false);
     }
@@ -249,7 +257,8 @@ export default function BrokerLedgerPage() {
         reference_id: referenceId,
       });
 
-      alert("Ledger entry recorded successfully!");
+      setPageSuccess("Ledger entry recorded successfully!");
+      setPageError(null);
       handleCloseConfirm();
 
       setReceiver("");
@@ -258,7 +267,7 @@ export default function BrokerLedgerPage() {
       setReferenceId("");
       setDestAccounts([]);
     } catch (error: any) {
-      alert(`Failed to submit ledger entry: ${error.message}`);
+      setModalTransferError(`Failed to submit ledger entry: ${error.message}`);
     } finally {
       setIsSubmittingTransfer(false);
     }
@@ -370,6 +379,9 @@ export default function BrokerLedgerPage() {
           Add Bank Details
         </button>
       </div>
+
+      <ErrorNotice message={pageError} onClose={() => setPageError(null)} />
+      <SuccessNotice message={pageSuccess} onClose={() => setPageSuccess(null)} />
 
       {/* ─── SCROLLABLE FORM CARD ─── */}
       <div className="bg-[var(--fin-table-bg)] border border-[var(--fin-border)] rounded-md shadow-sm flex flex-col flex-1 min-h-0 w-full">
@@ -551,6 +563,7 @@ export default function BrokerLedgerPage() {
             </div>
 
             <div className="p-5 sm:p-6 md:p-8 overflow-y-auto scrollbar-thin scrollbar-thumb-[var(--fin-border-subtle)] bg-[var(--fin-page-bg)]/50 flex-1 space-y-6">
+              <ErrorNotice message={modalBankError} onClose={() => setModalBankError(null)} />
               <div className="space-y-2 group bg-[var(--fin-table-bg)] p-5 rounded-md border border-[var(--fin-border)] shadow-sm">
                 <div className="flex items-center gap-2 mb-3">
                   <User className="w-4 h-4 text-[var(--fin-brand-600)]" />
@@ -743,6 +756,7 @@ export default function BrokerLedgerPage() {
             </div>
 
             <div className="p-6 md:p-8 overflow-y-auto scrollbar-thin scrollbar-thumb-[var(--fin-border-subtle)] bg-[var(--fin-page-bg)]/50 flex-1">
+              <ErrorNotice message={modalTransferError} onClose={() => setModalTransferError(null)} />
               <div className="text-center mb-8 sm:mb-10 w-full">
                 <p className="text-[10px] font-black text-[var(--fin-aux-text)] uppercase tracking-widest mb-3">
                   Amount to Transfer

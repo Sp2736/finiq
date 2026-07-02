@@ -18,6 +18,7 @@ import {
   Search,
   CheckSquare,
   Square,
+  Building2,
 } from "lucide-react";
 import { toTitleCase } from "@/lib/utils";
 import { decodeJwt, DecodedStaffToken } from "@/lib/authClient";
@@ -43,6 +44,21 @@ const BrokerTreeNode = ({
   const children = allBrokers.filter((b) => b.parent_id === broker.id);
   const hasChildren = children.length > 0;
   const isSelected = selectedId === broker.id;
+
+  // Determine Icon and Size based on hierarchy depth
+  let NodeIcon = Briefcase;
+  let iconSize = "w-4 h-4";
+
+  if (depth === 0) {
+    NodeIcon = Building2;
+    iconSize = "w-5 h-5";
+  } else if (depth === 1) {
+    NodeIcon = Briefcase;
+    iconSize = "w-4 h-4";
+  } else {
+    NodeIcon = User;
+    iconSize = "w-3.5 h-3.5";
+  }
 
   return (
     <div className="flex flex-col">
@@ -75,8 +91,8 @@ const BrokerTreeNode = ({
           )}
         </button>
         <div className="flex items-center gap-2 min-w-0 flex-1">
-          <Briefcase
-            className={`w-4 h-4 shrink-0 ${
+          <NodeIcon
+            className={`shrink-0 ${iconSize} ${
               isSelected
                 ? "text-[var(--fin-brand-600)]"
                 : "text-[var(--fin-aux-text)]"
@@ -343,7 +359,10 @@ export default function InvestorMappingPage() {
       </div>
 
       <ErrorNotice message={errorMsg} onClose={() => setErrorMsg(null)} />
-      <SuccessNotice message={pageSuccess} onClose={() => setPageSuccess(null)} />
+      <SuccessNotice
+        message={pageSuccess}
+        onClose={() => setPageSuccess(null)}
+      />
 
       <div className="flex-1 min-h-0 flex flex-col lg:flex-row gap-6">
         {/* Left Panel: Broker Tree */}

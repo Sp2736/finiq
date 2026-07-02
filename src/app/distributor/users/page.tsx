@@ -23,6 +23,7 @@ import {
   Mail,
 } from "lucide-react";
 import { toTitleCase } from "@/lib/utils";
+import ErrorNotice from "@/components/ui/ErrorNotice";
 
 // ─── UTILITIES ───
 const extractRole = (user: any): string => {
@@ -406,6 +407,9 @@ export default function UsersPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [editingUserId, setEditingUserId] = useState<string | null>(null);
   const [editingUser, setEditingUser] = useState<CompanyUser | null>(null);
+  
+  const [pageError, setPageError] = useState<string | null>(null);
+  const [modalError, setModalError] = useState<string | null>(null);
 
   const [formData, setFormData] = useState<CompanyUserPayload>({
     role: "DISTRIBUTOR",
@@ -486,10 +490,7 @@ export default function UsersPage() {
       await fetchUsers(); // Refresh the table
     } catch (error: any) {
       console.error("Failed to delete user:", error);
-      alert(
-        error.message ||
-          "Failed to delete user. They might have active child brokers.",
-      );
+      setPageError(error.message || "Failed to delete user. They might have active child brokers.");
     } finally {
       setIsLoading(false);
     }
@@ -529,7 +530,7 @@ export default function UsersPage() {
       handleCloseModal();
     } catch (error: any) {
       console.error("Failed to save user:", error);
-      alert(error.message || "Failed to save user. Please check the inputs.");
+      setModalError(error.message || "Failed to save user. Please check the inputs.");
     } finally {
       setIsSubmitting(false);
     }
@@ -558,6 +559,8 @@ export default function UsersPage() {
           Add New User
         </button>
       </div>
+
+      <ErrorNotice message={pageError} onClose={() => setPageError(null)} />
 
       {/* Main Hierarchical Data Containers */}
       <div className="flex-1 min-h-0 bg-transparent lg:bg-[var(--fin-table-bg)] lg:rounded-md lg:border border-[var(--fin-border)] lg:shadow-sm flex flex-col relative overflow-hidden">
@@ -664,6 +667,7 @@ export default function UsersPage() {
               onSubmit={handleSubmit}
               className="p-5 sm:p-6 flex flex-col gap-4 sm:gap-5 overflow-y-auto scrollbar-thin"
             >
+              <ErrorNotice message={modalError} onClose={() => setModalError(null)} />
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {/* Full Name */}
                 <div>

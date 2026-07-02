@@ -34,7 +34,7 @@ const MODES = [
 ];
 
 const REGISTRARS = ["All", "CAMS", "KARVY"];
-const GROUP_BY_OPTIONS = ["None", "Client", "AMC", "Scheme", "Registrar"];
+const GROUP_BY_OPTIONS = ["None", "Investor", "AMC", "Scheme", "Registrar"];
 
 export default function SystematicTransactionsReport() {
   const [reportData, setReportData] = useState<any[]>([]);
@@ -183,8 +183,8 @@ export default function SystematicTransactionsReport() {
 
     reportData.forEach((item) => {
       let key = "Unknown";
-      if (appliedGroupBy === "Client")
-        key = toTitleCase(item.investor_name || "Unknown Client");
+      if (appliedGroupBy === "Investor")
+        key = toTitleCase(item.investor_name || "Unknown Investor");
       else if (appliedGroupBy === "AMC") key = item.amc_name || "Unknown AMC";
       else if (appliedGroupBy === "Scheme")
         key = item.scheme_name || "Unknown Scheme";

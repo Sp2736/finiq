@@ -224,31 +224,6 @@ export default function Sidebar({ isCollapsed, setIsCollapsed }: SidebarProps) {
             )}
           </Link>
 
-          {/* Investor Mapping */}
-          <Link
-            href="/distributor/investor-mapping"
-            onClick={() => setIsMobileOpen(false)}
-            className={`flex items-center overflow-hidden ${isCollapsed ? "justify-center" : "justify-between"} px-4 py-3 rounded-md transition-all duration-300 group ${
-              pathname.startsWith("/distributor/investor-mapping")
-                ? "bg-[var(--fin-sidebar-item-active-bg)] text-[var(--fin-sidebar-item-active-text)]"
-                : "text-[var(--fin-sidebar-item-default-text)] hover:bg-[var(--fin-sidebar-item-hover-bg)] hover:text-[var(--fin-sidebar-item-hover-text)]"
-            }`}
-          >
-            <div className="flex items-center gap-3">
-              <GitBranch
-                className={`w-5 h-5 shrink-0 transition-transform duration-300 ${pathname.startsWith("/distributor/investor-mapping") ? "scale-110" : "group-hover:scale-110"}`}
-              />
-              {!isCollapsed && (
-                <span className="font-bold text-sm tracking-tight whitespace-nowrap">
-                  Investor Mapping
-                </span>
-              )}
-            </div>
-            {!isCollapsed &&
-              pathname.startsWith("/distributor/investor-mapping") && (
-                <div className="w-1.5 h-1.5 shrink-0 bg-[var(--fin-sidebar-item-active-dot)] rounded-full" />
-              )}
-          </Link>
 
           {/* User Management */}
           <Link
@@ -273,6 +248,32 @@ export default function Sidebar({ isCollapsed, setIsCollapsed }: SidebarProps) {
             {!isCollapsed && pathname.startsWith("/distributor/users") && (
               <div className="w-1.5 h-1.5 shrink-0 bg-[var(--fin-sidebar-item-active-dot)] rounded-full" />
             )}
+          </Link>
+          
+          {/* Investor Mapping */}
+          <Link
+            href="/distributor/investor-mapping"
+            onClick={() => setIsMobileOpen(false)}
+            className={`flex items-center overflow-hidden ${isCollapsed ? "justify-center" : "justify-between"} px-4 py-3 rounded-md transition-all duration-300 group ${
+              pathname.startsWith("/distributor/investor-mapping")
+                ? "bg-[var(--fin-sidebar-item-active-bg)] text-[var(--fin-sidebar-item-active-text)]"
+                : "text-[var(--fin-sidebar-item-default-text)] hover:bg-[var(--fin-sidebar-item-hover-bg)] hover:text-[var(--fin-sidebar-item-hover-text)]"
+            }`}
+          >
+            <div className="flex items-center gap-3">
+              <GitBranch
+                className={`w-5 h-5 shrink-0 transition-transform duration-300 ${pathname.startsWith("/distributor/investor-mapping") ? "scale-110" : "group-hover:scale-110"}`}
+              />
+              {!isCollapsed && (
+                <span className="font-bold text-sm tracking-tight whitespace-nowrap">
+                  Investor Mapping
+                </span>
+              )}
+            </div>
+            {!isCollapsed &&
+              pathname.startsWith("/distributor/investor-mapping") && (
+                <div className="w-1.5 h-1.5 shrink-0 bg-[var(--fin-sidebar-item-active-dot)] rounded-full" />
+              )}
           </Link>
 
           {/* Reports (Nested Menu) */}
