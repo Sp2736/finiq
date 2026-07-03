@@ -11,7 +11,6 @@ import {
   Play,
   ArrowRight,
 } from "lucide-react";
-import Sidebar from "@/components/distributor/Sidebar";
 import { distributorService } from "@/services/distributor.service";
 import { buildDistributorInfoPayload } from "@/lib/companyInfo";
 import { toTitleCase, triggerBlobDownload } from "@/lib/utils";
@@ -249,12 +248,8 @@ export default function SystematicTransactionsReport() {
       ? reportData.length > 0
       : groupedReportData && groupedReportData.length > 0;
 
-  const [isCollapsed, setIsCollapsed] = useState(false);
-
   return (
     <div className="flex h-[100dvh] md:h-screen w-full bg-[var(--fin-page-bg)] overflow-hidden">
-      {/* ─── SIDEBAR ─── */}
-      <Sidebar isCollapsed={isCollapsed} setIsCollapsed={setIsCollapsed} />
       
       {/* ─── PAGE CONTENT CONTAINER ─── */}
       <div className="relative flex-1 flex flex-col w-full min-w-0 h-full overflow-hidden animate-in fade-in slide-in-from-bottom-2 duration-500 ease-out">
