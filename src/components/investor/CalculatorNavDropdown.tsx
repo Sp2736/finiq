@@ -26,12 +26,12 @@ export default function CalculatorNavDropdown() {
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full flex items-center justify-between bg-white/60 backdrop-blur-md px-4 py-2.5 rounded-md border border-slate-200 transition-all shadow-sm text-sm font-bold text-slate-700 hover:border-investor-300 hover:bg-investor-50 hover:text-investor-700 focus:outline-none focus:ring-2 focus:ring-investor-500/20"
+        className="w-full flex items-center justify-between bg-[var(--fin-table-bg)]/60 backdrop-blur-md px-4 py-2.5 rounded-md border border-[var(--fin-border)] transition-all shadow-sm text-sm font-bold text-[var(--fin-table-row-text)] hover:border-[var(--fin-brand-300)] hover:bg-[var(--fin-brand-50)] hover:text-[var(--fin-brand-700)] focus:outline-none focus:ring-2 focus:ring-[var(--fin-brand-500)]/20"
       >
         <span className="truncate">{selectedOption.name}</span>
         <ChevronDown
           className={`w-4 h-4 transition-transform duration-200 shrink-0 ${
-            isOpen ? "rotate-180 text-investor-600" : "text-slate-400"
+            isOpen ? "rotate-180 text-[var(--fin-brand-600)]" : "text-[var(--fin-aux-text)]"
           }`}
         />
       </button>
@@ -42,7 +42,7 @@ export default function CalculatorNavDropdown() {
           {/* Invisible Backdrop for click-outside */}
           <div className="fixed inset-0 z-40" onClick={() => setIsOpen(false)} />
           
-          <div className="absolute right-0 z-50 w-full min-w-[200px] mt-2 bg-white border border-slate-200 rounded-md shadow-[0_12px_40px_-10px_rgba(0,0,0,0.15)] overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
+          <div className="absolute right-0 z-50 w-full min-w-[200px] mt-2 bg-[var(--fin-table-bg)] border border-[var(--fin-border)] rounded-md shadow-[0_12px_40px_-10px_rgba(0,0,0,0.15)] overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
             <ul className="max-h-60 overflow-y-auto p-1.5 custom-scrollbar">
               {calculators.map((calc) => (
                 <li
@@ -56,8 +56,8 @@ export default function CalculatorNavDropdown() {
                   }}
                   className={`p-3 text-sm cursor-pointer rounded-md mx-0.5 my-0.5 transition-colors duration-150 ${
                     pathname === calc.path
-                      ? "bg-investor-50 text-investor-700 font-black border-l-2 border-investor-500"
-                      : "text-slate-600 font-semibold hover:bg-slate-50 hover:text-slate-900 border-l-2 border-transparent"
+                      ? "bg-[var(--fin-brand-50)] text-[var(--fin-brand-700)] font-black border-l-2 border-[var(--fin-brand-500)]"
+                      : "text-[var(--fin-body-text)] font-semibold hover:bg-[var(--fin-page-bg)] hover:text-[var(--fin-heading-primary)] border-l-2 border-transparent"
                   }`}
                 >
                   {calc.name}

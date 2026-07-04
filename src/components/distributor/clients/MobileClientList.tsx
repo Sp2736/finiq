@@ -11,7 +11,7 @@ interface Props {
 }
 
 export default function MobileClientList({ clients, onClientClick }: Props) {
-  if (!clients || clients.length === 0) return <div className="p-8 text-center text-slate-500 font-medium bg-white rounded-md border border-slate-200">No investors found.</div>;
+  if (!clients || clients.length === 0) return <div className="p-8 text-center text-[var(--fin-muted-text)] font-medium bg-[var(--fin-table-bg)] rounded-md border border-[var(--fin-border)]">No investors found.</div>;
 
   return (
     <div className="flex flex-col gap-2 p-2">
@@ -19,21 +19,21 @@ export default function MobileClientList({ clients, onClientClick }: Props) {
         <div
           key={client.id}
           onClick={() => onClientClick(client.id)}
-          className="bg-white rounded-md border border-slate-200 shadow-sm transition-all duration-200 active:scale-[0.98] active:bg-slate-50 cursor-pointer group hover:border-distributor-300"
+          className="bg-[var(--fin-table-bg)] rounded-md border border-[var(--fin-border)] shadow-sm transition-all duration-200 active:scale-[0.98] active:bg-[var(--fin-page-bg)] cursor-pointer group hover:border-[var(--fin-brand-300)]"
         >
           <div className="p-3 md:p-4 flex items-center justify-between">
             <div className="flex flex-col min-w-0 flex-1">
-              <p className="font-bold text-slate-900 text-sm md:text-base truncate pr-2 group-hover:text-distributor-700">{toTitleCase(client.name)}</p>
+              <p className="font-bold text-[var(--fin-heading-primary)] text-sm md:text-base truncate pr-2 group-hover:text-[var(--fin-brand-700)]">{toTitleCase(client.name)}</p>
               <div className="flex items-center gap-2 mt-1">
-                <span className="px-2 py-0.5 bg-slate-100 text-slate-600 rounded text-[10px] md:text-xs font-bold font-mono">{client.pan}</span>
-                <span className="text-[10px] text-slate-400 font-medium truncate border-l border-slate-200 pl-2">{client.tax_status}</span>
+                <span className="px-2 py-0.5 bg-[var(--fin-skeleton-base)] text-[var(--fin-body-text)] rounded text-[10px] md:text-xs font-bold font-mono">{client.pan}</span>
+                <span className="text-[10px] text-[var(--fin-aux-text)] font-medium truncate border-l border-[var(--fin-border)] pl-2">{client.tax_status}</span>
               </div>
             </div>
             <div className="flex flex-col items-end mr-3 shrink-0">
-              <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-0.5">AUM</p>
-              <p className="font-black text-slate-900 tabular-nums text-xs md:text-sm">{formatCurrency(client.total_aum)}</p>
+              <p className="text-[9px] font-bold text-[var(--fin-aux-text)] uppercase tracking-widest mb-0.5">AUM</p>
+              <p className="font-black text-[var(--fin-heading-primary)] tabular-nums text-xs md:text-sm">{formatCurrency(client.total_aum)}</p>
             </div>
-            <div className="p-1.5 rounded-md bg-slate-50 text-slate-400 group-hover:bg-distributor-100 group-hover:text-distributor-600 transition-colors">
+            <div className="p-1.5 rounded-md bg-[var(--fin-page-bg)] text-[var(--fin-aux-text)] group-hover:bg-[var(--fin-brand-100)] group-hover:text-[var(--fin-brand-600)] transition-colors">
               <ChevronRight className="w-4 h-4" />
             </div>
           </div>

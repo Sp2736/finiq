@@ -17,7 +17,7 @@ export const formatPercent = (val?: number | null) => {
 
 export const getStatusColor = (val?: number | null) => {
   const safeVal = val ?? 0;
-  return safeVal > 0 ? 'text-emerald-600' : safeVal < 0 ? 'text-rose-600' : 'text-slate-600';
+  return safeVal > 0 ? 'text-[var(--fin-badge-success-text)]' : safeVal < 0 ? 'text-[var(--fin-badge-danger-text)]' : 'text-[var(--fin-body-text)]';
 };
 
 export const formatCompactNumber = (number: number) => {
@@ -50,4 +50,21 @@ export const getDynamicFinancialYears = (startYear: number = 2010) => {
   }
   
   return fyOptions;
+};
+
+export function decodeJwt(token: string): any {
+  try {
+    const base64Url = token.split('.')[1];
+    if (!base64Url) return null;
+    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    const jsonPayload = decodeURIComponent(
+      atob(base64)
+        .split('')
+        .map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+        .join('')
+    );
+    return JSON.parse(jsonPayload);
+  } catch (error) {
+    return null;
+  }
 };

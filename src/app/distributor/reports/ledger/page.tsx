@@ -53,10 +53,10 @@ const CustomSelect = ({
         type="button"
         onClick={() => setIsOpen(!isOpen)}
         disabled={disabled || isLoading}
-        className={`w-full p-3 flex justify-between items-center bg-white border border-slate-200 rounded-md text-sm font-semibold outline-none transition-all shadow-sm ${
+        className={`w-full p-3 flex justify-between items-center bg-[var(--fin-table-bg)] border border-[var(--fin-border)] rounded-md text-sm font-semibold outline-none transition-all shadow-sm ${
           disabled || isLoading
-            ? "opacity-60 bg-slate-50 cursor-not-allowed text-slate-500"
-            : "text-slate-700 hover:border-slate-300 focus:ring-4 focus:ring-distributor-500/10 focus:border-distributor-500"
+            ? "opacity-60 bg-[var(--fin-page-bg)] cursor-not-allowed text-[var(--fin-muted-text)]"
+            : "text-[var(--fin-table-row-text)] hover:border-[var(--fin-border)] focus:ring-4 focus:ring-[var(--fin-brand-500)]/10 focus:border-[var(--fin-brand-500)]"
         }`}
       >
         <span className="truncate">
@@ -68,7 +68,7 @@ const CustomSelect = ({
         </span>
         <ChevronDown
           className={`w-4 h-4 transition-transform duration-200 shrink-0 ${
-            isOpen ? "rotate-180 text-distributor-600" : "text-slate-400"
+            isOpen ? "rotate-180 text-[var(--fin-brand-600)]" : "text-[var(--fin-aux-text)]"
           }`}
         />
       </button>
@@ -79,10 +79,10 @@ const CustomSelect = ({
             className="fixed inset-0 z-40"
             onClick={() => setIsOpen(false)}
           />
-          <div className="absolute z-50 w-full mt-2 bg-white border border-slate-200 rounded-md shadow-xl overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
-            <ul className="max-h-60 overflow-y-auto p-1.5 scrollbar-thin scrollbar-thumb-slate-200 scrollbar-track-transparent">
+          <div className="absolute z-50 w-full mt-2 bg-[var(--fin-table-bg)] border border-[var(--fin-border)] rounded-md shadow-xl overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
+            <ul className="max-h-60 overflow-y-auto p-1.5 scrollbar-thin scrollbar-thumb-[var(--fin-border-subtle)] scrollbar-track-transparent">
               {options.length === 0 ? (
-                <li className="p-3 text-sm text-slate-500 text-center font-medium">
+                <li className="p-3 text-sm text-[var(--fin-muted-text)] text-center font-medium">
                   No options available
                 </li>
               ) : (
@@ -95,12 +95,12 @@ const CustomSelect = ({
                     }}
                     className={`p-3 text-sm cursor-pointer rounded-md mx-0.5 my-0.5 transition-colors flex items-center gap-2 ${
                       value === opt.value
-                        ? "bg-distributor-50 text-distributor-700 font-bold"
-                        : "text-slate-700 hover:bg-slate-50 font-medium"
+                        ? "bg-[var(--fin-brand-50)] text-[var(--fin-brand-700)] font-bold"
+                        : "text-[var(--fin-table-row-text)] hover:bg-[var(--fin-page-bg)] font-medium"
                     }`}
                   >
                     {opt.icon && (
-                      <span className="text-slate-400 shrink-0">
+                      <span className="text-[var(--fin-aux-text)] shrink-0">
                         {opt.icon}
                       </span>
                     )}
@@ -310,8 +310,8 @@ export default function BrokerLedgerPage() {
   if (isLoading) {
     return (
       <div className="flex-1 w-full h-[calc(100vh-5rem)] flex items-center justify-center p-8">
-        <div className="flex flex-col items-center gap-3 text-slate-400">
-          <div className="w-8 h-8 border-4 border-slate-200 border-t-distributor-600 rounded-full animate-spin"></div>
+        <div className="flex flex-col items-center gap-3 text-[var(--fin-aux-text)]">
+          <div className="w-8 h-8 border-4 border-[var(--fin-border)] border-t-[var(--fin-brand-600)] rounded-full animate-spin"></div>
           <p className="text-sm font-bold animate-pulse">
             Establishing secure connection to Ledger...
           </p>
@@ -355,16 +355,16 @@ export default function BrokerLedgerPage() {
       {/* ─── HEADER (Shrink-0 prevents it from squishing) ─── */}
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-end gap-4 shrink-0">
         <div>
-          <h1 className="text-2xl lg:text-3xl font-black tracking-tight text-slate-900 mb-1">
-            Broker <span className="text-distributor-600">Ledger</span>
+          <h1 className="text-2xl lg:text-3xl font-black tracking-tight text-[var(--fin-heading-primary)] mb-1">
+            Broker <span className="text-[var(--fin-brand-600)]">Ledger</span>
           </h1>
-          <p className="text-slate-500 font-medium text-sm">
+          <p className="text-[var(--fin-muted-text)] font-medium text-sm">
             Initiate and record manual payouts to sub-brokers.
           </p>
         </div>
         <button
           onClick={() => setShowAddBank(true)}
-          className="group w-full sm:w-auto flex justify-center items-center gap-2 bg-white text-distributor-700 border border-distributor-200 px-5 py-2.5 rounded-md text-sm font-bold shadow-sm hover:bg-distributor-50 hover:-translate-y-0.5 hover:shadow transition-all duration-200"
+          className="group w-full sm:w-auto flex justify-center items-center gap-2 bg-[var(--fin-table-bg)] text-[var(--fin-brand-700)] border border-[var(--fin-brand-200)] px-5 py-2.5 rounded-md text-sm font-bold shadow-sm hover:bg-[var(--fin-brand-50)] hover:-translate-y-0.5 hover:shadow transition-all duration-200"
         >
           <Plus className="w-4 h-4 shrink-0 group-hover:rotate-90 transition-transform duration-300" />
           Add Bank Details
@@ -372,12 +372,12 @@ export default function BrokerLedgerPage() {
       </div>
 
       {/* ─── SCROLLABLE FORM CARD ─── */}
-      <div className="bg-white border border-slate-200 rounded-md shadow-sm flex flex-col flex-1 min-h-0 w-full">
+      <div className="bg-[var(--fin-table-bg)] border border-[var(--fin-border)] rounded-md shadow-sm flex flex-col flex-1 min-h-0 w-full">
         {/* Form Content: Scrolls internally if the screen is too short */}
-        <div className="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-slate-200">
-          <div className="grid grid-cols-1 lg:grid-cols-3 divide-y lg:divide-y-0 lg:divide-x divide-slate-100 min-h-full">
-            <div className="p-5 sm:p-6 lg:p-8 flex flex-col gap-6 bg-slate-50/30 transition-colors duration-300 hover:bg-slate-50/80">
-              <div className="flex items-center gap-2 text-distributor-700 mb-1">
+        <div className="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-[var(--fin-border-subtle)]">
+          <div className="grid grid-cols-1 lg:grid-cols-3 divide-y lg:divide-y-0 lg:divide-x divide-[var(--fin-table-row-border)] min-h-full">
+            <div className="p-5 sm:p-6 lg:p-8 flex flex-col gap-6 bg-[var(--fin-page-bg)]/30 transition-colors duration-300 hover:bg-[var(--fin-page-bg)]/80">
+              <div className="flex items-center gap-2 text-[var(--fin-brand-700)] mb-1">
                 <Landmark className="w-4 h-4" />
                 <h3 className="text-sm font-black tracking-wide uppercase">
                   Transfer Route
@@ -385,7 +385,7 @@ export default function BrokerLedgerPage() {
               </div>
 
               <div className="space-y-2 group">
-                <label className="text-[11px] font-black uppercase tracking-widest text-slate-400">
+                <label className="text-[11px] font-black uppercase tracking-widest text-[var(--fin-aux-text)]">
                   Source Account
                 </label>
                 <CustomSelect
@@ -402,7 +402,7 @@ export default function BrokerLedgerPage() {
               </div>
 
               <div className="space-y-2 group">
-                <label className="text-[11px] font-black uppercase tracking-widest text-slate-400">
+                <label className="text-[11px] font-black uppercase tracking-widest text-[var(--fin-aux-text)]">
                   Transfer To (User)
                 </label>
                 <CustomSelect
@@ -418,8 +418,8 @@ export default function BrokerLedgerPage() {
               </div>
             </div>
 
-            <div className="p-5 sm:p-6 lg:p-8 flex flex-col gap-6 transition-colors duration-300 hover:bg-slate-50/30">
-              <div className="flex items-center gap-2 text-distributor-700 mb-1">
+            <div className="p-5 sm:p-6 lg:p-8 flex flex-col gap-6 transition-colors duration-300 hover:bg-[var(--fin-page-bg)]/30">
+              <div className="flex items-center gap-2 text-[var(--fin-brand-700)] mb-1">
                 <CreditCard className="w-4 h-4" />
                 <h3 className="text-sm font-black tracking-wide uppercase">
                   Destination & Value
@@ -427,7 +427,7 @@ export default function BrokerLedgerPage() {
               </div>
 
               <div className="space-y-2 group">
-                <label className="text-[11px] font-black uppercase tracking-widest text-slate-400">
+                <label className="text-[11px] font-black uppercase tracking-widest text-[var(--fin-aux-text)]">
                   Destination Account
                 </label>
                 <CustomSelect
@@ -446,7 +446,7 @@ export default function BrokerLedgerPage() {
               </div>
 
               <div className="space-y-2 group">
-                <label className="text-[11px] font-black uppercase tracking-widest text-slate-400">
+                <label className="text-[11px] font-black uppercase tracking-widest text-[var(--fin-aux-text)]">
                   Amount (₹)
                 </label>
                 <input
@@ -454,13 +454,13 @@ export default function BrokerLedgerPage() {
                   value={amount}
                   onChange={(e) => setAmount(e.target.value)}
                   placeholder="0.00"
-                  className="w-full p-3 bg-white border border-slate-200 rounded-md text-sm font-bold text-slate-900 focus:ring-4 focus:ring-distributor-500/10 focus:border-distributor-500 outline-none transition-all shadow-sm"
+                  className="w-full p-3 bg-[var(--fin-table-bg)] border border-[var(--fin-border)] rounded-md text-sm font-bold text-[var(--fin-heading-primary)] focus:ring-4 focus:ring-[var(--fin-brand-500)]/10 focus:border-[var(--fin-brand-500)] outline-none transition-all shadow-sm"
                 />
               </div>
             </div>
 
-            <div className="p-5 sm:p-6 lg:p-8 flex flex-col gap-6 bg-slate-50/30 transition-colors duration-300 hover:bg-slate-50/80">
-              <div className="flex items-center gap-2 text-distributor-700 mb-1">
+            <div className="p-5 sm:p-6 lg:p-8 flex flex-col gap-6 bg-[var(--fin-page-bg)]/30 transition-colors duration-300 hover:bg-[var(--fin-page-bg)]/80">
+              <div className="flex items-center gap-2 text-[var(--fin-brand-700)] mb-1">
                 <FileText className="w-4 h-4" />
                 <h3 className="text-sm font-black tracking-wide uppercase">
                   Execution Details
@@ -468,7 +468,7 @@ export default function BrokerLedgerPage() {
               </div>
 
               <div className="space-y-2 group">
-                <label className="text-[11px] font-black uppercase tracking-widest text-slate-400">
+                <label className="text-[11px] font-black uppercase tracking-widest text-[var(--fin-aux-text)]">
                   Payment Mode
                 </label>
                 <CustomSelect
@@ -483,7 +483,7 @@ export default function BrokerLedgerPage() {
               </div>
 
               <div className="space-y-2 group">
-                <label className="text-[11px] font-black uppercase tracking-widest text-slate-400">
+                <label className="text-[11px] font-black uppercase tracking-widest text-[var(--fin-aux-text)]">
                   {getDynamicRefLabel()}
                 </label>
                 <input
@@ -491,7 +491,7 @@ export default function BrokerLedgerPage() {
                   value={referenceId}
                   onChange={(e) => setReferenceId(e.target.value)}
                   placeholder={`Enter ${getDynamicRefLabel().toLowerCase()}...`}
-                  className="w-full p-3 bg-white border border-slate-200 rounded-md text-sm font-semibold text-slate-700 focus:ring-4 focus:ring-distributor-500/10 focus:border-distributor-500 outline-none transition-all shadow-sm"
+                  className="w-full p-3 bg-[var(--fin-table-bg)] border border-[var(--fin-border)] rounded-md text-sm font-semibold text-[var(--fin-table-row-text)] focus:ring-4 focus:ring-[var(--fin-brand-500)]/10 focus:border-[var(--fin-brand-500)] outline-none transition-all shadow-sm"
                 />
               </div>
             </div>
@@ -499,7 +499,7 @@ export default function BrokerLedgerPage() {
         </div>
 
         {/* Footer Buttons: Always visible at bottom of card */}
-        <div className="p-4 sm:p-6 bg-white border-t border-slate-100 flex flex-col-reverse sm:flex-row justify-end items-center gap-3 rounded-b-2xl shrink-0">
+        <div className="p-4 sm:p-6 bg-[var(--fin-table-bg)] border-t border-[var(--fin-border-subtle)] flex flex-col-reverse sm:flex-row justify-end items-center gap-3 rounded-b-2xl shrink-0">
           <button
             onClick={() => {
               setReceiver("");
@@ -508,7 +508,7 @@ export default function BrokerLedgerPage() {
               setReferenceId("");
               setDestAccounts([]);
             }}
-            className="w-full sm:w-auto px-6 py-2.5 text-sm font-bold text-slate-500 hover:bg-slate-50 rounded-md transition-colors border border-slate-200 sm:border-none"
+            className="w-full sm:w-auto px-6 py-2.5 text-sm font-bold text-[var(--fin-muted-text)] hover:bg-[var(--fin-page-bg)] rounded-md transition-colors border border-[var(--fin-border)] sm:border-none"
           >
             Clear Fields
           </button>
@@ -517,7 +517,7 @@ export default function BrokerLedgerPage() {
             disabled={
               !sourceAcc || !receiver || !destAcc || !amount || !referenceId
             }
-            className="w-full sm:w-auto px-8 py-2.5 bg-distributor-600 text-white rounded-md text-sm font-bold shadow-sm hover:bg-distributor-700 disabled:opacity-50 transition-all"
+            className="w-full sm:w-auto px-8 py-2.5 bg-[var(--fin-brand-600)] text-[var(--fin-btn-primary-text)] rounded-md text-sm font-bold shadow-sm hover:bg-[var(--fin-brand-700)] disabled:opacity-50 transition-all"
           >
             Review & Confirm
           </button>
@@ -526,35 +526,35 @@ export default function BrokerLedgerPage() {
 
       {/* ─── ADD BANK ACCOUNT MODAL ─── */}
       {showAddBank && (
-        <div className="fixed inset-0 z-[100000] flex items-center justify-center p-4 sm:p-6 bg-white/60 backdrop-blur-sm animate-in fade-in duration-200">
+        <div className="fixed inset-0 z-[100000] flex items-center justify-center p-4 sm:p-6 bg-[var(--fin-table-bg)]/60 backdrop-blur-sm animate-in fade-in duration-200">
           <div className="absolute inset-0" onClick={handleCloseAddBank} />
 
           <div
-            className={`relative w-full max-w-2xl bg-white rounded-md shadow-2xl flex flex-col max-h-[90vh] sm:max-h-[85vh] border border-slate-200/50 transition-all ${isClosingBank ? "animate-out zoom-out-95 fade-out duration-200" : "animate-in zoom-in-90 fade-in duration-200"}`}
+            className={`relative w-full max-w-2xl bg-[var(--fin-table-bg)] rounded-md shadow-2xl flex flex-col max-h-[90vh] sm:max-h-[85vh] border border-[var(--fin-border)]/50 transition-all ${isClosingBank ? "animate-out zoom-out-95 fade-out duration-200" : "animate-in zoom-in-90 fade-in duration-200"}`}
           >
-            <div className="flex justify-between items-center bg-white border-b border-slate-100 p-5 px-6 shrink-0 rounded-t-2xl">
+            <div className="flex justify-between items-center bg-[var(--fin-table-bg)] border-b border-[var(--fin-border-subtle)] p-5 px-6 shrink-0 rounded-t-2xl">
               <div>
-                <h3 className="text-lg font-black text-slate-800">
+                <h3 className="text-lg font-black text-[var(--fin-heading-tertiary)]">
                   Add Bank Account
                 </h3>
-                <p className="text-slate-500 text-xs mt-0.5">
+                <p className="text-[var(--fin-muted-text)] text-xs mt-0.5">
                   Register a new bank account to the system.
                 </p>
               </div>
               <button
                 onClick={handleCloseAddBank}
                 disabled={isSubmittingBank}
-                className="p-2 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-full transition-all"
+                className="p-2 text-[var(--fin-aux-text)] hover:text-[var(--fin-table-row-text)] hover:bg-[var(--fin-skeleton-base)] rounded-full transition-all"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
-            <div className="p-5 sm:p-6 md:p-8 overflow-y-auto scrollbar-thin scrollbar-thumb-slate-200 bg-slate-50/50 flex-1 space-y-6">
-              <div className="space-y-2 group bg-white p-5 rounded-md border border-slate-200 shadow-sm">
+            <div className="p-5 sm:p-6 md:p-8 overflow-y-auto scrollbar-thin scrollbar-thumb-[var(--fin-border-subtle)] bg-[var(--fin-page-bg)]/50 flex-1 space-y-6">
+              <div className="space-y-2 group bg-[var(--fin-table-bg)] p-5 rounded-md border border-[var(--fin-border)] shadow-sm">
                 <div className="flex items-center gap-2 mb-3">
-                  <User className="w-4 h-4 text-distributor-600" />
-                  <label className="text-[11px] font-black uppercase text-slate-700">
+                  <User className="w-4 h-4 text-[var(--fin-brand-600)]" />
+                  <label className="text-[11px] font-black uppercase text-[var(--fin-table-row-text)]">
                     Account Owner
                   </label>
                 </div>
@@ -597,7 +597,7 @@ export default function BrokerLedgerPage() {
                   }
                   placeholder="Bank Name"
                   disabled={isSubmittingBank}
-                  className="w-full p-3 bg-white border border-slate-200 rounded-md text-sm font-semibold focus:border-distributor-500 outline-none transition-all shadow-sm"
+                  className="w-full p-3 bg-[var(--fin-table-bg)] border border-[var(--fin-border)] rounded-md text-sm font-semibold focus:border-[var(--fin-brand-500)] outline-none transition-all shadow-sm"
                 />
                 <input
                   type="text"
@@ -607,7 +607,7 @@ export default function BrokerLedgerPage() {
                   }
                   placeholder="Account Number"
                   disabled={isSubmittingBank}
-                  className="w-full p-3 bg-white border border-slate-200 rounded-md text-sm font-semibold focus:border-distributor-500 outline-none transition-all shadow-sm"
+                  className="w-full p-3 bg-[var(--fin-table-bg)] border border-[var(--fin-border)] rounded-md text-sm font-semibold focus:border-[var(--fin-brand-500)] outline-none transition-all shadow-sm"
                 />
                 <input
                   type="text"
@@ -620,7 +620,7 @@ export default function BrokerLedgerPage() {
                   }
                   placeholder="Account Holder Name"
                   disabled={isSubmittingBank}
-                  className="w-full p-3 bg-white border border-slate-200 rounded-md text-sm font-semibold focus:border-distributor-500 outline-none transition-all shadow-sm"
+                  className="w-full p-3 bg-[var(--fin-table-bg)] border border-[var(--fin-border)] rounded-md text-sm font-semibold focus:border-[var(--fin-brand-500)] outline-none transition-all shadow-sm"
                 />
                 <input
                   type="text"
@@ -633,7 +633,7 @@ export default function BrokerLedgerPage() {
                   }
                   placeholder="IFSC Code"
                   disabled={isSubmittingBank}
-                  className="w-full p-3 bg-white border border-slate-200 rounded-md text-sm font-semibold uppercase focus:border-distributor-500 outline-none transition-all shadow-sm"
+                  className="w-full p-3 bg-[var(--fin-table-bg)] border border-[var(--fin-border)] rounded-md text-sm font-semibold uppercase focus:border-[var(--fin-brand-500)] outline-none transition-all shadow-sm"
                 />
                 <input
                   type="text"
@@ -646,7 +646,7 @@ export default function BrokerLedgerPage() {
                   }
                   placeholder="UPI ID (Optional)"
                   disabled={isSubmittingBank}
-                  className="w-full p-3 bg-white border border-slate-200 rounded-md text-sm font-semibold sm:col-span-2 focus:border-distributor-500 outline-none transition-all shadow-sm"
+                  className="w-full p-3 bg-[var(--fin-table-bg)] border border-[var(--fin-border)] rounded-md text-sm font-semibold sm:col-span-2 focus:border-[var(--fin-brand-500)] outline-none transition-all shadow-sm"
                 />
               </div>
 
@@ -655,40 +655,40 @@ export default function BrokerLedgerPage() {
                   if (!isSubmittingBank)
                     setNewBank({ ...newBank, isPrimary: !newBank.isPrimary });
                 }}
-                className={`flex items-center justify-between p-4 rounded-md border cursor-pointer transition-all ${newBank.isPrimary ? "bg-distributor-50 border-distributor-200" : "bg-white border-slate-200 hover:bg-slate-50"}`}
+                className={`flex items-center justify-between p-4 rounded-md border cursor-pointer transition-all ${newBank.isPrimary ? "bg-[var(--fin-brand-50)] border-[var(--fin-brand-200)]" : "bg-[var(--fin-table-bg)] border-[var(--fin-border)] hover:bg-[var(--fin-page-bg)]"}`}
               >
                 <div className="flex items-center gap-3">
                   <div
-                    className={`flex items-center justify-center w-8 h-8 rounded-full transition-colors duration-200 ${newBank.isPrimary ? "bg-distributor-600 text-white" : "bg-slate-100 text-slate-400"}`}
+                    className={`flex items-center justify-center w-8 h-8 rounded-full transition-colors duration-200 ${newBank.isPrimary ? "bg-[var(--fin-brand-600)] text-[var(--fin-btn-primary-text)]" : "bg-[var(--fin-skeleton-base)] text-[var(--fin-aux-text)]"}`}
                   >
                     <Star className="w-4 h-4 fill-current" />
                   </div>
                   <div>
                     <h4
-                      className={`text-sm font-bold transition-colors ${newBank.isPrimary ? "text-distributor-800" : "text-slate-700"}`}
+                      className={`text-sm font-bold transition-colors ${newBank.isPrimary ? "text-[var(--fin-brand-800)]" : "text-[var(--fin-table-row-text)]"}`}
                     >
                       Set as Primary Account
                     </h4>
-                    <p className="text-xs text-slate-500 mt-0.5">
+                    <p className="text-xs text-[var(--fin-muted-text)] mt-0.5">
                       Default for payouts.
                     </p>
                   </div>
                 </div>
                 <div
-                  className={`w-11 h-6 rounded-full flex items-center p-1 transition-colors duration-300 ${newBank.isPrimary ? "bg-distributor-500" : "bg-slate-200"}`}
+                  className={`w-11 h-6 rounded-full flex items-center p-1 transition-colors duration-300 ${newBank.isPrimary ? "bg-[var(--fin-brand-500)]" : "bg-[var(--fin-skeleton-base)]"}`}
                 >
                   <div
-                    className={`w-4 h-4 rounded-full bg-white shadow-sm transform transition-transform duration-300 ${newBank.isPrimary ? "translate-x-5" : "translate-x-0"}`}
+                    className={`w-4 h-4 rounded-full bg-[var(--fin-table-bg)] shadow-sm transform transition-transform duration-300 ${newBank.isPrimary ? "translate-x-5" : "translate-x-0"}`}
                   />
                 </div>
               </div>
             </div>
 
-            <div className="p-4 sm:p-5 px-6 bg-white border-t border-slate-100 flex flex-col-reverse sm:flex-row justify-end gap-3 shrink-0 rounded-b-2xl">
+            <div className="p-4 sm:p-5 px-6 bg-[var(--fin-table-bg)] border-t border-[var(--fin-border-subtle)] flex flex-col-reverse sm:flex-row justify-end gap-3 shrink-0 rounded-b-2xl">
               <button
                 onClick={handleCloseAddBank}
                 disabled={isSubmittingBank}
-                className="w-full sm:w-auto px-6 py-2.5 rounded-md text-sm font-bold text-slate-600 bg-white border border-slate-200 hover:bg-slate-50"
+                className="w-full sm:w-auto px-6 py-2.5 rounded-md text-sm font-bold text-[var(--fin-body-text)] bg-[var(--fin-table-bg)] border border-[var(--fin-border)] hover:bg-[var(--fin-page-bg)]"
               >
                 Cancel
               </button>
@@ -702,10 +702,10 @@ export default function BrokerLedgerPage() {
                   !newBank.ifscCode ||
                   isSubmittingBank
                 }
-                className="w-full sm:w-auto flex items-center justify-center gap-2 px-8 py-2.5 bg-distributor-600 text-white rounded-md text-sm font-bold shadow-sm hover:bg-distributor-700 disabled:opacity-50 transition-all"
+                className="w-full sm:w-auto flex items-center justify-center gap-2 px-8 py-2.5 bg-[var(--fin-brand-600)] text-[var(--fin-btn-primary-text)] rounded-md text-sm font-bold shadow-sm hover:bg-[var(--fin-brand-700)] disabled:opacity-50 transition-all"
               >
                 {isSubmittingBank ? (
-                  <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin shrink-0" />
+                  <span className="w-4 h-4 border-2 border-[var(--fin-border-subtle)]/30 border-t-white rounded-full animate-spin shrink-0" />
                 ) : (
                   <CheckCircle2 className="w-4 h-4" />
                 )}
@@ -718,102 +718,102 @@ export default function BrokerLedgerPage() {
 
       {/* ─── TRANSFER CONFIRMATION MODAL ─── */}
       {showConfirm && (
-        <div className="fixed inset-0 z-[100000] flex items-center justify-center p-4 sm:p-6 bg-white/60 backdrop-blur-sm animate-in fade-in duration-200">
+        <div className="fixed inset-0 z-[100000] flex items-center justify-center p-4 sm:p-6 bg-[var(--fin-table-bg)]/60 backdrop-blur-sm animate-in fade-in duration-200">
           <div className="absolute inset-0" onClick={handleCloseConfirm} />
 
           <div
-            className={`relative w-full max-w-4xl bg-white rounded-md shadow-2xl flex flex-col max-h-[90vh] sm:max-h-[85vh] border border-slate-200/50 transition-all ${isClosingConfirm ? "animate-out zoom-out-95 fade-out duration-200" : "animate-in zoom-in-90 fade-in duration-200"}`}
+            className={`relative w-full max-w-4xl bg-[var(--fin-table-bg)] rounded-md shadow-2xl flex flex-col max-h-[90vh] sm:max-h-[85vh] border border-[var(--fin-border)]/50 transition-all ${isClosingConfirm ? "animate-out zoom-out-95 fade-out duration-200" : "animate-in zoom-in-90 fade-in duration-200"}`}
           >
-            <div className="flex justify-between items-center bg-white border-b border-slate-100 p-5 px-6 shrink-0 rounded-t-2xl">
+            <div className="flex justify-between items-center bg-[var(--fin-table-bg)] border-b border-[var(--fin-border-subtle)] p-5 px-6 shrink-0 rounded-t-2xl">
               <div>
-                <h3 className="text-lg font-black text-slate-800">
+                <h3 className="text-lg font-black text-[var(--fin-heading-tertiary)]">
                   Finalize Payout
                 </h3>
-                <p className="text-slate-500 text-xs mt-0.5">
+                <p className="text-[var(--fin-muted-text)] text-xs mt-0.5">
                   Please review the details before committing.
                 </p>
               </div>
               <button
                 onClick={handleCloseConfirm}
                 disabled={isSubmittingTransfer}
-                className="p-2 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-full transition-all"
+                className="p-2 text-[var(--fin-aux-text)] hover:text-[var(--fin-table-row-text)] hover:bg-[var(--fin-skeleton-base)] rounded-full transition-all"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
-            <div className="p-6 md:p-8 overflow-y-auto scrollbar-thin scrollbar-thumb-slate-200 bg-slate-50/50 flex-1">
+            <div className="p-6 md:p-8 overflow-y-auto scrollbar-thin scrollbar-thumb-[var(--fin-border-subtle)] bg-[var(--fin-page-bg)]/50 flex-1">
               <div className="text-center mb-8 sm:mb-10 w-full">
-                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">
+                <p className="text-[10px] font-black text-[var(--fin-aux-text)] uppercase tracking-widest mb-3">
                   Amount to Transfer
                 </p>
                 <div className="w-full px-2">
-                  <span className="text-4xl sm:text-6xl font-black text-distributor-700 tracking-tighter">
+                  <span className="text-4xl sm:text-6xl font-black text-[var(--fin-brand-700)] tracking-tighter">
                     {formatCurrency(Number(amount))}
                   </span>
                 </div>
                 <div className="mt-4 sm:mt-6 flex flex-wrap justify-center gap-2 sm:gap-3">
-                  <span className="text-[10px] font-bold text-distributor-700 uppercase bg-distributor-50 border border-distributor-100 px-4 py-2 rounded-md">
+                  <span className="text-[10px] font-bold text-[var(--fin-brand-700)] uppercase bg-[var(--fin-brand-50)] border border-[var(--fin-brand-100)] px-4 py-2 rounded-md">
                     Mode: {mode}
                   </span>
-                  <span className="text-[10px] font-bold text-distributor-700 uppercase bg-distributor-50 border border-distributor-100 px-4 py-2 rounded-md">
+                  <span className="text-[10px] font-bold text-[var(--fin-brand-700)] uppercase bg-[var(--fin-brand-50)] border border-[var(--fin-brand-100)] px-4 py-2 rounded-md">
                     Ref: {referenceId}
                   </span>
                 </div>
               </div>
 
               <div className="flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-8 max-w-3xl mx-auto">
-                <div className="flex-1 bg-white border border-slate-200 rounded-md p-5 w-full text-center shadow-sm">
-                  <div className="w-10 h-10 bg-slate-50 text-slate-500 border border-slate-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                <div className="flex-1 bg-[var(--fin-table-bg)] border border-[var(--fin-border)] rounded-md p-5 w-full text-center shadow-sm">
+                  <div className="w-10 h-10 bg-[var(--fin-page-bg)] text-[var(--fin-muted-text)] border border-[var(--fin-border-subtle)] rounded-full flex items-center justify-center mx-auto mb-3">
                     <Building2 className="w-4 h-4" />
                   </div>
-                  <p className="text-[10px] font-black text-slate-400 uppercase mb-1">
+                  <p className="text-[10px] font-black text-[var(--fin-aux-text)] uppercase mb-1">
                     From Account
                   </p>
-                  <p className="font-bold text-slate-800 text-sm">
+                  <p className="font-bold text-[var(--fin-heading-tertiary)] text-sm">
                     {selectedSourceObj?.bank_name}
                   </p>
-                  <p className="text-xs font-mono text-slate-500 mt-1">
+                  <p className="text-xs font-mono text-[var(--fin-muted-text)] mt-1">
                     {selectedSourceObj?.account_number}
                   </p>
                 </div>
 
-                <div className="hidden sm:flex flex-col items-center shrink-0 text-slate-300">
+                <div className="hidden sm:flex flex-col items-center shrink-0 text-[var(--fin-aux-text)]">
                   <ArrowRight className="w-8 h-8" />
                 </div>
 
-                <div className="flex-1 bg-distributor-50/50 border border-distributor-200 rounded-md p-5 w-full text-center shadow-sm">
-                  <div className="w-10 h-10 bg-white text-distributor-600 border border-distributor-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                <div className="flex-1 bg-[var(--fin-brand-50)]/50 border border-[var(--fin-brand-200)] rounded-md p-5 w-full text-center shadow-sm">
+                  <div className="w-10 h-10 bg-[var(--fin-table-bg)] text-[var(--fin-brand-600)] border border-[var(--fin-brand-100)] rounded-full flex items-center justify-center mx-auto mb-3">
                     <CreditCard className="w-4 h-4" />
                   </div>
-                  <p className="text-[10px] font-black text-distributor-600/70 uppercase mb-1">
+                  <p className="text-[10px] font-black text-[var(--fin-brand-600)]/70 uppercase mb-1">
                     To User
                   </p>
-                  <p className="font-bold text-slate-800 text-sm">
+                  <p className="font-bold text-[var(--fin-heading-tertiary)] text-sm">
                     {selectedUserObj?.name}
                   </p>
-                  <p className="text-xs font-mono text-distributor-600/70 mt-1">
+                  <p className="text-xs font-mono text-[var(--fin-brand-600)]/70 mt-1">
                     {selectedDestObj?.account_number}
                   </p>
                 </div>
               </div>
             </div>
 
-            <div className="p-4 sm:p-5 px-6 bg-white border-t border-slate-100 flex flex-col-reverse sm:flex-row justify-end gap-3 shrink-0 rounded-b-2xl">
+            <div className="p-4 sm:p-5 px-6 bg-[var(--fin-table-bg)] border-t border-[var(--fin-border-subtle)] flex flex-col-reverse sm:flex-row justify-end gap-3 shrink-0 rounded-b-2xl">
               <button
                 onClick={handleCloseConfirm}
                 disabled={isSubmittingTransfer}
-                className="w-full sm:w-auto px-6 py-2.5 rounded-md text-sm font-bold text-slate-600 bg-white border border-slate-200 hover:bg-slate-50 disabled:opacity-50"
+                className="w-full sm:w-auto px-6 py-2.5 rounded-md text-sm font-bold text-[var(--fin-body-text)] bg-[var(--fin-table-bg)] border border-[var(--fin-border)] hover:bg-[var(--fin-page-bg)] disabled:opacity-50"
               >
                 Go Back
               </button>
               <button
                 onClick={handleSubmitLedger}
                 disabled={isSubmittingTransfer}
-                className="w-full sm:w-auto flex items-center justify-center gap-2 px-8 py-2.5 bg-distributor-600 text-white rounded-md text-sm font-bold shadow-sm hover:bg-distributor-700 disabled:opacity-50 transition-all"
+                className="w-full sm:w-auto flex items-center justify-center gap-2 px-8 py-2.5 bg-[var(--fin-brand-600)] text-[var(--fin-btn-primary-text)] rounded-md text-sm font-bold shadow-sm hover:bg-[var(--fin-brand-700)] disabled:opacity-50 transition-all"
               >
                 {isSubmittingTransfer ? (
-                  <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin shrink-0" />
+                  <span className="w-4 h-4 border-2 border-[var(--fin-border-subtle)]/30 border-t-white rounded-full animate-spin shrink-0" />
                 ) : (
                   <CheckCircle2 className="w-4 h-4" />
                 )}

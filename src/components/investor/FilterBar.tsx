@@ -22,37 +22,41 @@ export default function FilterBar({
   role = 'investor'
 }: FilterBarProps) {
   
-  const activeClass = role === 'investor' 
-    ? 'bg-investor-600 text-white shadow-md' 
-    : 'bg-investor-600 text-white shadow-md';
-    
-  const inactiveClass = role === 'investor'
-    ? 'text-slate-600 hover:bg-slate-100/80 hover:text-investor-900'
-    : 'text-slate-600 hover:bg-slate-100/80 hover:text-distributor-900';
+  // CSS variables handle theming; active/inactive defined via inline style in the button
 
   return (
-    <div className="flex justify-between items-center gap-4 bg-white/60 backdrop-blur-md p-2 rounded-md border border-slate-200/60 shadow-sm">
+    <div
+      className="flex justify-between items-center gap-4 backdrop-blur-md p-2 rounded-md shadow-sm border"
+      style={{ backgroundColor: 'var(--fin-filter-bg)', borderColor: 'var(--fin-filter-border)' }}
+    >
       <div className="flex items-center gap-1.5 p-1">
-        {["All", "Category/Industry", "AMC/Issuer", "Tag"].map((filter) => (
-          <button
-            key={filter}
-            onClick={() => { setActiveFilterType(filter); setActiveFilterValue("All"); }}
-            className={`px-4 py-2 rounded-md text-xs font-bold transition-all duration-200 ${
-              activeFilterType === filter 
-                ? activeClass 
-                : inactiveClass
-            }`}
-          >
-            {filter}
-          </button>
-        ))}
+        {["All", "Category/Industry", "AMC/Issuer", "Tag"].map((filter) => {
+          const isActive = activeFilterType === filter;
+          return (
+            <button
+              key={filter}
+              onClick={() => { setActiveFilterType(filter); setActiveFilterValue("All"); }}
+              className="px-4 py-2 rounded-md text-xs font-bold transition-all duration-200"
+              style={isActive
+                ? { backgroundColor: 'var(--fin-filter-option-active-bg)', color: 'var(--fin-filter-option-active-text)' }
+                : { backgroundColor: 'var(--fin-filter-option-idle-bg)', color: 'var(--fin-filter-option-idle-text)' }
+              }
+            >
+              {filter}
+            </button>
+          );
+        })}
         
         {activeFilterType !== "All" && filterOptions.length > 0 && (
-          <div className="ml-2 pl-3 border-l border-slate-200 flex items-center animate-[fadeIn_0.2s_ease-out]">
+          <div
+            className="ml-2 pl-3 flex items-center animate-[fadeIn_0.2s_ease-out] border-l"
+            style={{ borderColor: 'var(--fin-filter-border)' }}
+          >
             <select 
               value={activeFilterValue} 
               onChange={(e) => setActiveFilterValue(e.target.value)}
-              className="bg-transparent border-none text-slate-900 text-sm font-bold focus:ring-0 cursor-pointer outline-none"
+              style={{ color: 'var(--fin-input-text)' }}
+              className="bg-transparent border-none text-sm font-bold focus:ring-0 cursor-pointer outline-none"
             >
               <option value="All">All {activeFilterType.replace('By ', '')}s</option>
               {filterOptions.map(opt => <option key={opt} value={opt}>{opt}</option>)}
@@ -60,8 +64,8 @@ export default function FilterBar({
           </div>
         )}
       </div>
-      <div className="pr-4 text-xs font-bold text-slate-400">
-        Avg Holding: <span className="text-slate-800">{avgHoldingDays} Days</span>
+      <div className="pr-4 text-xs font-bold" style={{ color: 'var(--fin-ribbon-label)' }}>
+        Avg Holding: <span style={{ color: 'var(--fin-ribbon-value)' }}>{avgHoldingDays} Days</span>
       </div>
     </div>
   );

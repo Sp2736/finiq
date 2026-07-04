@@ -47,5 +47,10 @@ AGENTS.md
 log.txt
 todo.txt
 
+<<<<<<< HEAD
 # *.md
 *.py
+=======
+*.md
+*.py
+>>>>>>> 2e6571819fb678c890e1e7dbc207b65494845f7c

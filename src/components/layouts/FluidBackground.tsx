@@ -1,11 +1,50 @@
 "use client";
 
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
+
+function hexToRgb(hex: string) {
+  if (!hex) return "255, 255, 255";
+  const cleanHex = hex.replace('#', '').trim();
+  if (cleanHex.length !== 6) return "255, 255, 255";
+  const r = parseInt(cleanHex.substring(0, 2), 16);
+  const g = parseInt(cleanHex.substring(2, 4), 16);
+  const b = parseInt(cleanHex.substring(4, 6), 16);
+  return `${r}, ${g}, ${b}`;
+}
+
+const getCSSVar = (name: string, fallback: string) => {
+  if (typeof window === "undefined") return fallback;
+  return (
+    getComputedStyle(document.documentElement).getPropertyValue(name).trim() ||
+    fallback
+  );
+};
 
 export default function FluidBackground() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  
+  const [colors, setColors] = useState({
+    color50: "248, 250, 252",
+    color100: "241, 245, 249",
+    color200: "224, 231, 255",
+    color400: "99, 102, 241",
+    color600: "37, 99, 235",
+    color800: "30, 58, 138",
+    color950: "2, 6, 23"
+  });
 
   useEffect(() => {
+    const rootStyle = getComputedStyle(document.documentElement);
+    setColors({
+      color50: hexToRgb(rootStyle.getPropertyValue('--fin-brand-50')),
+      color100: hexToRgb(rootStyle.getPropertyValue('--fin-brand-100')),
+      color200: hexToRgb(rootStyle.getPropertyValue('--fin-brand-200')),
+      color400: hexToRgb(rootStyle.getPropertyValue('--fin-brand-400')),
+      color600: hexToRgb(rootStyle.getPropertyValue('--fin-brand-600')),
+      color800: hexToRgb(rootStyle.getPropertyValue('--fin-brand-800')),
+      color950: hexToRgb(rootStyle.getPropertyValue('--fin-brand-950'))
+    });
+
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext("2d");
@@ -27,10 +66,13 @@ export default function FluidBackground() {
       const w = canvas.width;
       const h = canvas.height;
 
+      const pageBg = getCSSVar("--fin-page-bg", "#f8fafc");
+      const surfaceBg = getCSSVar("--fin-content-surface", "#ffffff");
+
       // 1. Base Background: Clean, crisp Slate/White
       const bgGrad = ctx.createLinearGradient(0, 0, w, h);
-      bgGrad.addColorStop(0, "#ffffff"); // Pure white
-      bgGrad.addColorStop(1, "#f8fafc"); // Very soft slate
+      bgGrad.addColorStop(0, surfaceBg);
+      bgGrad.addColorStop(1, pageBg);
       ctx.fillStyle = bgGrad;
       ctx.fillRect(0, 0, w, h);
 
@@ -70,13 +112,13 @@ export default function FluidBackground() {
       };
 
       // 2. Top Wave: Pearlescent Ice Blue (Keeps dark text highly readable)
-      drawWave(h * 0.35, 120, 1.5, 0, "rgba(241, 245, 249, 0.8)", "rgba(224, 231, 255, 0.9)", true);
+      drawWave(h * 0.35, 120, 1.5, 0, `rgba(${colors.color100}, 0.8)`, `rgba(${colors.color200}, 0.9)`, true);
 
       // 3. Middle Wave: Modern SaaS Indigo / Azure Blue (Tech & Intelligence)
-      drawWave(h * 0.6, 150, 1.2, 2, "rgba(99, 102, 241, 0.85)", "rgba(37, 99, 235, 0.9)", false);
+      drawWave(h * 0.6, 150, 1.2, 2, `rgba(${colors.color400}, 0.85)`, `rgba(${colors.color600}, 0.9)`, false);
 
       // 4. Bottom Wave: Deep Institutional Navy (Security & Stability)
-      drawWave(h * 0.75, 100, 1.8, 4, "rgba(30, 58, 138, 0.95)", "rgba(2, 6, 23, 1)", false);
+      drawWave(h * 0.75, 100, 1.8, 4, `rgba(${colors.color800}, 0.95)`, `rgba(${colors.color950}, 1)`, false);
 
       animationFrameId = requestAnimationFrame(render);
     };

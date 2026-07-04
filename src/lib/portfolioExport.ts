@@ -1,7 +1,6 @@
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 
-// Helper to format currency safely
 const formatCurrency = (val: any) => {
   const num = Number(val);
   if (isNaN(num)) return "0.00";
@@ -9,6 +8,20 @@ const formatCurrency = (val: any) => {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   });
+};
+
+const getThemeColorRgbArray = (cssVarName: string, fallbackRgb: [number, number, number]): [number, number, number] => {
+  if (typeof window === "undefined") return fallbackRgb;
+  const hex = getComputedStyle(document.documentElement).getPropertyValue(cssVarName).trim();
+  if (!hex || !hex.startsWith('#')) return fallbackRgb;
+  
+  const cleanHex = hex.replace('#', '');
+  if (cleanHex.length !== 6) return fallbackRgb;
+  
+  const r = parseInt(cleanHex.substring(0, 2), 16);
+  const g = parseInt(cleanHex.substring(2, 4), 16);
+  const b = parseInt(cleanHex.substring(4, 6), 16);
+  return [r, g, b];
 };
 
 // Pure jsPDF Pie Chart Drawer (Dependency-Free, Gapless)
@@ -81,7 +94,8 @@ export const generatePortfolioValuationPDF = (
     }
 
     // 2. Report Meta Data (Right-Aligned)
-    doc.setTextColor(100, 116, 139); // text-slate-500
+    const mutedText = getThemeColorRgbArray("--fin-muted-text", [100, 116, 139]);
+    doc.setTextColor(mutedText[0], mutedText[1], mutedText[2]); // text-slate-500
     doc.setFontSize(8);
     doc.setFont("helvetica", "normal");
     doc.text(`NAV As on Date: ${today}`, pageWidth - 40, 45, {
@@ -97,7 +111,8 @@ export const generatePortfolioValuationPDF = (
     // 3. Client Details block
     doc.setFontSize(16);
     doc.setFont("helvetica", "bold");
-    doc.setTextColor(15, 23, 42); // text-slate-900
+    const headingText = getThemeColorRgbArray("--fin-heading-primary", [15, 23, 42]);
+    doc.setTextColor(headingText[0], headingText[1], headingText[2]); // text-slate-900
     doc.text("Portfolio Holdings Report", 40, 115);
 
     const clientName =
@@ -237,18 +252,18 @@ export const generatePortfolioValuationPDF = (
     styles: {
       fontSize: 6.5, // Shrunk to 6.5 to accommodate 12 columns gracefully
       cellPadding: 4,
-      textColor: [51, 65, 85], // text-slate-700
-      lineColor: [226, 232, 240], // border-slate-200
+      textColor: getThemeColorRgbArray("--fin-table-row-text", [51, 65, 85]), // text-slate-700
+      lineColor: getThemeColorRgbArray("--fin-border", [226, 232, 240]), // border-slate-200
       lineWidth: 0.1,
     },
     headStyles: {
-      fillColor: [125,125,125],
+      fillColor: getThemeColorRgbArray("--fin-brand-600", [125, 125, 125]),
       textColor: [255, 255, 255],
       fontStyle: "bold",
       halign: "right",
     },
     alternateRowStyles: {
-      fillColor: [248, 250, 252], // slate-50
+      fillColor: getThemeColorRgbArray("--fin-page-bg-subtle", [248, 250, 252]), // slate-50
     },
     columnStyles: {
       0: { halign: "left", cellWidth: 140 }, // Adjusted to give space to new columns
@@ -268,13 +283,14 @@ export const generatePortfolioValuationPDF = (
       // Highlight the final totals row with Finiq themes
       if (data.row.index === tableRows.length - 1) {
         data.cell.styles.fontStyle = "bold";
-        data.cell.styles.fillColor = [238, 242, 255]; // Soft Indigo Background
-        data.cell.styles.textColor = [15, 23, 42]; // Slate 900
+        data.cell.styles.fillColor = getThemeColorRgbArray("--fin-brand-100", [238, 242, 255]); // Soft Brand Background
+        data.cell.styles.textColor = getThemeColorRgbArray("--fin-heading-primary", [15, 23, 42]); // Heading Primary
       }
     },
     didDrawPage: function (data) {
       doc.setFontSize(8);
-      doc.setTextColor(148, 163, 184); // slate-400
+      const auxText = getThemeColorRgbArray("--fin-aux-text", [148, 163, 184]);
+      doc.setTextColor(auxText[0], auxText[1], auxText[2]); // slate-400
       doc.text(`Page No ${pageCount} of 3`, pageWidth / 2, pageHeight - 20, {
         align: "center",
       });
@@ -324,7 +340,8 @@ export const generatePortfolioValuationPDF = (
 
   doc.setFontSize(11);
   doc.setFont("helvetica", "bold");
-  doc.setTextColor(15, 23, 42); // slate-900
+  const headingText = getThemeColorRgbArray("--fin-heading-primary", [15, 23, 42]);
+  doc.setTextColor(headingText[0], headingText[1], headingText[2]); // slate-900
   doc.text(`TOTAL - ${clientData.investor_name || "Investor"}`, 40, 199);
 
   autoTable(doc, {
@@ -336,10 +353,10 @@ export const generatePortfolioValuationPDF = (
       fontSize: 8,
       cellPadding: 5,
       halign: "right",
-      textColor: [15, 23, 42],
+      textColor: getThemeColorRgbArray("--fin-heading-primary", [15, 23, 42]),
     },
     headStyles: {
-      fillColor: [125,125,125],
+      fillColor: getThemeColorRgbArray("--fin-brand-600", [125, 125, 125]),
       textColor: [255, 255, 255],
       fontStyle: "bold",
       lineWidth: 0,
@@ -356,7 +373,8 @@ export const generatePortfolioValuationPDF = (
   // 1. ASSET ALLOCATION
   doc.setFontSize(12);
   doc.setFont("helvetica", "bold");
-  doc.setTextColor(15, 23, 42);
+  const headingText2 = getThemeColorRgbArray("--fin-heading-primary", [15, 23, 42]);
+  doc.setTextColor(headingText2[0], headingText2[1], headingText2[2]);
   doc.text("ASSET ALLOCATION", 40, 200);
 
   let equityVal = 0;
@@ -392,11 +410,9 @@ export const generatePortfolioValuationPDF = (
   const radius = 60;
 
   // Sleek Finiq Chart Palette
-
-  // const eqColor = [79, 70, 229]; // Indigo
-  const eqColor = [0,0,128]; // Navy Blue
-  const hyColor = [16, 185, 129]; // Emerald Green
-  const dbColor = [245, 158, 11]; // Amber
+  const eqColor = getThemeColorRgbArray("--fin-chart-color-1", [0,0,128]); // Navy Blue
+  const hyColor = getThemeColorRgbArray("--fin-chart-color-2", [16, 185, 129]); // Emerald Green
+  const dbColor = getThemeColorRgbArray("--fin-chart-color-3", [245, 158, 11]); // Amber
 
   // const eqColor = [109, 40, 217]; // Deep Purple
   // const hyColor = [6, 182, 212]; // Cyan
@@ -457,7 +473,8 @@ export const generatePortfolioValuationPDF = (
   // Draw Asset Legends
   doc.setFont("helvetica", "bold");
   doc.setFontSize(9);
-  doc.setTextColor(51, 65, 85);
+  const rowText = getThemeColorRgbArray("--fin-table-row-text", [51, 65, 85]);
+  doc.setTextColor(rowText[0], rowText[1], rowText[2]);
 
   let legendY = 250;
   if (eqPct > 0) {
@@ -480,7 +497,7 @@ export const generatePortfolioValuationPDF = (
   const cy2 = 450;
   doc.setFontSize(12);
   doc.setFont("helvetica", "bold");
-  doc.setTextColor(15, 23, 42);
+  doc.setTextColor(headingText2[0], headingText2[1], headingText2[2]);
   doc.text("CLIENT ALLOCATION", 40, 370);
 
   // Draw Client Pie (100% full circle)
@@ -491,7 +508,7 @@ export const generatePortfolioValuationPDF = (
   // Draw Client Legend
   doc.setFont("helvetica", "bold");
   doc.setFontSize(9);
-  doc.setTextColor(51, 65, 85);
+  doc.setTextColor(rowText[0], rowText[1], rowText[2]);
   doc.rect(300, cy2 - 20, 10, 10, "F");
   doc.text(`${clientData.investor_name || "Investor"}: 100.00%`, 315, cy2 - 12);
 
