@@ -18,69 +18,33 @@ export interface SavedTheme {
   created_at: string;
 }
 
-interface CachedActiveTheme {
-  theme_name: string;
-  theme_variables: Record<string, string>;
-  active_theme_id: string | null;
-  cached_at: string;
-}
-
-const ACTIVE_THEME_CACHE_KEY = "finiq_active_theme";
-
 interface ThemeContextValue {
+  // The currently active theme's variables (applied to the whole site)
   variables: Record<string, string>;
   themeName: string;
   activeThemeId: string | null;
   savedThemes: SavedTheme[];
   isLoading: boolean;
-  isSavedThemesLoading: boolean;
 
+  // applyPreview / revertPreview are intentionally NO-OPS for global DOM.
+  // They exist so ThemePanel can call them without errors, but they do nothing
+  // to the global site. The ThemePreviewPane receives localVars directly via props
+  // and scopes them with inline style — no global mutation needed.
   applyPreview: (vars: Record<string, string>) => void;
   revertPreview: () => void;
 
+  // These are the ONLY functions that change the global site appearance:
   activateTheme: (savedThemeId: string) => Promise<void>;
   activateDefault: () => Promise<void>;
 
   saveTheme: (name: string, variables: Record<string, string>) => Promise<SavedTheme>;
   updateSavedTheme: (id: string, name: string, variables: Record<string, string>) => Promise<SavedTheme>;
   deleteSavedTheme: (id: string) => Promise<void>;
-
-  // Kept for callers that explicitly need to force a fresh read from the server
-  // (should be rare — only used as a fallback / manual "sync" action).
   refreshTheme: () => Promise<void>;
-
-  // Must be called explicitly by the Appearance settings page. Never called
-  // automatically by ThemeProvider.
   refreshSavedThemes: () => Promise<void>;
 }
 
 const ThemeContext = createContext<ThemeContextValue | undefined>(undefined);
-
-function readActiveThemeCache(): CachedActiveTheme | null {
-  if (typeof window === "undefined") return null;
-  try {
-    const raw = localStorage.getItem(ACTIVE_THEME_CACHE_KEY);
-    if (!raw) return null;
-    return JSON.parse(raw) as CachedActiveTheme;
-  } catch (_) {
-    return null;
-  }
-}
-
-function writeActiveThemeCache(data: {
-  theme_name: string;
-  theme_variables: Record<string, string>;
-  active_theme_id: string | null;
-}) {
-  if (typeof window === "undefined") return;
-  try {
-    const payload: CachedActiveTheme = {
-      ...data,
-      cached_at: new Date().toISOString(),
-    };
-    localStorage.setItem(ACTIVE_THEME_CACHE_KEY, JSON.stringify(payload));
-  } catch (_) {}
-}
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [variables, setVariables] = useState<Record<string, string>>({});
@@ -88,14 +52,16 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [activeThemeId, setActiveThemeId] = useState<string | null>(null);
   const [savedThemes, setSavedThemes] = useState<SavedTheme[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [isSavedThemesLoading, setIsSavedThemesLoading] = useState(false);
 
+  // snapshotRef is kept for potential future use but not used for global DOM mutation.
   const snapshotRef = useRef<Record<string, string>>({});
 
   const applyVarsToDOM = useCallback((vars: Record<string, string>) => {
     if (typeof window === "undefined") return;
     if (Object.keys(vars).length === 0) {
+      // System default: remove all inline overrides so :root CSS defaults apply
       document.documentElement.style.cssText = "";
+      // Also remove individual properties in case cssText didn't fully clear
       const root = document.documentElement;
       Array.from(root.style).forEach((prop) => {
         if (prop.startsWith("--fin-")) root.style.removeProperty(prop);
@@ -107,97 +73,91 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     });
   }, []);
 
-  // Applies a theme payload to state + DOM + cache, in one place.
-  const applyAndCache = useCallback((data: {
-    theme_name: string;
-    theme_variables: Record<string, string>;
-    active_theme_id: string | null;
-  }) => {
-    const vars = data.theme_variables || {};
-    setVariables(vars);
-    setThemeName(data.theme_name || "System Default");
-    setActiveThemeId(data.active_theme_id ?? null);
-    applyVarsToDOM(vars);
-    writeActiveThemeCache({
-      theme_name: data.theme_name || "System Default",
-      theme_variables: vars,
-      active_theme_id: data.active_theme_id ?? null,
-    });
-  }, [applyVarsToDOM]);
-
-  // Network fallback — only used when localStorage cache is missing/corrupt,
-  // or when explicitly forced via refreshTheme() / after activation calls.
   const fetchActiveTheme = useCallback(async () => {
     try {
       const res = await apiClient.get<any>("themes/active");
       const data = res.data || res;
-      applyAndCache({
-        theme_name: data?.theme_name,
-        theme_variables: data?.theme_variables || {},
-        active_theme_id: data?.active_theme_id ?? null,
-      });
+      
+      const vars = data?.theme_variables || {};
+      const name = data?.theme_name || "System Default";
+      const id = data?.active_theme_id || null;
+      
+      setVariables(vars);
+      setThemeName(name);
+      setActiveThemeId(id);
+      applyVarsToDOM(vars);
+      // Cache for FOUC prevention on next page load
+      try {
+        if (Object.keys(vars).length > 0) {
+          localStorage.setItem("finiq_theme_vars", JSON.stringify(vars));
+        } else {
+          localStorage.removeItem("finiq_theme_vars");
+        }
+      } catch (_) {}
     } catch (error) {
       console.error("Failed to fetch active theme:", error);
     }
-  }, [applyAndCache]);
+  }, [applyVarsToDOM]);
 
-  // Only called explicitly by the Appearance settings page.
   const fetchSavedThemes = useCallback(async () => {
-    setIsSavedThemesLoading(true);
     try {
       const res = await apiClient.get<any>("themes/saved");
       const data = res.data || res;
+      
       setSavedThemes(Array.isArray(data) ? data : []);
     } catch (error) {
       console.error("Failed to fetch saved themes:", error);
-    } finally {
-      setIsSavedThemesLoading(false);
     }
   }, []);
 
-  // ─── Mount: read from cache first, only hit the network if cache is empty ──
   useEffect(() => {
     const init = async () => {
-      const cached = readActiveThemeCache();
-      if (cached) {
-        setVariables(cached.theme_variables || {});
-        setThemeName(cached.theme_name || "System Default");
-        setActiveThemeId(cached.active_theme_id ?? null);
-        applyVarsToDOM(cached.theme_variables || {});
-        setIsLoading(false);
-        return;
-      }
-      // No cache found (e.g. localStorage cleared, or login page didn't prime
-      // it for some reason) — fall back to a single network call so the site
-      // isn't stuck unthemed.
-      await fetchActiveTheme();
+      await Promise.all([fetchActiveTheme(), fetchSavedThemes()]);
       setIsLoading(false);
     };
     init();
-    // NOTE: fetchSavedThemes is intentionally NOT called here.
-  }, [fetchActiveTheme, applyVarsToDOM]);
+  }, [fetchActiveTheme, fetchSavedThemes]);
 
-  const applyPreview = useCallback((_vars: Record<string, string>) => {}, []);
-  const revertPreview = useCallback(() => {}, []);
+  // ─── applyPreview and revertPreview are INTENTIONAL NO-OPS ───────────────
+  // The preview pane is isolated via inline style scoping on its container.
+  // Global DOM changes happen only through activateTheme / activateDefault below.
+  const applyPreview = useCallback((_vars: Record<string, string>) => {
+    // No-op: ThemePreviewPane receives localVars directly as a prop.
+    // The variables are scoped to the preview container via inline style.
+  }, []);
+
+  const revertPreview = useCallback(() => {
+    // No-op: nothing to revert because we never applied anything globally.
+    // When the user cancels editing, the active theme (set via activateTheme)
+    // is already visible on the live site unchanged.
+  }, []);
+
+  // ─── These are the only functions that mutate the global site ────────────
 
   const activateTheme = useCallback(async (savedThemeId: string) => {
     await apiClient.put(`themes/activate/${savedThemeId}`, {});
     snapshotRef.current = {};
-    await fetchActiveTheme(); // Re-fetches, applies to DOM, AND re-caches to localStorage
+    await fetchActiveTheme(); // Re-fetches and applies to DOM globally
   }, [fetchActiveTheme]);
 
   const activateDefault = useCallback(async () => {
     await apiClient.put("themes/activate-default", {});
     snapshotRef.current = {};
-    await fetchActiveTheme(); // Re-fetches (empty vars) and re-caches
+    try { localStorage.removeItem("finiq_theme_vars"); } catch (_) {}
+    await fetchActiveTheme(); // Re-fetches and clears DOM vars globally
   }, [fetchActiveTheme]);
+
+  // ─── These mutate the DB but do NOT change the live site appearance ───────
 
   const saveTheme = useCallback(async (
     name: string,
     newVars: Record<string, string>,
   ): Promise<SavedTheme> => {
-    const res = await apiClient.post<any>("themes/saved", { name, variables: newVars });
-    await fetchSavedThemes();
+    const res = await apiClient.post<any>("themes/saved", {
+      name,
+      variables: newVars,
+    });
+    await fetchSavedThemes(); // Refresh the list
     return res.data || res;
   }, [fetchSavedThemes]);
 
@@ -206,10 +166,15 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     name: string,
     newVars: Record<string, string>,
   ): Promise<SavedTheme> => {
-    const res = await apiClient.put<any>(`themes/saved/${id}`, { name, variables: newVars });
+    const res = await apiClient.put<any>(`themes/saved/${id}`, {
+      name,
+      variables: newVars,
+    });
     await fetchSavedThemes();
+    // If this is the currently active theme, also refresh the active theme
+    // to update the global site appearance with the new variables.
     if (activeThemeId === id) {
-      await activateTheme(id); // re-activates + re-caches active theme
+      await activateTheme(id); // Re-push to DB and re-apply globally
     }
     return res.data || res;
   }, [fetchSavedThemes, activateTheme, activeThemeId]);
@@ -217,8 +182,10 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const deleteSavedTheme = useCallback(async (id: string) => {
     await apiClient.delete(`themes/saved/${id}`);
     await fetchSavedThemes();
+    // If we deleted the active theme, the backend already reset to System Default.
+    // Re-fetch active theme to pick up the cleared state.
     if (activeThemeId === id) {
-      await fetchActiveTheme(); // backend reset to default; re-sync cache
+      await fetchActiveTheme();
     }
   }, [fetchSavedThemes, fetchActiveTheme, activeThemeId]);
 
@@ -230,7 +197,6 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
         activeThemeId,
         savedThemes,
         isLoading,
-        isSavedThemesLoading,
         applyPreview,
         revertPreview,
         activateTheme,

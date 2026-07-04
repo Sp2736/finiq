@@ -7,26 +7,17 @@ export interface AuthResponse<T> {
   timestamp: string;
 }
 
-export interface UserRole {
-  id: string;
-  role: string;
-  tenant_id: string | null;
-  company_id: string | null;
-  company_name: string | null;
-  first_name: string | null;
-  last_name: string | null;
-  company_logo?: string | null;
-}
 
 export interface VerifyOtpData {
   access_token: string;
   refresh_token: string;
-  user: {
-    id: string;
-    phone_number: string;
-    roles: UserRole[];
-    company_logo?: string | null;
-  };
+  company_logo_url?: string | null;
+  company_info?: {
+    name: string | null;
+    address: string | null;
+    email: string | null;
+    phone: string | null;
+  } | null;
 }
 
 export interface SendOtpData {
@@ -38,16 +29,14 @@ export interface LoginResponse {
   success: boolean;
   message: string;
   data: {
-    company_info(company_info: any): string;
-    logo_base64: any;
     access_token: string;
-    investor: {
-      id: string;
-      name: string;
-      mobile: string;
-      email: string;
-      logo_base64: string | null;
-    };
+    logo_url?: string | null;
+    company_info?: {
+      name?: string | null;
+      address?: string | null;
+      email?: string | null;
+      phone?: string | null;
+    } | null;
   };
 }
 

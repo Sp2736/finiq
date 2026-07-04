@@ -8,8 +8,7 @@ import PhoneInputForm from "@/components/layouts/PhoneInputForm";
 import OTPVerificationForm from "@/components/layouts/OTPVerificationForm";
 import DistributorFluidBackground from "@/components/layouts/DistributorFluidBackground";
 import { authService } from "@/services/auth.service";
-import { setAuthCookies } from "@/lib/authClient";
-import { primeThemeCache } from "@/lib/primeThemeCache";
+import { setAuthCookies, decodeJwt, DecodedStaffToken } from "@/lib/authClient";
 
 type Step = "phone" | "otp";
 
@@ -54,35 +53,31 @@ export default function DistributorLoginPage() {
       const fullPhone = `${phoneInfo.countryCode}${phoneInfo.number.replace(/\D/g, "")}`;
       const response = await authService.verifyOtp(fullPhone, otp);
 
-      // Store company logo so both sidebars can display it without an extra API call
-      if (response.data?.user?.company_logo) {
-        try {
-          localStorage.setItem("company_logo_base64", response.data.user.company_logo);
-        } catch (_) {}
-      }
-
       if (response.success) {
-<<<<<<< Updated upstream
-=======
         const decoded = decodeJwt<DecodedStaffToken>(response.data.access_token);
 
         // Store company logo so both sidebars can display it without an extra API call
         try {
-          if (response.data.company_logo) {
-            localStorage.setItem("company-logo-dis", response.data.company_logo);
+          const companyId = decoded.company_id;
+          if (response.data.company_logo_url && companyId) {
+            const cacheKey = `company_logo_cache_${companyId}`;
+            const newCache = {
+              url: response.data.company_logo_url,
+              expiresAt: Date.now() + 50 * 60 * 1000,
+            };
+            localStorage.setItem(cacheKey, JSON.stringify(newCache));
           }
           if (response.data.company_info) {
             localStorage.setItem("company-info-dis", JSON.stringify(response.data.company_info));
           }
         } catch (_) {}
 
->>>>>>> Stashed changes
         setAuthCookies(
           response.data.access_token,
           response.data.refresh_token,
-          "staff"
+          "staff",
+          decoded?.sub, // was response.data.user.id
         );
-        await primeThemeCache();
         router.push("/distributor");
       }
     } catch (err: any) {

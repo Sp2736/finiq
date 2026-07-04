@@ -68,3 +68,37 @@ export function decodeJwt(token: string): any {
     return null;
   }
 };
+
+export const getCompanyLogoFromStorage = (): string | null => {
+  if (typeof window === 'undefined') return null;
+  let logo = localStorage.getItem("company-logo-dis") || localStorage.getItem("company-logo-inv") || null;
+  if (logo && logo !== "null" && logo !== "undefined" && logo.length > 20) {
+    if (!logo.startsWith("data:image")) {
+      logo = `data:image/png;base64,${logo}`;
+    }
+    return logo;
+  }
+  return null;
+};
+
+export const getCompanyInfoFromStorage = () => {
+  if (typeof window === 'undefined') return {};
+  try {
+    const infoStr = localStorage.getItem("company-info-dis") || localStorage.getItem("company-info-inv");
+    if (infoStr && infoStr !== "null" && infoStr !== "undefined") {
+      return JSON.parse(infoStr);
+    }
+  } catch (_) {}
+  return {};
+};
+
+export function triggerBlobDownload(blob: Blob, filename: string): void {
+  const url = window.URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = filename;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  window.URL.revokeObjectURL(url);
+}

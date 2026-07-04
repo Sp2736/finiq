@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { formatCurrency } from '@/lib/utils';
 import Badge from '@/components/investor/Badge';
 
-export default function DesktopBrokerageTable({ data, totals }: { data: any[], totals: any }) {
+export default function DesktopBrokerageTable({ data, totals, groupLabel = "AMC" }: { data: any[], totals: any, groupLabel?: string }) {
   const [expandedUser, setExpandedUser] = useState<string | null>(null);
 
   const toggleUser = (id: string) => {
@@ -31,16 +31,15 @@ export default function DesktopBrokerageTable({ data, totals }: { data: any[], t
   return (
     <div className="bg-[var(--fin-table-bg)] rounded-md border border-[var(--fin-border)] shadow-[0_8px_30px_rgb(0,0,0,0.04)] relative h-full flex flex-col overflow-hidden">
       <div className="flex-1 overflow-auto table-scrollbar">
-        <table className="w-full text-left border-collapse min-w-[1000px] xl:min-w-[1200px]">
+        <table className="text-left border-collapse w-full">
           <thead className="sticky top-0 z-30 shadow-sm ring-1 ring-[var(--fin-input-ring-focus)]/50">
             <tr className="bg-[var(--fin-page-bg)] text-[9px] xl:text-[10px] uppercase tracking-widest text-[var(--fin-muted-text)] font-bold">
               <th className="p-3 w-10 sticky left-0 z-40 bg-[var(--fin-page-bg)] border-r border-[var(--fin-border)]/80"></th>
               <th className="p-3 w-[250px] xl:w-[300px] sticky left-10 z-40 bg-[var(--fin-page-bg)] border-r border-[var(--fin-border)]/50 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.05)]">User Details</th>
-              <th className="p-3 text-right bg-[var(--fin-page-bg)]">Gross Rec.</th>
-              <th className="p-3 text-right bg-[var(--fin-page-bg)]">Paid (Self)</th>
-              <th className="p-3 text-right bg-[var(--fin-page-bg)]">Paid (Sub)</th>
-              <th className="p-3 text-right bg-[var(--fin-page-bg)]">Total Paid</th>
-              <th className="p-3 text-right bg-[var(--fin-page-bg)] pr-4">Net Rec.</th>
+              <th className="p-3 text-right bg-[var(--fin-page-bg)]">Gross Brokerage</th>
+              <th className="p-3 text-right bg-[var(--fin-page-bg)]">Paid Brokerage</th>
+              <th className="p-3 text-right bg-[var(--fin-page-bg)]">Total Brokerage</th>
+              <th className="p-3 text-right bg-[var(--fin-page-bg)] pr-4">Net Receivable</th>
             </tr>
           </thead>
           <tbody className="text-xs">
@@ -86,7 +85,6 @@ export default function DesktopBrokerageTable({ data, totals }: { data: any[], t
                       </td>
                       <td className="p-3 text-right font-medium text-[var(--fin-body-text)] tabular-nums">{formatCurrency(user.gross)}</td>
                       <td className="p-3 text-right font-medium text-[var(--fin-muted-text)] tabular-nums">{formatCurrency(user.paid)}</td>
-                      <td className="p-3 text-right font-medium text-[var(--fin-muted-text)] tabular-nums">{formatCurrency(user.paidSub)}</td>
                       <td className="p-3 text-right font-bold text-[var(--fin-brand-600)] tabular-nums">{formatCurrency(totalPaid)}</td>
                       <td className="p-3 text-right tabular-nums pr-4">
                         <span className="font-black block text-[var(--fin-heading-primary)]">{formatCurrency(netReceivable)}</span>
@@ -105,7 +103,7 @@ export default function DesktopBrokerageTable({ data, totals }: { data: any[], t
                                     <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                                     </svg>
-                                    AMC Commission Ledger
+                                    {groupLabel} Commission Ledger
                                   </h4>
                                 </div>
 
@@ -113,12 +111,11 @@ export default function DesktopBrokerageTable({ data, totals }: { data: any[], t
                                   <table className="w-full text-left text-[11px]">
                                     <thead className="bg-[var(--fin-page-bg)]/80 text-[8px] uppercase tracking-widest text-[var(--fin-muted-text)] font-bold border-b border-[var(--fin-border)]/80">
                                       <tr>
-                                        <th className="p-2 w-[25%] pl-4">AMC Name</th>
-                                        <th className="p-2 w-[15%] text-right">Gross Rec.</th>
-                                        <th className="p-2 w-[15%] text-right">Paid (Self)</th>
-                                        <th className="p-2 w-[15%] text-right">Paid (Sub)</th>
-                                        <th className="p-2 w-[15%] text-right">Total Paid</th>
-                                        <th className="p-2 w-[15%] text-right pr-4">Net Rec.</th>
+                                        <th className="p-2 w-[25%] pl-4">{groupLabel} Name</th>
+                                        <th className="p-2 w-[15%] text-right">Gross Brokerage</th>
+                                        <th className="p-2 w-[15%] text-right">Paid Brokerage</th>
+                                        <th className="p-2 w-[15%] text-right">Total Brokerage</th>
+                                        <th className="p-2 w-[15%] text-right pr-4">Net Receivable</th>
                                       </tr>
                                     </thead>
                                   </table>
@@ -130,10 +127,9 @@ export default function DesktopBrokerageTable({ data, totals }: { data: any[], t
                                           const amcNet = amc.gross - amcTotal;
                                           return (
                                             <tr key={amc.id} className={`hover:bg-[var(--fin-page-bg)]/80 transition-colors ${idx !== user.amcBreakdown.length - 1 ? "border-b border-[var(--fin-border-subtle)]" : ""}`}>
-                                              <td className="p-2 w-[25%] pl-4 font-bold text-[var(--fin-table-row-text)]">{amc.amcName}</td>
+                                              <td className="p-2 w-[25%] pl-4 font-bold text-[var(--fin-table-row-text)]">{amc.name}</td>
                                               <td className="p-2 w-[15%] text-right font-medium text-[var(--fin-body-text)] tabular-nums">{formatCurrency(amc.gross)}</td>
                                               <td className="p-2 w-[15%] text-right text-[var(--fin-muted-text)] font-medium tabular-nums">{formatCurrency(amc.paid)}</td>
-                                              <td className="p-2 w-[15%] text-right text-[var(--fin-muted-text)] font-medium tabular-nums">{formatCurrency(amc.paidSub)}</td>
                                               <td className="p-2 w-[15%] text-right font-bold text-[var(--fin-brand-600)] tabular-nums">{formatCurrency(amcTotal)}</td>
                                               <td className="p-2 w-[15%] text-right font-black text-[var(--fin-heading-primary)] tabular-nums pr-4">{formatCurrency(amcNet)}</td>
                                             </tr>
@@ -159,7 +155,6 @@ export default function DesktopBrokerageTable({ data, totals }: { data: any[], t
               <td colSpan={2} className="px-3 py-3 text-[10px] font-black uppercase tracking-widest text-right sticky left-0 bg-[var(--fin-brand-900)] z-50">Grand Totals</td>
               <td className="px-3 py-3 text-right font-black tabular-nums">{formatCurrency(totals.gross)}</td>
               <td className="px-3 py-3 text-right font-black text-[var(--fin-aux-text)] tabular-nums">{formatCurrency(totals.paid)}</td>
-              <td className="px-3 py-3 text-right font-black text-[var(--fin-aux-text)] tabular-nums">{formatCurrency(totals.paidSub)}</td>
               <td className="px-3 py-3 text-right font-black text-[var(--fin-brand-400)] tabular-nums">{formatCurrency(totals.paid + totals.paidSub)}</td>
               <td className="px-3 py-3 text-right font-black text-[var(--fin-badge-warning-text)] tabular-nums pr-4">{formatCurrency(totals.gross - (totals.paid + totals.paidSub))}</td>
             </tr>

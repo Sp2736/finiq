@@ -3,9 +3,9 @@
 import React, { useState } from 'react';
 import { formatCurrency } from '@/lib/utils';
 import Badge from '@/components/investor/Badge';
-import { ChevronRight, Building2 } from 'lucide-react';
+import { ChevronRight, Building2, User } from 'lucide-react';
 
-export default function MobileBrokerageOverview({ data, totals }: { data: any[], totals: any }) {
+export default function MobileBrokerageOverview({ data, totals, groupLabel = "AMC" }: { data: any[], totals: any, groupLabel?: string }) {
   const [expandedUser, setExpandedUser] = useState<string | null>(null);
 
   const toggleUser = (id: string) => {
@@ -127,15 +127,19 @@ export default function MobileBrokerageOverview({ data, totals }: { data: any[],
                     {hasAmc && (
                       <div className="mt-2 mb-1 space-y-2 border-l-2 border-[var(--fin-brand-200)] pl-3 ml-3">
                         <div className="flex items-center gap-2 mb-2 pt-1">
-                          <Building2 className="w-4 h-4 text-[var(--fin-brand-600)]" />
-                          <h4 className="text-[10px] font-black text-[var(--fin-brand-700)] uppercase tracking-widest">AMC Breakdown</h4>
+                          {groupLabel === "Investor" ? (
+                            <User className="w-4 h-4 text-[var(--fin-brand-600)]" />
+                          ) : (
+                            <Building2 className="w-4 h-4 text-[var(--fin-brand-600)]" />
+                          )}
+                          <h4 className="text-[10px] font-black text-[var(--fin-brand-700)] uppercase tracking-widest">{groupLabel} Breakdown</h4>
                         </div>
                         {user.amcBreakdown.map((amc: any) => {
                           const amcTotal = amc.paid + amc.paidSub;
                           const amcNet = amc.gross - amcTotal;
                           return (
                             <div key={amc.id} className="bg-[var(--fin-table-bg)] p-3 rounded-md border border-[var(--fin-border)] shadow-sm flex flex-col gap-2">
-                              <h5 className="font-bold text-xs text-[var(--fin-heading-tertiary)]">{amc.amcName}</h5>
+                              <h5 className="font-bold text-xs text-[var(--fin-heading-tertiary)]">{amc.name}</h5>
                               <div className="flex justify-between items-center">
                                 <span className="text-[10px] font-bold text-[var(--fin-muted-text)] uppercase tracking-widest">Gross: {formatCurrency(amc.gross)}</span>
                                 <span className="text-[10px] font-bold text-[var(--fin-brand-600)] uppercase tracking-widest">Paid: {formatCurrency(amcTotal)}</span>

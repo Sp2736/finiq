@@ -16,11 +16,14 @@ import {
   Briefcase,
   Percent,
   Hash,
+  Trash2,
+  Phone,
   ChevronRight,
   ChevronDown,
   Mail,
 } from "lucide-react";
 import { toTitleCase } from "@/lib/utils";
+import ErrorNotice from "@/components/ui/ErrorNotice";
 
 // ─── UTILITIES ───
 const extractRole = (user: any): string => {
@@ -64,11 +67,13 @@ const DesktopUserRow = ({
   user,
   allUsers,
   onEdit,
+  onDelete,
   depth = 0,
 }: {
   user: CompanyUser;
   allUsers: CompanyUser[];
   onEdit: (user: CompanyUser) => void;
+  onDelete: (user: CompanyUser) => void;
   depth?: number;
 }) => {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -133,7 +138,9 @@ const DesktopUserRow = ({
           </span>
         </td>
         <td className="p-4 font-mono text-[11px] font-bold text-[var(--fin-muted-text)]">
-          {user.arn_id || <span className="text-[var(--fin-aux-text)]">N/A</span>}
+          {user.arn_id || (
+            <span className="text-[var(--fin-aux-text)]">N/A</span>
+          )}
         </td>
         <td className="p-4 text-right font-black text-[var(--fin-table-row-text)] tabular-nums">
           {user.share_percentage !== null &&
@@ -146,20 +153,37 @@ const DesktopUserRow = ({
           )}
         </td>
         <td className="p-4 pr-6 text-right">
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              onEdit(user);
-            }}
-            className="group/edit inline-flex items-center overflow-hidden rounded-full bg-[var(--fin-table-bg)] border border-[var(--fin-border)] text-[var(--fin-aux-text)] hover:text-[var(--fin-brand-700)] hover:border-[var(--fin-brand-300)] hover:bg-[var(--fin-brand-50)] transition-all duration-300 ease-in-out h-8 w-8 hover:w-[88px] shadow-sm hover:shadow"
-          >
-            <div className="w-8 h-8 shrink-0 flex items-center justify-center">
-              <Edit2 className="w-3.5 h-3.5" />
-            </div>
-            <span className="text-[10px] font-black uppercase tracking-widest whitespace-nowrap opacity-0 group-hover/edit:opacity-100 transition-opacity duration-300 delay-75 -ml-1">
-              Manage
-            </span>
-          </button>
+          <div className="flex justify-end gap-2">
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onEdit(user);
+              }}
+              className="group/edit inline-flex items-center overflow-hidden rounded-full bg-[var(--fin-table-bg)] border border-[var(--fin-border)] text-[var(--fin-aux-text)] hover:text-[var(--fin-brand-700)] hover:border-[var(--fin-brand-300)] hover:bg-[var(--fin-brand-50)] transition-all duration-300 ease-in-out h-8 w-8 hover:w-[88px] shadow-sm hover:shadow"
+            >
+              <div className="w-8 h-8 shrink-0 flex items-center justify-center">
+                <Edit2 className="w-3.5 h-3.5" />
+              </div>
+              <span className="text-[10px] font-black uppercase tracking-widest whitespace-nowrap opacity-0 group-hover/edit:opacity-100 transition-opacity duration-300 delay-75 -ml-1">
+                Manage
+              </span>
+            </button>
+
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onDelete(user);
+              }}
+              className="group/delete inline-flex items-center overflow-hidden rounded-full bg-[var(--fin-table-bg)] border border-[var(--fin-border)] text-[var(--fin-aux-text)] hover:text-red-600 hover:border-red-300 hover:bg-red-50 transition-all duration-300 ease-in-out h-8 w-8 hover:w-[88px] shadow-sm hover:shadow"
+            >
+              <div className="w-8 h-8 shrink-0 flex items-center justify-center">
+                <Trash2 className="w-3.5 h-3.5" />
+              </div>
+              <span className="text-[10px] font-black uppercase tracking-widest whitespace-nowrap opacity-0 group-hover/delete:opacity-100 transition-opacity duration-300 delay-75 -ml-1">
+                Delete
+              </span>
+            </button>
+          </div>
         </td>
       </tr>
 
@@ -225,6 +249,7 @@ const DesktopUserRow = ({
                                 key={child.id}
                                 user={child}
                                 allUsers={allUsers}
+                                onDelete={onDelete}
                                 onEdit={onEdit}
                                 depth={depth + 1}
                               />
@@ -249,11 +274,13 @@ const MobileUserCard = ({
   user,
   allUsers,
   onEdit,
+  onDelete,
   depth = 0,
 }: {
   user: CompanyUser;
   allUsers: CompanyUser[];
   onEdit: (user: CompanyUser) => void;
+  onDelete: (user: CompanyUser) => void;
   depth?: number;
 }) => {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -281,15 +308,26 @@ const MobileUserCard = ({
             )}
           </div>
         </div>
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            onEdit(user);
-          }}
-          className="p-2 bg-[var(--fin-page-bg)] text-[var(--fin-muted-text)] hover:text-[var(--fin-brand-600)] rounded-md shrink-0 border border-[var(--fin-border-subtle)]"
-        >
-          <Edit2 className="w-4 h-4" />
-        </button>
+        <div className="flex gap-1 shrink-0">
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onEdit(user);
+            }}
+            className="p-2 bg-[var(--fin-page-bg)] text-[var(--fin-muted-text)] hover:text-[var(--fin-brand-600)] rounded-md border border-[var(--fin-border-subtle)]"
+          >
+            <Edit2 className="w-4 h-4" />
+          </button>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onDelete(user);
+            }}
+            className="p-2 bg-[var(--fin-page-bg)] text-[var(--fin-muted-text)] hover:text-red-600 hover:bg-red-50 rounded-md border border-[var(--fin-border-subtle)]"
+          >
+            <Trash2 className="w-4 h-4" />
+          </button>
+        </div>
       </div>
 
       <div className="p-3 grid grid-cols-3 gap-2 bg-[var(--fin-page-bg)]/50">
@@ -349,6 +387,7 @@ const MobileUserCard = ({
                 user={child}
                 allUsers={allUsers}
                 onEdit={onEdit}
+                onDelete={onDelete}
                 depth={depth + 1}
               />
             ))}
@@ -367,11 +406,16 @@ export default function UsersPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [editingUserId, setEditingUserId] = useState<string | null>(null);
+  const [editingUser, setEditingUser] = useState<CompanyUser | null>(null);
+  
+  const [pageError, setPageError] = useState<string | null>(null);
+  const [modalError, setModalError] = useState<string | null>(null);
 
   const [formData, setFormData] = useState<CompanyUserPayload>({
     role: "DISTRIBUTOR",
     name: "",
     email: "",
+    phone_number: "",
     arn_id: "",
     parent_id: "",
     share_percentage: null,
@@ -405,20 +449,24 @@ export default function UsersPage() {
   const handleOpenModal = (user?: CompanyUser) => {
     if (user) {
       setEditingUserId(user.id);
+      setEditingUser(user);
       setFormData({
         role: extractRole(user),
-        name: user.name || "",
-        email: user.email || "",
-        arn_id: user.arn_id || "",
+        name: "", // Will show as placeholder
+        email: "", // Will show as placeholder
+        phone_number: "", // Will show as placeholder
+        arn_id: "", // Will show as placeholder
         parent_id: user.parent_id || "",
-        share_percentage: user.share_percentage || null,
+        share_percentage: null, // Will show as placeholder
       });
     } else {
       setEditingUserId(null);
+      setEditingUser(null);
       setFormData({
         role: "DISTRIBUTOR", // Base role when Parent ID is empty
         name: "",
         email: "",
+        phone_number: "",
         arn_id: "",
         parent_id: "",
         share_percentage: null,
@@ -427,9 +475,31 @@ export default function UsersPage() {
     setIsModalOpen(true);
   };
 
+  const handleDeleteUser = async (user: CompanyUser) => {
+    if (
+      !window.confirm(
+        `Are you sure you want to delete ${user.name}? This will also permanently remove their system access.`,
+      )
+    ) {
+      return;
+    }
+
+    try {
+      setIsLoading(true);
+      await distributorService.deleteCompanyUser(user.id);
+      await fetchUsers(); // Refresh the table
+    } catch (error: any) {
+      console.error("Failed to delete user:", error);
+      setPageError(error.message || "Failed to delete user. They might have active child brokers.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const handleCloseModal = () => {
     setIsModalOpen(false);
     setEditingUserId(null);
+    setEditingUser(null);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -438,12 +508,17 @@ export default function UsersPage() {
     try {
       const payload: CompanyUserPayload = {
         role: formData.parent_id ? "SUB_BROKER" : "DISTRIBUTOR",
-        name: formData.name,
-        email: formData.email,
-        arn_id: formData.arn_id,
+        name: formData.name || editingUser?.name || "",
+        email: formData.email || editingUser?.email || "",
+        phone_number: formData.phone_number || (editingUser as any)?.phone_number || "",
+        arn_id: formData.arn_id || editingUser?.arn_id || "",
         parent_id: formData.parent_id === "" ? null : formData.parent_id,
         share_percentage:
-          formData.share_percentage === 0 ? null : formData.share_percentage,
+          formData.share_percentage === null && editingUser
+            ? editingUser.share_percentage
+            : formData.share_percentage === 0
+            ? null
+            : formData.share_percentage,
       };
 
       if (editingUserId) {
@@ -455,7 +530,7 @@ export default function UsersPage() {
       handleCloseModal();
     } catch (error: any) {
       console.error("Failed to save user:", error);
-      alert(error.message || "Failed to save user. Please check the inputs.");
+      setModalError(error.message || "Failed to save user. Please check the inputs.");
     } finally {
       setIsSubmitting(false);
     }
@@ -485,6 +560,8 @@ export default function UsersPage() {
         </button>
       </div>
 
+      <ErrorNotice message={pageError} onClose={() => setPageError(null)} />
+
       {/* Main Hierarchical Data Containers */}
       <div className="flex-1 min-h-0 bg-transparent lg:bg-[var(--fin-table-bg)] lg:rounded-md lg:border border-[var(--fin-border)] lg:shadow-sm flex flex-col relative overflow-hidden">
         {isLoading ? (
@@ -496,7 +573,9 @@ export default function UsersPage() {
             <div className="w-16 h-16 bg-[var(--fin-page-bg)] border border-[var(--fin-border-subtle)] rounded-full flex items-center justify-center mb-4 shadow-sm">
               <User className="w-8 h-8 text-[var(--fin-aux-text)]" />
             </div>
-            <h3 className="text-lg font-bold text-[var(--fin-table-row-text)]">No Users Found</h3>
+            <h3 className="text-lg font-bold text-[var(--fin-table-row-text)]">
+              No Users Found
+            </h3>
             <p className="text-sm text-[var(--fin-muted-text)] mt-1">
               Get started by adding your first independent broker.
             </p>
@@ -531,6 +610,7 @@ export default function UsersPage() {
                       key={user.id}
                       user={user}
                       allUsers={users}
+                      onDelete={handleDeleteUser}
                       onEdit={handleOpenModal}
                     />
                   ))}
@@ -546,6 +626,7 @@ export default function UsersPage() {
                     key={user.id}
                     user={user}
                     allUsers={users}
+                    onDelete={handleDeleteUser}
                     onEdit={handleOpenModal}
                   />
                 ))}
@@ -564,12 +645,13 @@ export default function UsersPage() {
               <h2 className="text-lg font-black text-[var(--fin-heading-tertiary)] flex items-center gap-2">
                 {editingUserId ? (
                   <>
-                    <Edit2 className="w-4 h-4 text-[var(--fin-brand-600)]" /> Edit User
+                    <Edit2 className="w-4 h-4 text-[var(--fin-brand-600)]" />{" "}
+                    Edit User
                   </>
                 ) : (
                   <>
-                    <User className="w-4 h-4 text-[var(--fin-brand-600)]" /> Add New
-                    User
+                    <User className="w-4 h-4 text-[var(--fin-brand-600)]" /> Add
+                    New User
                   </>
                 )}
               </h2>
@@ -585,6 +667,7 @@ export default function UsersPage() {
               onSubmit={handleSubmit}
               className="p-5 sm:p-6 flex flex-col gap-4 sm:gap-5 overflow-y-auto scrollbar-thin"
             >
+              <ErrorNotice message={modalError} onClose={() => setModalError(null)} />
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {/* Full Name */}
                 <div>
@@ -595,12 +678,12 @@ export default function UsersPage() {
                     <User className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-[var(--fin-aux-text)] group-focus-within:text-[var(--fin-brand-600)] transition-colors" />
                     <input
                       type="text"
-                      required
+                      required={!editingUserId}
                       value={formData.name}
                       onChange={(e) =>
                         setFormData({ ...formData, name: e.target.value })
                       }
-                      placeholder="e.g. Aman Gupta"
+                      placeholder={editingUser?.name || "e.g. Aman Gupta"}
                       className="w-full pl-9 pr-4 py-2.5 border border-[var(--fin-border)] rounded-md text-sm font-medium focus:outline-none focus:border-[var(--fin-brand-500)] focus:ring-1 focus:ring-[var(--fin-brand-500)] shadow-sm hover:border-[var(--fin-border)] transition-all"
                     />
                   </div>
@@ -615,16 +698,39 @@ export default function UsersPage() {
                     <Mail className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-[var(--fin-aux-text)] group-focus-within:text-[var(--fin-brand-600)] transition-colors" />
                     <input
                       type="email"
-                      required
+                      required={!editingUserId}
                       value={formData.email || ""}
                       onChange={(e) =>
                         setFormData({ ...formData, email: e.target.value })
                       }
-                      placeholder="aman@company.com"
+                      placeholder={editingUser?.email || "aman@company.com"}
                       className="w-full pl-9 pr-4 py-2.5 border border-[var(--fin-border)] rounded-md text-sm font-medium focus:outline-none focus:border-[var(--fin-brand-500)] focus:ring-1 focus:ring-[var(--fin-brand-500)] shadow-sm hover:border-[var(--fin-border)] transition-all"
                     />
                   </div>
                 </div>
+              </div>
+
+              {/* Phone Number */}
+              <div>
+                <label className="block text-[11px] font-black text-[var(--fin-muted-text)] uppercase tracking-widest mb-2">
+                  Phone Number (Login ID)
+                </label>
+                <div className="relative group">
+                  <Phone className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-[var(--fin-aux-text)] group-focus-within:text-[var(--fin-brand-600)] transition-colors" />
+                  <input
+                    type="tel"
+                    required={!editingUserId}
+                    value={formData.phone_number || ""}
+                    onChange={(e) =>
+                      setFormData({ ...formData, phone_number: e.target.value })
+                    }
+                    placeholder={(editingUser as any)?.phone_number || "+91 98765 43210"}
+                    className="w-full pl-9 pr-4 py-2.5 border border-[var(--fin-border)] rounded-md text-sm font-medium focus:outline-none focus:border-[var(--fin-brand-500)] focus:ring-1 focus:ring-[var(--fin-brand-500)] shadow-sm hover:border-[var(--fin-border)] transition-all"
+                  />
+                </div>
+                <p className="text-[10px] text-[var(--fin-aux-text)] mt-1.5 ml-1">
+                  Used for OTP login authentication.
+                </p>
               </div>
 
               {/* Dynamic Auto-Assigned Role Selection */}
@@ -665,7 +771,7 @@ export default function UsersPage() {
                       onChange={(e) =>
                         setFormData({ ...formData, arn_id: e.target.value })
                       }
-                      placeholder="ARN-XXXX"
+                      placeholder={editingUser?.arn_id || "ARN-XXXX"}
                       className="w-full pl-9 pr-4 py-2.5 border border-[var(--fin-border)] rounded-md text-sm font-mono focus:outline-none focus:border-[var(--fin-brand-500)] focus:ring-1 focus:ring-[var(--fin-brand-500)] shadow-sm hover:border-[var(--fin-border)] transition-all"
                     />
                   </div>
@@ -696,7 +802,7 @@ export default function UsersPage() {
                               : Number(e.target.value),
                         })
                       }
-                      placeholder="0"
+                      placeholder={editingUser?.share_percentage?.toString() || "0"}
                       className="w-full pl-9 pr-4 py-2.5 border border-[var(--fin-border)] rounded-md text-sm font-black tabular-nums focus:outline-none focus:border-[var(--fin-brand-500)] focus:ring-1 focus:ring-[var(--fin-brand-500)] shadow-sm hover:border-[var(--fin-border)] transition-all"
                     />
                   </div>
@@ -714,10 +820,10 @@ export default function UsersPage() {
                     value={formData.parent_id || ""}
                     onChange={(e) => {
                       const newParentId = e.target.value;
-                      setFormData({ 
-                        ...formData, 
+                      setFormData({
+                        ...formData,
                         parent_id: newParentId,
-                        role: newParentId ? "SUB_BROKER" : "DISTRIBUTOR" 
+                        role: newParentId ? "SUB_BROKER" : "DISTRIBUTOR",
                       });
                     }}
                     className="w-full pl-9 pr-4 py-2.5 bg-[var(--fin-table-bg)] border border-[var(--fin-border)] rounded-md text-sm font-medium focus:outline-none focus:border-[var(--fin-brand-500)] focus:ring-1 focus:ring-[var(--fin-brand-500)] appearance-none shadow-sm hover:border-[var(--fin-border)] transition-all cursor-pointer"

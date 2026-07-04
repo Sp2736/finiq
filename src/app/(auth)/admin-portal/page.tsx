@@ -10,6 +10,7 @@ import InvestorFluidBackground from "@/components/layouts/InvestorFluidBackgroun
 import { authService } from "@/services/auth.service";
 import { setAuthCookies } from "@/lib/authClient";
 import { primeThemeCache } from "@/lib/primeThemeCache";
+import ErrorNotice from "@/components/ui/ErrorNotice";
 
 type Step = "phone" | "otp";
 

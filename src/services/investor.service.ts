@@ -7,22 +7,6 @@ export const investorService = {
     return apiClient.get<any>("/investors/holdings");
   },
 
-  getCapitalGains: async (data: {
-    start_date: string;
-    end_date: string;
-    investor_id?: string;
-  }) => {
-    return apiClient.post<any>("/investors/capital-gains", data);
-  },
-
-  getTransactionReport: async (
-    investorId?: string,
-  ): Promise<ApiResponse<any>> => {
-    // If the API requires the ID in the body even for logged-in investors:
-    return apiClient.post<ApiResponse<any>>("/investors/transaction-report", {
-      investor_id: investorId,
-    });
-  },
 
   getSystematicReport: async (data: {
     type?: string;

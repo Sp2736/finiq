@@ -26,6 +26,7 @@ import {
   TrendingDown,
   ArrowRightLeft,
   RefreshCcw,
+  GitBranch,
 } from "lucide-react";
 
 interface SidebarProps {
@@ -47,7 +48,7 @@ export default function Sidebar({ isCollapsed, setIsCollapsed }: SidebarProps) {
   // Extract and format logo from local storage
   useEffect(() => {
     try {
-      let storedLogo = localStorage.getItem("company_logo_base64");
+      let storedLogo = localStorage.getItem("company-logo-dis");
 
       if (
         storedLogo &&
@@ -103,7 +104,11 @@ export default function Sidebar({ isCollapsed, setIsCollapsed }: SidebarProps) {
       {/* Mobile Hamburger */}
       <button
         onClick={() => setIsMobileOpen(true)}
-        style={{ backgroundColor: 'var(--fin-sidebar-mobile-btn-bg)', borderColor: 'var(--fin-sidebar-mobile-btn-border)', color: 'var(--fin-sidebar-mobile-btn-text)' }}
+        style={{
+          backgroundColor: "var(--fin-sidebar-mobile-btn-bg)",
+          borderColor: "var(--fin-sidebar-mobile-btn-border)",
+          color: "var(--fin-sidebar-mobile-btn-text)",
+        }}
         className="lg:hidden fixed top-4 right-4 z-50 p-2.5 border rounded-md shadow-sm"
       >
         <Menu className="w-5 h-5" />
@@ -113,14 +118,17 @@ export default function Sidebar({ isCollapsed, setIsCollapsed }: SidebarProps) {
       {isMobileOpen && (
         <div
           className="lg:hidden fixed inset-0 backdrop-blur-sm z-40"
-          style={{ backgroundColor: 'var(--fin-sidebar-mobile-backdrop)' }}
+          style={{ backgroundColor: "var(--fin-sidebar-mobile-backdrop)" }}
           onClick={() => setIsMobileOpen(false)}
         />
       )}
 
       {/* Sidebar Container */}
       <aside
-        style={{ backgroundColor: 'var(--fin-sidebar-bg)', borderColor: 'var(--fin-sidebar-border)' }}
+        style={{
+          backgroundColor: "var(--fin-sidebar-bg)",
+          borderColor: "var(--fin-sidebar-border)",
+        }}
         className={`h-screen backdrop-blur-xl border-r flex flex-col fixed left-0 top-0 z-50 transition-all duration-300 ease-in-out overflow-x-hidden
         ${isMobileOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"} 
         ${isCollapsed ? "w-24" : "w-72"}`}
@@ -214,6 +222,32 @@ export default function Sidebar({ isCollapsed, setIsCollapsed }: SidebarProps) {
             {!isCollapsed && pathname.startsWith("/distributor/clients") && (
               <div className="w-1.5 h-1.5 shrink-0 bg-[var(--fin-sidebar-item-active-dot)] rounded-full" />
             )}
+          </Link>
+
+          {/* Investor Mapping */}
+          <Link
+            href="/distributor/investor-mapping"
+            onClick={() => setIsMobileOpen(false)}
+            className={`flex items-center overflow-hidden ${isCollapsed ? "justify-center" : "justify-between"} px-4 py-3 rounded-md transition-all duration-300 group ${
+              pathname.startsWith("/distributor/investor-mapping")
+                ? "bg-[var(--fin-sidebar-item-active-bg)] text-[var(--fin-sidebar-item-active-text)]"
+                : "text-[var(--fin-sidebar-item-default-text)] hover:bg-[var(--fin-sidebar-item-hover-bg)] hover:text-[var(--fin-sidebar-item-hover-text)]"
+            }`}
+          >
+            <div className="flex items-center gap-3">
+              <GitBranch
+                className={`w-5 h-5 shrink-0 transition-transform duration-300 ${pathname.startsWith("/distributor/investor-mapping") ? "scale-110" : "group-hover:scale-110"}`}
+              />
+              {!isCollapsed && (
+                <span className="font-bold text-sm tracking-tight whitespace-nowrap">
+                  Investor Mapping
+                </span>
+              )}
+            </div>
+            {!isCollapsed &&
+              pathname.startsWith("/distributor/investor-mapping") && (
+                <div className="w-1.5 h-1.5 shrink-0 bg-[var(--fin-sidebar-item-active-dot)] rounded-full" />
+              )}
           </Link>
 
           {/* User Management */}
@@ -392,7 +426,10 @@ export default function Sidebar({ isCollapsed, setIsCollapsed }: SidebarProps) {
 
         {/* ─── COMPACT BOTTOM ACTIONS ROW ─── */}
         <div
-          style={{ backgroundColor: 'var(--fin-sidebar-footer-bg)', borderColor: 'var(--fin-sidebar-footer-border)' }}
+          style={{
+            backgroundColor: "var(--fin-sidebar-footer-bg)",
+            borderColor: "var(--fin-sidebar-footer-border)",
+          }}
           className={`p-4 mt-auto border-t flex ${isCollapsed ? "flex-col items-center gap-3" : "items-center gap-2"} shrink-0`}
         >
           {/* Settings Icon */}
@@ -422,25 +459,11 @@ export default function Sidebar({ isCollapsed, setIsCollapsed }: SidebarProps) {
             className={`${isCollapsed ? "w-full flex justify-center" : "flex-1 min-w-0"}`}
           >
             {isCollapsed ? (
-              <Link
-                href="/distributor-portal"
-                title="Sign Out"
-                className="p-2.5 text-[var(--fin-sidebar-collapse-icon-color)] hover:text-[var(--fin-sidebar-icon-logout-hover)] hover:bg-[var(--fin-sidebar-icon-logout-hover-bg)] rounded-md transition-colors flex items-center justify-center"
-              >
-                <svg
-                  className="w-5 h-5"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
-                  ></path>
-                </svg>
-              </Link>
+              <LogoutButton
+                portal="staff"
+                redirectTo="/distributor-portal"
+                isCollapsed={true}
+              />
             ) : (
               <LogoutButton portal="staff" redirectTo="/distributor-portal" />
             )}

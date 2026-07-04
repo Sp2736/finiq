@@ -7,10 +7,8 @@ import { useRouter } from "next/navigation";
 import EmailPasswordForm from "@/components/layouts/EmailPasswordForm";
 import InvestorFluidBackground from "@/components/layouts/InvestorFluidBackground";
 import { authService } from "@/services/auth.service";
-<<<<<<< Updated upstream
-import { setAuthCookies } from "@/lib/authClient";
+import { setAuthCookies, decodeJwt, DecodedInvestorToken } from "@/lib/authClient";
 import ErrorNotice from "@/components/ui/ErrorNotice";
-import { primeThemeCache } from "@/lib/primeThemeCache";
 
 export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
@@ -23,14 +21,6 @@ export default function LoginPage() {
     try {
       const response = await authService.loginInvestor(identifier, password);
 
-      // Access via response.data.investor
-      if (response.data?.investor?.logo_base64) {
-        localStorage.setItem(
-          "company_logo_base64",
-          response.data.investor.logo_base64,
-        );
-      }
-
       // Navigate to the exact location of the token in your JSON
       const actualToken = response.data?.access_token;
 
@@ -38,10 +28,18 @@ export default function LoginPage() {
         throw new Error("API connected, but access_token was missing in the data object.");
       }
 
+      const decoded = decodeJwt<DecodedInvestorToken>(actualToken);
+
       // Store company logo so InvestorSidebar can display it without extra API calls
       try {
-        if (response.data?.logo_base64) {
-          localStorage.setItem("company-logo-inv", response.data.logo_base64);
+        const companyId = decoded.company_id;
+        if (response.data?.logo_url && companyId) {
+          const cacheKey = `company_logo_cache_${companyId}`;
+          const newCache = {
+            url: response.data.logo_url,
+            expiresAt: Date.now() + 50 * 60 * 1000,
+          };
+          localStorage.setItem(cacheKey, JSON.stringify(newCache));
         }
         if (response.data?.company_info) {
           localStorage.setItem("company-info-inv", JSON.stringify(response.data.company_info));
@@ -50,9 +48,6 @@ export default function LoginPage() {
 
       // Store access token
       setAuthCookies(actualToken, undefined, "investor");
-
-      // Prime the theme cache once, right after auth cookies are set.
-      await primeThemeCache();
 
       // Redirect seamlessly to the dashboard
       router.push("/investor");

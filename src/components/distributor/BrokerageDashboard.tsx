@@ -6,29 +6,41 @@ import MobileBrokerageOverview from './MobileBrokerageOverview';
 import { distributorService } from '@/services/distributor.service';
 import { formatCompactNumber } from '@/lib/utils';
 import { Search, Download, Calendar, AlertCircle, RefreshCw, Loader2 } from 'lucide-react';
+import ExcelJS from 'exceljs';
 
 // ─── GLOBAL CACHE FOR BROKERAGE VIEWS ───
 const globalHierarchyCache = new Map<string, any[]>();
 const globalHierarchyPromiseCache = new Map<string, Promise<any[]>>();
 
-// Mapper to translate API Response into UI format
-const mapHierarchyData = (subBrokers: any[]) => {
+// Mapper to translate API Response into UI format.
+// `groupBy` is "AMC" or "Investor" (matches activeGroup state values).
+const mapHierarchyData = (subBrokers: any[], groupBy: string) => {
   if (!subBrokers || !Array.isArray(subBrokers)) return [];
+
+  const isInvestorGroup = groupBy === "Investor";
 
   return subBrokers.map((broker, index) => {
     let totalGross = 0;
     let totalPaid = 0;
 
-    const amcBreakdown = (broker.amc_wise_brokerage || []).map((amc: any, i: number) => {
-      totalGross += amc.total_brokerage || 0;
-      totalPaid += amc.paid_brokerage || 0;
+    const rawBreakdown = isInvestorGroup
+      ? broker.investor_wise_brokerage
+      : broker.amc_wise_brokerage;
+
+    const breakdown = (rawBreakdown || []).map((item: any, i: number) => {
+      totalGross += item.total_brokerage || 0;
+      totalPaid += item.paid_brokerage || 0;
 
       return {
-        id: `amc-${index}-${i}`,
-        amcName: amc.amc_name || "Uncategorized AMC",
-        gross: amc.total_brokerage || 0,
-        paid: amc.paid_brokerage || 0,
-        paidSub: 0 
+        id: isInvestorGroup
+          ? (item.investor_id || `investor-${index}-${i}`)
+          : `amc-${index}-${i}`,
+        name: isInvestorGroup
+          ? (item.investor_name || "Unnamed Investor")
+          : (item.amc_name || "Uncategorized AMC"),
+        gross: item.total_brokerage || 0,
+        paid: item.paid_brokerage || 0,
+        paidSub: 0,
       };
     });
 
@@ -40,8 +52,8 @@ const mapHierarchyData = (subBrokers: any[]) => {
       gross: totalGross,
       paid: totalPaid,
       paidSub: 0,
-      amcBreakdown: amcBreakdown,
-      children: [] 
+      amcBreakdown: breakdown, // keep this key name — both child components already read it
+      children: []
     };
   });
 };
@@ -98,7 +110,7 @@ export default function BrokerageDashboard() {
         );
         
         if (res.success && res.data) {
-          const mappedData = mapHierarchyData(res.data.sub_brokers || []);
+          const mappedData = mapHierarchyData(res.data.sub_brokers || [], activeGroup);
           globalHierarchyCache.set(currentCacheKey, mappedData);
           return mappedData;
         } else {
@@ -146,6 +158,166 @@ export default function BrokerageDashboard() {
   const grandTotalPaid = totals.paid + totals.paidSub;
   const grandNetReceivable = totals.gross - grandTotalPaid;
 
+  const [isExporting, setIsExporting] = useState(false);
+
+  const handleExportExcel = async () => {
+    setIsExporting(true);
+    try {
+      const wb = new ExcelJS.Workbook();
+      const ws = wb.addWorksheet('Hierarchy Earnings', {
+        views: [{ state: 'frozen', ySplit: 5 }],
+        properties: { defaultRowHeight: 22 },
+        pageSetup: { orientation: 'landscape', fitToPage: true, fitToWidth: 1, fitToHeight: 0 }
+      });
+
+      // Configure columns
+      ws.getColumn(1).width = 45;
+      ws.getColumn(2).width = 18;
+      ws.getColumn(3).width = 22; ws.getColumn(3).alignment = { horizontal: 'right' };
+      ws.getColumn(4).width = 22; ws.getColumn(4).alignment = { horizontal: 'right' };
+      ws.getColumn(5).width = 22; ws.getColumn(5).alignment = { horizontal: 'right' };
+      ws.getColumn(6).width = 22; ws.getColumn(6).alignment = { horizontal: 'right' };
+
+      // Title Block
+      const titleRow1 = ws.addRow(['Hierarchy Earnings Report - ' + activeGroup + ' Breakdown']);
+      titleRow1.font = { name: 'Calibri', bold: true, color: { argb: 'FF0F2850' }, size: 14 };
+      titleRow1.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFF4F7FC' } };
+
+      const titleRow2 = ws.addRow(['Period: ' + dateRange.fromDate + ' to ' + dateRange.toDate]);
+      titleRow2.font = { name: 'Calibri', color: { argb: 'FF0F2850' }, size: 11 };
+      titleRow2.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFF4F7FC' } };
+
+      const titleRow3 = ws.addRow(['Generated on: ' + new Date().toLocaleDateString('en-IN')]);
+      titleRow3.font = { name: 'Calibri', color: { argb: 'FF0F2850' }, size: 11 };
+      titleRow3.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFF4F7FC' } };
+
+      ws.addRow([]); // Empty row 4
+
+      // Header Row (Row 5)
+      const headerRow = ws.addRow(['User', 'Type', 'Gross Rec. (Rs.)', 'Paid (Self) (Rs.)', 'Total Paid (Rs.)', 'Net Rec. (Rs.)']);
+      headerRow.font = { name: 'Calibri', bold: true, color: { argb: 'FFFFFFFF' }, size: 11 };
+      headerRow.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF0F2850' } };
+      headerRow.alignment = { vertical: 'middle', horizontal: 'center' };
+      
+      ws.autoFilter = { from: 'A5', to: 'F5' };
+
+      const flattenHierarchy = (nodes: any[]): any[] => {
+        let flat: any[] = [];
+        nodes.forEach(node => {
+          flat.push(node);
+          if (node.children && node.children.length > 0) {
+            flat = flat.concat(flattenHierarchy(node.children));
+          }
+        });
+        return flat;
+      };
+
+      const flatData = flattenHierarchy(filteredData || []);
+
+      flatData.forEach((user, index) => {
+        const totalPaid = user.paid + user.paidSub;
+        const netReceivable = user.gross - totalPaid;
+        
+        const row = ws.addRow([
+          user.user,
+          user.type,
+          user.gross,
+          user.paid,
+          totalPaid,
+          netReceivable
+        ]);
+        
+        row.font = { name: 'Calibri', bold: true, size: 11, color: { argb: 'FF0F2850' } };
+        row.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFD6E0F0' } };
+        
+        row.eachCell((cell) => {
+           cell.border = { 
+               top: { style: 'thin', color: { argb: 'FFB8C9E6' } },
+               left: { style: 'thin', color: { argb: 'FFB8C9E6' } },
+               right: { style: 'thin', color: { argb: 'FFB8C9E6' } },
+               bottom: { style: 'thin', color: { argb: 'FFB8C9E6' } },
+           };
+        });
+
+        [3, 4, 5, 6].forEach((colIndex) => {
+          row.getCell(colIndex).numFmt = '#,##0.00';
+        });
+
+        if (user.amcBreakdown && user.amcBreakdown.length > 0) {
+          user.amcBreakdown.forEach((breakdown: any, bIdx: number) => {
+            const breakdownRow = ws.addRow([
+              `   ↳ ${breakdown.name}`,
+              activeGroup,
+              breakdown.gross,
+              breakdown.paid,
+              breakdown.paid,
+              breakdown.gross - breakdown.paid
+            ]);
+
+            breakdownRow.font = { name: 'Calibri', italic: true, color: { argb: 'FF475569' }, size: 11 };
+            
+            // Alternate shading for children (white and near-white blue tint)
+            const childFill = bIdx % 2 === 0 ? 'FFFFFFFF' : 'FFF4F7FC';
+            breakdownRow.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: childFill } };
+
+            breakdownRow.eachCell((cell) => {
+               cell.border = { 
+                   left: { style: 'thin', color: { argb: 'FFB8C9E6' } },
+                   right: { style: 'thin', color: { argb: 'FFB8C9E6' } },
+                   bottom: { style: 'thin', color: { argb: 'FFB8C9E6' } },
+               };
+            });
+            
+            [3, 4, 5, 6].forEach((colIndex) => {
+              breakdownRow.getCell(colIndex).numFmt = '#,##0.00';
+            });
+          });
+        }
+      });
+
+      // Add grand totals
+      const grandTotalRow = ws.addRow([
+        'GRAND TOTALS',
+        '',
+        totals.gross,
+        totals.paid,
+        totals.paid + totals.paidSub,
+        totals.gross - (totals.paid + totals.paidSub)
+      ]);
+      
+      grandTotalRow.font = { name: 'Calibri', bold: true, color: { argb: 'FFFFFFFF' }, size: 12 };
+      grandTotalRow.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF1E3A6E' } };
+      
+      grandTotalRow.eachCell((cell) => {
+         cell.border = {
+             top: { style: 'medium', color: { argb: 'FF0F2850' } },
+             bottom: { style: 'thin', color: { argb: 'FFB8C9E6' } },
+             left: { style: 'thin', color: { argb: 'FFB8C9E6' } },
+             right: { style: 'thin', color: { argb: 'FFB8C9E6' } },
+         };
+      });
+
+      [3, 4, 5, 6].forEach((colIndex) => {
+        grandTotalRow.getCell(colIndex).numFmt = '#,##0.00';
+      });
+
+      const buffer = await wb.xlsx.writeBuffer();
+      const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.setAttribute("href", url);
+      link.setAttribute("download", `Hierarchy_Earnings_by_${activeGroup}_${dateRange.fromDate}_to_${dateRange.toDate}.xlsx`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error("Export failed:", error);
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
   return (
     <div className="flex flex-col h-full animate-[fadeIn_0.5s_ease-out] overflow-hidden">
       
@@ -157,9 +329,9 @@ export default function BrokerageDashboard() {
           </h1>
         </div>
         <div className="hidden md:flex gap-3">
-          <button className="flex items-center gap-2 px-4 py-2 bg-[var(--fin-table-bg)] border border-[var(--fin-border)] text-[var(--fin-body-text)] font-bold text-xs rounded-md hover:border-[var(--fin-brand-600)] hover:text-[var(--fin-brand-600)] transition-all shadow-sm">
-            <Download className="w-4 h-4" />
-            <span>Export</span>
+          <button onClick={handleExportExcel} disabled={isExporting} className="flex items-center gap-2 px-4 py-2 bg-[var(--fin-table-bg)] border border-[var(--fin-border)] text-[var(--fin-body-text)] font-bold text-xs rounded-md hover:border-[var(--fin-brand-600)] hover:text-[var(--fin-brand-600)] transition-all shadow-sm disabled:opacity-50">
+            {isExporting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
+            <span>{isExporting ? 'Exporting...' : 'Export'}</span>
           </button>
         </div>
       </div>
@@ -198,27 +370,6 @@ export default function BrokerageDashboard() {
             <option>Jan-2026</option>
           </select>
         </div>
-
-        {/* Search */}
-        <div className="flex-1 flex items-center gap-2">
-          <div className="relative flex-1">
-            <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-[var(--fin-aux-text)]" />
-            <input
-              type="text"
-              placeholder="Search user or type..."
-              value={searchInput}
-              onChange={(e) => setSearchInput(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && handleSearchTrigger()}
-              className="w-full pl-8 pr-3 py-1.5 bg-[var(--fin-page-bg)] border border-[var(--fin-border)] rounded-md text-xs font-medium focus:outline-none focus:border-[var(--fin-brand-600)] transition-all"
-            />
-          </div>
-          <button 
-            onClick={handleSearchTrigger}
-            className="px-3 py-1.5 bg-[var(--fin-brand-700)] text-[var(--fin-btn-primary-text)] rounded-md text-[11px] font-bold hover:bg-[var(--fin-brand-800)] transition-all shadow-sm"
-          >
-            Search
-          </button>
-        </div>
       </div>
 
       {/* KPI Section - Compact Grid, Less Padding */}
@@ -226,7 +377,7 @@ export default function BrokerageDashboard() {
         
         <div className="bg-[var(--fin-table-bg)] p-2.5 md:p-4 rounded-md border border-[var(--fin-border)] shadow-sm relative overflow-hidden group hover:bg-[var(--fin-brand-600)] transition-all cursor-default">
           <div className="group-hover:opacity-0 transition-opacity">
-            <p className="text-[9px] md:text-[10px] font-black text-[var(--fin-muted-text)] uppercase tracking-widest mb-0.5">Gross Rec.</p>
+            <p className="text-[9px] md:text-[10px] font-black text-[var(--fin-muted-text)] uppercase tracking-widest mb-0.5">Gross Brokerage</p>
             <h3 className="text-base md:text-xl font-black text-[var(--fin-heading-primary)]">{formatCompactNumber(totals.gross)}</h3>
           </div>
           <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
@@ -244,7 +395,7 @@ export default function BrokerageDashboard() {
           </div>
         </div>
 
-        <div className="bg-[var(--fin-table-bg)] p-2.5 md:p-4 rounded-md border border-[var(--fin-border)] shadow-sm relative overflow-hidden group hover:bg-[var(--fin-brand-600)] transition-all cursor-default">
+        {/* <div className="bg-[var(--fin-table-bg)] p-2.5 md:p-4 rounded-md border border-[var(--fin-border)] shadow-sm relative overflow-hidden group hover:bg-[var(--fin-brand-600)] transition-all cursor-default">
           <div className="group-hover:opacity-0 transition-opacity">
             <p className="text-[9px] md:text-[10px] font-black text-[var(--fin-muted-text)] uppercase tracking-widest mb-0.5">Paid (Sub)</p>
             <h3 className="text-base md:text-xl font-black text-[var(--fin-badge-broker-text)]">{formatCompactNumber(totals.paidSub)}</h3>
@@ -252,11 +403,11 @@ export default function BrokerageDashboard() {
           <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
             <h3 className="text-sm md:text-base font-black text-[var(--fin-btn-primary-text)]">₹{totals.paidSub.toLocaleString('en-IN', { maximumFractionDigits: 0 })}</h3>
           </div>
-        </div>
+        </div> */}
 
         <div className="bg-[var(--fin-brand-900)] p-2.5 md:p-4 rounded-md border border-[var(--fin-heading-primary)] shadow-sm relative overflow-hidden group hover:bg-[var(--fin-brand-600)] transition-all cursor-default">
           <div className="group-hover:opacity-0 transition-opacity relative z-10">
-            <p className="text-[9px] md:text-[10px] font-black text-[var(--fin-aux-text)] uppercase tracking-widest mb-0.5">Net Rec.</p>
+            <p className="text-[9px] md:text-[10px] font-black text-[var(--fin-aux-text)] uppercase tracking-widest mb-0.5">Net Receivable</p>
             <h3 className="text-base md:text-xl font-black text-[var(--fin-btn-primary-text)]">{formatCompactNumber(grandNetReceivable)}</h3>
           </div>
           <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity z-20">
@@ -279,7 +430,7 @@ export default function BrokerageDashboard() {
                 <Loader2 className="w-8 h-8 text-[var(--fin-brand-600)] animate-spin" />
               </div>
             )}
-            <DesktopBrokerageTable data={filteredData} totals={totals} />
+            <DesktopBrokerageTable data={filteredData} totals={totals} groupLabel={activeGroup} />
           </div>
 
           <div className="md:hidden flex flex-col flex-1 min-h-0 overflow-y-auto pr-1 pb-4 relative">
@@ -288,7 +439,7 @@ export default function BrokerageDashboard() {
                 <Loader2 className="w-8 h-8 text-[var(--fin-brand-600)] animate-spin" />
               </div>
             )}
-             <MobileBrokerageOverview data={filteredData} totals={totals} />
+             <MobileBrokerageOverview data={filteredData} totals={totals} groupLabel={activeGroup} />
           </div>
         </React.Fragment>
       )}

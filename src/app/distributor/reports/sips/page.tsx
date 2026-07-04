@@ -20,8 +20,35 @@ import {
   distributorService,
   SipSummary,
   InvestorSip,
-  SipDetail,
 } from "@/services/distributor.service";
+
+const formatFrequency = (freq: string | null | undefined) => {
+  if (!freq) return "Monthly";
+  const f = freq.toUpperCase().trim();
+  switch (f) {
+    case "Y": return "Yearly";
+    case "OM": return "Monthly";
+    case "BZ": return "Business Fortnightly";
+    case "D": return "Daily";
+    case "OW": return "Weekly";
+    case "DZ": return "Daily (Business Days Only)";
+    case "SM": return "Semi-Monthly";
+    case "O": return "One Time";
+    // Fallbacks
+    case "M": return "Monthly";
+    case "W": return "Weekly";
+    case "Q": return "Quarterly";
+    case "OQ": return "Quarterly";
+    case "HY": return "Half Yearly";
+    default:
+      if (f.includes("MONTH")) return "Monthly";
+      if (f.includes("WEEK")) return "Weekly";
+      if (f.includes("QUARTER")) return "Quarterly";
+      if (f.includes("YEAR") || f.includes("ANN")) return "Yearly";
+      if (f.includes("DAY") || f.includes("DAILY")) return "Daily";
+      return freq;
+  }
+};
 
 export default function ActiveSipsDashboard() {
   // --- States ---
@@ -41,13 +68,6 @@ export default function ActiveSipsDashboard() {
   const [investorSips, setInvestorSips] = useState<InvestorSip[]>([]);
   const [isLoadingSips, setIsLoadingSips] = useState(false);
 
-  // Modal 2: SIP Detail
-  const [selectedSipInfo, setSelectedSipInfo] = useState<{
-    id: string;
-    source: string;
-  } | null>(null);
-  const [sipDetail, setSipDetail] = useState<SipDetail | null>(null);
-  const [isLoadingDetail, setIsLoadingDetail] = useState(false);
 
   // ─── DEBOUNCE EFFECT FOR SEARCH ───
   useEffect(() => {
@@ -96,28 +116,12 @@ export default function ActiveSipsDashboard() {
     }
   };
 
-  const openSipDetail = async (id: string, source: string) => {
-    setSelectedSipInfo({ id, source });
-    setIsLoadingDetail(true);
-    try {
-      const res = await distributorService.getSipDetail(source, id);
-      if (res.success) setSipDetail(res.data);
-    } catch (error) {
-      console.error("Failed to load SIP details", error);
-    } finally {
-      setIsLoadingDetail(false);
-    }
-  };
 
   const closeInvestorList = () => {
     setSelectedInvestorId(null);
     setInvestorSips([]);
   };
 
-  const closeSipDetail = () => {
-    setSelectedSipInfo(null);
-    setSipDetail(null);
-  };
 
   if (isLoadingSummary) {
     return (
@@ -339,9 +343,6 @@ export default function ActiveSipsDashboard() {
                 <h3 className="text-lg lg:text-xl font-black text-[var(--fin-heading-tertiary)] tracking-tight">
                   {selectedInvestorName}&apos;s SIPs
                 </h3>
-                <p className="text-[var(--fin-muted-text)] text-xs mt-0.5">
-                  Click any SIP row to view full mandate details.
-                </p>
               </div>
               <button
                 onClick={closeInvestorList}
@@ -362,8 +363,7 @@ export default function ActiveSipsDashboard() {
                   {investorSips.map((sip, idx) => (
                     <div
                       key={`${sip.id}-${idx}`}
-                      onClick={() => openSipDetail(sip.id, sip.source)}
-                      className="bg-[var(--fin-table-bg)] border border-[var(--fin-border)] rounded-md p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 cursor-pointer hover:border-[var(--fin-brand-300)] hover:shadow-md transition-all duration-200 group"
+                      className="bg-[var(--fin-table-bg)] border border-[var(--fin-border)] rounded-md p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 group"
                     >
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-1.5">
@@ -376,12 +376,24 @@ export default function ActiveSipsDashboard() {
                             {sip.status || "ACTIVE"}
                           </span>
                         </div>
-                        <h4 className="text-base font-bold text-[var(--fin-heading-tertiary)] line-clamp-2 pr-4 group-hover:text-[var(--fin-brand-700)] transition-colors">
+                        <h4 className="text-base font-bold text-[var(--fin-heading-tertiary)] line-clamp-2 pr-4">
                           {sip.product_name}
                         </h4>
-                        <p className="text-sm text-[var(--fin-muted-text)] mt-1 font-mono">
-                          Folio: {sip.folio_no}
-                        </p>
+                        <div className="flex flex-wrap items-center gap-4 mt-2">
+                          <p className="text-sm text-[var(--fin-muted-text)] font-mono">
+                            Folio: {sip.folio_no}
+                          </p>
+                          <div className="flex items-center gap-1.5 text-xs font-semibold text-[var(--fin-table-row-text)]">
+                            <CalendarClock className="w-3.5 h-3.5 text-[var(--fin-aux-text)]" />
+                            {sip.start_date && !sip.start_date.toString().startsWith("2999") && !sip.start_date.toString().startsWith("2099")
+                              ? new Date(sip.start_date).toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" })
+                              : "—"}
+                            <span className="text-[var(--fin-aux-text)] font-normal mx-0.5">to</span>
+                            {sip.end_date && !sip.end_date.toString().startsWith("2999") && !sip.end_date.toString().startsWith("2099")
+                              ? new Date(sip.end_date).toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" })
+                              : "Perpetual"}
+                          </div>
+                        </div>
                       </div>
 
                       <div className="flex items-center sm:items-end justify-between sm:flex-col shrink-0 sm:text-right border-t sm:border-t-0 pt-3 sm:pt-0 border-[var(--fin-border-subtle)]">
@@ -393,8 +405,8 @@ export default function ActiveSipsDashboard() {
                             {formatCurrency(Number(sip.installment_amount))}
                           </span>
                         </div>
-                        <p className="text-xs font-bold text-[var(--fin-muted-text)] capitalize">
-                          {sip.frequency?.toLowerCase() || "Monthly"}
+                        <p className="text-xs font-bold text-[var(--fin-muted-text)] capitalize mt-1">
+                          {formatFrequency(sip.frequency)}
                         </p>
                       </div>
                     </div>
@@ -411,134 +423,7 @@ export default function ActiveSipsDashboard() {
         </div>
       )}
 
-      {/* ─── MODAL 2: SIP DETAILS (Detailed Drill-down) ─── */}
-      {selectedSipInfo && sipDetail && !isLoadingDetail && (
-        <div className="absolute inset-0 z-[60] flex items-center justify-center p-4 sm:p-6 lg:p-8 animate-in fade-in duration-200 overflow-hidden">
-          <div
-            className="absolute inset-0 bg-[var(--fin-table-bg)]/60 backdrop-blur-sm"
-            onClick={closeSipDetail}
-          />
 
-          <div className="relative w-full max-w-2xl bg-[var(--fin-table-bg)] rounded-md shadow-2xl flex flex-col max-h-full border border-[var(--fin-border)]/50 animate-in zoom-in-95 duration-200">
-            <div className="flex justify-between items-start bg-[var(--fin-page-bg)] border-b border-[var(--fin-border)] p-6 rounded-t-2xl shrink-0">
-              <div className="pr-6">
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded bg-[var(--fin-table-bg)] border border-[var(--fin-border)] text-[var(--fin-body-text)]">
-                    {sipDetail.rta} Data
-                  </span>
-                  <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded bg-[var(--fin-badge-success-bg)] text-[var(--fin-badge-success-text)]">
-                    {sipDetail.status || "Active"}
-                  </span>
-                </div>
-                <h3 className="text-lg sm:text-xl font-black text-[var(--fin-heading-tertiary)] leading-tight">
-                  {sipDetail.scheme_name}
-                </h3>
-              </div>
-              <button
-                onClick={closeSipDetail}
-                className="p-2 bg-[var(--fin-table-bg)] border border-[var(--fin-border)] text-[var(--fin-aux-text)] hover:text-[var(--fin-table-row-text)] hover:bg-[var(--fin-skeleton-base)] rounded-full transition-all shrink-0"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-
-            <div className="p-6 overflow-y-auto scrollbar-thin scrollbar-thumb-[var(--fin-border-subtle)] space-y-6 rounded-b-2xl">
-              {/* Highlight Amount Box */}
-              <div className="bg-[var(--fin-brand-50)] border border-[var(--fin-brand-100)] rounded-md p-5 flex items-center justify-between">
-                <div>
-                  <p className="text-[11px] font-black text-[var(--fin-brand-600)]/70 uppercase tracking-widest mb-1">
-                    Installment Amount
-                  </p>
-                  <p className="text-3xl font-black text-[var(--fin-brand-800)]">
-                    {formatCurrency(Number(sipDetail.sip_amount))}
-                  </p>
-                </div>
-                <div className="text-right">
-                  <p className="text-[11px] font-black text-[var(--fin-brand-600)]/70 uppercase tracking-widest mb-1">
-                    Frequency
-                  </p>
-                  <p className="text-lg font-bold text-[var(--fin-brand-700)] capitalize">
-                    {sipDetail.frequency?.toLowerCase() || "Monthly"}
-                  </p>
-                </div>
-              </div>
-
-              {/* Data Grid */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="bg-[var(--fin-table-bg)] border border-[var(--fin-border)] rounded-md p-4 flex gap-3">
-                  <User className="w-5 h-5 text-[var(--fin-aux-text)] shrink-0" />
-                  <div>
-                    <p className="text-[10px] font-black text-[var(--fin-aux-text)] uppercase tracking-widest mb-0.5">
-                      Investor Name
-                    </p>
-                    <p className="text-sm font-bold text-[var(--fin-heading-tertiary)]">
-                      {sipDetail.investor_name}
-                    </p>
-                  </div>
-                </div>
-
-                <div className="bg-[var(--fin-table-bg)] border border-[var(--fin-border)] rounded-md p-4 flex gap-3">
-                  <Hash className="w-5 h-5 text-[var(--fin-aux-text)] shrink-0" />
-                  <div>
-                    <p className="text-[10px] font-black text-[var(--fin-aux-text)] uppercase tracking-widest mb-0.5">
-                      Folio Number
-                    </p>
-                    <p className="text-sm font-mono font-bold text-[var(--fin-heading-tertiary)]">
-                      {sipDetail.folio_no}
-                    </p>
-                  </div>
-                </div>
-
-                <div className="bg-[var(--fin-table-bg)] border border-[var(--fin-border)] rounded-md p-4 flex gap-3">
-                  <CalendarClock className="w-5 h-5 text-[var(--fin-aux-text)] shrink-0" />
-                  <div>
-                    <p className="text-[10px] font-black text-[var(--fin-aux-text)] uppercase tracking-widest mb-0.5">
-                      Start Date
-                    </p>
-                    <p className="text-sm font-bold text-[var(--fin-heading-tertiary)]">
-                      {sipDetail.from_date
-                        ? new Date(sipDetail.from_date).toLocaleDateString(
-                            "en-IN",
-                            { day: "numeric", month: "short", year: "numeric" },
-                          )
-                        : "N/A"}
-                    </p>
-                  </div>
-                </div>
-
-                <div className="bg-[var(--fin-table-bg)] border border-[var(--fin-border)] rounded-md p-4 flex gap-3">
-                  <CalendarRange className="w-5 h-5 text-[var(--fin-aux-text)] shrink-0" />
-                  <div>
-                    <p className="text-[10px] font-black text-[var(--fin-aux-text)] uppercase tracking-widest mb-0.5">
-                      Termination Date
-                    </p>
-                    <p className="text-sm font-bold text-[var(--fin-heading-tertiary)]">
-                      {sipDetail.to_date
-                        ? new Date(sipDetail.to_date).toLocaleDateString(
-                            "en-IN",
-                            { day: "numeric", month: "short", year: "numeric" },
-                          )
-                        : "Perpetual (No End Date)"}
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Remarks/Notes (If any exist) */}
-              {sipDetail.remarks && (
-                <div className="bg-[var(--fin-badge-warning-bg)] border border-[var(--fin-badge-warning-border)] rounded-md p-4">
-                  <p className="text-[10px] font-black text-[var(--fin-badge-warning-text)]/70 uppercase tracking-widest mb-1">
-                    RTA Remarks
-                  </p>
-                  <p className="text-sm font-medium text-[var(--fin-badge-warning-text)]">
-                    {sipDetail.remarks}
-                  </p>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

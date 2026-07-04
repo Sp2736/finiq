@@ -177,8 +177,8 @@ export const generateSystematicPDF = (
   drawFooters();
   
   const validInvestorName = typeof investorName === 'string' ? investorName : 'All_Investors';
-  const safeInvestorName = validInvestorName.replace(/[^a-zA-Z0-9\s_-]/g, '').trim().replace(/\s+/g, '_');
-  const dateStr = new Date().toISOString().split('T')[0];
+  const safeName = validInvestorName.replace(/[^a-zA-Z0-9\s_-]/g, '').trim().replace(/\s+/g, '_');
+  const dateStr = new Date().toLocaleDateString('en-GB').replace(/\//g, '-');
   
-  doc.save(`${safeInvestorName}-Systematic_Report_${type}_${dateStr}.pdf`);
+  doc.save(`${safeName}_Systematic-Report-${type}_${dateStr}.pdf`);
 };
