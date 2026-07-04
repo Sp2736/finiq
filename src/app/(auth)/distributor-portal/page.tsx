@@ -61,6 +61,21 @@ export default function DistributorLoginPage() {
       }
 
       if (response.success) {
+<<<<<<< Updated upstream
+=======
+        const decoded = decodeJwt<DecodedStaffToken>(response.data.access_token);
+
+        // Store company logo so both sidebars can display it without an extra API call
+        try {
+          if (response.data.company_logo) {
+            localStorage.setItem("company-logo-dis", response.data.company_logo);
+          }
+          if (response.data.company_info) {
+            localStorage.setItem("company-info-dis", JSON.stringify(response.data.company_info));
+          }
+        } catch (_) {}
+
+>>>>>>> Stashed changes
         setAuthCookies(
           response.data.access_token,
           response.data.refresh_token,

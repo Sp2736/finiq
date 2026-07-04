@@ -4,6 +4,7 @@ import React from 'react';
 import { ThemeProvider } from '@/context/ThemeContext';
 import InvestorSidebar from '@/components/investor/InvestorSidebar';
 
+
 export default function InvestorLayout({
   children,
 }: {
@@ -11,37 +12,14 @@ export default function InvestorLayout({
 }) {
   return (
     <>
-      <script
-        dangerouslySetInnerHTML={{
-          __html: `
-            (function() {
-              try {
-                var cached = localStorage.getItem('finiq_theme_vars');
-                if (cached) {
-                  var vars = JSON.parse(cached);
-                  var root = document.documentElement;
-                  var keys = Object.keys(vars);
-                  for (var i = 0; i < keys.length; i++) {
-                    root.style.setProperty(keys[i], vars[keys[i]]);
-                  }
-                }
-              } catch(e) {}
-            })();
-          `,
-        }}
-      />
+
       <ThemeProvider>
 
 
       <div className="flex h-screen overflow-hidden selection:bg-[var(--fin-brand-100)] selection:text-[var(--fin-brand-900)]" style={{ backgroundColor: 'var(--fin-page-bg)' }}>
         
         {/* Sidebar remains fixed */}
-        <InvestorSidebar 
-           onExportHoldings={() => {}}
-           onOpenCapitalGains={() => {}}
-           isExporting={false}
-           isPortfolioLoaded={true}
-        />
+        <InvestorSidebar />
 
         <main className="flex-1 relative h-screen overflow-hidden">
           <div className="absolute inset-0 opacity-[0.015] pointer-events-none mix-blend-overlay" />

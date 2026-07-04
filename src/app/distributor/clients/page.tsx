@@ -94,7 +94,7 @@ export default function InvestorsPage() {
   const handleExportExcel = async () => {
     setIsExporting(true);
     try {
-      const limitToFetch = maxLimit ? maxLimit : 5000;
+      const limitToFetch = maxLimit ? maxLimit : 50000;
       const res = await distributorService.downloadInvestorList(1, limitToFetch, limitToFetch, searchTerm);
       
       if (res.success && res.data && res.data.data) {

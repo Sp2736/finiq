@@ -7,10 +7,16 @@ import { useRouter } from "next/navigation";
 import EmailPasswordForm from "@/components/layouts/EmailPasswordForm";
 import InvestorFluidBackground from "@/components/layouts/InvestorFluidBackground";
 import { authService } from "@/services/auth.service";
+<<<<<<< Updated upstream
 import { setAuthCookies } from "@/lib/authClient";
+=======
+import { setAuthCookies, decodeJwt, DecodedInvestorToken } from "@/lib/authClient";
+import ErrorNotice from "@/components/ui/ErrorNotice";
+>>>>>>> Stashed changes
 
 export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const router = useRouter();
   const portalName = "Investor";
 
@@ -35,11 +41,22 @@ export default function LoginPage() {
       }
 
       // Store company logo so InvestorSidebar can display it without extra API calls
+<<<<<<< Updated upstream
       if (response.data?.investor?.logo_base64) {
         try {
           localStorage.setItem("company_logo_base64", response.data.investor.logo_base64);
         } catch (_) {}
       }
+=======
+      try {
+        if (response.data?.logo_base64) {
+          localStorage.setItem("company-logo-inv", response.data.logo_base64);
+        }
+        if (response.data?.company_info) {
+          localStorage.setItem("company-info-inv", JSON.stringify(response.data.company_info));
+        }
+      } catch (_) {}
+>>>>>>> Stashed changes
 
       // Store access token
       setAuthCookies(actualToken, undefined, "investor");
@@ -48,10 +65,7 @@ export default function LoginPage() {
       router.push("/investor");
     } catch (error: any) {
       console.error("Login failed:", error);
-      alert(
-        error.message ||
-          "Invalid credentials. Please check your identifier and password.",
-      );
+      setErrorMsg(error.message || "Invalid credentials. Please check your identifier and password.");
     } finally {
       setIsLoading(false);
     }
@@ -250,7 +264,7 @@ export default function LoginPage() {
                   Enter your credentials to securely access your portfolio.
                 </p>
               </div>
-
+              <ErrorNotice message={errorMsg} onClose={() => setErrorMsg(null)} />
               <EmailPasswordForm onSubmit={handleLogin} isLoading={isLoading} />
 
               <div className="mt-8 sm:mt-10 text-center">

@@ -46,3 +46,6 @@ AGENTS.md
 
 log.txt
 todo.txt
+
+*.md
+*.py
