@@ -66,7 +66,7 @@ export default function DistributorSettingsPage() {
           </div>
         );
 
-      case 'notifications':
+      // case 'notifications':
         return (
           <div className="space-y-8 max-w-xl mx-auto animate-[fadeIn_0.3s_ease-out]">
             <h2 className="text-xl font-black text-[var(--fin-heading-primary)] tracking-tight mb-6">Notification Preferences</h2>
@@ -114,81 +114,8 @@ export default function DistributorSettingsPage() {
             </div>
           </div>
         );
-
-      case 'security':
-        return (
-          <div className="space-y-10 max-w-2xl mx-auto animate-[fadeIn_0.3s_ease-out]">
-            
-            <div>
-              <h2 className="text-xl font-black text-[var(--fin-heading-primary)] tracking-tight mb-6">Security Settings</h2>
-              <div className="bg-[var(--fin-page-bg)] p-6 rounded-md border border-[var(--fin-border-subtle)] space-y-4">
-                <div className="flex items-center gap-3 mb-2">
-                  <Lock className="w-5 h-5 text-[var(--fin-brand-600)]" />
-                  <h3 className="font-black text-[var(--fin-heading-primary)]">Change Password</h3>
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-[10px] font-black text-[var(--fin-muted-text)] uppercase tracking-widest mb-2">Current Password</label>
-                    <input type="password" placeholder="••••••••" className="w-full px-4 py-2.5 bg-[var(--fin-table-bg)] border border-[var(--fin-border)] rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-[var(--fin-brand-600)]/20 focus:border-[var(--fin-brand-600)] transition-all" />
-                  </div>
-                  <div>
-                    <label className="block text-[10px] font-black text-[var(--fin-muted-text)] uppercase tracking-widest mb-2">New Password</label>
-                    <input type="password" placeholder="••••••••" className="w-full px-4 py-2.5 bg-[var(--fin-table-bg)] border border-[var(--fin-border)] rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-[var(--fin-brand-600)]/20 focus:border-[var(--fin-brand-600)] transition-all" />
-                  </div>
-                </div>
-                <button className="px-5 py-2.5 bg-[var(--fin-heading-primary)] text-[var(--fin-btn-primary-text)] rounded-md font-bold text-sm hover:bg-[var(--fin-heading-primary)] transition-all mt-2">
-                  Update Password
-                </button>
-              </div>
-            </div>
-
-            <div>
-              <h2 className="text-lg font-black text-[var(--fin-heading-primary)] tracking-tight mb-4">Two-Factor Authentication (2FA)</h2>
-              <div className="flex items-center justify-between p-5 bg-[var(--fin-table-bg)] border border-[var(--fin-brand-100)] rounded-md shadow-sm shadow-[var(--fin-brand-600)]/5">
-                <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 bg-[var(--fin-brand-50)] rounded-md flex items-center justify-center text-[var(--fin-brand-600)]">
-                    <Smartphone className="w-5 h-5" />
-                  </div>
-                  <div>
-                    <h3 className="font-black text-[var(--fin-heading-primary)] text-sm">Authenticator App</h3>
-                    <p className="text-xs font-medium text-[var(--fin-muted-text)] mt-0.5">Status: <span className="text-[var(--fin-brand-600)] font-bold">Enabled</span></p>
-                  </div>
-                </div>
-                <button className="px-4 py-2 bg-[var(--fin-skeleton-base)] text-[var(--fin-table-row-text)] rounded-md font-bold text-xs hover:bg-[var(--fin-skeleton-base)] transition-all">
-                  Manage
-                </button>
-              </div>
-            </div>
-
-            <div>
-              <h2 className="text-lg font-black text-[var(--fin-heading-primary)] tracking-tight mb-4">Active Sessions</h2>
-              <div className="space-y-3">
-                <div className="flex items-center justify-between p-4 bg-[var(--fin-page-bg)] rounded-md border border-[var(--fin-border-subtle)]">
-                  <div className="flex items-center gap-4">
-                    <Monitor className="w-5 h-5 text-[var(--fin-aux-text)]" />
-                    <div>
-                      <h3 className="font-black text-[var(--fin-heading-primary)] text-sm">MacBook Pro - Chrome</h3>
-                      <p className="text-[10px] font-medium text-[var(--fin-muted-text)] mt-0.5 uppercase tracking-widest">Mumbai, India • Current Session</p>
-                    </div>
-                  </div>
-                  <div className="w-2 h-2 bg-[var(--fin-brand-500)] rounded-full animate-pulse" />
-                </div>
-                <div className="flex items-center justify-between p-4 bg-[var(--fin-table-bg)] rounded-md border border-[var(--fin-border-subtle)]">
-                  <div className="flex items-center gap-4">
-                    <Smartphone className="w-5 h-5 text-[var(--fin-aux-text)]" />
-                    <div>
-                      <h3 className="font-black text-[var(--fin-heading-primary)] text-sm">iPhone 14 Pro - Safari</h3>
-                      <p className="text-[10px] font-medium text-[var(--fin-muted-text)] mt-0.5 uppercase tracking-widest">Ahmedabad, India • Last active 2 hours ago</p>
-                    </div>
-                  </div>
-                  <button className="text-xs font-bold text-[var(--fin-badge-danger-text)] hover:text-[var(--fin-badge-danger-text)]">Revoke</button>
-                </div>
-              </div>
-            </div>
-
-          </div>
-        );
-      case 'appearance':
+      
+        case 'appearance':
         return (
           <div className="space-y-6 w-full animate-[fadeIn_0.3s_ease-out]">
             <ThemePanel />
