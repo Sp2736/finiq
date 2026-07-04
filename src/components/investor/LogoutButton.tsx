@@ -18,8 +18,9 @@ export default function LogoutButton({
     // 1. Clear the auth cookies
     removeAuthCookies(portal);
 
-    // 2. Clear the dynamic logo from local storage
+    // 2. Clear the dynamic logo and theme from local storage
     localStorage.removeItem("company_logo_base64");
+    localStorage.removeItem("finiq_active_theme");
 
     // 3. Redirect to the login page
     router.push(redirectTo);

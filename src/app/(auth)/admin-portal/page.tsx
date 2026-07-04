@@ -9,6 +9,7 @@ import OTPVerificationForm from "@/components/layouts/OTPVerificationForm";
 import InvestorFluidBackground from "@/components/layouts/InvestorFluidBackground";
 import { authService } from "@/services/auth.service";
 import { setAuthCookies } from "@/lib/authClient";
+import { primeThemeCache } from "@/lib/primeThemeCache";
 
 type Step = "phone" | "otp";
 
@@ -46,6 +47,7 @@ export default function AdminLoginPage() {
       const response = await authService.verifyOtp(fullPhone, otp);
       if (response.success) {
         setAuthCookies(response.data.access_token, response.data.refresh_token);
+        await primeThemeCache();
         router.push("/admin");
       }
     } catch (err: any) {

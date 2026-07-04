@@ -38,6 +38,8 @@ export interface LoginResponse {
   success: boolean;
   message: string;
   data: {
+    company_info(company_info: any): string;
+    logo_base64: any;
     access_token: string;
     investor: {
       id: string;

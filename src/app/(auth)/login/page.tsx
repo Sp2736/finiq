@@ -8,6 +8,8 @@ import EmailPasswordForm from "@/components/layouts/EmailPasswordForm";
 import InvestorFluidBackground from "@/components/layouts/InvestorFluidBackground";
 import { authService } from "@/services/auth.service";
 import { setAuthCookies } from "@/lib/authClient";
+import ErrorNotice from "@/components/ui/ErrorNotice";
+import { primeThemeCache } from "@/lib/primeThemeCache";
 
 export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
@@ -30,14 +32,25 @@ export default function LoginPage() {
       // Navigate to the exact location of the token in your JSON
       const actualToken = response.data?.access_token;
 
-      if (actualToken) {
-        setAuthCookies(actualToken, undefined, "investor");
-      } else {
-        // If we still can't find it, throw an error instead of using a dummy session
-        throw new Error(
-          "API connected, but access_token was missing in the data object.",
-        );
+      if (!actualToken) {
+        throw new Error("API connected, but access_token was missing in the data object.");
       }
+
+      // Store company logo so InvestorSidebar can display it without extra API calls
+      try {
+        if (response.data?.logo_base64) {
+          localStorage.setItem("company-logo-inv", response.data.logo_base64);
+        }
+        if (response.data?.company_info) {
+          localStorage.setItem("company-info-inv", JSON.stringify(response.data.company_info));
+        }
+      } catch (_) {}
+
+      // Store access token
+      setAuthCookies(actualToken, undefined, "investor");
+
+      // Prime the theme cache once, right after auth cookies are set.
+      await primeThemeCache();
 
       // Redirect seamlessly to the dashboard
       router.push("/investor");

@@ -22,9 +22,24 @@ export const setAuthCookies = (accessToken: string, refreshToken?: string, porta
     document.cookie = `${refresh}=${refreshToken}; path=/; expires=${expires.toUTCString()}; max-age=${maxAge}; SameSite=Lax`;
   }
 
+  let finalUserId = userId;
+  if (!finalUserId && accessToken) {
+    try {
+      const base64Url = accessToken.split('.')[1];
+      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+      const jsonPayload = decodeURIComponent(window.atob(base64).split('').map(function(c) {
+          return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+      }).join(''));
+      const payload = JSON.parse(jsonPayload);
+      finalUserId = payload.sub || payload.id;
+    } catch (e) {
+      console.warn("Failed to decode JWT for user ID:", e);
+    }
+  }
+
   // Store user ID for refresh logic
-  if (userId) {
-    document.cookie = `${userIdCookie}=${userId}; path=/; expires=${expires.toUTCString()}; max-age=${maxAge}; SameSite=Lax`;
+  if (finalUserId) {
+    document.cookie = `${userIdCookie}=${finalUserId}; path=/; expires=${expires.toUTCString()}; max-age=${maxAge}; SameSite=Lax`;
   }
 };
 

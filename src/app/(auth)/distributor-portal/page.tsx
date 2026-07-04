@@ -9,6 +9,7 @@ import OTPVerificationForm from "@/components/layouts/OTPVerificationForm";
 import DistributorFluidBackground from "@/components/layouts/DistributorFluidBackground";
 import { authService } from "@/services/auth.service";
 import { setAuthCookies } from "@/lib/authClient";
+import { primeThemeCache } from "@/lib/primeThemeCache";
 
 type Step = "phone" | "otp";
 
@@ -65,9 +66,9 @@ export default function DistributorLoginPage() {
         setAuthCookies(
           response.data.access_token,
           response.data.refresh_token,
-          "staff",
-          response.data.user.id,
+          "staff"
         );
+        await primeThemeCache();
         router.push("/distributor");
       }
     } catch (err: any) {
