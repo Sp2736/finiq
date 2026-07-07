@@ -9,7 +9,8 @@ const getCookieValue = (name: string) => {
 
 const getPortalContext = () => {
   if (typeof window === "undefined") return "staff";
-  return window.location.pathname.startsWith("/investor")
+  const path = window.location.pathname;
+  return path.startsWith("/investor") || path === "/login"
     ? "investor"
     : "staff";
 };

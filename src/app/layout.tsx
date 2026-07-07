@@ -30,15 +30,19 @@ export default function RootLayout({
           strategy="beforeInteractive"
           dangerouslySetInnerHTML={{
             __html: `
-          (function(){
+          (function() {
             try {
-              var t = localStorage.getItem('finiq_theme_vars');
-              if(t){
-                var v = JSON.parse(t);
-                var r = document.documentElement;
-                Object.keys(v).forEach(function(k){ r.style.setProperty(k, v[k]); });
+              var cached = localStorage.getItem('finiq_active_theme');
+              if (cached) {
+                var parsed = JSON.parse(cached);
+                var vars = parsed.theme_variables || {};
+                var root = document.documentElement;
+                var keys = Object.keys(vars);
+                for (var i = 0; i < keys.length; i++) {
+                  root.style.setProperty(keys[i], vars[keys[i]]);
+                }
               }
-            } catch(e){}
+            } catch(e) {}
           })();
         `,
           }}

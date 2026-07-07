@@ -131,6 +131,8 @@ export default function ThemePanel() {
     saveTheme,
     updateSavedTheme,
     deleteSavedTheme,
+    refreshSavedThemes,
+    isSavedThemesLoading,
   } = useTheme();
 
   const [localVars, setLocalVars] = useState<Record<string, string>>({ ...DEFAULT_VARS, ...variables });
@@ -141,10 +143,15 @@ export default function ThemePanel() {
   const [toasts, setToasts] = useState<Toast[]>([]);
   const themeNameRef = useRef<HTMLInputElement>(null);
   
-  // For header-level actions
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [isActivating, setIsActivating] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+
+  // Fetch the saved-themes list only when this settings page is actually opened.
+  useEffect(() => {
+    refreshSavedThemes();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Sync local vars when context variables change (e.g. on activate)
   useEffect(() => {

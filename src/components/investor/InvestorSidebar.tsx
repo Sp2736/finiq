@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useParams } from "next/navigation";
 import LogoutButton from "@/components/investor/LogoutButton";
+import { useCompanyLogo } from "@/hooks/useCompanyLogo";
 import { exportTransactionReport } from "@/lib/transactionReportExport";
 import {
   LayoutDashboard,
@@ -59,31 +60,7 @@ export default function InvestorSidebar(props: InvestorSidebarProps) {
   const investorName = rawP?.investor_name || rawP?.clientName || "Investor";
 
   // Dynamic Logo State
-  const [companyLogo, setCompanyLogo] = useState<string | null>(null);
-
-  // Extract and format logo from local storage
-  useEffect(() => {
-    try {
-      let storedLogo = localStorage.getItem("company-logo-inv");
-
-      if (
-        storedLogo &&
-        storedLogo !== "null" &&
-        storedLogo !== "undefined" &&
-        storedLogo.length > 20
-      ) {
-        // Append prefix if missing for proper rendering
-        if (!storedLogo.startsWith("data:image")) {
-          storedLogo = `data:image/png;base64,${storedLogo}`;
-        }
-        setCompanyLogo(storedLogo);
-      } else {
-        console.warn("Sidebar: No valid logo found in local storage.");
-      }
-    } catch (err) {
-      console.error("Sidebar: Error retrieving logo.", err);
-    }
-  }, []);
+  const { logoUrl: companyLogo, refreshLogo } = useCompanyLogo();
 
   // Auto-expand menus if we are inside their respective routes
   useEffect(() => {
@@ -179,6 +156,7 @@ export default function InvestorSidebar(props: InvestorSidebarProps) {
                 <img
                   src={companyLogo}
                   alt="Company Logo"
+                  onError={() => refreshLogo(true)}
                   className="max-w-full max-h-full object-contain group-hover:scale-105 transition-transform duration-300"
                 />
               ) : (

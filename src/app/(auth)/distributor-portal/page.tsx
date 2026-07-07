@@ -9,6 +9,7 @@ import OTPVerificationForm from "@/components/layouts/OTPVerificationForm";
 import DistributorFluidBackground from "@/components/layouts/DistributorFluidBackground";
 import { authService } from "@/services/auth.service";
 import { setAuthCookies, decodeJwt, DecodedStaffToken } from "@/lib/authClient";
+import { primeThemeCache } from "@/lib/primeThemeCache";
 
 type Step = "phone" | "otp";
 
@@ -58,12 +59,17 @@ export default function DistributorLoginPage() {
 
         // Store company logo so both sidebars can display it without an extra API call
         try {
-          const companyId = decoded.company_id;
+          const decoded = decodeJwt<DecodedStaffToken>(response.data.access_token);
+          const companyId = decoded?.company_id;
+          if (companyId) {
+            localStorage.setItem('company_id', companyId);
+          }
           if (response.data.company_logo_url && companyId) {
             const cacheKey = `company_logo_cache_${companyId}`;
             const newCache = {
               url: response.data.company_logo_url,
               expiresAt: Date.now() + 50 * 60 * 1000,
+              s3Key: response.data.company_logo_s3_key ?? null,
             };
             localStorage.setItem(cacheKey, JSON.stringify(newCache));
           }
@@ -78,6 +84,9 @@ export default function DistributorLoginPage() {
           "staff",
           decoded?.sub, // was response.data.user.id
         );
+        
+        await primeThemeCache();
+        
         router.push("/distributor");
       }
     } catch (err: any) {

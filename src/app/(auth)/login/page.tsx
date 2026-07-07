@@ -9,6 +9,7 @@ import InvestorFluidBackground from "@/components/layouts/InvestorFluidBackgroun
 import { authService } from "@/services/auth.service";
 import { setAuthCookies, decodeJwt, DecodedInvestorToken } from "@/lib/authClient";
 import ErrorNotice from "@/components/ui/ErrorNotice";
+import { primeThemeCache } from "@/lib/primeThemeCache";
 
 export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
@@ -33,11 +34,15 @@ export default function LoginPage() {
       // Store company logo so InvestorSidebar can display it without extra API calls
       try {
         const companyId = decoded.company_id;
+        if (companyId) {
+          localStorage.setItem('company_id', companyId);
+        }
         if (response.data?.logo_url && companyId) {
           const cacheKey = `company_logo_cache_${companyId}`;
           const newCache = {
             url: response.data.logo_url,
             expiresAt: Date.now() + 50 * 60 * 1000,
+            s3Key: response.data.logo_s3_key ?? null,
           };
           localStorage.setItem(cacheKey, JSON.stringify(newCache));
         }
@@ -48,6 +53,9 @@ export default function LoginPage() {
 
       // Store access token
       setAuthCookies(actualToken, undefined, "investor");
+
+      // Prime the theme cache once, right after auth cookies are set.
+      await primeThemeCache();
 
       // Redirect seamlessly to the dashboard
       router.push("/investor");

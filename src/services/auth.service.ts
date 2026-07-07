@@ -31,6 +31,7 @@ export interface LoginResponse {
   data: {
     access_token: string;
     logo_url?: string | null;
+    logo_s3_key?: string | null;
     company_info?: {
       name?: string | null;
       address?: string | null;

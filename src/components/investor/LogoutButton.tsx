@@ -20,12 +20,26 @@ export default function LogoutButton({
     // 1. Clear the auth cookies
     removeAuthCookies(portal);
 
-    // 2. Clear the dynamic logo from local storage
+    // 2. Clear the dynamic logo and company_id from local storage
     if (portal === "investor") {
       localStorage.removeItem("company-logo-inv");
+      localStorage.removeItem("company-info-inv");
     } else {
       localStorage.removeItem("company-logo-dis");
+      localStorage.removeItem("company-info-dis");
     }
+
+    localStorage.removeItem("company_id");
+    localStorage.removeItem("finiq_active_theme");
+
+    const keysToRemove = [];
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key?.startsWith('company_logo_cache_')) {
+        keysToRemove.push(key);
+      }
+    }
+    keysToRemove.forEach(k => localStorage.removeItem(k));
 
     // 3. Redirect to the login page
     router.push(redirectTo);
