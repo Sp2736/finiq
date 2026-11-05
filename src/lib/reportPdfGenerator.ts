@@ -540,9 +540,18 @@ export function generateSystematicReportPDF(
   const CW = PW - ML - MR;
   let Y = 0;
 
-  const type = opts.type || "ALL";
+  const type = opts.type || "All";
   const groupBy = opts.groupBy || "None";
   const investorLabel = opts.investorLabel || "All Investors";
+
+  const needsPage = (h: number) => {
+    if (Y + h > PH - 18) {
+      doc.addPage();
+      Y = 16;
+      return true;
+    }
+    return false;
+  };
 
   const drawHeader = () => {
     const HEADER_H = 22;
@@ -593,7 +602,7 @@ export function generateSystematicReportPDF(
     doc.setFont("helvetica", "normal");
     doc.setTextColor(...C.textPrimary);
     doc.text(
-      `Total Instructions: ${items.length}  |  Type: ${type}  |  Group By: ${groupBy}`,
+      `Total Records: ${items.length}  |  Type: ${type}  |  Group By: ${groupBy}`,
       ML + 4,
       Y + 11.5
     );
@@ -604,98 +613,219 @@ export function generateSystematicReportPDF(
     doc.setTextColor(...C.navy);
     doc.text(distName, PW - MR - 4, Y + 6, { align: "right" });
 
+    const phone = distributorInfo?.phone || "+91 99000 00001";
+    const email = distributorInfo?.email || "support@finiq.com";
     doc.setFontSize(7.5);
     doc.setFont("helvetica", "normal");
     doc.setTextColor(...C.textPrimary);
-    doc.text("Ph: +91 99000 00001  |  support@finiq.com", PW - MR - 4, Y + 11.5, {
+    doc.text(`Ph: ${phone}  |  ${email}`, PW - MR - 4, Y + 11.5, {
       align: "right",
     });
 
     Y += BAND_H + 6;
   };
 
+  const drawEmptyState = () => {
+    needsPage(20);
+    doc.setFillColor(...C.offWhite);
+    doc.setDrawColor(...C.border);
+    doc.setLineWidth(0.3);
+    doc.rect(ML, Y, CW, 18, "FD");
+
+    doc.setFontSize(9);
+    doc.setFont("helvetica", "italic");
+    doc.setTextColor(...C.textMuted);
+    doc.text(
+      "No systematic transactions were found for the selected criteria.",
+      ML + CW / 2,
+      Y + 10,
+      { align: "center" }
+    );
+    Y += 18 + 8;
+  };
+
+  const drawGroupSummary = () => {
+    const groups: Record<string, { count: number; totalAmount: number }> = {};
+
+    items.forEach((item) => {
+      let key = "Unknown";
+      if (groupBy === "Client")
+        key = toTitleCase(item.investor_name || "Unknown Client");
+      else if (groupBy === "AMC") key = item.amc_name || "Unknown AMC";
+      else if (groupBy === "Scheme")
+        key = item.scheme_name || "Unknown Scheme";
+      else if (groupBy === "Registrar")
+        key = item.source || "Unknown Registrar";
+
+      if (!groups[key]) groups[key] = { count: 0, totalAmount: 0 };
+      groups[key].count += 1;
+      groups[key].totalAmount += Number(item.amount) || 0;
+    });
+
+    const groupedData = Object.entries(groups)
+      .map(([name, data]) => ({
+        groupName: name,
+        count: data.count,
+        totalAmount: data.totalAmount,
+      }))
+      .sort((a, b) => b.totalAmount - a.totalAmount);
+
+    const rows = groupedData.map((g) => [
+      g.groupName,
+      String(g.count),
+      fmt(g.totalAmount),
+    ]);
+
+    const grandTotalAmount = groupedData.reduce((sum, g) => sum + g.totalAmount, 0);
+    const grandTotalCount = groupedData.reduce((sum, g) => sum + g.count, 0);
+
+    autoTable(doc, {
+      startY: Y,
+      margin: { left: ML, right: MR },
+      head: [[groupBy, "No. of Mandates", "Total Amount (Rs.)"]],
+      body: rows,
+      foot: [["Total", String(grandTotalCount), `INR ${fmt(grandTotalAmount)}`]],
+      theme: "grid",
+      styles: {
+        fontSize: 8,
+        cellPadding: { top: 3, bottom: 3, left: 4, right: 4 },
+        lineColor: C.border,
+        lineWidth: 0.15,
+        textColor: C.textPrimary,
+        font: "helvetica",
+      },
+      headStyles: {
+        textColor: C.white,
+        halign: "left",
+        valign: "middle",
+        fontStyle: "bold",
+        fillColor: C.navy,
+      },
+      alternateRowStyles: { fillColor: C.rowAlt },
+      footStyles: {
+        fillColor: C.steelLight,
+        textColor: C.navy,
+        fontStyle: "bold",
+      },
+      columnStyles: {
+        0: { halign: "left", cellWidth: "auto", fontStyle: "bold" },
+        1: { halign: "right", cellWidth: 40 },
+        2: { halign: "right", cellWidth: 50, fontStyle: "bold" },
+      },
+    });
+
+    Y = (doc as any).lastAutoTable.finalY + 10;
+  };
+
+  const drawDetailTable = () => {
+    const getStatusStr = (item: any): string => {
+      const now = new Date();
+      if (item.termination_date) return "Terminated";
+      if (item.end_date && new Date(item.end_date) < now) return "Expired";
+      return item.status || "Running";
+    };
+
+    const rows = items.map((tx: any) => [
+      tx.trxn_no || "N/A",
+      tx.folio_number || "—",
+      tx.investor_name ? toTitleCase(tx.investor_name) : "—",
+      tx.scheme_name || "—",
+      tx.systematic_type || "SIP",
+      fmt(tx.amount),
+      fmtDate(tx.start_date),
+      fmtDate(tx.end_date),
+      getStatusStr(tx),
+      tx.source || "N/A",
+    ]);
+
+    autoTable(doc, {
+      startY: Y,
+      margin: { left: ML, right: MR },
+      head: [
+        [
+          "Trxn No.",
+          "Folio Number",
+          "Investor Name",
+          "Scheme Name",
+          "Type",
+          "Amount (Rs.)",
+          "Start Date",
+          "End Date",
+          "Status",
+          "Source",
+        ],
+      ],
+      body: rows,
+      theme: "grid",
+      styles: {
+        fontSize: 7.5,
+        cellPadding: { top: 2, bottom: 2, left: 2, right: 2 },
+        lineColor: C.border,
+        lineWidth: 0.15,
+        textColor: C.textPrimary,
+        font: "helvetica",
+      },
+      headStyles: {
+        textColor: C.white,
+        halign: "center",
+        valign: "middle",
+        fontStyle: "bold",
+        fillColor: C.navy,
+      },
+      alternateRowStyles: { fillColor: C.rowAlt },
+      columnStyles: {
+        0: { halign: "center", cellWidth: 22 },
+        1: { halign: "center", cellWidth: 26 },
+        2: { halign: "left", cellWidth: 38 },
+        3: { halign: "left", cellWidth: "auto" },
+        4: { halign: "center", cellWidth: 16 },
+        5: { halign: "right", cellWidth: 24 },
+        6: { halign: "center", cellWidth: 22 },
+        7: { halign: "center", cellWidth: 22 },
+        8: { halign: "center", cellWidth: 20 },
+        9: { halign: "center", cellWidth: 18 },
+      },
+    });
+
+    Y = (doc as any).lastAutoTable.finalY + 6;
+  };
+
+  const drawTotalsBand = () => {
+    needsPage(14);
+
+    const totalAmount = items.reduce(
+      (sum, tx) => sum + (Number(tx.amount) || 0),
+      0
+    );
+
+    doc.setFillColor(...C.navy);
+    doc.rect(ML, Y, CW, 10, "F");
+
+    doc.setFontSize(8);
+    doc.setFont("helvetica", "bold");
+    doc.setTextColor(...C.white);
+    doc.text(
+      `Total Mandates: ${items.length}      |      Total Mandate Value: Rs ${fmt(totalAmount)}`,
+      ML + 4,
+      Y + 6.5
+    );
+
+    Y += 10 + 6;
+  };
+
   drawHeader();
   drawContactBand();
 
-  const rows = items.map((item: any) => [
-    item.investor_name || item.client_name || "Aarav Mehta",
-    item.folio_number || item.folio || "AX99201928",
-    item.scheme_name || item.scheme || "Axis Bluechip Fund - Growth",
-    item.systematic_type || item.type || item.transaction_type || "SIP",
-    `INR ${fmt(item.amount || item.installment_amount || 15000)}`,
-    item.frequency || "Monthly",
-    fmtDate(item.start_date || "2023-01-05"),
-    fmtDate(item.end_date || "2028-01-05"),
-    item.debit_day || "5th",
-    item.status || (item.termination_date ? "Terminated" : "Running"),
-    item.source || item.registrar || "CAMS",
-  ]);
-
-  const totalAmount = items.reduce(
-    (acc: number, item: any) => acc + (Number(item.amount || item.installment_amount) || 0),
-    0
-  );
-
-  autoTable(doc, {
-    startY: Y,
-    margin: { left: ML, right: MR },
-    head: [
-      [
-        "Investor Name",
-        "Folio No",
-        "Scheme Name",
-        "Type",
-        "Amount",
-        "Frequency",
-        "Start Date",
-        "End Date",
-        "Debit Day",
-        "Status",
-        "Registrar",
-      ],
-    ],
-    body: rows,
-    foot: [
-      [
-        "Total",
-        "",
-        "",
-        "",
-        `INR ${fmt(totalAmount)}`,
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-      ],
-    ],
-    theme: "plain",
-    styles: {
-      fontSize: 7.5,
-      textColor: C.textPrimary,
-      lineColor: C.border,
-      lineWidth: 0.2,
-      cellPadding: 2,
-    },
-    headStyles: {
-      fillColor: C.navy,
-      textColor: C.white,
-      fontStyle: "bold",
-      fontSize: 8,
-    },
-    alternateRowStyles: {
-      fillColor: C.rowAlt,
-    },
-    footStyles: {
-      fillColor: C.steelLight,
-      textColor: C.navy,
-      fontStyle: "bold",
-    },
-    columnStyles: {
-      4: { halign: "right" },
-    },
-  });
+  if (items.length === 0) {
+    drawEmptyState();
+  } else {
+    if (groupBy && groupBy !== "None") {
+      drawGroupSummary();
+    } else {
+      drawDetailTable();
+      drawTotalsBand();
+    }
+  }
 
   const pageCount = doc.getNumberOfPages();
   for (let i = 1; i <= pageCount; i++) {

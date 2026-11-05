@@ -3,6 +3,7 @@ import { buildDistributorInfoPayload } from "./companyInfo";
 
 export const exportSystematicReportPDF = async (
   payload: {
+    data?: any[];
     type?: string;
     status?: string;
     registrar?: string;

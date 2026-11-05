@@ -487,10 +487,48 @@ async function handleMockRequest<T>(
 
   if (path === "sips/systematic-report" || path === "my-portfolio/systematic-report") {
     const db = loadMockDb();
+    let items = [...db.systematicItems];
+
+    if (path === "my-portfolio/systematic-report") {
+      const currentInv = db.investors[0]; // Aarav Mehta
+      items = items.filter(
+        (it) => it.investor_name.toLowerCase() === currentInv.name.toLowerCase()
+      );
+    } else if (body?.investor_id && body.investor_id !== "ALL") {
+      const inv = db.investors.find((i) => i.id === body.investor_id);
+      if (inv) {
+        items = items.filter(
+          (it) => it.investor_name.toLowerCase() === inv.name.toLowerCase()
+        );
+      }
+    }
+
+    if (body?.type && body.type !== "All" && body.type !== "ALL") {
+      items = items.filter(
+        (it) => (it.systematic_type || "").toUpperCase() === body.type.toUpperCase()
+      );
+    }
+
+    if (body?.registrar && body.registrar !== "All" && body.registrar !== "ALL") {
+      items = items.filter(
+        (it) => (it.source || "").toUpperCase() === body.registrar.toUpperCase()
+      );
+    }
+
+    if (body?.status && body.status !== "All") {
+      if (body.status === "CURRENTLY_RUNNING" || body.status === "Running") {
+        items = items.filter((it) => !it.termination_date);
+      } else if (body.status === "PREMATURELY_TERMINATED" || body.status === "Terminated") {
+        items = items.filter((it) => !!it.termination_date);
+      } else if (body.status === "DUE_TO_MATURITY" || body.status === "Expired" || body.status === "Matured") {
+        items = items.filter((it) => it.end_date && new Date(it.end_date) < new Date());
+      }
+    }
+
     return {
       success: true,
       message: "Success",
-      data: db.systematicItems,
+      data: items,
       timestamp: now,
     } as T;
   }
@@ -897,17 +935,70 @@ export const apiClient = {
 
     // 2. SYSTEMATIC REPORT EXPORT
     if (endpoint.includes("systematic-report")) {
-      const items = Array.isArray(data?.data) && data.data.length > 0
-        ? data.data
-        : (data?.investorLabel && data.investorLabel !== "All Investors"
-            ? db.systematicItems.filter((it) => it.investor_name.toLowerCase().includes(data.investorLabel.toLowerCase()))
-            : db.systematicItems);
+      let items: any[] = [];
+      if (Array.isArray(data?.data) && data.data.length > 0) {
+        items = data.data;
+      } else {
+        items = [...db.systematicItems];
 
-      const blob = generateSystematicReportPDF(items, {
-        type: data?.type,
-        investorLabel: data?.investorLabel,
-        groupBy: data?.groupBy,
-      }, data?.distributor_info);
+        if (data?.investorLabel === "My Portfolio") {
+          const currentInvestor = db.investors[0]; // Aarav Mehta
+          items = items.filter(
+            (it) => it.investor_name.toLowerCase() === currentInvestor.name.toLowerCase()
+          );
+        } else if (
+          data?.investorLabel &&
+          data.investorLabel !== "All Investors" &&
+          data.investorLabel !== "All"
+        ) {
+          items = items.filter((it) =>
+            it.investor_name.toLowerCase().includes(data.investorLabel.toLowerCase())
+          );
+        } else if (data?.investorId && data.investorId !== "ALL") {
+          const inv = db.investors.find((i) => i.id === data.investorId);
+          if (inv) {
+            items = items.filter(
+              (it) => it.investor_name.toLowerCase() === inv.name.toLowerCase()
+            );
+          }
+        }
+
+        if (data?.type && data.type !== "All" && data.type !== "ALL") {
+          items = items.filter(
+            (it) => (it.systematic_type || "").toUpperCase() === data.type.toUpperCase()
+          );
+        }
+
+        if (data?.registrar && data.registrar !== "All" && data.registrar !== "ALL") {
+          items = items.filter(
+            (it) => (it.source || "").toUpperCase() === data.registrar.toUpperCase()
+          );
+        }
+
+        if (data?.status && data.status !== "All") {
+          if (data.status === "CURRENTLY_RUNNING" || data.status === "Running") {
+            items = items.filter((it) => !it.termination_date);
+          } else if (data.status === "PREMATURELY_TERMINATED" || data.status === "Terminated") {
+            items = items.filter((it) => !!it.termination_date);
+          } else if (data.status === "DUE_TO_MATURITY" || data.status === "Expired" || data.status === "Matured") {
+            items = items.filter((it) => it.end_date && new Date(it.end_date) < new Date());
+          }
+        }
+      }
+
+      if (items.length === 0) {
+        items = db.systematicItems.slice(0, 6);
+      }
+
+      const blob = generateSystematicReportPDF(
+        items,
+        {
+          type: data?.type || "All",
+          investorLabel: data?.investorLabel || "All Investors",
+          groupBy: data?.groupBy || "None",
+        },
+        data?.distributor_info
+      );
       return {
         blob,
         filename: fallbackFilename || "Systematic_Transactions_Report.pdf",

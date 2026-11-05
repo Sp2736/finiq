@@ -123,6 +123,7 @@ export default function InvestorSystematicTransactions() {
       };
 
       await exportSystematicReportPDF({
+        data: reportData,
         type: appliedType !== "All" ? appliedType : undefined,
         status: appliedStatus !== "All" ? STATUS_MAP[appliedStatus] : undefined,
         registrar: appliedRegistrar !== "All" ? appliedRegistrar : undefined,
