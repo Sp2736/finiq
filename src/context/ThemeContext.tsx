@@ -61,7 +61,16 @@ function readActiveThemeCache(): CachedActiveTheme | null {
   try {
     const raw = localStorage.getItem(ACTIVE_THEME_CACHE_KEY);
     if (!raw) return null;
-    return JSON.parse(raw) as CachedActiveTheme;
+    const parsed = JSON.parse(raw) as CachedActiveTheme;
+    if (
+      parsed.theme_name === "FinIQ Modern Slate" ||
+      parsed.active_theme_id === "th-slate-01" ||
+      parsed.theme_variables?.["--fin-page-bg"] === "#0f172a"
+    ) {
+      localStorage.removeItem(ACTIVE_THEME_CACHE_KEY);
+      return null;
+    }
+    return parsed;
   } catch (_) {
     return null;
   }

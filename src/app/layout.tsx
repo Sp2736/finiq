@@ -13,7 +13,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="h-full antialiased">
+    <html lang="en" className="h-full antialiased" suppressHydrationWarning>
       <head>
         {/* Anti-FOUC Script: Runs before React hydration to apply saved CSS vars immediately */}
         <Script
@@ -26,6 +26,10 @@ export default function RootLayout({
               var cached = localStorage.getItem('finiq_active_theme');
               if (cached) {
                 var parsed = JSON.parse(cached);
+                if (parsed.theme_name === "FinIQ Modern Slate" || parsed.active_theme_id === "th-slate-01" || (parsed.theme_variables && parsed.theme_variables['--fin-page-bg'] === '#0f172a')) {
+                  localStorage.removeItem('finiq_active_theme');
+                  return;
+                }
                 var vars = parsed.theme_variables || {};
                 var root = document.documentElement;
                 var keys = Object.keys(vars);
