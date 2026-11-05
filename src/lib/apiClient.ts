@@ -16,6 +16,17 @@ import {
   INITIAL_ACTIVE_THEME,
   generateMockJwt,
 } from "./mockDatabase";
+import {
+  generateCapitalGainsPDF,
+  generateCapitalGainsExcel,
+  generateSystematicReportPDF,
+  generateTransactionsPDF,
+  generatePortfolioValuationPDF,
+  generateAumSummaryPDF,
+  generateBrokeragePayoutsPDF,
+  generateClientActivityPDF,
+  generateMasterDataExcel,
+} from "./reportPdfGenerator";
 
 export interface DownloadedFile {
   blob: Blob;
@@ -36,63 +47,7 @@ function parseUrl(endpoint: string) {
   return { path, query, segments };
 }
 
-/**
- * Generate a realistic downloadable PDF blob for demo report exports
- */
-function generateDemoReportPdf(reportTitle: string, investorName = "Aarav Mehta"): Blob {
-  const today = new Date().toLocaleDateString("en-IN", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
 
-  const pdfContent = `%PDF-1.4
-1 0 obj << /Type /Catalog /Pages 2 0 R >> endobj
-2 0 obj << /Type /Pages /Kids [3 0 R] /Count 1 >> endobj
-3 0 obj << /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Contents 4 0 R /Resources << /Font << /F1 5 0 R /F2 6 0 R >> >> >> endobj
-4 0 obj << /Length 380 >> stream
-BT
-/F1 22 Tf
-50 730 Td
-(FINIQ WEALTH MANAGEMENT PORTFOLIO REPORT) Tj
-/F2 12 Tf
-0 -30 Td
-(Generated on: ${today}) Tj
-0 -20 Td
-(Client: ${investorName} | PAN: ABCDE1234F | Status: Resident Individual) Tj
-0 -30 Td
-(--------------------------------------------------------------------------) Tj
-0 -30 Td
-(Report Type: ${reportTitle}) Tj
-0 -20 Td
-(Total Portfolio AUM: INR 54,80,250 | Net Gain: INR 12,30,250 [28.95%]) Tj
-0 -20 Td
-(XIRR Annualized Return: 19.8% | Active SIPs: 4 Schemes) Tj
-0 -40 Td
-(This is an authentic simulated document generated for demo evaluation.) Tj
-0 -20 Td
-(Platform: FinIQ Portfolio Suite | Architecture: NestJS + TypeORM + PostgreSQL) Tj
-ET
-endstream
-endobj
-5 0 obj << /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold >> endobj
-6 0 obj << /Type /Font /Subtype /Type1 /BaseFont /Helvetica >> endobj
-xref
-0 7
-0000000000 65535 f 
-0000000010 00000 n 
-0000000060 00000 n 
-0000000117 00000 n 
-0000000250 00000 n 
-0000000680 00000 n 
-0000000755 00000 n 
-trailer << /Size 7 /Root 1 0 R >>
-startxref
-825
-%%EOF`;
-
-  return new Blob([pdfContent], { type: "application/pdf" });
-}
 
 /**
  * Core Request Router - Resolves all API endpoints to local mock database
@@ -458,9 +413,38 @@ async function handleMockRequest<T>(
 
   if (segments[0] === "sips" && segments[1] === "investor") {
     const db = loadMockDb();
-    const sips = db.funds
-      .filter((f) => f.sip_status === "Active")
-      .map((f, i) => ({
+    const invId = segments[2];
+    const inv = db.investors.find((i) => i.id === invId);
+    const invName = inv?.name || "Aarav Mehta";
+
+    const matchedItems = db.systematicItems.filter(
+      (it) => it.investor_name.toLowerCase() === invName.toLowerCase() && it.systematic_type === "SIP"
+    );
+
+    let sips: {
+      id: string;
+      source: "CAMS" | "KARVY";
+      product_name: string;
+      folio_no: string;
+      installment_amount: number;
+      frequency: string;
+      status: string;
+      start_date: string;
+      end_date: string | null;
+    }[] = matchedItems.map((item, i) => ({
+      id: `sip-${item.trxn_no}-${i}`,
+      source: (item.source || "CAMS") as "CAMS" | "KARVY",
+      product_name: item.scheme_name,
+      folio_no: item.folio_number,
+      installment_amount: item.amount,
+      frequency: "Monthly",
+      status: "Active",
+      start_date: item.start_date,
+      end_date: item.end_date || "2028-12-31",
+    }));
+
+    if (sips.length === 0) {
+      sips = db.funds.slice(0, 3).map((f, i) => ({
         id: `sip-${f.amfi_code}-${i}`,
         source: (i % 2 === 0 ? "CAMS" : "KARVY") as "CAMS" | "KARVY",
         product_name: f.fund_name,
@@ -469,8 +453,10 @@ async function handleMockRequest<T>(
         frequency: "Monthly",
         status: "Active",
         start_date: f.purchase_date,
-        end_date: null,
+        end_date: "2028-12-31",
       }));
+    }
+
     return {
       success: true,
       message: "Success",
@@ -862,7 +848,8 @@ export const apiClient = {
     handleMockRequest<T>("DELETE", endpoint),
 
   /**
-   * Report Export Interceptor - Generates real, downloadable PDF files
+   * Report Export Interceptor - Generates real, downloadable PDF & Excel files
+   * using authentic FinIQ styling copied from finiq-api
    */
   postForFile: async (
     endpoint: string,
@@ -871,27 +858,147 @@ export const apiClient = {
     _options?: RequestInit,
   ): Promise<DownloadedFile> => {
     await delay();
+    const db = loadMockDb();
 
-    let title = "Portfolio Valuation Statement";
-    let filename = fallbackFilename;
-
+    // 1. CAPITAL GAINS TAX REPORT
     if (endpoint.includes("capital-gains")) {
-      title = "Capital Gains Tax Statement (FIFO Indexation)";
-      filename = fallbackFilename || "Capital_Gains_Statement.pdf";
-    } else if (endpoint.includes("transactions")) {
-      title = "Transaction Ledger & Historical Statement";
-      filename = fallbackFilename || "Transaction_Report.pdf";
-    } else if (endpoint.includes("systematic-report")) {
-      title = "Systematic Investment Plans (SIP/STP/SWP) Audit";
-      filename = fallbackFilename || "Systematic_Transactions_Report.pdf";
-    } else if (endpoint.includes("holdings")) {
-      title = "Holdings Valuation & Asset Allocation Report";
-      filename = fallbackFilename || "Holdings_Valuation_Report.pdf";
+      const invId = data?.investor_id || "inv-001";
+      const inv = db.investors.find((i) => i.id === invId) || db.investors[0];
+      const gainsPayload = {
+        investorDetails: {
+          name: inv.name,
+          pan: inv.pan,
+          mobile: inv.mobile || "+91 98765 43210",
+          email: inv.email,
+          address: inv.address || "Level 4, Emerald Heights, Mumbai 400051",
+        },
+        transactions: [
+          { sellDate: "2024-11-15", holdingDays: 949, transactionType: "Redemption", units: 500, sellNav: 68.2, sellAmount: 34100, purchaseDate: "2022-04-10", purchaseNav: 52.4, netPurchaseAmount: 26200, costAcquisition: 26200, shortTermPL: 0, longTermPL: 7900 },
+          { sellDate: "2024-12-02", holdingDays: 210, transactionType: "Redemption", units: 300, sellNav: 84.5, sellAmount: 25350, purchaseDate: "2024-05-06", purchaseNav: 76.0, netPurchaseAmount: 22800, costAcquisition: 22800, shortTermPL: 2550, longTermPL: 0 },
+          { sellDate: "2025-01-20", holdingDays: 1120, transactionType: "Switch Out", units: 1200, sellNav: 142.0, sellAmount: 170400, purchaseDate: "2021-12-27", purchaseNav: 108.5, netPurchaseAmount: 130200, costAcquisition: 130200, shortTermPL: 0, longTermPL: 40200 },
+          { sellDate: "2025-02-14", holdingDays: 185, transactionType: "Redemption", units: 450, sellNav: 54.0, sellAmount: 24300, purchaseDate: "2024-08-13", purchaseNav: 49.2, netPurchaseAmount: 22140, costAcquisition: 22140, shortTermPL: 2160, longTermPL: 0 },
+        ],
+      };
+
+      if (data?.format === "excel") {
+        const blob = await generateCapitalGainsExcel(gainsPayload, data?.from_date, data?.to_date);
+        return {
+          blob,
+          filename: fallbackFilename || `${inv.name.replace(/\s+/g, "_")}_Capital-Gains-Report.xlsx`,
+        };
+      } else {
+        const blob = generateCapitalGainsPDF(gainsPayload, data?.from_date, data?.to_date, data?.distributor_info);
+        return {
+          blob,
+          filename: fallbackFilename || `${inv.name.replace(/\s+/g, "_")}_Capital-Gains-Report.pdf`,
+        };
+      }
     }
 
-    const investorName = data?.investorLabel || data?.investor_name || "Aarav Mehta";
-    const blob = generateDemoReportPdf(title, investorName);
+    // 2. SYSTEMATIC REPORT EXPORT
+    if (endpoint.includes("systematic-report")) {
+      const items = Array.isArray(data?.data) && data.data.length > 0
+        ? data.data
+        : (data?.investorLabel && data.investorLabel !== "All Investors"
+            ? db.systematicItems.filter((it) => it.investor_name.toLowerCase().includes(data.investorLabel.toLowerCase()))
+            : db.systematicItems);
 
-    return { blob, filename };
+      const blob = generateSystematicReportPDF(items, {
+        type: data?.type,
+        investorLabel: data?.investorLabel,
+        groupBy: data?.groupBy,
+      }, data?.distributor_info);
+      return {
+        blob,
+        filename: fallbackFilename || "Systematic_Transactions_Report.pdf",
+      };
+    }
+
+    // 3. TRANSACTIONS STATEMENT EXPORT
+    if (endpoint.includes("transactions")) {
+      const parts = endpoint.split("/");
+      const invIdIndex = parts.indexOf("investors");
+      const invId = invIdIndex !== -1 && parts[invIdIndex + 1] ? parts[invIdIndex + 1] : "inv-001";
+      const inv = db.investors.find((i) => i.id === invId) || db.investors[0];
+
+      const txs = db.portfolio.funds.flatMap((f) => f.transactions || []).map((t) => ({
+        date: t.transactionDate,
+        folio_number: "FOL-892011/0",
+        scheme_name: "FinIQ Horizon Bluechip Equity Fund - Direct Growth",
+        type: t.transactionType,
+        units: t.units,
+        nav: t.nav,
+        amount: t.amount,
+        balance_units: t.balanceUnits,
+      }));
+
+      const blob = generateTransactionsPDF({
+        investor_name: inv.name,
+        transactions: txs.length > 0 ? txs : [
+          { date: "2023-04-10", folio_number: "FOL-892011/0", scheme_name: "FinIQ Horizon Bluechip Equity Fund", type: "PURCHASE", units: 2000, nav: 150.0, amount: 300000, balance_units: 2000 },
+          { date: "2023-10-15", folio_number: "FOL-892011/0", scheme_name: "FinIQ Horizon Bluechip Equity Fund", type: "SIP", units: 1000, nav: 175.0, amount: 175000, balance_units: 3000 },
+          { date: "2024-03-20", folio_number: "FOL-892011/0", scheme_name: "FinIQ Horizon Bluechip Equity Fund", type: "PURCHASE", units: 1000, nav: 195.0, amount: 195000, balance_units: 4000 },
+          { date: "2024-09-12", folio_number: "FOL-892011/0", scheme_name: "FinIQ Horizon Bluechip Equity Fund", type: "SIP", units: 820.537, nav: 215.0, amount: 176415, balance_units: 4820.537 },
+        ],
+      }, data?.distributor_info);
+      return {
+        blob,
+        filename: fallbackFilename || `${inv.name.replace(/\s+/g, "_")}_Transactions.pdf`,
+      };
+    }
+
+    // 4. HOLDINGS VALUATION REPORT EXPORT
+    if (endpoint.includes("holdings")) {
+      const parts = endpoint.split("/");
+      const invIdIndex = parts.indexOf("investors");
+      const invId = invIdIndex !== -1 && parts[invIdIndex + 1] ? parts[invIdIndex + 1] : "inv-001";
+      const inv = db.investors.find((i) => i.id === invId) || db.investors[0];
+
+      const holdings = db.portfolio.funds.map((f) => ({
+        fund_name: f.fund_name,
+        folio_number: f.folio_number,
+        category: f.category,
+        units: f.units,
+        avg_buy_nav: f.avg_nav,
+        current_nav: f.current_nav,
+        invested_amount: f.invested_capital,
+        current_value: f.current_value,
+      }));
+
+      const blob = generatePortfolioValuationPDF(holdings, inv.name);
+      return {
+        blob,
+        filename: fallbackFilename || `${inv.name.replace(/\s+/g, "_")}_Holdings.pdf`,
+      };
+    }
+
+    // 5. AUM SUMMARY REPORT
+    if (endpoint.includes("aum-summary")) {
+      const blob = generateAumSummaryPDF(db.investors, data?.distributor_info);
+      return { blob, filename: fallbackFilename || "FinIQ_AUM_Summary.pdf" };
+    }
+
+    // 6. BROKERAGE PAYOUTS REPORT
+    if (endpoint.includes("brokerage-payouts")) {
+      const blob = generateBrokeragePayoutsPDF(MOCK_HIERARCHY_DATA, data?.distributor_info);
+      return { blob, filename: fallbackFilename || "FinIQ_Brokerage_Payouts.pdf" };
+    }
+
+    // 7. CLIENT ACTIVITY REPORT
+    if (endpoint.includes("client-activity")) {
+      const blob = generateClientActivityPDF(db.systematicItems, data?.distributor_info);
+      return { blob, filename: fallbackFilename || "FinIQ_Client_Activity.pdf" };
+    }
+
+    // 8. MASTER DATA EXCEL EXPORT
+    if (endpoint.includes("master-data")) {
+      const blob = await generateMasterDataExcel(db.investors, db.portfolio.funds, db.systematicItems);
+      return { blob, filename: fallbackFilename || "FinIQ_Master_Data.xlsx" };
+    }
+
+    // Fallback default
+    const investorName = data?.investorLabel || data?.investor_name || "Aarav Mehta";
+    const blob = generatePortfolioValuationPDF(db.portfolio.funds, investorName);
+    return { blob, filename: fallbackFilename };
   },
 };
