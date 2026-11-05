@@ -30,7 +30,7 @@ export function useCompanyLogo() {
     
     // Fallback: If missing from localStorage, try to decode from the auth cookie
     if (!companyId && typeof document !== 'undefined') {
-      const portal = window.location.pathname.startsWith("/investor") ? "investor" : "staff";
+      const portal = window.location.pathname.includes("/investor") ? "investor" : "staff";
       const match = document.cookie.match(new RegExp(`(^| )${portal}-auth-token=([^;]+)`));
       if (match) {
         const token = decodeURIComponent(match[2]);
@@ -76,7 +76,7 @@ export function useCompanyLogo() {
     
     // Fallback: If missing from localStorage, try to decode from the auth cookie
     if (!companyId && typeof document !== 'undefined') {
-      const portal = window.location.pathname.startsWith("/investor") ? "investor" : "staff";
+      const portal = window.location.pathname.includes("/investor") ? "investor" : "staff";
       const match = document.cookie.match(new RegExp(`(^| )${portal}-auth-token=([^;]+)`));
       if (match) {
         const token = decodeURIComponent(match[2]);
