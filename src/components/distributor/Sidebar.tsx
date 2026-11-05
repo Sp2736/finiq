@@ -470,11 +470,11 @@ export default function Sidebar({ isCollapsed, setIsCollapsed }: SidebarProps) {
             {isCollapsed ? (
               <LogoutButton
                 portal="staff"
-                redirectTo="/distributor-portal"
+                redirectTo="/login"
                 isCollapsed={true}
               />
             ) : (
-              <LogoutButton portal="staff" redirectTo="/distributor-portal" />
+              <LogoutButton portal="staff" redirectTo="/login" />
             )}
           </div>
         </div>

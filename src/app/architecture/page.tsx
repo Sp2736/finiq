@@ -1,7 +1,8 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
+import LogoutButton from "@/components/investor/LogoutButton";
 import {
   Server,
   Database,
@@ -32,6 +33,8 @@ import {
   Zap,
   Info,
   Check,
+  TrendingUp,
+  LogOut,
 } from "lucide-react";
 
 interface ApiDocumentationItem {
@@ -589,6 +592,54 @@ export default function BackendArchitecturePage() {
     { id: "telemetry", label: "Telemetry & Theming", count: 2 },
   ];
 
+  const [originRole, setOriginRole] = useState<"admin" | "distributor" | "investor" | null>(null);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const savedRole = sessionStorage.getItem("finiq_current_role") as "admin" | "distributor" | "investor" | null;
+      if (savedRole && ["admin", "distributor", "investor"].includes(savedRole)) {
+        setOriginRole(savedRole);
+      }
+    }
+  }, []);
+
+  const roleConfig = useMemo(() => {
+    if (originRole === "admin") {
+      return {
+        name: "Admin Control Center",
+        label: "Return to Super Admin",
+        href: "/admin",
+        icon: ShieldCheck,
+        badgeColor: "bg-purple-100 text-purple-700 border-purple-200",
+      };
+    }
+    if (originRole === "distributor") {
+      return {
+        name: "Distributor Workspace",
+        label: "Return to Distributor",
+        href: "/distributor",
+        icon: TrendingUp,
+        badgeColor: "bg-blue-100 text-blue-700 border-blue-200",
+      };
+    }
+    if (originRole === "investor") {
+      return {
+        name: "Investor Portfolio",
+        label: "Return to Investor",
+        href: "/investor",
+        icon: Wallet,
+        badgeColor: "bg-emerald-100 text-emerald-700 border-emerald-200",
+      };
+    }
+    return {
+      name: "Portal Workspace",
+      label: "Return to Role Selector",
+      href: "/login",
+      icon: Users,
+      badgeColor: "bg-gray-100 text-gray-700 border-gray-200",
+    };
+  }, [originRole]);
+
   const filteredApis = useMemo(() => {
     return API_DOCUMENTARY_ENTRIES.filter((api) => {
       const matchesCat = activeCategory === "all" || api.category === activeCategory;
@@ -613,9 +664,17 @@ export default function BackendArchitecturePage() {
           <div>
             <div className="flex items-center gap-2 text-xs font-semibold text-[var(--fin-muted-text)] mb-3">
               <Link href="/login" className="hover:text-[var(--fin-brand-600)] transition-colors">
-                Portal Home
+                Role Selector
               </Link>
               <ChevronRight className="w-3.5 h-3.5" />
+              {originRole ? (
+                <>
+                  <Link href={roleConfig.href} className="hover:text-[var(--fin-brand-600)] transition-colors">
+                    {roleConfig.name}
+                  </Link>
+                  <ChevronRight className="w-3.5 h-3.5" />
+                </>
+              ) : null}
               <span className="text-[var(--fin-brand-600)]">Backend Architecture Documentary</span>
             </div>
 
@@ -624,9 +683,17 @@ export default function BackendArchitecturePage() {
                 <Server className="w-6 h-6" />
               </div>
               <div>
-                <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-[var(--fin-heading-primary)]">
-                  Backend Architecture & API Documentary
-                </h1>
+                <div className="flex flex-wrap items-center gap-3">
+                  <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-[var(--fin-heading-primary)]">
+                    Backend Architecture & API Documentary
+                  </h1>
+                  {originRole && (
+                    <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold border ${roleConfig.badgeColor}`}>
+                      <roleConfig.icon className="w-3.5 h-3.5" />
+                      Active Session: {roleConfig.name}
+                    </span>
+                  )}
+                </div>
                 <p className="text-sm text-[var(--fin-muted-text)] font-medium mt-1">
                   Comprehensive technical documentary of microservice pipelines, data flows, and endpoint specifications.
                 </p>
@@ -634,14 +701,31 @@ export default function BackendArchitecturePage() {
             </div>
           </div>
 
-          <div className="flex items-center gap-3">
-            <Link
-              href="/login"
-              className="px-4 py-2.5 rounded-xl bg-[var(--fin-brand-100)] hover:bg-[var(--fin-brand-200)] border border-[var(--fin-brand-300)] text-xs font-bold text-[var(--fin-brand-800)] transition-all flex items-center gap-2"
-            >
-              <ArrowRight className="w-4 h-4 rotate-180" />
-              <span>Back to Role Selector</span>
-            </Link>
+          <div className="flex flex-wrap items-center gap-3">
+            {originRole ? (
+              <Link
+                href={roleConfig.href}
+                className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-[var(--fin-brand-600)] to-[var(--fin-brand-700)] hover:opacity-95 text-white text-xs font-bold transition-all shadow-md flex items-center gap-2"
+              >
+                <ArrowRight className="w-4 h-4 rotate-180" />
+                <roleConfig.icon className="w-4 h-4" />
+                <span>{roleConfig.label}</span>
+              </Link>
+            ) : (
+              <Link
+                href="/login"
+                className="px-4 py-2.5 rounded-xl bg-[var(--fin-brand-100)] hover:bg-[var(--fin-brand-200)] border border-[var(--fin-brand-300)] text-xs font-bold text-[var(--fin-brand-800)] transition-all flex items-center gap-2"
+              >
+                <ArrowRight className="w-4 h-4 rotate-180" />
+                <span>Back to Role Selector</span>
+              </Link>
+            )}
+
+            <LogoutButton
+              redirectTo="/login"
+              label="Sign Out / Switch Role"
+              className="px-4 py-2.5 rounded-xl bg-[var(--fin-table-bg)] hover:bg-[var(--fin-badge-danger-bg)] border border-[var(--fin-border)] hover:border-[var(--fin-badge-danger-border)] text-[var(--fin-heading-primary)] hover:text-[var(--fin-badge-danger-text)] text-xs font-bold transition-all flex items-center gap-2 shadow-sm"
+            />
           </div>
         </div>
 
@@ -989,12 +1073,31 @@ export default function BackendArchitecturePage() {
             </div>
           </div>
 
-          <Link
-            href="/login"
-            className="px-5 py-2.5 rounded-xl bg-[var(--fin-brand-600)] hover:bg-[var(--fin-brand-700)] text-white text-xs font-bold transition-all shadow-md shadow-[var(--fin-brand-600)]/20 whitespace-nowrap"
-          >
-            Launch Interactive Demo
-          </Link>
+          <div className="flex flex-wrap items-center gap-3 shrink-0">
+            {originRole ? (
+              <Link
+                href={roleConfig.href}
+                className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-[var(--fin-brand-600)] to-[var(--fin-brand-700)] hover:opacity-95 text-white text-xs font-bold transition-all shadow-md flex items-center gap-2 whitespace-nowrap"
+              >
+                <ArrowRight className="w-4 h-4 rotate-180" />
+                <roleConfig.icon className="w-4 h-4" />
+                <span>{roleConfig.label}</span>
+              </Link>
+            ) : (
+              <Link
+                href="/login"
+                className="px-5 py-2.5 rounded-xl bg-[var(--fin-brand-600)] hover:bg-[var(--fin-brand-700)] text-white text-xs font-bold transition-all shadow-md shadow-[var(--fin-brand-600)]/20 whitespace-nowrap"
+              >
+                Launch Interactive Demo
+              </Link>
+            )}
+
+            <LogoutButton
+              redirectTo="/login"
+              label="Sign Out / Switch Role"
+              className="px-4 py-2.5 rounded-xl bg-[var(--fin-content-surface)] hover:bg-[var(--fin-badge-danger-bg)] border border-[var(--fin-border)] hover:border-[var(--fin-badge-danger-border)] text-[var(--fin-heading-primary)] hover:text-[var(--fin-badge-danger-text)] text-xs font-bold transition-all flex items-center gap-2 shadow-sm whitespace-nowrap"
+            />
+          </div>
         </div>
       </div>
     </div>
