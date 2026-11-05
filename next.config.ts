@@ -1,15 +1,15 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  output: "export",
+  basePath: "/finiq",
+  trailingSlash: true,
+  images: {
+    unoptimized: true,
+  },
   devIndicators: false,
-  async rewrites() {
-    return [
-      {
-        source: "/api/:path*",
-        destination: 'http://localhost:3000/api/:path*'
-        // destination: "https://finiqapibeta.kaelivtech.com/api/:path*",
-      },
-    ];
+  typescript: {
+    ignoreBuildErrors: false,
   },
 };
 

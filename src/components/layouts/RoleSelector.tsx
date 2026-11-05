@@ -28,11 +28,11 @@ export default function RoleSelector({ roles, activeRole, onRoleChange }: RoleSe
 
   return (
     <div 
-      className="relative flex w-full p-1 bg-[var(--fin-skeleton-base)] dark:bg-[var(--fin-heading-primary)]/50 rounded-md mb-8 items-center"
+      className="relative flex w-full p-1.5 bg-[var(--fin-content-surface)]/80 backdrop-blur-md border border-[var(--fin-border-subtle)] rounded-xl mb-6 items-center shadow-inner"
       ref={containerRef}
     >
       <div 
-        className="absolute h-[calc(100%-8px)] top-1 bg-[var(--fin-table-bg)] dark:bg-[var(--fin-heading-tertiary)] shadow-sm rounded-md transition-all duration-300 ease-out"
+        className="absolute h-[calc(100%-12px)] top-1.5 bg-[var(--fin-brand-600)] text-white shadow-md rounded-lg transition-all duration-300 ease-out"
         style={{
           left: `${indicatorStyle.left}px`,
           width: `${indicatorStyle.width}px`
@@ -50,10 +50,10 @@ export default function RoleSelector({ roles, activeRole, onRoleChange }: RoleSe
             type="button"
             onClick={() => onRoleChange(role)}
             className={`
-              relative z-10 flex-1 py-2 text-sm font-medium transition-colors duration-300 rounded-md
+              relative z-10 flex-1 py-2 text-sm font-bold transition-colors duration-300 rounded-lg capitalize
               ${isActive 
-                ? 'text-foreground' 
-                : 'text-[var(--fin-muted-text)] hover:text-[var(--fin-table-row-text)] dark:text-[var(--fin-aux-text)] dark:hover:text-[var(--fin-aux-text)]'
+                ? 'text-white' 
+                : 'text-[var(--fin-body-text)] hover:text-[var(--fin-heading-primary)]'
               }
             `}
           >

@@ -26,6 +26,7 @@ import {
   Download,
   FileText,
   Loader2,
+  Server,
 } from "lucide-react";
 import { investorService } from "@/services/investor.service";
 
@@ -160,9 +161,9 @@ export default function InvestorSidebar(props: InvestorSidebarProps) {
                   className="max-w-full max-h-full object-contain group-hover:scale-105 transition-transform duration-300"
                 />
               ) : (
-                <div className="w-full h-full bg-theme-btnPrimaryBg rounded-md flex items-center justify-center shadow-sm group-hover:scale-105 transition-transform duration-300">
-                  <span className="text-theme-btnPrimaryText font-bold text-[10px]">
-                    LOGO
+                <div className="w-full h-full bg-gradient-to-br from-emerald-600 to-teal-700 rounded-xl flex items-center justify-center shadow-md shadow-emerald-600/20 group-hover:scale-105 transition-transform duration-300 px-3">
+                  <span className="text-white font-black text-xs tracking-tight">
+                    FinIQ
                   </span>
                 </div>
               )}
@@ -430,6 +431,40 @@ export default function InvestorSidebar(props: InvestorSidebarProps) {
               </div>
             )}
           </div>
+
+          {/* Backend Architecture Showcase */}
+          <Link
+            href="/architecture"
+            onClick={() => setIsMobileOpen(false)}
+            className={`flex items-center overflow-hidden ${
+              isCollapsed ? "justify-center" : "justify-between"
+            } px-4 py-3 rounded-md transition-all duration-300 group ${
+              pathname === "/architecture"
+                ? "bg-[var(--fin-sidebar-item-active-bg)] text-[var(--fin-sidebar-item-active-text)] shadow-md shadow-[var(--fin-sidebar-item-active-bg)]/20"
+                : "text-[var(--fin-sidebar-item-default-text)] hover:bg-[var(--fin-sidebar-item-hover-bg)] hover:text-[var(--fin-sidebar-item-hover-text)]"
+            }`}
+          >
+            <div className="flex items-center gap-3">
+              <Server
+                className={`w-5 h-5 shrink-0 text-blue-400 transition-transform duration-300 ${
+                  pathname === "/architecture" ? "scale-110" : "group-hover:scale-110"
+                }`}
+              />
+              {!isCollapsed && (
+                <div className="flex items-center gap-2">
+                  <span className="font-bold text-sm tracking-tight whitespace-nowrap">
+                    Backend Architecture
+                  </span>
+                  <span className="px-1.5 py-0.5 text-[9px] font-extrabold uppercase bg-blue-500/20 text-blue-400 border border-blue-500/30 rounded">
+                    NestJS
+                  </span>
+                </div>
+              )}
+            </div>
+            {!isCollapsed && pathname === "/architecture" && (
+              <div className="w-1.5 h-1.5 shrink-0 bg-[var(--fin-sidebar-item-active-dot)] rounded-full" />
+            )}
+          </Link>
         </nav>
 
         {/* ─── COMPACT BOTTOM ACTIONS ROW ─── */}

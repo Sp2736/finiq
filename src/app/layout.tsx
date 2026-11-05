@@ -1,16 +1,10 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
 import Script from "next/script";
 import "./globals.css";
 
-const inter = Inter({
-  variable: "--font-inter",
-  subsets: ["latin"],
-});
-
 export const metadata: Metadata = {
-  title: "FinIQ",
-  description: "Modern financial intelligence platform",
+  title: "FinIQ - Wealth Management Suite",
+  description: "Modern financial intelligence and portfolio management platform",
 };
 
 export default function RootLayout({
@@ -19,10 +13,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="en"
-      className={`${inter.variable} h-full antialiased`}
-    >
+    <html lang="en" className="h-full antialiased">
       <head>
         {/* Anti-FOUC Script: Runs before React hydration to apply saved CSS vars immediately */}
         <Script
@@ -48,7 +39,9 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body suppressHydrationWarning className="font-sans min-h-full flex flex-col bg-background text-foreground">{children}</body>
+      <body suppressHydrationWarning className="font-sans min-h-full flex flex-col bg-background text-foreground">
+        {children}
+      </body>
     </html>
   );
 }
