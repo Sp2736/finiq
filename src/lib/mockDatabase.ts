@@ -1765,23 +1765,20 @@ export interface SavedThemePayload {
 }
 
 export const INITIAL_ACTIVE_THEME: ActiveThemePayload = {
-  theme_name: "FinIQ Modern Slate",
-  active_theme_id: "th-slate-01",
-  theme_variables: {
-    "--fin-brand-500": "#3b82f6",
-    "--fin-brand-600": "#2563eb",
-    "--fin-brand-700": "#1d4ed8",
-    "--fin-page-bg": "#0f172a",
-    "--fin-content-surface": "#1e293b",
-    "--fin-heading-primary": "#f8fafc",
-    "--fin-body-text": "#94a3b8",
-  },
+  theme_name: "System Default",
+  active_theme_id: null,
+  theme_variables: {},
 };
 
 export const INITIAL_SAVED_THEMES: SavedThemePayload[] = [
   {
+    id: "th-default-00",
+    name: "System Default",
+    variables: {},
+  },
+  {
     id: "th-slate-01",
-    name: "FinIQ Modern Slate",
+    name: "Modern Slate",
     variables: {
       "--fin-brand-500": "#3b82f6",
       "--fin-brand-600": "#2563eb",

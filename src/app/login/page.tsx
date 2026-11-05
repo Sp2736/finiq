@@ -11,23 +11,24 @@ import {
   ArrowRight,
   Sparkles,
   CheckCircle2,
-  Database,
-  Cpu,
-  Layers,
   Lock,
+  Layers,
+  PieChart,
+  Wallet,
 } from "lucide-react";
-import { MOCK_ROLES, MockUserSession } from "@/lib/mockDatabase";
+import { MOCK_ROLES } from "@/lib/mockDatabase";
 import { setAuthCookies } from "@/lib/authClient";
 import InvestorFluidBackground from "@/components/layouts/InvestorFluidBackground";
-import RoleSelector from "@/components/layouts/RoleSelector";
+import { primeThemeCache } from "@/lib/primeThemeCache";
 
 export default function LoginPage() {
   const router = useRouter();
   const [selectedRole, setSelectedRole] = useState<string>("investor");
   const [isRedirecting, setIsRedirecting] = useState<string | null>(null);
 
-  const handleSelectRole = (roleKey: "admin" | "distributor" | "investor") => {
+  const handleSelectRole = async (roleKey: "admin" | "distributor" | "investor") => {
     setIsRedirecting(roleKey);
+    setSelectedRole(roleKey);
     const session = MOCK_ROLES[roleKey];
 
     if (typeof window !== "undefined") {
@@ -36,13 +37,15 @@ export default function LoginPage() {
       if (session.company_id) {
         localStorage.setItem("company_id", session.company_id);
       }
-      // Populate auth cookies so legacy token readers stay functional
+      // Populate auth cookies for consistent session reads across layouts
       setAuthCookies(
         session.token,
         "mock_refresh_token_demo",
         roleKey === "investor" ? "investor" : "staff",
         session.user_id,
       );
+      // Prime theme cache with the original platform theme
+      await primeThemeCache();
     }
 
     const destinations = {
@@ -53,28 +56,40 @@ export default function LoginPage() {
 
     setTimeout(() => {
       router.push(destinations[roleKey]);
-    }, 200);
+    }, 250);
   };
 
   return (
-    <div className="min-h-screen bg-[var(--fin-page-bg,#0a0f1d)] text-[var(--fin-heading-primary,#f8fafc)] font-sans relative flex flex-col justify-between overflow-x-hidden">
-      {/* Background Ambience */}
-      <div className="absolute inset-0 z-0 bg-gradient-to-br from-[var(--fin-page-bg,#0f172a)] via-[var(--fin-content-surface,#1e293b)] to-[var(--fin-page-bg,#0a0f1d)]" />
-      <div className="absolute inset-0 z-0 opacity-20 bg-[radial-gradient(#3b82f6_1px,transparent_1px)] [background-size:24px_24px] pointer-events-none" />
-      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-600/10 rounded-full blur-[120px] pointer-events-none z-0" />
-      <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-indigo-600/10 rounded-full blur-[120px] pointer-events-none z-0" />
+    <div className="min-h-screen bg-[var(--fin-page-bg)] font-sans selection:bg-[var(--fin-brand-500)]/20 selection:text-[var(--fin-brand-700)] relative flex items-center justify-center overflow-x-hidden">
+      {/* ─── NATIVE AMBIENCE & GRADIENT FOUNDATION ─── */}
+      <div className="absolute inset-0 z-0 bg-gradient-to-br from-[var(--fin-page-bg)] via-[var(--fin-content-surface)] to-[var(--fin-skeleton-base)]" />
+      <div className="absolute inset-0 z-0 opacity-[0.35] bg-[radial-gradient(#94a3b8_1px,transparent_1px)] [background-size:24px_24px] sm:[background-size:32px_32px] pointer-events-none" />
+
+      {/* Fluid Interactive Canvas from Original Brand */}
+      <div
+        className="absolute top-0 left-0 w-full lg:w-[65%] h-full opacity-[0.85] pointer-events-none z-0"
+        style={{
+          maskImage: "linear-gradient(to right, black 40%, transparent 100%)",
+          WebkitMaskImage: "linear-gradient(to right, black 40%, transparent 100%)",
+        }}
+      >
+        <InvestorFluidBackground />
+      </div>
+
+      <div className="absolute -top-40 -left-40 w-[400px] sm:w-[600px] h-[400px] sm:h-[600px] bg-[var(--fin-brand-500)]/20 rounded-full blur-[80px] sm:blur-[100px] pointer-events-none z-0" />
+      <div className="absolute bottom-0 right-0 w-[500px] sm:w-[800px] h-[500px] sm:h-[800px] bg-[var(--fin-brand-600)]/15 rounded-full blur-[100px] sm:blur-[120px] pointer-events-none z-0" />
 
       {/* Top Navbar */}
-      <header className="relative z-20 w-full max-w-7xl mx-auto px-6 py-6 flex items-center justify-between border-b border-white/5">
+      <header className="absolute top-0 left-0 right-0 z-30 w-full max-w-[1600px] mx-auto px-6 sm:px-12 py-6 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-blue-500/25">
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[var(--fin-brand-600)] to-[var(--fin-brand-800)] flex items-center justify-center shadow-lg shadow-[var(--fin-brand-900)]/20">
             <TrendingUp className="w-5 h-5 text-white" />
           </div>
           <div>
-            <span className="text-xl font-black tracking-tight bg-gradient-to-r from-white via-slate-100 to-slate-400 bg-clip-text text-transparent">
+            <span className="text-xl font-black tracking-tight text-[var(--fin-heading-primary)]">
               FinIQ
             </span>
-            <span className="ml-2 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider bg-blue-500/20 text-blue-400 border border-blue-500/30 rounded-full">
+            <span className="ml-2 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider bg-[var(--fin-brand-100)] text-[var(--fin-brand-700)] border border-[var(--fin-brand-200)] rounded-full">
               Demo Suite
             </span>
           </div>
@@ -82,253 +97,226 @@ export default function LoginPage() {
 
         <Link
           href="/architecture"
-          className="group flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 border border-slate-700/60 text-xs font-semibold text-slate-200 transition-all shadow-sm hover:border-blue-500/50"
+          className="group flex items-center gap-2 px-4 py-2 rounded-xl bg-[var(--fin-table-bg)] hover:bg-[var(--fin-brand-50)] border border-[var(--fin-border)] text-xs font-semibold text-[var(--fin-brand-700)] transition-all shadow-sm hover:border-[var(--fin-brand-400)]"
         >
-          <Server className="w-4 h-4 text-blue-400 group-hover:scale-110 transition-transform" />
-          <span>Backend Architecture</span>
-          <ArrowRight className="w-3.5 h-3.5 text-slate-400 group-hover:translate-x-0.5 transition-transform" />
+          <Server className="w-4 h-4 text-[var(--fin-brand-600)] group-hover:scale-110 transition-transform" />
+          <span>Backend Architecture Documentary</span>
+          <ArrowRight className="w-3.5 h-3.5 text-[var(--fin-brand-400)] group-hover:translate-x-0.5 transition-transform" />
         </Link>
       </header>
 
-      {/* Main Content Area */}
-      <main className="relative z-10 w-full max-w-7xl mx-auto px-6 py-10 lg:py-16 flex-1 flex flex-col items-center justify-center">
-        {/* Hero Section */}
-        <div className="text-center max-w-3xl mx-auto mb-12">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-semibold mb-6">
-            <Sparkles className="w-3.5 h-3.5" />
+      {/* ─── MAIN CONTENT CONTAINER ─── */}
+      <div className="relative z-10 w-full max-w-[1600px] mx-auto px-6 sm:px-12 lg:px-20 py-24 sm:py-28 flex flex-col lg:flex-row items-center justify-between gap-12 lg:gap-20">
+        
+        {/* ─── LEFT COLUMN: HERO NARRATIVE & 3D FLOATING FEATURES ─── */}
+        <div className="w-full lg:w-3/5 flex flex-col justify-center items-center md:items-start text-center md:text-left">
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[var(--fin-brand-100)] border border-[var(--fin-brand-200)] text-[var(--fin-brand-700)] text-xs font-semibold mb-6">
+            <Sparkles className="w-3.5 h-3.5 text-[var(--fin-brand-600)]" />
             <span>Interactive Portfolio & Wealth Tech Demo</span>
           </div>
-          <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-[1.1] mb-6">
-            Explore FinIQ with <br />
-            <span className="bg-gradient-to-r from-blue-400 via-indigo-300 to-teal-300 bg-clip-text text-transparent">
-              Simulated Live Workflows
+
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-extrabold tracking-tight text-[var(--fin-heading-primary)] leading-[1.1] mb-6">
+            Wealth Intelligence, <br />
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[var(--fin-brand-600)] via-[var(--fin-brand-700)] to-[var(--fin-brand-900)]">
+              Engineered.
             </span>
           </h1>
-          <p className="text-sm sm:text-base lg:text-lg text-slate-400 max-w-2xl mx-auto leading-relaxed">
-            Choose a system role below to launch directly into an active,
-            data-populated session. Under the hood, browser-side interception simulates
-            all NestJS endpoints with zero backend dependencies.
+
+          <p className="text-base sm:text-lg lg:text-xl text-[var(--fin-muted-text)] font-medium max-w-xl leading-relaxed mb-10">
+            A comprehensive, institutional-grade financial portfolio management platform engineered with multi-tier brokerage hierarchies, automated FIFO capital gains calculations, and high-precision telemetry.
           </p>
+
+          {/* 3D Floating Feature Perspective Badges (from Original Project) */}
+          <div className="hidden sm:grid grid-cols-3 gap-4 w-full max-w-xl">
+            <div className="p-4 rounded-xl bg-[var(--fin-table-bg)] border border-[var(--fin-border)] shadow-sm">
+              <div className="w-8 h-8 rounded-lg bg-[var(--fin-brand-100)] flex items-center justify-center text-[var(--fin-brand-600)] mb-2">
+                <PieChart className="w-4 h-4" />
+              </div>
+              <p className="text-xs font-bold text-[var(--fin-heading-primary)]">Portfolio Engine</p>
+              <p className="text-[11px] text-[var(--fin-muted-text)]">Live NAV tracking & asset allocation</p>
+            </div>
+
+            <div className="p-4 rounded-xl bg-[var(--fin-table-bg)] border border-[var(--fin-border)] shadow-sm">
+              <div className="w-8 h-8 rounded-lg bg-[var(--fin-brand-100)] flex items-center justify-center text-[var(--fin-brand-600)] mb-2">
+                <Layers className="w-4 h-4" />
+              </div>
+              <p className="text-xs font-bold text-[var(--fin-heading-primary)]">FIFO Tax Engine</p>
+              <p className="text-[11px] text-[var(--fin-muted-text)]">STCG & LTCG capital gains calculation</p>
+            </div>
+
+            <div className="p-4 rounded-xl bg-[var(--fin-table-bg)] border border-[var(--fin-border)] shadow-sm">
+              <div className="w-8 h-8 rounded-lg bg-[var(--fin-brand-100)] flex items-center justify-center text-[var(--fin-brand-600)] mb-2">
+                <Users className="w-4 h-4" />
+              </div>
+              <p className="text-xs font-bold text-[var(--fin-heading-primary)]">Multi-Tier Hierarchy</p>
+              <p className="text-[11px] text-[var(--fin-muted-text)]">Sub-broker commission distribution</p>
+            </div>
+          </div>
         </div>
 
-        {/* 3 Prominent Role Selection Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full max-w-6xl">
-          {/* 1. INVESTOR ROLE CARD */}
+        {/* ─── RIGHT COLUMN: FROSTED GLASS ROLE SELECTOR CARD ─── */}
+        <div className="w-full lg:w-2/5 flex justify-center lg:justify-end relative z-20">
           <div
-            onClick={() => handleSelectRole("investor")}
-            className={`group relative flex flex-col justify-between p-7 rounded-3xl bg-slate-900/70 hover:bg-slate-900/90 border transition-all duration-300 cursor-pointer overflow-hidden ${
-              selectedRole === "investor"
-                ? "border-emerald-500/50 shadow-xl shadow-emerald-500/10 ring-1 ring-emerald-500/30"
-                : "border-slate-800 hover:border-slate-700"
-            }`}
+            className="w-full max-w-[460px] bg-[var(--fin-table-bg)]/95 backdrop-blur-3xl border border-[var(--fin-border)] shadow-[0_30px_80px_-15px_rgba(0,0,0,0.12)] rounded-[2.5rem] p-6 sm:p-8 lg:p-10 relative overflow-hidden"
+            style={{ animation: "slideFadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards" }}
           >
-            <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/10 rounded-full blur-2xl group-hover:bg-emerald-500/20 transition-all pointer-events-none" />
+            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[var(--fin-brand-600)] to-transparent opacity-80" />
 
-            <div>
-              <div className="flex items-center justify-between mb-6">
-                <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 group-hover:scale-110 transition-transform">
-                  <TrendingUp className="w-6 h-6" />
-                </div>
-                <span className="px-3 py-1 rounded-full text-[11px] font-bold tracking-wide uppercase bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-                  Investor Portal
-                </span>
+            <div className="mb-6 text-center lg:text-left">
+              <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[var(--fin-brand-50)] text-[var(--fin-brand-700)] border border-[var(--fin-brand-200)] text-[10px] font-bold uppercase tracking-wider mb-2">
+                One-Click Instant Access
               </div>
-
-              <h2 className="text-2xl font-bold text-white mb-2 group-hover:text-emerald-400 transition-colors">
-                High-Net-Worth Investor
+              <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-[var(--fin-heading-primary)]">
+                Select Portal Role
               </h2>
-              <p className="text-xs text-slate-400 font-medium mb-5">
-                Simulated Persona:{" "}
-                <span className="text-slate-200 font-semibold">Aarav Mehta</span>{" "}
-                (₹54.80 L AUM across 6 Funds)
-              </p>
-
-              <div className="space-y-2.5 pt-4 border-t border-slate-800/80 mb-8">
-                <div className="flex items-center gap-2 text-xs text-slate-300">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
-                  <span>Real-time NAV & Asset Allocation Table</span>
-                </div>
-                <div className="flex items-center gap-2 text-xs text-slate-300">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
-                  <span>Capital Gains (FIFO STCG/LTCG engine)</span>
-                </div>
-                <div className="flex items-center gap-2 text-xs text-slate-300">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
-                  <span>Active Systematic Flows (SIP, STP, SWP)</span>
-                </div>
-                <div className="flex items-center gap-2 text-xs text-slate-300">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
-                  <span>1-Click PDF Report Export & Valuation</span>
-                </div>
-              </div>
-            </div>
-
-            <button
-              disabled={isRedirecting !== null}
-              className="w-full py-3.5 px-4 rounded-xl font-bold text-sm bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white shadow-lg shadow-emerald-500/20 flex items-center justify-center gap-2 group-hover:gap-3 transition-all"
-            >
-              <span>{isRedirecting === "investor" ? "Loading Dashboard..." : "Enter Investor Portal"}</span>
-              <ArrowRight className="w-4 h-4" />
-            </button>
-          </div>
-
-          {/* 2. DISTRIBUTOR ROLE CARD */}
-          <div
-            onClick={() => handleSelectRole("distributor")}
-            className={`group relative flex flex-col justify-between p-7 rounded-3xl bg-slate-900/70 hover:bg-slate-900/90 border transition-all duration-300 cursor-pointer overflow-hidden ${
-              selectedRole === "distributor"
-                ? "border-blue-500/50 shadow-xl shadow-blue-500/10 ring-1 ring-blue-500/30"
-                : "border-slate-800 hover:border-slate-700"
-            }`}
-          >
-            <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 rounded-full blur-2xl group-hover:bg-blue-500/20 transition-all pointer-events-none" />
-
-            <div>
-              <div className="flex items-center justify-between mb-6">
-                <div className="w-12 h-12 rounded-2xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400 group-hover:scale-110 transition-transform">
-                  <Users className="w-6 h-6" />
-                </div>
-                <span className="px-3 py-1 rounded-full text-[11px] font-bold tracking-wide uppercase bg-blue-500/10 text-blue-400 border border-blue-500/20">
-                  Distributor Portal
-                </span>
-              </div>
-
-              <h2 className="text-2xl font-bold text-white mb-2 group-hover:text-blue-400 transition-colors">
-                Principal Wealth Distributor
-              </h2>
-              <p className="text-xs text-slate-400 font-medium mb-5">
-                Simulated Persona:{" "}
-                <span className="text-slate-200 font-semibold">Rajesh Sharma</span>{" "}
-                (ARN-84920 | ₹3.13 Cr AUM)
-              </p>
-
-              <div className="space-y-2.5 pt-4 border-t border-slate-800/80 mb-8">
-                <div className="flex items-center gap-2 text-xs text-slate-300">
-                  <CheckCircle2 className="w-4 h-4 text-blue-400 shrink-0" />
-                  <span>Multi-tier Sub-Broker Hierarchy & Splits</span>
-                </div>
-                <div className="flex items-center gap-2 text-xs text-slate-300">
-                  <CheckCircle2 className="w-4 h-4 text-blue-400 shrink-0" />
-                  <span>Client Directory (18+ Simulated Investors)</span>
-                </div>
-                <div className="flex items-center gap-2 text-xs text-slate-300">
-                  <CheckCircle2 className="w-4 h-4 text-blue-400 shrink-0" />
-                  <span>Escrow Bank Accounts & Settlement Ledger</span>
-                </div>
-                <div className="flex items-center gap-2 text-xs text-slate-300">
-                  <CheckCircle2 className="w-4 h-4 text-blue-400 shrink-0" />
-                  <span>Investor-to-Broker Interactive Mapping</span>
-                </div>
-              </div>
-            </div>
-
-            <button
-              disabled={isRedirecting !== null}
-              className="w-full py-3.5 px-4 rounded-xl font-bold text-sm bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white shadow-lg shadow-blue-500/20 flex items-center justify-center gap-2 group-hover:gap-3 transition-all"
-            >
-              <span>{isRedirecting === "distributor" ? "Loading Dashboard..." : "Enter Distributor Portal"}</span>
-              <ArrowRight className="w-4 h-4" />
-            </button>
-          </div>
-
-          {/* 3. ADMIN ROLE CARD */}
-          <div
-            onClick={() => handleSelectRole("admin")}
-            className={`group relative flex flex-col justify-between p-7 rounded-3xl bg-slate-900/70 hover:bg-slate-900/90 border transition-all duration-300 cursor-pointer overflow-hidden ${
-              selectedRole === "admin"
-                ? "border-purple-500/50 shadow-xl shadow-purple-500/10 ring-1 ring-purple-500/30"
-                : "border-slate-800 hover:border-slate-700"
-            }`}
-          >
-            <div className="absolute top-0 right-0 w-32 h-32 bg-purple-500/10 rounded-full blur-2xl group-hover:bg-purple-500/20 transition-all pointer-events-none" />
-
-            <div>
-              <div className="flex items-center justify-between mb-6">
-                <div className="w-12 h-12 rounded-2xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-400 group-hover:scale-110 transition-transform">
-                  <ShieldCheck className="w-6 h-6" />
-                </div>
-                <span className="px-3 py-1 rounded-full text-[11px] font-bold tracking-wide uppercase bg-purple-500/10 text-purple-400 border border-purple-500/20">
-                  Admin Control
-                </span>
-              </div>
-
-              <h2 className="text-2xl font-bold text-white mb-2 group-hover:text-purple-400 transition-colors">
-                System Administrator
-              </h2>
-              <p className="text-xs text-slate-400 font-medium mb-5">
-                Simulated Persona:{" "}
-                <span className="text-slate-200 font-semibold">Alex Morgan</span>{" "}
-                (Infrastructure & Theme Engine)
-              </p>
-
-              <div className="space-y-2.5 pt-4 border-t border-slate-800/80 mb-8">
-                <div className="flex items-center gap-2 text-xs text-slate-300">
-                  <CheckCircle2 className="w-4 h-4 text-purple-400 shrink-0" />
-                  <span>Real-time System Audit & Ingestion Logs</span>
-                </div>
-                <div className="flex items-center gap-2 text-xs text-slate-300">
-                  <CheckCircle2 className="w-4 h-4 text-purple-400 shrink-0" />
-                  <span>Database Pool & Redis Cache Telemetry</span>
-                </div>
-                <div className="flex items-center gap-2 text-xs text-slate-300">
-                  <CheckCircle2 className="w-4 h-4 text-purple-400 shrink-0" />
-                  <span>Dynamic CSS Variable Theme Manager</span>
-                </div>
-                <div className="flex items-center gap-2 text-xs text-slate-300">
-                  <CheckCircle2 className="w-4 h-4 text-purple-400 shrink-0" />
-                  <span>BullMQ Asynchronous Job Worker Monitor</span>
-                </div>
-              </div>
-            </div>
-
-            <button
-              disabled={isRedirecting !== null}
-              className="w-full py-3.5 px-4 rounded-xl font-bold text-sm bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white shadow-lg shadow-purple-500/20 flex items-center justify-center gap-2 group-hover:gap-3 transition-all"
-            >
-              <span>{isRedirecting === "admin" ? "Loading Dashboard..." : "Enter Admin Portal"}</span>
-              <ArrowRight className="w-4 h-4" />
-            </button>
-          </div>
-        </div>
-
-        {/* Technical Architecture Banner */}
-        <div className="mt-12 w-full max-w-6xl p-6 rounded-2xl bg-gradient-to-r from-slate-900/90 via-slate-850 to-slate-900/90 border border-slate-800 flex flex-col md:flex-row items-center justify-between gap-6">
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400 shrink-0">
-              <Layers className="w-6 h-6" />
-            </div>
-            <div>
-              <h3 className="text-base font-bold text-white mb-1">
-                Evaluating Full-Stack Architecture?
-              </h3>
-              <p className="text-xs text-slate-400">
-                Explore the technical deep-dive into the NestJS backend, BullMQ processing queues, FIFO tax algorithms, and PostgreSQL schema.
+              <p className="text-xs sm:text-sm text-[var(--fin-body-text)] font-medium mt-1">
+                Experience full functionality across all three platform access tiers.
               </p>
             </div>
-          </div>
-          <Link
-            href="/architecture"
-            className="shrink-0 px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold transition-all shadow-md shadow-blue-600/20 flex items-center gap-2"
-          >
-            <span>Explore Backend Architecture</span>
-            <ArrowRight className="w-4 h-4" />
-          </Link>
-        </div>
-      </main>
 
-      {/* Footer */}
-      <footer className="relative z-20 w-full max-w-7xl mx-auto px-6 py-6 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
-        <div>
-          FinIQ Portfolio Management System • Demo Showcase Edition
+            {/* Role Options */}
+            <div className="space-y-3.5 mb-6">
+              {/* Investor Role */}
+              <button
+                type="button"
+                onClick={() => handleSelectRole("investor")}
+                disabled={isRedirecting !== null}
+                className={`w-full text-left p-4 rounded-2xl border transition-all duration-200 flex items-start gap-4 group relative overflow-hidden ${
+                  selectedRole === "investor"
+                    ? "bg-[var(--fin-brand-50)] border-[var(--fin-brand-600)] shadow-md shadow-[var(--fin-brand-600)]/10"
+                    : "bg-[var(--fin-table-bg)] border-[var(--fin-border)] hover:border-[var(--fin-brand-400)] hover:bg-[var(--fin-brand-50)]/50"
+                }`}
+              >
+                <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-700 flex items-center justify-center text-white shrink-0 shadow-md shadow-emerald-500/20">
+                  <Wallet className="w-5 h-5" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm font-bold text-[var(--fin-heading-primary)]">
+                      Investor Portal
+                    </span>
+                    <span className="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200">
+                      Portfolio ₹1.85 Cr
+                    </span>
+                  </div>
+                  <p className="text-xs text-[var(--fin-muted-text)] mt-0.5">
+                    Aarav Mehta • Holdings, Capital Gains FIFO & SIPs
+                  </p>
+                </div>
+                {isRedirecting === "investor" ? (
+                  <div className="w-4 h-4 border-2 border-emerald-600 border-t-transparent rounded-full animate-spin shrink-0 self-center" />
+                ) : (
+                  <ArrowRight className="w-4 h-4 text-[var(--fin-brand-400)] group-hover:text-[var(--fin-brand-600)] group-hover:translate-x-0.5 transition-all shrink-0 self-center" />
+                )}
+              </button>
+
+              {/* Distributor Role */}
+              <button
+                type="button"
+                onClick={() => handleSelectRole("distributor")}
+                disabled={isRedirecting !== null}
+                className={`w-full text-left p-4 rounded-2xl border transition-all duration-200 flex items-start gap-4 group relative overflow-hidden ${
+                  selectedRole === "distributor"
+                    ? "bg-[var(--fin-brand-50)] border-[var(--fin-brand-600)] shadow-md shadow-[var(--fin-brand-600)]/10"
+                    : "bg-[var(--fin-table-bg)] border-[var(--fin-border)] hover:border-[var(--fin-brand-400)] hover:bg-[var(--fin-brand-50)]/50"
+                }`}
+              >
+                <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-[var(--fin-brand-600)] to-[var(--fin-brand-800)] flex items-center justify-center text-white shrink-0 shadow-md shadow-[var(--fin-brand-600)]/20">
+                  <Users className="w-5 h-5" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm font-bold text-[var(--fin-heading-primary)]">
+                      Distributor Hub
+                    </span>
+                    <span className="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-full bg-[var(--fin-brand-100)] text-[var(--fin-brand-800)] border border-[var(--fin-brand-200)]">
+                      AUM ₹24.5 Cr
+                    </span>
+                  </div>
+                  <p className="text-xs text-[var(--fin-muted-text)] mt-0.5">
+                    Rajesh Sharma • 18 HNI Clients & Sub-broker Hierarchy
+                  </p>
+                </div>
+                {isRedirecting === "distributor" ? (
+                  <div className="w-4 h-4 border-2 border-[var(--fin-brand-600)] border-t-transparent rounded-full animate-spin shrink-0 self-center" />
+                ) : (
+                  <ArrowRight className="w-4 h-4 text-[var(--fin-brand-400)] group-hover:text-[var(--fin-brand-600)] group-hover:translate-x-0.5 transition-all shrink-0 self-center" />
+                )}
+              </button>
+
+              {/* Admin Role */}
+              <button
+                type="button"
+                onClick={() => handleSelectRole("admin")}
+                disabled={isRedirecting !== null}
+                className={`w-full text-left p-4 rounded-2xl border transition-all duration-200 flex items-start gap-4 group relative overflow-hidden ${
+                  selectedRole === "admin"
+                    ? "bg-[var(--fin-brand-50)] border-[var(--fin-brand-600)] shadow-md shadow-[var(--fin-brand-600)]/10"
+                    : "bg-[var(--fin-table-bg)] border-[var(--fin-border)] hover:border-[var(--fin-brand-400)] hover:bg-[var(--fin-brand-50)]/50"
+                }`}
+              >
+                <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-purple-600 to-indigo-800 flex items-center justify-center text-white shrink-0 shadow-md shadow-purple-600/20">
+                  <ShieldCheck className="w-5 h-5" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm font-bold text-[var(--fin-heading-primary)]">
+                      SuperAdmin Portal
+                    </span>
+                    <span className="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-full bg-purple-100 text-purple-800 border border-purple-200">
+                      Audit & Telemetry
+                    </span>
+                  </div>
+                  <p className="text-xs text-[var(--fin-muted-text)] mt-0.5">
+                    Alex Morgan • Tenant Health, Audits & Theming
+                  </p>
+                </div>
+                {isRedirecting === "admin" ? (
+                  <div className="w-4 h-4 border-2 border-purple-600 border-t-transparent rounded-full animate-spin shrink-0 self-center" />
+                ) : (
+                  <ArrowRight className="w-4 h-4 text-[var(--fin-brand-400)] group-hover:text-[var(--fin-brand-600)] group-hover:translate-x-0.5 transition-all shrink-0 self-center" />
+                )}
+              </button>
+            </div>
+
+            {/* Architecture Link & Security Badge */}
+            <div className="pt-4 border-t border-[var(--fin-border)] flex flex-col items-center gap-3">
+              <Link
+                href="/architecture"
+                className="w-full py-2.5 px-4 rounded-xl bg-[var(--fin-brand-50)] hover:bg-[var(--fin-brand-100)] border border-[var(--fin-brand-200)] flex items-center justify-center gap-2 text-xs font-bold text-[var(--fin-brand-700)] transition-colors"
+              >
+                <Server className="w-4 h-4 text-[var(--fin-brand-600)]" />
+                <span>Explore Backend Architecture Documentary</span>
+              </Link>
+
+              <div className="flex items-center gap-1.5 text-[11px] font-bold text-[var(--fin-muted-text)] uppercase tracking-wider">
+                <Lock className="w-3.5 h-3.5 text-emerald-600" />
+                <span>Fictional Dummy Data • Zero Real PAN/PII</span>
+              </div>
+            </div>
+          </div>
         </div>
-        <div className="flex items-center gap-6">
-          <span className="flex items-center gap-1.5 text-emerald-400">
-            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-            Client Simulation Active
-          </span>
-          <span>100% Mock Data Guaranteed</span>
-        </div>
-      </footer>
+      </div>
+
+      <style
+        dangerouslySetInnerHTML={{
+          __html: `
+        @keyframes slideFadeUp {
+          from { opacity: 0; transform: translateY(20px); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeIn {
+          from { opacity: 0; }
+          to   { opacity: 1; }
+        }
+        @keyframes shine {
+          0%   { left: -100%; }
+          20%  { left: 200%; }
+          100% { left: 200%; }
+        }
+      `,
+        }}
+      />
     </div>
   );
 }
