@@ -3,7 +3,7 @@ name: Deploy Next.js Demo to GitHub Pages
 on:
   push:
     branches:
-      - demo
+      - gh-pages
   workflow_dispatch:
 
 permissions:
