@@ -300,3 +300,12 @@ finiq/
 <div align="center">
 <sub>Brand it, scope it, ship it.</sub>
 </div>
+
+
+---
+
+## 📊 Live Stats
+
+<!--LIVE_STATS_START-->
+<!-- auto-generated — do not edit manually -->
+<!--LIVE_STATS_END-->
